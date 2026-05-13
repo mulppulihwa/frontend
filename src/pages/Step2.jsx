@@ -1,0 +1,61 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import TopBar from '../components/TopBar'
+import StepIndicator from '../components/StepIndicator'
+import SelectField from '../components/SelectField'
+import Button from '../components/Button'
+import BottomNav from '../components/BottomNav'
+
+export default function Step2() {
+  const navigate = useNavigate()
+  const [since, setSince] = useState('1년 이내')
+  const [household, setHousehold] = useState('혼자')
+  const [income, setIncome] = useState('기초수급')
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#FDFCF8' }}>
+      <div style={{ background: '#FDFCF8' }}>
+        <TopBar title="정보 입력" />
+        <div style={{ padding: '8px 18px 10px' }}>
+          <StepIndicator current={2} total={2} />
+        </div>
+      </div>
+
+      <div style={{ padding: '20px 18px 16px' }}>
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease both' }}>
+          귀농·귀향하셨나요?
+        </h2>
+        <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease 0.15s both' }}>
+          받을 수 있는 지원금을 찾아드려요
+        </p>
+      </div>
+
+      <div style={{ padding: '0 18px 0', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <SelectField label="시작한 지" value={since} onChange={setSince} options={[
+            { value: '1년 이내', label: '1년 이내' },
+            { value: '2년 이내', label: '2년 이내' },
+            { value: '3년 이내', label: '3년 이내' },
+            { value: '3년 이상', label: '3년 이상' },
+          ]} />
+          <SelectField label="가구 유형" value={household} onChange={setHousehold} options={[
+            { value: '혼자', label: '혼자' },
+            { value: '부부', label: '부부' },
+            { value: '가족', label: '가족' },
+          ]} />
+          <SelectField label="소득 구간" value={income} onChange={setIncome} options={[
+            { value: '기초수급', label: '기초수급' },
+            { value: '차상위', label: '차상위' },
+            { value: '일반', label: '일반' },
+          ]} />
+        </div>
+      </div>
+
+      <div style={{ padding: '12px 18px 100px' }}>
+        <Button onClick={() => navigate('/loading')}>내 지원금 찾기</Button>
+      </div>
+
+      <BottomNav />
+    </div>
+  )
+}
