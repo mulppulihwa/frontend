@@ -16,7 +16,8 @@ export default function BottomNav() {
       bottom: 0,
       width: 480,
       background: '#fff',
-      borderTop: '1px solid #f0f0f0',
+      borderRadius: '28px 28px 0 0',
+      boxShadow: '0 -4px 24px rgba(0,0,0,0.07)',
       display: 'flex',
       zIndex: 100,
     }}>
