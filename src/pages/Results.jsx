@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bookmark, Clock, Banknote, MapPin } from 'lucide-react'
+import { Bookmark, Clock, Banknote, MapPin, ArrowUpRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
@@ -146,7 +146,9 @@ export default function Results() {
             </div>
           </div>
 
-          <Button variant="ghost" onClick={() => navigate('/detail')} style={{ marginTop: 14 }}>자세히 보기</Button>
+          <Button variant="ghost" onClick={() => navigate('/detail')} style={{ marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            자세히 보기 <ArrowUpRight size={18} strokeWidth={2.2} />
+          </Button>
         </Card>
 
         {/* Status card */}
