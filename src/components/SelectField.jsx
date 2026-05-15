@@ -3,6 +3,7 @@ import { ChevronDown, Check } from 'lucide-react'
 
 export default function SelectField({ label, value, options, onChange, required }) {
   const [open, setOpen] = useState(false)
+  const [focused, setFocused] = useState(false)
   const ref = useRef(null)
 
   useEffect(() => {
@@ -27,8 +28,9 @@ export default function SelectField({ label, value, options, onChange, required 
         onClick={() => setOpen(o => !o)}
         style={{
           width: '100%',
+          minHeight: 56,
           padding: '12px 14px',
-          border: `1.5px solid ${open ? '#2d6a2d' : '#e8e8e8'}`,
+          border: `1.5px solid ${open || focused ? '#2d6a2d' : '#e8e8e8'}`,
           borderRadius: 16,
           fontSize: 20,
           color: '#1a1a1a',
@@ -42,9 +44,14 @@ export default function SelectField({ label, value, options, onChange, required 
           alignItems: 'center',
           justifyContent: 'space-between',
           textAlign: 'left',
-          transition: 'border-color 0.15s ease',
+          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
           boxSizing: 'border-box',
+          boxShadow: open || focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
         }}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
       >
         <span>{selected?.label}</span>
         <ChevronDown
@@ -68,6 +75,8 @@ export default function SelectField({ label, value, options, onChange, required 
           boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
           zIndex: 200,
           overflow: 'hidden',
+          maxHeight: 260,
+          overflowY: 'auto',
         }}>
           {options.map((opt, i) => {
             const isSelected = opt.value === value
