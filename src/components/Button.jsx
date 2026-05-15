@@ -23,7 +23,8 @@ export default function Button({ children, variant = 'primary', onClick, disable
       disabled={disabled}
       style={{
         width: '100%',
-        padding: '13px',
+        minHeight: 58,
+        padding: '16px',
         borderRadius: 18,
         fontSize: 18,
         fontWeight: 600,
