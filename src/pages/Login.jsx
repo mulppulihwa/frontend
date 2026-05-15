@@ -73,7 +73,7 @@ export default function Login() {
             textUnderlineOffset: 3,
           }}
         >
-          로그인 없이 바로...
+          로그인 없이 바로 시작하기
         </button>
       </div>
     </div>
