@@ -5,7 +5,7 @@
 }
 
 body {
-  background: #f5ece9;
+  background: #FDFCF8;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -13,10 +13,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(45, 106, 45, 0.22);
+  outline-offset: 2px;
+}
+
 #root {
   width: 480px;
   min-height: 100vh;
-  background: transparent;
+  background: #FDFCF8;
   flex-shrink: 0;
   font-size: 16px;
 }
@@ -28,4 +34,48 @@ body {
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cardSlideFromRight {
+  from { opacity: 0; transform: translateX(34px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes cardSlideFromLeft {
+  from { opacity: 0; transform: translateX(-34px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.support-search-animation {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+  animation: fadeUp 0.5s ease 0.28s both;
+}
+
+.moving-search-stage {
+  position: relative;
+  width: 180px;
+  height: 66px;
+}
+
+.moving-search-icon {
+  position: absolute;
+  left: 6px;
+  top: 7px;
+  width: 52px;
+  height: 52px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #3f7d3f, #2d6a2d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 24px rgba(45, 106, 45, 0.22);
+  animation: movingSearchIcon 2.4s cubic-bezier(0.42, 0, 0.18, 1) infinite;
+}
+
+@keyframes movingSearchIcon {
+  0%, 100% { transform: translateX(0) translateY(0) rotate(-4deg); }
+  36% { transform: translateX(60px) translateY(-6px) rotate(0deg); }
+  62%, 74% { transform: translateX(116px) translateY(0) rotate(5deg); }
 }
