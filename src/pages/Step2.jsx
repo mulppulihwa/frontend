@@ -4,7 +4,21 @@ import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import SelectField from '../components/SelectField'
 import Button from '../components/Button'
-import BottomNav from '../components/BottomNav'
+import SearchAnimation from '../components/SearchAnimation'
+
+function Header() {
+  return (
+    <div style={{ padding: '20px 18px 16px' }}>
+      <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease both' }}>
+        귀농·귀향하셨나요?
+      </h2>
+      <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease 0.15s both' }}>
+        받을 수 있는 지원금을 찾아드려요
+      </p>
+      <SearchAnimation />
+    </div>
+  )
+}
 
 export default function Step2() {
   const navigate = useNavigate()
@@ -15,20 +29,13 @@ export default function Step2() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#FDFCF8' }}>
       <div style={{ background: '#FDFCF8' }}>
-        <TopBar title="정보 입력" />
+        <TopBar title="정보 입력" onBack={() => navigate('/step1')} />
         <div style={{ padding: '8px 18px 10px' }}>
           <StepIndicator current={2} total={2} />
         </div>
       </div>
 
-      <div style={{ padding: '20px 18px 16px' }}>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease both' }}>
-          귀농·귀향하셨나요?
-        </h2>
-        <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease 0.15s both' }}>
-          받을 수 있는 지원금을 찾아드려요
-        </p>
-      </div>
+      <Header />
 
       <div style={{ padding: '0 18px 0', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -51,11 +58,9 @@ export default function Step2() {
         </div>
       </div>
 
-      <div style={{ padding: '12px 18px 100px' }}>
+      <div style={{ padding: '12px 18px 48px' }}>
         <Button onClick={() => navigate('/loading')}>내 지원금 찾기</Button>
       </div>
-
-      <BottomNav />
     </div>
   )
 }
