@@ -19,6 +19,28 @@ input:focus-visible {
   outline-offset: 2px;
 }
 
+.detail-scroll-page {
+  scrollbar-width: thin;
+  scrollbar-color: #d9d6cf transparent;
+}
+
+.detail-scroll-page::-webkit-scrollbar {
+  width: 6px;
+}
+
+.detail-scroll-page::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.detail-scroll-page::-webkit-scrollbar-thumb {
+  background: #d9d6cf;
+  border-radius: 999px;
+}
+
+.detail-scroll-page::-webkit-scrollbar-thumb:hover {
+  background: #c9c5bd;
+}
+
 #root {
   width: 480px;
   min-height: 100vh;
@@ -46,36 +68,134 @@ input:focus-visible {
   to   { opacity: 1; transform: translateX(0); }
 }
 
+.analysis-visual {
+  position: relative;
+  width: 190px;
+  height: 136px;
+}
+
+.analysis-card {
+  position: absolute;
+  left: 50%;
+  width: 132px;
+  height: 46px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1.5px solid #e8e8e8;
+  transform: translateX(-50%);
+}
+
+.analysis-card::before,
+.analysis-card::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  height: 5px;
+  border-radius: 999px;
+  background: #ebe7df;
+}
+
+.analysis-card::before {
+  top: 14px;
+  width: 68px;
+}
+
+.analysis-card::after {
+  top: 26px;
+  width: 94px;
+}
+
+.analysis-card-one {
+  top: 0;
+  animation: analysisCardPulse 1.8s ease-in-out infinite;
+}
+
+.analysis-card-two {
+  top: 44px;
+  animation: analysisCardPulse 1.8s ease-in-out 0.25s infinite;
+}
+
+.analysis-card-three {
+  top: 88px;
+  animation: analysisCardPulse 1.8s ease-in-out 0.5s infinite;
+}
+
+.analysis-search-icon {
+  position: absolute;
+  top: 42px;
+  left: 9px;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  background: #FDFCF8;
+  border: 1.5px solid #2d6a2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: analysisSearchSweep 2.1s cubic-bezier(0.42, 0, 0.18, 1) infinite;
+}
+
+@keyframes analysisSearchSweep {
+  0%, 100% { transform: translate(0, -32px) rotate(-5deg); }
+  33% { transform: translate(126px, 12px) rotate(4deg); }
+  66% { transform: translate(0, 56px) rotate(-4deg); }
+}
+
+@keyframes analysisCardPulse {
+  0%, 100% { border-color: #e8e8e8; }
+  50% { border-color: #b8d2b8; }
+}
+
+.loading-wave-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #FDFCF8;
+  overflow: hidden;
+}
+
+.loading-wave-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--fill);
+  background: #dcefdc;
+  transition: height 0.18s ease;
+  z-index: 0;
+}
+
+.loading-wave-surface {
+  position: absolute;
+  top: -58px;
+  left: 0;
+  width: 200%;
+  height: 74px;
+  background-repeat: repeat-x;
+  background-size: 260px 74px;
+  background-image: url("data:image/svg+xml,%3Csvg width='260' height='74' viewBox='0 0 260 74' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 39C31 13 65 13 99 39C132 64 167 64 200 39C222 22 242 16 260 20V74H0V39Z' fill='%23dcefdc'/%3E%3C/svg%3E");
+}
+
+.loading-wave-surface-one {
+  animation: fullPageWave 3.8s linear infinite;
+}
+
+.loading-wave-surface-two {
+  top: -48px;
+  opacity: 0.72;
+  background-image: url("data:image/svg+xml,%3Csvg width='260' height='74' viewBox='0 0 260 74' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 32C28 55 62 55 96 32C130 9 164 9 198 32C222 48 242 54 260 50V74H0V32Z' fill='%23cfe7cf'/%3E%3C/svg%3E");
+  animation: fullPageWave 5.2s linear infinite reverse;
+}
+
+@keyframes fullPageWave {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-260px); }
+}
+
 .support-search-animation {
   display: flex;
   justify-content: center;
   margin-top: 14px;
   animation: fadeUp 0.5s ease 0.28s both;
-}
-
-.moving-search-stage {
-  position: relative;
-  width: 180px;
-  height: 66px;
-}
-
-.moving-search-icon {
-  position: absolute;
-  left: 6px;
-  top: 7px;
-  width: 52px;
-  height: 52px;
-  border-radius: 20px;
-  background: linear-gradient(145deg, #3f7d3f, #2d6a2d);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 12px 24px rgba(45, 106, 45, 0.22);
-  animation: movingSearchIcon 2.4s cubic-bezier(0.42, 0, 0.18, 1) infinite;
-}
-
-@keyframes movingSearchIcon {
-  0%, 100% { transform: translateX(0) translateY(0) rotate(-4deg); }
-  36% { transform: translateX(60px) translateY(-6px) rotate(0deg); }
-  62%, 74% { transform: translateX(116px) translateY(0) rotate(5deg); }
 }

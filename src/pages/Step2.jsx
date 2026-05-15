@@ -59,7 +59,7 @@ export default function Step2() {
       </div>
 
       <div style={{ padding: '12px 18px 48px' }}>
-        <Button onClick={() => navigate('/loading')}>내 지원금 찾기</Button>
+        <Button onClick={() => navigate('/loading')} style={{ fontWeight: 500 }}>내 지원금 찾기</Button>
       </div>
     </div>
   )

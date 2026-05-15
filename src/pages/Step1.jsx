@@ -15,7 +15,7 @@ const textInputStyle = {
   border: '1.5px solid #e8e8e8',
   borderRadius: 16,
   fontSize: 20,
-  fontWeight: 600,
+  fontWeight: 400,
   color: '#1a1a1a',
   background: '#fff',
   fontFamily: 'inherit',
@@ -25,7 +25,7 @@ const textInputStyle = {
 
 const labelStyle = {
   fontSize: 18,
-  fontWeight: 600,
+  fontWeight: 400,
   color: '#1a1a1a',
   letterSpacing: '-0.1px',
 }
@@ -86,7 +86,7 @@ function TextField({ label, value, onChange, placeholder, type = 'text', min, ma
             top: '50%',
             transform: 'translateY(-50%)',
             fontSize: 17,
-            fontWeight: 700,
+            fontWeight: 400,
             color: '#777',
             pointerEvents: 'none',
           }}>
@@ -132,7 +132,7 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 fontSize: 17,
-                fontWeight: 700,
+                fontWeight: 400,
                 color: active ? tone.color : '#1a1a1a',
                 letterSpacing: '-0.2px',
                 textAlign: 'center',
@@ -256,7 +256,7 @@ export default function Step1() {
       </div>
 
       <div style={{ padding: '12px 18px 48px' }}>
-        <Button onClick={goNext}>다음</Button>
+        <Button onClick={goNext} style={{ fontWeight: 500 }}>다음</Button>
       </div>
     </div>
   )

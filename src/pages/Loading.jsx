@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Check } from 'lucide-react'
 import TopBar from '../components/TopBar'
+
+const steps = ['조건 확인', '지원금 매칭', '결과 정리']
 
 export default function Loading() {
   const navigate = useNavigate()
@@ -21,25 +24,92 @@ export default function Loading() {
   }, [navigate])
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      background: 'radial-gradient(ellipse at 10% 10%, #f5a94e 0%, #FDFCF8 42%, #FDFCF8 58%, #5a9a5a 100%)',
-    }}>
-      <TopBar title="정보 입력" />
+    <div
+      className="loading-wave-page"
+      style={{ '--fill': `${progress}%` }}
+    >
+      <div className="loading-wave-fill" aria-hidden="true">
+        <div className="loading-wave-surface loading-wave-surface-one" />
+        <div className="loading-wave-surface loading-wave-surface-two" />
+      </div>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
-        <div style={{
-          width: 72,
-          height: 72,
-          borderRadius: '50%',
-          border: '5px solid #e8e8e8',
-          borderTopColor: '#2d6a2d',
-          animation: 'spin 0.9s linear infinite',
-        }} />
-        <p style={{ fontSize: 24, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>분석 중......</p>
-        <p style={{ fontSize: 26, fontWeight: 700, color: '#2d6a2d', letterSpacing: '-0.5px' }}>{progress}%</p>
+      <div style={{ position: 'relative', zIndex: 2 }}>
+        <TopBar title="정보 입력" />
+      </div>
+
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0 28px 58px',
+        position: 'relative',
+        zIndex: 2,
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: 24, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', lineHeight: 1.45 }}>
+            받을 수 있는 지원금을
+          </p>
+          <p style={{ fontSize: 24, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', lineHeight: 1.45 }}>
+            찾고 있어요
+          </p>
+          <p style={{ fontSize: 16, fontWeight: 400, color: '#666', marginTop: 10, letterSpacing: '-0.1px' }}>
+            입력하신 조건을 기준으로 분석 중
+          </p>
+        </div>
+
+        <div style={{ width: '100%', marginTop: 28 }}>
+          <div style={{
+            width: '100%',
+            height: 8,
+            borderRadius: 999,
+            background: '#ece9e2',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              width: `${progress}%`,
+              height: '100%',
+              borderRadius: 999,
+              background: '#2d6a2d',
+              transition: 'width 0.12s ease',
+            }} />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
+            <span style={{ fontSize: 15, fontWeight: 400, color: '#777', letterSpacing: '-0.1px' }}>
+              분석 진행률
+            </span>
+            <span style={{ fontSize: 17, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>{progress}%</span>
+          </div>
+        </div>
+
+        <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 18 }}>
+          {steps.map((step, index) => {
+            const complete = progress >= (index + 1) * 30
+            return (
+              <div
+                key={step}
+                style={{
+                  minHeight: 44,
+                  borderRadius: 14,
+                  border: '1.5px solid #e8e8e8',
+                  background: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 5,
+                  color: complete ? '#2d6a2d' : '#777',
+                  fontSize: 14,
+                  fontWeight: 400,
+                  letterSpacing: '-0.1px',
+                }}
+              >
+                {complete && <Check size={14} strokeWidth={2.5} />}
+                {step}
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

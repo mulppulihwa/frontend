@@ -17,7 +17,7 @@ export default function SelectField({ label, value, options, onChange, required 
   return (
     <div ref={ref} style={{ display: 'flex', flexDirection: 'column', gap: 6, position: 'relative' }}>
       {label && (
-        <label style={{ fontSize: 18, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
+        <label style={{ fontSize: 18, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
           {label}{required && <span style={{ color: '#e53e3e', marginLeft: 2 }}>*</span>}
         </label>
       )}
@@ -36,7 +36,7 @@ export default function SelectField({ label, value, options, onChange, required 
           color: '#1a1a1a',
           background: '#fff',
           fontFamily: 'inherit',
-          fontWeight: 600,
+          fontWeight: 400,
           outline: 'none',
           letterSpacing: '-0.2px',
           cursor: 'pointer',
@@ -95,7 +95,7 @@ export default function SelectField({ label, value, options, onChange, required 
                   background: isSelected ? '#f0f7f0' : '#fff',
                   fontSize: 19,
                   fontFamily: 'inherit',
-                  fontWeight: isSelected ? 700 : 600,
+                  fontWeight: isSelected ? 500 : 400,
                   color: isSelected ? '#2d6a2d' : '#1a1a1a',
                   cursor: 'pointer',
                   display: 'flex',
