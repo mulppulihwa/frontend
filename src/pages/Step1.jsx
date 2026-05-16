@@ -255,7 +255,7 @@ export default function Step1() {
         )}
       </div>
 
-      <div style={{ padding: '12px 18px 48px' }}>
+      <div style={{ position: 'fixed', bottom: 64, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 480, padding: '12px 18px 16px', background: 'linear-gradient(to top, #FDFCF8 75%, transparent)', zIndex: 50 }}>
         <Button onClick={goNext} style={{ fontWeight: 500 }}>다음</Button>
       </div>
     </div>
