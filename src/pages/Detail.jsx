@@ -4,7 +4,6 @@ import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import Card from '../components/Card'
 import Button from '../components/Button'
-import BottomNav from '../components/BottomNav'
 
 const sections = [
   { title: '지원 내용', icon: Banknote, items: ['농업 창업 비용 최대 300만원 지원'], type: 'bullet' },
@@ -107,7 +106,6 @@ export default function Detail() {
         <Button style={{ fontWeight: 500 }}>신청 페이지 바로가기 →</Button>
       </div>
 
-      <BottomNav />
     </div>
   )
 }

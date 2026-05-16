@@ -5,7 +5,6 @@ import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import Card from '../components/Card'
-import BottomNav from '../components/BottomNav'
 import GrantResultCard from '../components/GrantResultCard'
 
 const grants = [
@@ -161,7 +160,6 @@ export default function Results() {
         </div>
       </div>
 
-      <BottomNav />
     </div>
   )
 }
