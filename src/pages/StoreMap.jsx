@@ -257,7 +257,7 @@ export default function StoreMap() {
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{
-                      fontSize: 17, fontWeight: 700, color: '#1a1a1a',
+                      fontSize: 17, fontWeight: 400, color: '#1a1a1a',
                       letterSpacing: '-0.3px', marginBottom: 4,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>
@@ -285,8 +285,22 @@ export default function StoreMap() {
                     <Phone size={15} color="#2d6a2d" strokeWidth={2.5} />
                     <span style={{ fontSize: 14, fontWeight: 600, color: '#2d6a2d', fontFamily: 'inherit' }}>전화하기</span>
                   </a>
+                  <a
+                    href={`https://map.kakao.com/?q=${encodeURIComponent(store.name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={e => e.stopPropagation()}
+                    style={{
+                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      gap: 6, padding: '11px 0', textDecoration: 'none',
+                      borderRight: '1.5px solid #ebebeb',
+                    }}
+                  >
+                    <MapPin size={15} color="#e07b00" strokeWidth={2.5} />
+                    <span style={{ fontSize: 14, fontWeight: 600, color: '#e07b00', fontFamily: 'inherit' }}>지도 보기</span>
+                  </a>
                   <button
-                    onClick={e => { e.stopPropagation(); handleStoreClick(store); setSheetH(COLLAPSED_H) }}
+                    onClick={e => { e.stopPropagation(); navigate(`/store-detail?category=${activeCategory}&store=${i}`) }}
                     style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                       gap: 6, padding: '11px 0', background: 'none', border: 'none', cursor: 'pointer',
@@ -294,7 +308,7 @@ export default function StoreMap() {
                     }}
                   >
                     <Navigation size={15} color="#555" strokeWidth={2.5} />
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#555' }}>지도 보기</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: '#555' }}>자세히 보기</span>
                   </button>
                 </div>
               </div>
