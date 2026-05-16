@@ -6,6 +6,9 @@ import Loading from './pages/Loading'
 import Results from './pages/Results'
 import Detail from './pages/Detail'
 import StoreMap from './pages/StoreMap'
+import StoreDetail from './pages/StoreDetail'
+import MyPage from './pages/MyPage'
+import GrantStatus from './pages/GrantStatus'
 import BottomNav from './components/BottomNav'
 
 const NO_NAV = ['/', '/loading']
@@ -24,6 +27,9 @@ function Layout() {
         <Route path="/results" element={<Results />} />
         <Route path="/detail" element={<Detail />} />
         <Route path="/map" element={<StoreMap />} />
+        <Route path="/store-detail" element={<StoreDetail />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/grant-status" element={<GrantStatus />} />
       </Routes>
       {showNav && <BottomNav />}
     </>
