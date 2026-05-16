@@ -43,7 +43,7 @@ export default function Login() {
         </div>
       </div>
 
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginBottom: 80 }}>
         <button
           onClick={() => navigate('/step1')}
           style={{
