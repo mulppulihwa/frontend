@@ -18,7 +18,7 @@ export default function GrantResultCard({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
         <div style={{ flex: 1, paddingRight: 8 }}>
           <p style={{ fontSize: 24, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1.28 }}>{grant.title}</p>
-          <p style={{ fontSize: 18, fontWeight: 400, color: '#1a1a1a', marginTop: 5, letterSpacing: '-0.1px' }}>{grant.agency}</p>
+          <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', marginTop: 5, letterSpacing: '-0.1px' }}>{grant.agency}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, paddingTop: 1 }}>
           {statusCfg && (
@@ -65,7 +65,7 @@ export default function GrantResultCard({
           <div style={{ width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Banknote size={22} color="#2d6a2d" strokeWidth={2.2} />
           </div>
-          <p style={{ fontSize: 18, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>{grant.subtitle}</p>
+          <p style={{ fontSize: 16, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>{grant.subtitle}</p>
         </div>
 
         <div style={{
@@ -130,7 +130,7 @@ export default function GrantResultCard({
                   {Number(val)}
                 </span>
               </div>
-              <span style={{ fontSize: 18, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 16, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px', whiteSpace: 'nowrap' }}>
                 {unit}
               </span>
             </Fragment>

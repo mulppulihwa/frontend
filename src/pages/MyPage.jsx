@@ -110,51 +110,36 @@ export default function MyPage() {
               전체 보기 <ChevronRight size={15} color="#aaa" strokeWidth={2.2} />
             </button>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {grantStatuses.map(grant => {
-              const cfg = statusConfig[grant.status]
-              const StatusIcon = cfg?.Icon
-              return (
-                <Card key={grant.id}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                    <div style={{
-                      width: 44, height: 44, borderRadius: 14, flexShrink: 0,
-                      background: cfg ? cfg.bg : '#f5f5f5',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+          <Card>
+            <div style={{ display: 'flex' }}>
+              {[
+                { key: '신청완료', label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8' },
+                { key: '신청예정', label: '신청 예정', color: '#e07b00', bg: '#fff3e0' },
+                { key: null, label: '미설정', color: '#bbb', bg: '#f5f5f5' },
+              ].map(({ key, label, color, bg }, i, arr) => {
+                const count = grantStatuses.filter(g => g.status === key).length
+                return (
+                  <div
+                    key={label}
+                    style={{
+                      flex: 1,
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                      padding: '8px 0',
+                      borderRight: i < arr.length - 1 ? '1.5px solid #f0f0f0' : 'none',
+                    }}
+                  >
+                    <p style={{ fontSize: 28, fontWeight: 800, color, letterSpacing: '-0.5px' }}>{count}</p>
+                    <span style={{
+                      fontSize: 13, fontWeight: 600, color,
+                      letterSpacing: '-0.1px',
                     }}>
-                      {cfg
-                        ? <StatusIcon size={20} color={cfg.color} strokeWidth={2.2} />
-                        : <Banknote size={20} color="#bbb" strokeWidth={2} />
-                      }
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 16, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px', marginBottom: 3 }}>
-                        {grant.title}
-                      </p>
-                      <p style={{ fontSize: 14, color: '#888', letterSpacing: '-0.1px' }}>{grant.subtitle} · 마감 {grant.deadline}</p>
-                    </div>
-                    {cfg ? (
-                      <span style={{
-                        fontSize: 13, fontWeight: 700, color: cfg.color,
-                        background: cfg.bg, borderRadius: 8, padding: '4px 10px',
-                        flexShrink: 0, letterSpacing: '-0.1px',
-                      }}>
-                        {cfg.label}
-                      </span>
-                    ) : (
-                      <span style={{
-                        fontSize: 13, fontWeight: 500, color: '#bbb',
-                        background: '#f5f5f5', borderRadius: 8, padding: '4px 10px',
-                        flexShrink: 0, letterSpacing: '-0.1px',
-                      }}>
-                        미설정
-                      </span>
-                    )}
+                      {label}
+                    </span>
                   </div>
-                </Card>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+          </Card>
         </div>
 
         {/* 북마크 */}

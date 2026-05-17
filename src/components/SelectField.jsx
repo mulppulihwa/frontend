@@ -17,7 +17,7 @@ export default function SelectField({ label, value, options, onChange, required 
   return (
     <div ref={ref} style={{ display: 'flex', flexDirection: 'column', gap: 6, position: 'relative' }}>
       {label && (
-        <label style={{ fontSize: 18, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
+        <label style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
           {label}{required && <span style={{ color: '#e53e3e', marginLeft: 2 }}>*</span>}
         </label>
       )}

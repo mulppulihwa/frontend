@@ -8,6 +8,7 @@ import SearchAnimation from '../components/SearchAnimation'
 
 const fieldGap = 12
 
+
 const textInputStyle = {
   width: '100%',
   padding: '12px 14px',
@@ -24,7 +25,7 @@ const textInputStyle = {
 }
 
 const labelStyle = {
-  fontSize: 18,
+  fontSize: 16,
   fontWeight: 400,
   color: '#1a1a1a',
   letterSpacing: '-0.1px',
@@ -152,10 +153,12 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
 export default function Step1() {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
+  const [birthDate, setBirthDate] = useState('1959-05-15')
   const [age, setAge] = useState('67')
   const [gender, setGender] = useState('남자')
   const [nationality, setNationality] = useState('내국인')
   const [farming, setFarming] = useState(true)
+  const [farmingDate, setFarmingDate] = useState('')
   const [location, setLocation] = useState('옥천군 or 옥천 외')
   const [movedAt, setMovedAt] = useState('2026-05-15')
   const [previousResidence, setPreviousResidence] = useState('내국인')
@@ -192,10 +195,10 @@ export default function Step1() {
 
       <Header />
 
-      <div style={{ padding: '0 18px 0', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div style={{ padding: '0 18px 140px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
         {page === 1 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-            <TextField label="나이가 어떻게 되세요?" value={age} onChange={setAge} type="number" min={0} max={120} />
+            <TextField label="생년월일이 어떻게 되세요?" value={birthDate} onChange={setBirthDate} type="date" />
             <SelectField label="성별이 어떻게 되세요?" value={gender} onChange={setGender} options={[
               { value: '남자', label: '남자' },
               { value: '여자', label: '여자' },
@@ -204,9 +207,6 @@ export default function Step1() {
               { value: '내국인', label: '내국인' },
               { value: '외국인', label: '외국인' },
             ]} />
-            <div style={{ paddingTop: 10 }}>
-              <RadioGroup label="농사 지으세요?" value={farming} onChange={setFarming} />
-            </div>
           </div>
         )}
 
@@ -239,24 +239,22 @@ export default function Step1() {
               { label: '예', value: true },
               { label: '아니요', value: false },
             ]} />
-            <TextField label="농업 외 소득이 있으신가요? (월 단위)" value={outsideIncome} onChange={setOutsideIncome} type="number" placeholder="예: 1000000" min={0} suffix="원" />
+            <TextField label="농업 외 소득이 있으신가요? (월 단위)" value={outsideIncome} onChange={setOutsideIncome} type="number" placeholder="약 --- 원" min={0} suffix="원" />
           </div>
         )}
 
         {page === 4 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-            <SelectField label="어디 사세요?" required value={region} onChange={setRegion} options={[
-              { value: '옥천군', label: '옥천군' },
-              { value: '옥천 외', label: '옥천 외' },
+            <RadioGroup label="귀농 교육 100시간을 이수하셨나요?" value={farming} onChange={setFarming} options={[
+              { label: '예', value: true },
+              { label: '아니요', value: false },
             ]} />
-            <TextField label="나이가 어떻게 되세요?" value={age} onChange={setAge} type="number" min={0} max={120} />
-            <RadioGroup label="농사 지으세요?" value={farming} onChange={setFarming} />
           </div>
         )}
       </div>
 
       <div style={{ position: 'fixed', bottom: 64, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 480, padding: '12px 18px 16px', background: 'linear-gradient(to top, #FDFCF8 75%, transparent)', zIndex: 50 }}>
-        <Button onClick={goNext} style={{ fontWeight: 500 }}>다음</Button>
+        <Button onClick={goNext} style={{ fontWeight: 500 }}>{page === 4 ? '내 지원금 찾기' : '다음'}</Button>
       </div>
     </div>
   )

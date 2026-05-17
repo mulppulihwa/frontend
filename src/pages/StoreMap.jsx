@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Tractor, Wallet } from 'lucide-react'
+import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Tractor, Wallet, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
@@ -25,8 +25,8 @@ const stores = {
 
 const markerColors = { farm: '#2d6a2d', local: '#e07b00' }
 
-const COLLAPSED_H = 190
-const EXPANDED_H = 460
+const COLLAPSED_H = 160
+const EXPANDED_H = 440
 
 export default function StoreMap() {
   const navigate = useNavigate()
@@ -36,6 +36,7 @@ export default function StoreMap() {
   const [activeCategory, setActiveCategory] = useState('farm')
   const [sheetH, setSheetH] = useState(COLLAPSED_H)
   const [selectedStore, setSelectedStore] = useState(null)
+  const [query, setQuery] = useState('')
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
 
   const expanded = sheetH > (COLLAPSED_H + EXPANDED_H) / 2
@@ -108,7 +109,7 @@ export default function StoreMap() {
       const marker = new window.kakao.maps.Marker({ position, image: markerImage, map })
       window.kakao.maps.event.addListener(marker, 'click', () => {
         setSelectedStore(store)
-        setExpanded(true)
+        setSheetH(EXPANDED_H)
         map.panTo(position)
       })
       markersRef.current.push(marker)
@@ -118,8 +119,13 @@ export default function StoreMap() {
   const handleCategoryChange = (categoryId) => {
     setActiveCategory(categoryId)
     setSelectedStore(null)
+    setQuery('')
     drawMarkers(categoryId)
   }
+
+  const filteredStores = stores[activeCategory].filter(s =>
+    s.name.includes(query) || s.address.includes(query)
+  )
 
   const handleStoreClick = (store) => {
     setSelectedStore(store)
@@ -129,193 +135,200 @@ export default function StoreMap() {
   const activeCat = categories.find(c => c.id === activeCategory)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: '#FDFCF8' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: '#f0f0f0' }}>
 
       <TopBar title="우리 마을 곳곳 사용처" />
 
       {/* Map */}
       <div style={{ position: 'relative', flex: 1 }}>
-      <div ref={mapRef} style={{ width: '100%', height: '100%', zIndex: 0 }} />
+        <div ref={mapRef} style={{ width: '100%', height: '100%', zIndex: 0 }} />
 
-        {/* Kakao map button */}
-        <button
-          onClick={() => window.open(`https://map.kakao.com/?q=옥천군+${activeCat?.label}`, '_blank')}
-          style={{
-            position: 'absolute', top: 12, right: 16, zIndex: 10,
-            display: 'flex', alignItems: 'center', gap: 6,
-            background: '#fff', border: '2px solid #2d6a2d', borderRadius: 24,
-            padding: '10px 16px', cursor: 'pointer', fontFamily: 'inherit',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.12)',
-          }}
-        >
-          <MapPin size={15} color="#2d6a2d" strokeWidth={2.5} />
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#2d6a2d' }}>카카오맵에서 보기</span>
-        </button>
-
-      {/* Bottom sheet */}
-      <div
-        style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10,
-          height: sheetH,
-          background: '#fff',
-          borderRadius: '24px 24px 0 0',
-          boxShadow: '0 -2px 20px rgba(0,0,0,0.10)',
-          transition: dragRef.current.dragging ? 'none' : 'height 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
-          display: 'flex', flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-        onMouseMove={onDragMove}
-        onMouseUp={onDragEnd}
-        onTouchMove={onDragMove}
-        onTouchEnd={onDragEnd}
-      >
-        {/* Drag handle */}
-        <div
-          onMouseDown={onDragStart}
-          onTouchStart={onDragStart}
-          onClick={() => setSheetH(expanded ? COLLAPSED_H : EXPANDED_H)}
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '12px 0 8px', cursor: 'grab', flexShrink: 0, userSelect: 'none' }}
-        >
-          <div style={{ width: 32, height: 4, borderRadius: 2, background: '#ddd' }} />
-        </div>
-
-        {/* Category pills */}
-        <div style={{ display: 'flex', gap: 8, padding: '0 16px 14px', flexShrink: 0 }}>
-          {categories.map(cat => {
-            const Icon = cat.icon
-            const isActive = activeCategory === cat.id
-            return (
-              <button
-                key={cat.id}
-                onClick={() => handleCategoryChange(cat.id)}
-                style={{
-                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-                  padding: '11px 0', borderRadius: 14, border: 'none', cursor: 'pointer',
-                  background: isActive ? cat.color : '#fff',
-                  boxShadow: isActive ? `0 4px 14px ${cat.color}33` : '0 1px 4px rgba(0,0,0,0.07)',
-                  fontFamily: 'inherit', transition: 'all 0.2s ease',
-                }}
-              >
-                <Icon size={18} color={isActive ? '#fff' : cat.color} strokeWidth={2.2} />
-                <span style={{ fontSize: 15, fontWeight: 700, color: isActive ? '#fff' : '#444', letterSpacing: '-0.2px' }}>
-                  {cat.label}
-                </span>
+        {/* Floating search + filter overlay */}
+        <div style={{
+          position: 'absolute', top: 12, left: 16, right: 16, zIndex: 10,
+          display: 'flex', flexDirection: 'column', gap: 10,
+        }}>
+          {/* Search bar */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            background: '#fff', borderRadius: 16,
+            padding: '12px 16px',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
+          }}>
+            <input
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              onFocus={() => setSheetH(EXPANDED_H)}
+              placeholder="장소 또는 주소 검색"
+              style={{
+                flex: 1, border: 'none', background: 'none', outline: 'none',
+                fontSize: 15, color: '#1a1a1a', fontFamily: 'inherit', letterSpacing: '-0.1px',
+              }}
+            />
+            {query.length > 0 ? (
+              <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
+                <X size={17} color="#bbb" strokeWidth={2.5} />
               </button>
-            )
-          })}
-        </div>
+            ) : (
+              <Search size={17} color="#bbb" strokeWidth={2.2} />
+            )}
+          </div>
 
-        {/* Expand hint / store count */}
-        <div
-          onClick={() => setSheetH(expanded ? COLLAPSED_H : EXPANDED_H)}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '0 18px 10px', cursor: 'pointer', flexShrink: 0,
-          }}
-        >
-          <span style={{ fontSize: 15, fontWeight: 600, color: '#888' }}>
-            {stores[activeCategory].length}개 장소
-          </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#aaa' }}>
-              {expanded ? '접기' : '목록 보기'}
-            </span>
-            {expanded
-              ? <ChevronDown size={16} color="#aaa" strokeWidth={2.5} />
-              : <ChevronUp size={16} color="#aaa" strokeWidth={2.5} />
-            }
+          {/* Category filter pills */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            {categories.map(cat => {
+              const Icon = cat.icon
+              const isActive = activeCategory === cat.id
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => handleCategoryChange(cat.id)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 7,
+                    padding: '9px 16px', borderRadius: 24,
+                    border: `1.5px solid ${isActive ? cat.color : '#e8e8e8'}`,
+                    background: '#fff',
+                    cursor: 'pointer', fontFamily: 'inherit',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    transition: 'border-color 0.15s ease',
+                  }}
+                >
+                  <Icon size={16} color={cat.color} strokeWidth={2.2} />
+                  <span style={{ fontSize: 14, fontWeight: isActive ? 700 : 500, color: isActive ? cat.color : '#555', letterSpacing: '-0.1px' }}>
+                    {cat.label}
+                  </span>
+                </button>
+              )
+            })}
           </div>
         </div>
 
-        {/* Store list */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 12px' }}>
-          {stores[activeCategory].map((store, i) => {
-            const isSelected = selectedStore?.name === store.name
-            const CatIcon = activeCat.icon
-            return (
-              <div
-                key={i}
-                onClick={() => handleStoreClick(store)}
-                style={{
-                  borderRadius: 18,
-                  marginBottom: 10,
-                  background: '#fff',
-                  border: `2px solid ${isSelected ? activeCat.color : '#ebebeb'}`,
-                  cursor: 'pointer',
-                  overflow: 'hidden',
-                  transition: 'border-color 0.18s ease',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 14px 12px' }}>
-                  <div style={{
-                    width: 46, height: 46, borderRadius: 14, flexShrink: 0,
-                    background: isSelected ? activeCat.color : activeCat.bg,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'background 0.18s',
-                  }}>
-                    <CatIcon size={22} color={isSelected ? '#fff' : activeCat.color} strokeWidth={2} />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{
-                      fontSize: 17, fontWeight: 400, color: '#1a1a1a',
-                      letterSpacing: '-0.3px', marginBottom: 4,
-                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        {/* Bottom sheet */}
+        <div
+          style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10,
+            height: sheetH,
+            background: '#fff',
+            borderRadius: '24px 24px 0 0',
+            boxShadow: '0 -2px 20px rgba(0,0,0,0.10)',
+            transition: dragRef.current.dragging ? 'none' : 'height 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
+            display: 'flex', flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+          onMouseMove={onDragMove}
+          onMouseUp={onDragEnd}
+          onTouchMove={onDragMove}
+          onTouchEnd={onDragEnd}
+        >
+          {/* Drag handle */}
+          <div
+            onMouseDown={onDragStart}
+            onTouchStart={onDragStart}
+            onClick={() => setSheetH(expanded ? COLLAPSED_H : EXPANDED_H)}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '12px 0 8px', cursor: 'grab', flexShrink: 0, userSelect: 'none' }}
+          >
+            <div style={{ width: 32, height: 4, borderRadius: 2, background: '#ddd' }} />
+          </div>
+
+          {/* Store count + expand toggle */}
+          <div
+            onClick={() => setSheetH(expanded ? COLLAPSED_H : EXPANDED_H)}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '0 18px 12px', cursor: 'pointer', flexShrink: 0,
+            }}
+          >
+            <span style={{ fontSize: 15, fontWeight: 600, color: '#888' }}>
+              {filteredStores.length}개 장소
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: '#aaa' }}>
+                {expanded ? '접기' : '목록 보기'}
+              </span>
+              {expanded
+                ? <ChevronDown size={16} color="#aaa" strokeWidth={2.5} />
+                : <ChevronUp size={16} color="#aaa" strokeWidth={2.5} />
+              }
+            </div>
+          </div>
+
+          {/* Store list */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 12px' }}>
+            {filteredStores.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '24px 0', color: '#bbb', fontSize: 15 }}>
+                검색 결과가 없어요
+              </div>
+            )}
+            {filteredStores.map((store) => {
+              const i = stores[activeCategory].indexOf(store)
+              const isSelected = selectedStore?.name === store.name
+              const CatIcon = activeCat.icon
+              return (
+                <div
+                  key={i}
+                  onClick={() => handleStoreClick(store)}
+                  style={{
+                    borderRadius: 18, marginBottom: 10,
+                    background: '#fff',
+                    border: `2px solid ${isSelected ? activeCat.color : '#ebebeb'}`,
+                    cursor: 'pointer', overflow: 'hidden',
+                    transition: 'border-color 0.18s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 14px 12px' }}>
+                    <div style={{
+                      width: 46, height: 46, borderRadius: 14, flexShrink: 0,
+                      background: isSelected ? activeCat.color : activeCat.bg,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'background 0.18s',
                     }}>
-                      {store.name}
-                    </p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <MapPin size={13} color="#888" strokeWidth={2} />
-                      <span style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {store.address}
-                      </span>
+                      <CatIcon size={22} color={isSelected ? '#fff' : activeCat.color} strokeWidth={2} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 17, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {store.name}
+                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <MapPin size={13} color="#888" strokeWidth={2} />
+                        <span style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {store.address}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div style={{ display: 'flex', borderTop: '1.5px solid #ebebeb' }}>
-                  <a
-                    href={`tel:${store.phone}`}
-                    onClick={e => e.stopPropagation()}
-                    style={{
-                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      gap: 6, padding: '11px 0', textDecoration: 'none',
-                      borderRight: '1.5px solid #ebebeb',
-                    }}
-                  >
-                    <Phone size={15} color="#2d6a2d" strokeWidth={2.5} />
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#2d6a2d', fontFamily: 'inherit' }}>전화하기</span>
-                  </a>
-                  <a
-                    href={`https://map.kakao.com/?q=${encodeURIComponent(store.name)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={e => e.stopPropagation()}
-                    style={{
-                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      gap: 6, padding: '11px 0', textDecoration: 'none',
-                      borderRight: '1.5px solid #ebebeb',
-                    }}
-                  >
-                    <MapPin size={15} color="#e07b00" strokeWidth={2.5} />
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#e07b00', fontFamily: 'inherit' }}>지도 보기</span>
-                  </a>
-                  <button
-                    onClick={e => { e.stopPropagation(); navigate(`/store-detail?category=${activeCategory}&store=${i}`) }}
-                    style={{
-                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      gap: 6, padding: '11px 0', background: 'none', border: 'none', cursor: 'pointer',
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    <Navigation size={15} color="#555" strokeWidth={2.5} />
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#555' }}>자세히 보기</span>
-                  </button>
+                  <div style={{ display: 'flex', borderTop: '1.5px solid #ebebeb' }}>
+                    <a
+                      href={`tel:${store.phone}`}
+                      onClick={e => e.stopPropagation()}
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none', borderRight: '1.5px solid #ebebeb' }}
+                    >
+                      <Phone size={15} color="#2d6a2d" strokeWidth={2.5} />
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#2d6a2d', fontFamily: 'inherit' }}>전화하기</span>
+                    </a>
+                    <a
+                      href={`https://map.kakao.com/?q=${encodeURIComponent(store.name)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={e => e.stopPropagation()}
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none', borderRight: '1.5px solid #ebebeb' }}
+                    >
+                      <MapPin size={15} color="#e07b00" strokeWidth={2.5} />
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#e07b00', fontFamily: 'inherit' }}>지도 보기</span>
+                    </a>
+                    <button
+                      onClick={e => { e.stopPropagation(); navigate(`/store-detail?category=${activeCategory}&store=${i}`) }}
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                    >
+                      <Navigation size={15} color="#555" strokeWidth={2.5} />
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#555' }}>자세히 보기</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
-      </div>
       </div>
     </div>
   )

@@ -9,6 +9,8 @@ import StoreMap from './pages/StoreMap'
 import StoreDetail from './pages/StoreDetail'
 import MyPage from './pages/MyPage'
 import GrantStatus from './pages/GrantStatus'
+import Home from './pages/Home'
+import Alarm from './pages/Alarm'
 import BottomNav from './components/BottomNav'
 
 const NO_NAV = ['/', '/loading']
@@ -30,6 +32,8 @@ function Layout() {
         <Route path="/store-detail" element={<StoreDetail />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/grant-status" element={<GrantStatus />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/alarm" element={<Alarm />} />
       </Routes>
       {showNav && <BottomNav />}
     </>

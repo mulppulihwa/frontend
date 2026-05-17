@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { Home, MapPin, User } from 'lucide-react'
 
 const tabs = [
-  { label: '홈', icon: Home, path: '/results' },
+  { label: '홈', icon: Home, path: '/home' },
   { label: '사용처', icon: MapPin, path: '/map' },
   { label: '마이페이지', icon: User, path: '/mypage' },
 ]

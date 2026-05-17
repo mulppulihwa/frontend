@@ -133,7 +133,7 @@ export default function StoreDetail() {
             </div>
             <p style={{ fontSize: 17, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>매장 정보</p>
           </div>
-          <p style={{ fontSize: 18, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', marginBottom: 8 }}>{store.address}</p>
+          <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', marginBottom: 8 }}>{store.address}</p>
           <a
             href={`tel:${store.phone}`}
             style={{
@@ -162,7 +162,7 @@ export default function StoreDetail() {
             {section.type === 'bullet' && section.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: i < section.items.length - 1 ? 8 : 0 }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2d6a2d', marginTop: 8, flexShrink: 0 }} />
-                <p style={{ fontSize: 18, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.6 }}>{item}</p>
+                <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.6 }}>{item}</p>
               </div>
             ))}
 
@@ -171,13 +171,13 @@ export default function StoreDetail() {
                 <div style={{ width: 22, height: 22, borderRadius: 999, background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Check size={12} color="#2d6a2d" strokeWidth={3} />
                 </div>
-                <p style={{ fontSize: 18, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item}</p>
+                <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item}</p>
               </div>
             ))}
 
             {section.type === 'contact' && section.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <p style={{ fontSize: 18, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item.text}</p>
+                <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item.text}</p>
                 <a
                   href={`tel:${item.phone}`}
                   style={{
