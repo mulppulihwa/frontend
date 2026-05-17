@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
-import { Check, Banknote, ClipboardCheck, Calendar, Phone } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Check, Banknote, ClipboardCheck, Calendar, Phone, MousePointerClick, ArrowUpRight, GraduationCap } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import Card from '../components/Card'
@@ -8,7 +9,9 @@ import Button from '../components/Button'
 const sections = [
   { title: '지원 내용', icon: Banknote, items: ['농업 창업 비용 최대 300만원 지원'], type: 'bullet' },
   { title: '신청 자격', icon: ClipboardCheck, items: ['귀농 3년 이내', '만 18세 이상', '옥천군 거주'], type: 'check' },
+  { title: '신청 요건', icon: GraduationCap, items: ['귀농교육 100시간 이상 이수'], type: 'requirement', link: { label: '교육이수 페이지 바로가기', href: '#' } },
   { title: '신청 기간', icon: Calendar, items: ['2026.04.01 ~ 06.30'], type: 'bullet' },
+  { title: '신청 방법', icon: MousePointerClick, items: ['인터넷', '방문', 'FAX', '우편', '무인발급기'], type: 'bullet' },
   { title: '담당 기관', icon: Phone, items: [{ text: '옥천군 농업기술센터', phone: '043-730-XXXX' }], type: 'contact' },
 ]
 
@@ -29,7 +32,7 @@ function Toast({ visible }) {
         <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Check size={26} color="#2d6a2d" strokeWidth={2.5} />
         </div>
-        <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
+        <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
       </div>
       <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>
     </div>
@@ -37,6 +40,7 @@ function Toast({ visible }) {
 }
 
 export default function Detail() {
+  const navigate = useNavigate()
   const [status, setStatus] = useState(null)
   const [toastVisible, setToastVisible] = useState(false)
   const toastTimer = useRef(null)
@@ -110,6 +114,44 @@ export default function Detail() {
               </div>
             ))}
 
+            {section.type === 'methods' && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {section.items.map((item, i) => (
+                  <span key={i} style={{
+                    fontSize: 14, fontWeight: 600, color: '#2d6a2d',
+                    background: '#e8f3e8', borderRadius: 20,
+                    padding: '6px 14px', letterSpacing: '-0.1px',
+                  }}>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {section.type === 'requirement' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {section.items.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2d6a2d', marginTop: 8, flexShrink: 0 }} />
+                    <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.6 }}>{item}</p>
+                  </div>
+                ))}
+                {section.link && (
+                  <a
+                    href={section.link.href}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
+                      fontSize: 15, fontWeight: 500, color: '#2d6a2d', textDecoration: 'none',
+                      marginTop: 2,
+                    }}
+                  >
+                    {section.link.label}
+                    <ArrowUpRight size={15} color="#2d6a2d" strokeWidth={2.2} />
+                  </a>
+                )}
+              </div>
+            )}
+
             {section.type === 'contact' && section.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item.text}</p>
@@ -129,14 +171,10 @@ export default function Detail() {
           </Card>
         ))}
 
-        <Card>
-          <p style={{ fontSize: 16, fontWeight: 500, color: '#1a1a1a', marginBottom: 12, letterSpacing: '-0.1px' }}>지원현황을 체크해주세요</p>
-          <StatusCheckboxes value={status} onChange={handleStatusChange} />
-        </Card>
       </div>
 
       <div style={{ position: 'fixed', bottom: 76, width: 480, padding: '14px 18px 16px', background: 'linear-gradient(to top, #FDFCF8 75%, transparent)' }}>
-        <Button style={{ fontWeight: 500 }}>신청 페이지 바로가기 →</Button>
+        <Button onClick={() => navigate('/checklist')} style={{ fontWeight: 500 }}>준비물 확인 →</Button>
       </div>
 
       <Toast visible={toastVisible} />

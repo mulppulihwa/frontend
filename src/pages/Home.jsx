@@ -33,29 +33,24 @@ export default function Home() {
 
       <div style={{ flex: 1 }} />
 
-      <div style={{ display: 'flex', gap: 10 }}>
-        {buttons.map(({ label, onClick, bg, color }) => (
-          <button
-            key={label}
-            onClick={onClick}
-            style={{
-              flex: 1,
-              padding: '16px 0',
-              borderRadius: 50,
-              border: 'none',
-              background: bg,
-              color,
-              fontSize: 16,
-              fontWeight: 700,
-              fontFamily: 'inherit',
-              letterSpacing: '-0.2px',
-              cursor: 'pointer',
-            }}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <button
+        onClick={() => setShowLogin(true)}
+        style={{
+          width: '100%',
+          padding: '18px 0',
+          borderRadius: 50,
+          border: 'none',
+          background: '#e07b00',
+          color: '#fff',
+          fontSize: 18,
+          fontWeight: 700,
+          fontFamily: 'inherit',
+          letterSpacing: '-0.2px',
+          cursor: 'pointer',
+        }}
+      >
+        진단하기 시작
+      </button>
 
       {/* Login modal */}
       {showLogin && (
@@ -80,7 +75,7 @@ export default function Home() {
               animation: 'fadeInScale 0.2s ease',
             }}
           >
-            <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
+            <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
               로그인 필요합니다
             </p>
             <button
@@ -93,7 +88,7 @@ export default function Home() {
                 border: 'none',
                 background: '#FEE500',
                 color: '#1a1a1a',
-                fontSize: 17,
+                fontSize: 18,
                 fontWeight: 600,
                 cursor: 'pointer',
                 fontFamily: 'inherit',

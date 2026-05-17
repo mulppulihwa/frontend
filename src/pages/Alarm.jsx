@@ -126,10 +126,10 @@ export default function Alarm() {
               <Check size={26} color="#2d6a2d" strokeWidth={2.5} />
             </div>
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: 16, fontWeight: 700, color: '#2d6a2d', letterSpacing: '-0.2px', marginBottom: 6 }}>
+              <p style={{ fontSize: 20, fontWeight: 700, color: '#2d6a2d', letterSpacing: '-0.2px', marginBottom: 6 }}>
                 {[...selected].sort((a, b) => b - a).map(n => `${n}일전`).join(', ')}
               </p>
-              <p style={{ fontSize: 15, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>알림 설정을 해두었어요!</p>
+              <p style={{ fontSize: 18, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>알림 설정을 해두었어요!</p>
             </div>
           </div>
           <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>

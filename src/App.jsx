@@ -11,6 +11,7 @@ import MyPage from './pages/MyPage'
 import GrantStatus from './pages/GrantStatus'
 import Home from './pages/Home'
 import Alarm from './pages/Alarm'
+import Checklist from './pages/Checklist'
 import BottomNav from './components/BottomNav'
 
 const NO_NAV = ['/', '/loading']
@@ -34,6 +35,7 @@ function Layout() {
         <Route path="/grant-status" element={<GrantStatus />} />
         <Route path="/home" element={<Home />} />
         <Route path="/alarm" element={<Alarm />} />
+        <Route path="/checklist" element={<Checklist />} />
       </Routes>
       {showNav && <BottomNav />}
     </>
