@@ -36,7 +36,7 @@ export default function Login() {
               서비스 이름<br />로고
             </p>
           </div>
-          <p style={{ fontSize: 30, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.6px', marginTop: 22 }}>서비스 이름</p>
+          <p style={{ fontSize: 30, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.6px', marginTop: 22 }}>귀농OK</p>
           <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: 12, textAlign: 'center' }}>
             내 조건에 맞는 농업 지원금을<br />간편하게 찾아보세요
           </p>
