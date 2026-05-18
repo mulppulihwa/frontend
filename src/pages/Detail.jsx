@@ -19,22 +19,22 @@ function Toast({ visible }) {
   if (!visible) return null
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 200,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      pointerEvents: 'none',
+      position: 'fixed', bottom: 120, left: '50%', transform: 'translateX(-50%)',
+      zIndex: 200, pointerEvents: 'none',
     }}>
       <div style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14,
-        background: '#fff', borderRadius: 24, padding: '28px 36px',
-        boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
-        animation: 'fadeInScale 0.2s ease',
+        display: 'flex', alignItems: 'center', gap: 10,
+        background: '#1a1a1a', borderRadius: 50, padding: '12px 20px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+        animation: 'fadeInUp 0.22s ease',
+        whiteSpace: 'nowrap',
       }}>
-        <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Check size={26} color="#2d6a2d" strokeWidth={2.5} />
+        <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#2d6a2d', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Check size={13} color="#fff" strokeWidth={2.5} />
         </div>
-        <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
+        <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
       </div>
-      <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>
+      <style>{`@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
     </div>
   )
 }
