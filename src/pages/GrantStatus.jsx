@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check } from 'lucide-react'
+import { Check, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 
@@ -33,40 +33,35 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
 
   return (
     <div style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 20, overflow: 'hidden' }}>
-      <div style={{ padding: '14px 14px 12px', display: 'flex', gap: 12 }}>
-        {/* Left */}
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>{grant.title}</p>
-          <p style={{ fontSize: 14, color: '#888', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
+      <div
+        onClick={() => navigate('/detail')}
+        style={{ padding: '14px 14px 12px', display: 'flex', flexDirection: 'column', gap: 8, cursor: 'pointer' }}
+      >
+        {/* Title row */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+          <p style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', flex: 1 }}>{grant.title}</p>
           {cfg && (
             <div style={{
               display: 'inline-flex', alignItems: 'center',
               background: cfg.bg, borderRadius: 10,
-              padding: '5px 12px', alignSelf: 'flex-start', marginTop: 2,
+              padding: '4px 10px', flexShrink: 0,
             }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: cfg.color, letterSpacing: '-0.1px' }}>{cfg.label}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: cfg.color, letterSpacing: '-0.1px' }}>{cfg.label}</span>
             </div>
           )}
         </div>
-        {/* Right */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between', flexShrink: 0, gap: 6 }}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button
-              onClick={() => navigate('/detail')}
-              style={{ padding: '7px 14px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}
-            >
-              자세히 보기
-            </button>
-            <button
-              onClick={() => isCompleted ? navigate('/map') : navigate('/alarm', { state: { grant } })}
-              style={{ padding: '7px 14px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}
-            >
-              {isCompleted ? '사용처 보기' : '알림 받기'}
-            </button>
-          </div>
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px', textAlign: 'right' }}>
-            {isCompleted ? '지원금 지급일까지' : '마감까지'} D- {grant.days}일 {grant.hours}시간 {grant.minutes}분
+        <p style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
+        {/* Countdown + button row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <p style={{ fontSize: 12, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px' }}>
+            {isCompleted ? '지급일까지' : '마감까지'} D- {grant.days}일 {grant.hours}시간 {grant.minutes}분
           </p>
+          <button
+            onClick={e => { e.stopPropagation(); isCompleted ? navigate('/map') : navigate('/alarm', { state: { grant } }) }}
+            style={{ padding: '6px 12px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}
+          >
+            {isCompleted ? '사용처 보기' : '알림 받기'}
+          </button>
         </div>
       </div>
 
@@ -131,6 +126,7 @@ export default function GrantStatus() {
   const [activeFilter, setActiveFilter] = useState('전체')
   const [statuses, setStatuses] = useState(initialStatuses)
   const [toastVisible, setToastVisible] = useState(false)
+  const [query, setQuery] = useState('')
   const toastTimer = useRef(null)
 
   const showToast = () => {
@@ -146,7 +142,8 @@ export default function GrantStatus() {
 
   const grants = grantsData.map(g => ({ ...g, status: statuses[g.id] }))
   const isAll = activeFilter === '전체'
-  const filtered = isAll ? [...grants].sort((a, b) => a.days - b.days) : grants.filter(g => g.status === activeFilter)
+  const filtered = (isAll ? [...grants].sort((a, b) => a.days - b.days) : grants.filter(g => g.status === activeFilter))
+    .filter(g => g.title.includes(query) || g.subtitle.includes(query))
   const grouped = !isAll && filtered.reduce((acc, g) => {
     if (!acc[g.status]) acc[g.status] = []
     acc[g.status].push(g)
@@ -166,6 +163,22 @@ export default function GrantStatus() {
           <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
             다음과 같아요
           </p>
+        </div>
+
+        {/* Search box */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#fff', borderRadius: 16, padding: '11px 16px', border: '1.5px solid #e8e8e8' }}>
+          <Search size={16} color="#bbb" strokeWidth={2.2} />
+          <input
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="지원금 검색"
+            style={{ flex: 1, border: 'none', background: 'none', outline: 'none', fontSize: 14, color: '#1a1a1a', fontFamily: 'inherit', letterSpacing: '-0.1px' }}
+          />
+          {query.length > 0 && (
+            <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
+              <X size={15} color="#bbb" strokeWidth={2.5} />
+            </button>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>

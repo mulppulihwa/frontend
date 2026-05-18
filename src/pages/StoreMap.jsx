@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Tractor, Wallet, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 
@@ -30,9 +30,11 @@ const EXPANDED_H = 440
 
 export default function StoreMap() {
   const navigate = useNavigate()
+  const { state } = useLocation()
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
   const markersRef = useRef([])
+  const mapAreaRef = useRef(null)
   const [activeCategory, setActiveCategory] = useState('farm')
   const [sheetH, setSheetH] = useState(COLLAPSED_H)
   const [selectedStore, setSelectedStore] = useState(null)
@@ -68,11 +70,17 @@ export default function StoreMap() {
       window.kakao.maps.load(() => {
         const container = mapRef.current
         if (!container) return
-        mapInstanceRef.current = new window.kakao.maps.Map(container, {
-          center: new window.kakao.maps.LatLng(OKCHEON_CENTER.lat, OKCHEON_CENTER.lng),
-          level: 5,
-        })
-        drawMarkers(activeCategory)
+        const center = state?.store
+          ? new window.kakao.maps.LatLng(state.store.lat, state.store.lng)
+          : new window.kakao.maps.LatLng(OKCHEON_CENTER.lat, OKCHEON_CENTER.lng)
+        mapInstanceRef.current = new window.kakao.maps.Map(container, { center, level: 3 })
+        const category = state?.store?.category ?? activeCategory
+        if (state?.store) setActiveCategory(category)
+        drawMarkers(category)
+        if (state?.store) {
+          setSelectedStore(state.store)
+          setSheetH(EXPANDED_H)
+        }
       })
     }
 
@@ -142,66 +150,51 @@ export default function StoreMap() {
       </div>
 
       {/* Map */}
-      <div style={{ position: 'relative', flex: 1 }}>
+      <div ref={mapAreaRef} style={{ position: 'relative', flex: 1 }}>
         <div ref={mapRef} style={{ width: '100%', height: '100%', zIndex: 0 }} />
 
-        {/* Floating search + filter overlay */}
+        {/* Floating search trigger + category pills */}
         <div style={{
           position: 'absolute', top: 12, left: 16, right: 16, zIndex: 10,
           display: 'flex', flexDirection: 'column', gap: 10,
         }}>
-          {/* Search bar */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            background: '#fff', borderRadius: 16,
-            padding: '12px 16px',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
-          }}>
-            <input
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              onFocus={() => setSheetH(EXPANDED_H)}
-              placeholder="장소 또는 주소 검색"
-              style={{
-                flex: 1, border: 'none', background: 'none', outline: 'none',
-                fontSize: 14, color: '#1a1a1a', fontFamily: 'inherit', letterSpacing: '-0.1px',
-              }}
-            />
-            {query.length > 0 ? (
-              <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
-                <X size={17} color="#bbb" strokeWidth={2.5} />
-              </button>
-            ) : (
-              <Search size={17} color="#bbb" strokeWidth={2.2} />
-            )}
+          <div
+            onClick={() => navigate('/store-search')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              background: '#fff', borderRadius: 16, padding: '11px 16px',
+              border: '1.5px solid #e8e8e8',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.08)', cursor: 'pointer',
+            }}
+          >
+            <Search size={16} color="#bbb" strokeWidth={2.2} />
+            <span style={{ fontSize: 14, color: '#bbb', fontFamily: 'inherit', letterSpacing: '-0.1px' }}>장소 또는 주소 검색</span>
           </div>
-
-          {/* Category filter pills */}
           <div style={{ display: 'flex', gap: 8 }}>
-            {categories.map(cat => {
-              const Icon = cat.icon
-              const isActive = activeCategory === cat.id
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => handleCategoryChange(cat.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 7,
-                    padding: '9px 16px', borderRadius: 24,
-                    border: `1.5px solid ${isActive ? cat.color : '#e8e8e8'}`,
-                    background: '#fff',
-                    cursor: 'pointer', fontFamily: 'inherit',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                    transition: 'border-color 0.15s ease',
-                  }}
-                >
-                  <Icon size={16} color={cat.color} strokeWidth={2.2} />
-                  <span style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? cat.color : '#555', letterSpacing: '-0.1px' }}>
-                    {cat.label}
-                  </span>
-                </button>
-              )
-            })}
+          {categories.map(cat => {
+            const Icon = cat.icon
+            const isActive = activeCategory === cat.id
+            return (
+              <button
+                key={cat.id}
+                onClick={() => handleCategoryChange(cat.id)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 7,
+                  padding: '9px 16px', borderRadius: 24,
+                  border: `1.5px solid ${isActive ? cat.color : '#e8e8e8'}`,
+                  background: '#fff',
+                  cursor: 'pointer', fontFamily: 'inherit',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'border-color 0.15s ease',
+                }}
+              >
+                <Icon size={16} color={cat.color} strokeWidth={2.2} />
+                <span style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? cat.color : '#555', letterSpacing: '-0.1px' }}>
+                  {cat.label}
+                </span>
+              </button>
+            )
+          })}
           </div>
         </div>
 
@@ -231,6 +224,7 @@ export default function StoreMap() {
           >
             <div style={{ width: 32, height: 4, borderRadius: 2, background: '#ddd' }} />
           </div>
+
 
           {/* Store count + expand toggle */}
           <div
