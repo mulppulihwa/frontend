@@ -9,7 +9,7 @@ const sections = [
   {
     title: '신청 요건',
     items: ['귀농교육 100시간 이상 이수'],
-    link: { label: '교육이수 페이지 바로가기', href: '#' },
+    link: { label: '교육이수 페이지 바로가기', href: 'https://agriedu.net/' },
   },
   {
     title: '제출 서류',

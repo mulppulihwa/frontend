@@ -9,7 +9,7 @@ import Button from '../components/Button'
 const sections = [
   { title: '지원 내용', icon: Banknote, items: ['농업 창업 비용 최대 300만원 지원'], type: 'bullet' },
   { title: '신청 자격', icon: ClipboardCheck, items: ['귀농 3년 이내', '만 18세 이상', '옥천군 거주'], type: 'check' },
-  { title: '신청 요건', icon: GraduationCap, items: ['귀농교육 100시간 이상 이수'], type: 'requirement', link: { label: '교육이수 페이지 바로가기', href: '#' } },
+  { title: '신청 요건', icon: GraduationCap, items: ['귀농교육 100시간 이상 이수'], type: 'requirement', link: { label: '교육이수 페이지 바로가기', href: 'https://agriedu.net/' } },
   { title: '신청 기간', icon: Calendar, items: ['2026.04.01 ~ 06.30'], type: 'bullet' },
   { title: '신청 방법', icon: MousePointerClick, items: ['인터넷', '방문', 'FAX', '우편', '무인발급기'], type: 'bullet' },
   { title: '담당 기관', icon: Phone, items: [{ text: '옥천군 농업기술센터', phone: '043-730-XXXX' }], type: 'contact' },

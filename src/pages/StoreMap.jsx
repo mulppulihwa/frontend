@@ -339,17 +339,17 @@ export default function StoreMap() {
                       </p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
                         <span style={{ fontSize: 12, fontWeight: 700, color: '#f59e0b' }}>★ {store.rating}</span>
-                        <span style={{ fontSize: 11, color: '#bbb' }}>({store.reviews})</span>
+                        <span style={{ fontSize: 11, color: '#888' }}>({store.reviews})</span>
                         {userPos && (
                           <>
-                            <span style={{ fontSize: 11, color: '#ddd' }}>·</span>
-                            <span style={{ fontSize: 12, color: '#aaa' }}>{haversine(userPos.lat, userPos.lng, store.lat, store.lng)}</span>
+                            <span style={{ fontSize: 11, color: '#bbb' }}>·</span>
+                            <span style={{ fontSize: 12, color: '#666' }}>{haversine(userPos.lat, userPos.lng, store.lat, store.lng)}</span>
                           </>
                         )}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <MapPin size={13} color="#bbb" strokeWidth={2} />
-                        <span style={{ fontSize: 12, color: '#aaa', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <MapPin size={13} color="#999" strokeWidth={2} />
+                        <span style={{ fontSize: 12, color: '#666', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.address}
                         </span>
                       </div>
