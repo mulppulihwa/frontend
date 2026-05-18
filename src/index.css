@@ -42,10 +42,10 @@ input:focus-visible {
 }
 
 #root {
-  width: 480px;
+  width: 100%;
+  max-width: 480px;
   min-height: 100vh;
   background: #FDFCF8;
-  flex-shrink: 0;
   font-size: 16px;
 }
 
