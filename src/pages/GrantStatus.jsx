@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, Search, X } from 'lucide-react'
+import { Check, Search, X, ArrowUpDown } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 
@@ -112,6 +112,7 @@ export default function GrantStatus() {
   const [statuses, setStatuses] = useState(initialStatuses)
   const [toastVisible, setToastVisible] = useState(false)
   const [query, setQuery] = useState('')
+  const [sort, setSort] = useState('마감순')
   const toastTimer = useRef(null)
 
   const showToast = () => {
@@ -127,8 +128,12 @@ export default function GrantStatus() {
 
   const grants = grantsData.map(g => ({ ...g, status: statuses[g.id] }))
   const isAll = activeFilter === '전체'
-  const filtered = (isAll ? [...grants].sort((a, b) => a.days - b.days) : grants.filter(g => g.status === activeFilter))
+  const sortFn = sort === '마감순'
+    ? (a, b) => a.days - b.days
+    : (a, b) => a.title.localeCompare(b.title, 'ko')
+  const filtered = (isAll ? grants : grants.filter(g => g.status === activeFilter))
     .filter(g => g.title.includes(query) || g.subtitle.includes(query))
+    .sort(sortFn)
   const grouped = !isAll && filtered.reduce((acc, g) => {
     if (!acc[g.status]) acc[g.status] = []
     acc[g.status].push(g)
@@ -189,6 +194,22 @@ export default function GrantStatus() {
               </button>
             )
           })}
+        </div>
+
+        {/* Sort toggle */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: -14 }}>
+          <button
+            onClick={() => setSort(s => s === '마감순' ? '가나다순' : '마감순')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontFamily: 'inherit', fontSize: 13, fontWeight: 500, color: '#888',
+              padding: 0,
+            }}
+          >
+            <ArrowUpDown size={13} color="#aaa" strokeWidth={2.2} />
+            {sort}
+          </button>
         </div>
 
         {isAll ? (
