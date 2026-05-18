@@ -18,7 +18,7 @@ export default function TopBar({ title, onBack }) {
       >
         <ArrowLeft size={18} color="#1a1a1a" strokeWidth={2} />
       </button>
-      <span style={{ fontSize: 20, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{title}</span>
+      <span style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{title}</span>
     </div>
   )
 }

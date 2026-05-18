@@ -36,15 +36,15 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
       <div style={{ padding: '14px 14px 12px', display: 'flex', gap: 12 }}>
         {/* Left */}
         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>{grant.title}</p>
-          <p style={{ fontSize: 15, color: '#888', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>{grant.title}</p>
+          <p style={{ fontSize: 14, color: '#888', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
           {cfg && (
             <div style={{
               display: 'inline-flex', alignItems: 'center',
               background: cfg.bg, borderRadius: 10,
               padding: '5px 12px', alignSelf: 'flex-start', marginTop: 2,
             }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: cfg.color, letterSpacing: '-0.1px' }}>{cfg.label}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: cfg.color, letterSpacing: '-0.1px' }}>{cfg.label}</span>
             </div>
           )}
         </div>
@@ -53,18 +53,18 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
           <div style={{ display: 'flex', gap: 6 }}>
             <button
               onClick={() => navigate('/detail')}
-              style={{ padding: '7px 14px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 15, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}
+              style={{ padding: '7px 14px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}
             >
               자세히 보기
             </button>
             <button
               onClick={() => isCompleted ? navigate('/map') : navigate('/alarm', { state: { grant } })}
-              style={{ padding: '7px 14px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 15, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}
+              style={{ padding: '7px 14px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}
             >
               {isCompleted ? '사용처 보기' : '알림 받기'}
             </button>
           </div>
-          <p style={{ fontSize: 14, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px', textAlign: 'right' }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px', textAlign: 'right' }}>
             {isCompleted ? '지원금 지급일까지' : '마감까지'} D- {grant.days}일 {grant.hours}시간 {grant.minutes}분
           </p>
         </div>
@@ -83,7 +83,7 @@ function StatusSection({ title, grants, statuses, onStatusChange, navigate }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ paddingLeft: 2 }}>
-        <p style={{ fontSize: 17, fontWeight: 700, color: cfg.color, letterSpacing: '-0.2px' }}>{cfg.label}</p>
+        <p style={{ fontSize: 15, fontWeight: 700, color: cfg.color, letterSpacing: '-0.2px' }}>{cfg.label}</p>
       </div>
       {grants.map(g => (
         <GrantCard
@@ -119,7 +119,7 @@ function Toast({ visible }) {
         <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Check size={26} color="#2d6a2d" strokeWidth={2.5} />
         </div>
-        <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
+        <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
       </div>
       <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>
     </div>
@@ -160,10 +160,10 @@ export default function GrantStatus() {
       <div style={{ padding: '12px 18px 100px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
         <div style={{ textAlign: 'center', lineHeight: 1.55, padding: '4px 0 0' }}>
-          <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
+          <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
             ○○○님의 <span style={{ color: '#2d6a2d' }}>지원 현황</span>은
           </p>
-          <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
+          <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
             다음과 같아요
           </p>
         </div>
@@ -180,7 +180,7 @@ export default function GrantStatus() {
                   border: `1.5px solid ${active ? '#2d6a2d' : '#e8e8e8'}`,
                   background: active ? '#2d6a2d' : '#fff',
                   cursor: 'pointer', fontFamily: 'inherit',
-                  fontSize: 14, fontWeight: active ? 700 : 500,
+                  fontSize: 13, fontWeight: active ? 700 : 500,
                   color: active ? '#fff' : '#666',
                   letterSpacing: '-0.1px',
                   transition: 'all 0.15s ease',
@@ -221,7 +221,7 @@ export default function GrantStatus() {
         )}
 
         {filtered.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: '#bbb', fontSize: 15 }}>
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#bbb', fontSize: 14 }}>
             해당하는 지원금이 없어요
           </div>
         )}

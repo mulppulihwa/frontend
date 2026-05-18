@@ -137,7 +137,9 @@ export default function StoreMap() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: '#f0f0f0' }}>
 
-      <TopBar title="우리 마을 곳곳 사용처" />
+      <div style={{ background: '#FDFCF8' }}>
+        <TopBar title="우리 마을 곳곳 사용처" />
+      </div>
 
       {/* Map */}
       <div style={{ position: 'relative', flex: 1 }}>
@@ -162,7 +164,7 @@ export default function StoreMap() {
               placeholder="장소 또는 주소 검색"
               style={{
                 flex: 1, border: 'none', background: 'none', outline: 'none',
-                fontSize: 15, color: '#1a1a1a', fontFamily: 'inherit', letterSpacing: '-0.1px',
+                fontSize: 14, color: '#1a1a1a', fontFamily: 'inherit', letterSpacing: '-0.1px',
               }}
             />
             {query.length > 0 ? (
@@ -194,7 +196,7 @@ export default function StoreMap() {
                   }}
                 >
                   <Icon size={16} color={cat.color} strokeWidth={2.2} />
-                  <span style={{ fontSize: 14, fontWeight: isActive ? 700 : 500, color: isActive ? cat.color : '#555', letterSpacing: '-0.1px' }}>
+                  <span style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? cat.color : '#555', letterSpacing: '-0.1px' }}>
                     {cat.label}
                   </span>
                 </button>
@@ -238,11 +240,11 @@ export default function StoreMap() {
               padding: '0 18px 12px', cursor: 'pointer', flexShrink: 0,
             }}
           >
-            <span style={{ fontSize: 15, fontWeight: 600, color: '#888' }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: '#888' }}>
               {filteredStores.length}개 장소
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: '#aaa' }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#aaa' }}>
                 {expanded ? '접기' : '목록 보기'}
               </span>
               {expanded
@@ -255,7 +257,7 @@ export default function StoreMap() {
           {/* Store list */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 12px' }}>
             {filteredStores.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '24px 0', color: '#bbb', fontSize: 15 }}>
+              <div style={{ textAlign: 'center', padding: '24px 0', color: '#bbb', fontSize: 14 }}>
                 검색 결과가 없어요
               </div>
             )}
@@ -285,12 +287,12 @@ export default function StoreMap() {
                       <CatIcon size={22} color={isSelected ? '#fff' : activeCat.color} strokeWidth={2} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 17, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <p style={{ fontSize: 15, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {store.name}
                       </p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <MapPin size={13} color="#888" strokeWidth={2} />
-                        <span style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: 12, color: '#888', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.address}
                         </span>
                       </div>
@@ -304,7 +306,7 @@ export default function StoreMap() {
                       style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none', borderRight: '1.5px solid #ebebeb' }}
                     >
                       <Phone size={15} color="#2d6a2d" strokeWidth={2.5} />
-                      <span style={{ fontSize: 14, fontWeight: 600, color: '#2d6a2d', fontFamily: 'inherit' }}>전화하기</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#2d6a2d', fontFamily: 'inherit' }}>전화하기</span>
                     </a>
                     <a
                       href={`https://map.kakao.com/?q=${encodeURIComponent(store.name)}`}
@@ -314,14 +316,14 @@ export default function StoreMap() {
                       style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none', borderRight: '1.5px solid #ebebeb' }}
                     >
                       <MapPin size={15} color="#e07b00" strokeWidth={2.5} />
-                      <span style={{ fontSize: 14, fontWeight: 600, color: '#e07b00', fontFamily: 'inherit' }}>지도 보기</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#e07b00', fontFamily: 'inherit' }}>지도 보기</span>
                     </a>
                     <button
                       onClick={e => { e.stopPropagation(); navigate(`/store-detail?category=${activeCategory}&store=${i}`) }}
                       style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
                     >
                       <Navigation size={15} color="#555" strokeWidth={2.5} />
-                      <span style={{ fontSize: 14, fontWeight: 600, color: '#555' }}>자세히 보기</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#555' }}>자세히 보기</span>
                     </button>
                   </div>
                 </div>

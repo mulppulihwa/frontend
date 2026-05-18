@@ -19,7 +19,7 @@ export default function StepIndicator({ current, total }) {
           transition: 'width 0.5s ease',
         }} />
       </div>
-      <span style={{ fontSize: 13, fontWeight: 700, color: '#bbb', whiteSpace: 'nowrap', letterSpacing: '0.3px' }}>
+      <span style={{ fontSize: 12, fontWeight: 700, color: '#bbb', whiteSpace: 'nowrap', letterSpacing: '0.3px' }}>
         {current} / {total}
       </span>
     </div>

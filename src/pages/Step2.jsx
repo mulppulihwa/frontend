@@ -9,10 +9,10 @@ import SearchAnimation from '../components/SearchAnimation'
 function Header() {
   return (
     <div style={{ padding: '20px 18px 16px' }}>
-      <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease both' }}>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease both' }}>
         귀농·귀향하셨나요?
       </h2>
-      <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease 0.15s both' }}>
+      <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease 0.15s both' }}>
         받을 수 있는 지원금을 찾아드려요
       </p>
       <SearchAnimation />

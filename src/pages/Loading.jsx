@@ -48,13 +48,13 @@ export default function Loading() {
         zIndex: 2,
       }}>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: 24, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', lineHeight: 1.45 }}>
+          <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', lineHeight: 1.45 }}>
             받을 수 있는 지원금을
           </p>
-          <p style={{ fontSize: 24, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', lineHeight: 1.45 }}>
+          <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', lineHeight: 1.45 }}>
             찾고 있어요
           </p>
-          <p style={{ fontSize: 16, fontWeight: 400, color: '#666', marginTop: 10, letterSpacing: '-0.1px' }}>
+          <p style={{ fontSize: 14, fontWeight: 400, color: '#666', marginTop: 10, letterSpacing: '-0.1px' }}>
             입력하신 조건을 기준으로 분석 중
           </p>
         </div>
@@ -76,10 +76,10 @@ export default function Loading() {
             }} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
-            <span style={{ fontSize: 15, fontWeight: 400, color: '#777', letterSpacing: '-0.1px' }}>
+            <span style={{ fontSize: 14, fontWeight: 400, color: '#777', letterSpacing: '-0.1px' }}>
               분석 진행률
             </span>
-            <span style={{ fontSize: 17, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>{progress}%</span>
+            <span style={{ fontSize: 15, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>{progress}%</span>
           </div>
         </div>
 
@@ -99,7 +99,7 @@ export default function Loading() {
                   justifyContent: 'center',
                   gap: 5,
                   color: complete ? '#2d6a2d' : '#777',
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: 400,
                   letterSpacing: '-0.1px',
                 }}

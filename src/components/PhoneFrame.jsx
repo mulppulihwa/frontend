@@ -21,7 +21,7 @@ export default function PhoneFrame({ children }) {
         padding: '0 24px',
         flexShrink: 0,
       }}>
-        <span style={{ fontSize: 13, fontWeight: 600 }}>9:41</span>
+        <span style={{ fontSize: 12, fontWeight: 600 }}>9:41</span>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
             <rect x="0" y="3" width="3" height="9" rx="1" fill="#000"/>

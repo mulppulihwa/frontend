@@ -32,7 +32,7 @@ function Toast({ visible }) {
         <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Check size={26} color="#2d6a2d" strokeWidth={2.5} />
         </div>
-        <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
+        <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
       </div>
       <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>
     </div>
@@ -70,10 +70,10 @@ export default function Detail() {
       <div style={{ background: '#FDFCF8' }}>
         <TopBar title="상세 정보" />
         <div style={{ padding: '4px 24px 20px', textAlign: 'center' }}>
-          <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.4px', lineHeight: 1.4 }}>
+          <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.4px', lineHeight: 1.4 }}>
             귀농 농업창업 지원금
           </p>
-          <p style={{ fontSize: 16, fontWeight: 400, color: '#888', marginTop: 4, letterSpacing: '-0.1px' }}>
+          <p style={{ fontSize: 14, fontWeight: 400, color: '#888', marginTop: 4, letterSpacing: '-0.1px' }}>
             농림축산식품부 · 옥천군
           </p>
           {/* Amount highlight */}
@@ -82,7 +82,7 @@ export default function Detail() {
             background: '#e8f3e8', borderRadius: 12, padding: '8px 18px', marginTop: 12,
           }}>
             <Banknote size={16} color="#2d6a2d" strokeWidth={2.2} />
-            <span style={{ fontSize: 17, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>최대 300만원 지원</span>
+            <span style={{ fontSize: 15, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>최대 300만원 지원</span>
           </div>
         </div>
       </div>
@@ -95,13 +95,13 @@ export default function Detail() {
               <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <section.icon size={16} color="#2d6a2d" strokeWidth={2.2} />
               </div>
-              <p style={{ fontSize: 17, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{section.title}</p>
+              <p style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{section.title}</p>
             </div>
 
             {section.type === 'bullet' && section.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2d6a2d', marginTop: 8, flexShrink: 0 }} />
-                <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.6 }}>{item}</p>
+                <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.6 }}>{item}</p>
               </div>
             ))}
 
@@ -110,7 +110,7 @@ export default function Detail() {
                 <div style={{ width: 22, height: 22, borderRadius: 999, background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Check size={12} color="#2d6a2d" strokeWidth={3} />
                 </div>
-                <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item}</p>
+                <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item}</p>
               </div>
             ))}
 
@@ -118,7 +118,7 @@ export default function Detail() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {section.items.map((item, i) => (
                   <span key={i} style={{
-                    fontSize: 14, fontWeight: 600, color: '#2d6a2d',
+                    fontSize: 13, fontWeight: 600, color: '#2d6a2d',
                     background: '#e8f3e8', borderRadius: 20,
                     padding: '6px 14px', letterSpacing: '-0.1px',
                   }}>
@@ -133,7 +133,7 @@ export default function Detail() {
                 {section.items.map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2d6a2d', marginTop: 8, flexShrink: 0 }} />
-                    <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.6 }}>{item}</p>
+                    <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.6 }}>{item}</p>
                   </div>
                 ))}
                 {section.link && (
@@ -141,7 +141,7 @@ export default function Detail() {
                     href={section.link.href}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
-                      fontSize: 15, fontWeight: 500, color: '#2d6a2d', textDecoration: 'none',
+                      fontSize: 14, fontWeight: 500, color: '#2d6a2d', textDecoration: 'none',
                       marginTop: 2,
                     }}
                   >
@@ -154,12 +154,12 @@ export default function Detail() {
 
             {section.type === 'contact' && section.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item.text}</p>
+                <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item.text}</p>
                 <a
                   href={`tel:${item.phone}`}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6, alignSelf: 'flex-start',
-                    fontSize: 17, fontWeight: 500, color: '#2d6a2d', textDecoration: 'none',
+                    fontSize: 15, fontWeight: 500, color: '#2d6a2d', textDecoration: 'none',
                     background: '#e8f3e8', padding: '8px 16px', borderRadius: 16, letterSpacing: '-0.1px',
                   }}
                 >

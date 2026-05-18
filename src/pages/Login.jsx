@@ -32,12 +32,12 @@ export default function Login() {
             justifyContent: 'center',
             padding: 16,
           }}>
-            <p style={{ fontSize: 13, fontWeight: 400, color: '#777', textAlign: 'center', lineHeight: 1.45, letterSpacing: '-0.1px' }}>
+            <p style={{ fontSize: 12, fontWeight: 400, color: '#777', textAlign: 'center', lineHeight: 1.45, letterSpacing: '-0.1px' }}>
               서비스 이름<br />로고
             </p>
           </div>
           <p style={{ fontSize: 30, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.6px', marginTop: 22 }}>귀농OK</p>
-          <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: 12, textAlign: 'center' }}>
+          <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: 12, textAlign: 'center' }}>
             내 조건에 맞는 농업 지원금을<br />간편하게 찾아보세요
           </p>
         </div>
@@ -54,7 +54,7 @@ export default function Login() {
             border: 'none',
             background: '#FEE500',
             color: '#1a1a1a',
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: 500,
             cursor: 'pointer',
             fontFamily: 'inherit',
@@ -74,7 +74,7 @@ export default function Login() {
           style={{
             background: 'none',
             border: 'none',
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: 400,
             color: '#1a1a1a',
             cursor: 'pointer',

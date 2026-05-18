@@ -17,8 +17,8 @@ export default function GrantResultCard({
     <Card style={{ padding: '18px 18px 16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
         <div style={{ flex: 1, paddingRight: 8 }}>
-          <p style={{ fontSize: 24, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1.28 }}>{grant.title}</p>
-          <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', marginTop: 5, letterSpacing: '-0.1px' }}>{grant.agency}</p>
+          <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1.28 }}>{grant.title}</p>
+          <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', marginTop: 5, letterSpacing: '-0.1px' }}>{grant.agency}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, paddingTop: 1 }}>
           {statusCfg && (
@@ -26,7 +26,7 @@ export default function GrantResultCard({
               display: 'inline-flex',
               alignItems: 'center',
               minHeight: 34,
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: 500,
               borderRadius: 999,
               padding: '0 12px',
@@ -65,7 +65,7 @@ export default function GrantResultCard({
           <div style={{ width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Banknote size={22} color="#2d6a2d" strokeWidth={2.2} />
           </div>
-          <p style={{ fontSize: 16, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>{grant.subtitle}</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>{grant.subtitle}</p>
         </div>
 
         <div style={{
@@ -77,12 +77,12 @@ export default function GrantResultCard({
           padding: '12px 13px',
         }}>
           <div style={{ flex: 1 }}>
-            <p style={{ fontSize: 17, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px', marginBottom: 7 }}>해당 이유</p>
+            <p style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px', marginBottom: 7 }}>해당 이유</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {reasons.map((reason) => (
                 <div key={reason} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                   <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#2d6a2d', flexShrink: 0 }} />
-                  <p style={{ fontSize: 17, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{reason}</p>
+                  <p style={{ fontSize: 15, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{reason}</p>
                 </div>
               ))}
             </div>
@@ -100,17 +100,17 @@ export default function GrantResultCard({
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0 }}>
             <CalendarDays size={16} color="#2d6a2d" strokeWidth={2.2} />
-            <p style={{ fontSize: 16, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
+            <p style={{ fontSize: 14, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
               신청 기간
             </p>
           </div>
-          <p style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', textAlign: 'right' }}>
+          <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', textAlign: 'right' }}>
             {grant.period}
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
           <Clock size={14} color="#2d6a2d" strokeWidth={2} />
-          <p style={{ fontSize: 16, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
             마감까지
           </p>
         </div>
@@ -126,11 +126,11 @@ export default function GrantResultCard({
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-                <span style={{ fontSize: 24, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1 }}>
+                <span style={{ fontSize: 22, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.5px', lineHeight: 1 }}>
                   {Number(val)}
                 </span>
               </div>
-              <span style={{ fontSize: 16, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px', whiteSpace: 'nowrap' }}>
                 {unit}
               </span>
             </Fragment>
@@ -149,7 +149,7 @@ export default function GrantResultCard({
           background: 'transparent',
           color: '#2d6a2d',
           fontFamily: 'inherit',
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: 500,
           letterSpacing: '-0.1px',
           cursor: 'pointer',

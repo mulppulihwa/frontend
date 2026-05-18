@@ -17,7 +17,7 @@ export default function SelectField({ label, value, options, onChange, required 
   return (
     <div ref={ref} style={{ display: 'flex', flexDirection: 'column', gap: 6, position: 'relative' }}>
       {label && (
-        <label style={{ fontSize: 16, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
+        <label style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
           {label}{required && <span style={{ color: '#e53e3e', marginLeft: 2 }}>*</span>}
         </label>
       )}
@@ -32,7 +32,7 @@ export default function SelectField({ label, value, options, onChange, required 
           padding: '12px 14px',
           border: `1.5px solid ${open || focused ? '#2d6a2d' : '#e8e8e8'}`,
           borderRadius: 16,
-          fontSize: 20,
+          fontSize: 18,
           color: '#1a1a1a',
           background: '#fff',
           fontFamily: 'inherit',

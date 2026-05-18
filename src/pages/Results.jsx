@@ -70,10 +70,10 @@ export default function Results() {
           <StepIndicator current={index + 1} total={total} />
         </div>
         <div style={{ textAlign: 'center', lineHeight: 1.55 }}>
-          <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease both' }}>
+          <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease both' }}>
             ○○○님이 받을 수 있는 지원금
           </p>
-          <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease 0.18s both' }}>
+          <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease 0.18s both' }}>
             <span style={{ color: '#2d6a2d' }}>총 {total}개</span> 찾았어요
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function Results() {
           >
             <ChevronLeft size={23} strokeWidth={2.4} />
           </button>
-          <span style={{ fontSize: 15, fontWeight: 500, color: '#777', minWidth: 44, textAlign: 'center' }}>
+          <span style={{ fontSize: 14, fontWeight: 500, color: '#777', minWidth: 44, textAlign: 'center' }}>
             {index + 1} / {total}
           </span>
           <button
@@ -150,7 +150,7 @@ export default function Results() {
 
         {/* Status card */}
         <Card>
-          <p style={{ fontSize: 17, fontWeight: 500, color: '#1a1a1a', marginBottom: 12, letterSpacing: '-0.1px' }}>지원현황을 체크해주세요</p>
+          <p style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', marginBottom: 12, letterSpacing: '-0.1px' }}>지원현황을 체크해주세요</p>
           <StatusCheckboxes
             value={statuses[grant.id] ?? null}
             onChange={handleStatusChange}

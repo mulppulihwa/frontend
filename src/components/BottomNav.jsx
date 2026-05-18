@@ -15,7 +15,10 @@ export default function BottomNav() {
     <div style={{
       position: 'fixed',
       bottom: 0,
-      width: 480,
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '100%',
+      maxWidth: 390,
       background: '#fff',
       borderRadius: '28px 28px 0 0',
       boxShadow: '0 -4px 24px rgba(0,0,0,0.07)',
@@ -43,7 +46,7 @@ export default function BottomNav() {
           >
             <Icon size={26} color={active ? '#2d6a2d' : '#ccc'} strokeWidth={active ? 2.2 : 1.8} />
             <span style={{
-              fontSize: 12,
+              fontSize: 11,
               fontWeight: active ? 700 : 500,
               color: active ? '#2d6a2d' : '#ccc',
               letterSpacing: '-0.1px',

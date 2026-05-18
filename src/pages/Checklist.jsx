@@ -53,7 +53,7 @@ function CheckItem({ label, checked, onToggle }) {
         )}
       </div>
       <span style={{
-        fontSize: 16, fontWeight: 400, color: checked ? '#aaa' : '#1a1a1a',
+        fontSize: 14, fontWeight: 400, color: checked ? '#aaa' : '#1a1a1a',
         letterSpacing: '-0.2px',
         textDecoration: checked ? 'line-through' : 'none',
         transition: 'color 0.15s ease',
@@ -125,7 +125,7 @@ export default function Checklist() {
       <TopBar title="준비물 확인" onBack={() => navigate(-1)} />
 
       <p style={{
-        fontSize: 15, color: '#888', textAlign: 'center',
+        fontSize: 14, color: '#888', textAlign: 'center',
         letterSpacing: '-0.1px', padding: '4px 0 20px',
       }}>
         주민센터 방문 전 놓친 것이 있나 확인해보세요
@@ -140,7 +140,7 @@ export default function Checklist() {
               padding: '16px 18px',
             }}>
               <p style={{
-                fontSize: 15, fontWeight: 700, color: accentColor,
+                fontSize: 14, fontWeight: 700, color: accentColor,
                 letterSpacing: '-0.2px', marginBottom: 12,
               }}>
                 {section.title}
@@ -160,7 +160,7 @@ export default function Checklist() {
                   href={section.link.href}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 4,
-                    fontSize: 14, fontWeight: 500, color: '#888',
+                    fontSize: 13, fontWeight: 500, color: '#888',
                     textDecoration: 'none', marginTop: 10,
                   }}
                 >
@@ -190,7 +190,7 @@ export default function Checklist() {
           overflow: 'hidden',
         }}>
           <p style={{
-            fontSize: 15, fontWeight: 700, color: accentColor,
+            fontSize: 14, fontWeight: 700, color: accentColor,
             letterSpacing: '-0.2px', padding: '16px 18px 12px',
           }}>
             행정복지센터 방문하기
@@ -207,7 +207,7 @@ export default function Checklist() {
           </div>
 
           <div style={{ padding: '0 18px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <p style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
               {office.name}
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -217,8 +217,8 @@ export default function Checklist() {
                 { Icon: Clock, label: '운영시간', value: office.hours },
               ].map(({ Icon, label, value }) => (
                 <div key={label}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: '#888', letterSpacing: '-0.1px', marginBottom: 2 }}>{label}</p>
-                  <p style={{ fontSize: 15, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5 }}>{value}</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: '#888', letterSpacing: '-0.1px', marginBottom: 2 }}>{label}</p>
+                  <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5 }}>{value}</p>
                 </div>
               ))}
             </div>

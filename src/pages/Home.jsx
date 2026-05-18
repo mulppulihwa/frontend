@@ -37,12 +37,12 @@ export default function Home() {
         onClick={() => setShowLogin(true)}
         style={{
           width: '100%',
-          padding: '18px 0',
+          padding: '14px 0',
           borderRadius: 50,
           border: 'none',
           background: '#e07b00',
           color: '#fff',
-          fontSize: 18,
+          fontSize: 15,
           fontWeight: 700,
           fontFamily: 'inherit',
           letterSpacing: '-0.2px',
@@ -75,7 +75,7 @@ export default function Home() {
               animation: 'fadeInScale 0.2s ease',
             }}
           >
-            <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
+            <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
               로그인 필요합니다
             </p>
             <button
@@ -88,7 +88,7 @@ export default function Home() {
                 border: 'none',
                 background: '#FEE500',
                 color: '#1a1a1a',
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: 600,
                 cursor: 'pointer',
                 fontFamily: 'inherit',

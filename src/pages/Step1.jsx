@@ -15,7 +15,7 @@ const textInputStyle = {
   boxSizing: 'border-box',
   border: '1.5px solid #e8e8e8',
   borderRadius: 16,
-  fontSize: 20,
+  fontSize: 18,
   fontWeight: 400,
   color: '#1a1a1a',
   background: '#fff',
@@ -25,7 +25,7 @@ const textInputStyle = {
 }
 
 const labelStyle = {
-  fontSize: 16,
+  fontSize: 14,
   fontWeight: 400,
   color: '#1a1a1a',
   letterSpacing: '-0.1px',
@@ -39,10 +39,10 @@ const radioRows = [
 function Header() {
   return (
     <div style={{ padding: '20px 18px 16px' }}>
-      <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease both' }}>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease both' }}>
         귀농·귀향하셨나요?
       </h2>
-      <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease 0.15s both' }}>
+      <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease 0.15s both' }}>
         받을 수 있는 지원금을 찾아드려요
       </p>
       <SearchAnimation />
@@ -86,7 +86,7 @@ function TextField({ label, value, onChange, placeholder, type = 'text', min, ma
             right: 16,
             top: '50%',
             transform: 'translateY(-50%)',
-            fontSize: 17,
+            fontSize: 15,
             fontWeight: 400,
             color: '#777',
             pointerEvents: 'none',
@@ -132,7 +132,7 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
                 justifyContent: 'center',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                fontSize: 17,
+                fontSize: 15,
                 fontWeight: 400,
                 color: active ? tone.color : '#1a1a1a',
                 letterSpacing: '-0.2px',

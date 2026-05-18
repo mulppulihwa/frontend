@@ -26,7 +26,7 @@ export default function Button({ children, variant = 'primary', onClick, disable
         minHeight: 58,
         padding: '16px',
         borderRadius: 18,
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 600,
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'inherit',

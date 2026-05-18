@@ -37,20 +37,20 @@ export default function Alarm() {
       <div style={{ padding: '20px 24px 140px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
         <div style={{ lineHeight: 1.55 }}>
-          <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
+          <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
             {grant.title} 마감까지
           </p>
-          <p style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.3px' }}>
+          <p style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.3px' }}>
             <span style={{ color: '#d93025' }}>D- {grant.days}일 {grant.hours}시간 {grant.minutes}분</span>
             {' '}남았어요!
           </p>
         </div>
 
         <div>
-          <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 6 }}>
+          <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 6 }}>
             잊지 않게 알림을 보내드릴게요
           </p>
-          <p style={{ fontSize: 14, color: '#bbb', letterSpacing: '-0.1px' }}>
+          <p style={{ fontSize: 13, color: '#bbb', letterSpacing: '-0.1px' }}>
             알림을 원하시는 시간대를 모두 체크해주세요
           </p>
         </div>
@@ -85,7 +85,7 @@ export default function Alarm() {
                     </svg>
                   )}
                 </div>
-                <span style={{ fontSize: 17, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
+                <span style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
                   {n}일전
                 </span>
               </button>
@@ -126,10 +126,10 @@ export default function Alarm() {
               <Check size={26} color="#2d6a2d" strokeWidth={2.5} />
             </div>
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: 20, fontWeight: 700, color: '#2d6a2d', letterSpacing: '-0.2px', marginBottom: 6 }}>
+              <p style={{ fontSize: 18, fontWeight: 700, color: '#2d6a2d', letterSpacing: '-0.2px', marginBottom: 6 }}>
                 {[...selected].sort((a, b) => b - a).map(n => `${n}일전`).join(', ')}
               </p>
-              <p style={{ fontSize: 18, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>알림 설정을 해두었어요!</p>
+              <p style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>알림 설정을 해두었어요!</p>
             </div>
           </div>
           <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>

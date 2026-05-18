@@ -33,7 +33,7 @@ export default function StatusCheckboxes({ value, onChange }) {
               boxShadow: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: 500,
               color: active ? '#fff' : '#444',
               letterSpacing: '-0.2px',

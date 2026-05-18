@@ -26,7 +26,7 @@ const statusConfig = {
 
 function SectionTitle({ children }) {
   return (
-    <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 10, paddingLeft: 2 }}>
+    <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 10, paddingLeft: 2 }}>
       {children}
     </p>
   )
@@ -58,10 +58,10 @@ export default function MyPage() {
                 <User size={26} color="#2d6a2d" strokeWidth={2} />
               </div>
               <div>
-                <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>{userInfo.name}님</p>
+                <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>{userInfo.name}님</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 3 }}>
                   <MapPin size={13} color="#888" strokeWidth={2} />
-                  <span style={{ fontSize: 14, color: '#888', letterSpacing: '-0.1px' }}>{userInfo.region} 거주</span>
+                  <span style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{userInfo.region} 거주</span>
                 </div>
               </div>
               <button
@@ -69,7 +69,7 @@ export default function MyPage() {
                 style={{
                   marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 2,
                   background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-                  fontSize: 14, fontWeight: 500, color: '#888',
+                  fontSize: 13, fontWeight: 500, color: '#888',
                 }}
               >
                 수정 <ChevronRight size={15} color="#aaa" strokeWidth={2.2} />
@@ -84,8 +84,8 @@ export default function MyPage() {
                 { label: '이사 날짜', value: userInfo.movedAt },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 15, color: '#888', letterSpacing: '-0.1px' }}>{label}</span>
-                  <span style={{ fontSize: 16, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{value}</span>
+                  <span style={{ fontSize: 14, color: '#888', letterSpacing: '-0.1px' }}>{label}</span>
+                  <span style={{ fontSize: 14, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{value}</span>
                 </div>
               ))}
             </div>
@@ -95,10 +95,10 @@ export default function MyPage() {
         {/* 지원 현황 */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, paddingLeft: 2 }}>
-            <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>지원 현황</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>지원 현황</p>
             <button
               onClick={() => navigate('/grant-status')}
-              style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, color: '#888' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 500, color: '#888' }}
             >
               전체 보기 <ChevronRight size={15} color="#aaa" strokeWidth={2.2} />
             </button>
@@ -121,9 +121,9 @@ export default function MyPage() {
                       borderRight: i < arr.length - 1 ? '1.5px solid #f0f0f0' : 'none',
                     }}
                   >
-                    <p style={{ fontSize: 28, fontWeight: 800, color, letterSpacing: '-0.5px' }}>{count}</p>
+                    <p style={{ fontSize: 25, fontWeight: 800, color, letterSpacing: '-0.5px' }}>{count}</p>
                     <span style={{
-                      fontSize: 13, fontWeight: 600, color,
+                      fontSize: 12, fontWeight: 600, color,
                       letterSpacing: '-0.1px',
                     }}>
                       {label}
@@ -161,8 +161,8 @@ export default function MyPage() {
                 <ClipboardList size={22} color="#2d6a2d" strokeWidth={2} />
               </div>
               <div style={{ textAlign: 'left' }}>
-                <p style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>준비물 확인하기</p>
-                <p style={{ fontSize: 14, color: '#888', marginTop: 2, letterSpacing: '-0.1px' }}>신청에 필요한 서류를 확인해요</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>준비물 확인하기</p>
+                <p style={{ fontSize: 13, color: '#888', marginTop: 2, letterSpacing: '-0.1px' }}>신청에 필요한 서류를 확인해요</p>
               </div>
             </div>
             <ArrowRight size={20} color="#aaa" strokeWidth={2.2} />
