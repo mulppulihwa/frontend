@@ -13,10 +13,41 @@ const userInfo = {
 }
 
 const grantStatuses = [
-  { id: 1, title: '귀농 농업창업 지원금', subtitle: '최대 300만원', status: '신청완료', deadline: '2026.06.30' },
-  { id: 2, title: '농촌 정착 지원금', subtitle: '최대 500만원', status: '신청예정', deadline: '2026.08.15' },
-  { id: 3, title: '귀농인 농기계 구입지원', subtitle: '구입 비용 50% 지원', status: null, deadline: '2026.11.30' },
+  { id: 1, title: '귀농 농업창업 지원금', subtitle: '최대 300만원', status: '신청완료', deadline: '2026-06-30', checkDone: 4, checkTotal: 5 },
+  { id: 2, title: '농촌 정착 지원금', subtitle: '최대 500만원', status: '신청예정', deadline: '2026-08-15', checkDone: 1, checkTotal: 5 },
+  { id: 3, title: '귀농인 농기계 구입지원', subtitle: '구입 비용 50% 지원', status: null, deadline: '2026-11-30', checkDone: 0, checkTotal: 5 },
 ]
+
+function getDday(deadlineStr) {
+  const today = new Date('2026-05-18')
+  const deadline = new Date(deadlineStr)
+  const diff = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24))
+  if (diff === 0) return 'D-DAY'
+  if (diff > 0) return `D-${diff}`
+  return `D+${Math.abs(diff)}`
+}
+
+function MiniRing({ done, total }) {
+  const r = 10
+  const circ = 2 * Math.PI * r
+  const pct = total === 0 ? 0 : done / total
+  const complete = done === total && total > 0
+  const color = complete ? '#2d6a2d' : '#C96A1B'
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+      <svg width="26" height="26" viewBox="0 0 26 26">
+        <circle cx="13" cy="13" r={r} fill="none" stroke="#e8e8e8" strokeWidth="2.5" />
+        <circle cx="13" cy="13" r={r} fill="none" stroke={color} strokeWidth="2.5"
+          strokeDasharray={`${pct * circ} ${circ}`} strokeLinecap="round"
+          transform="rotate(-90 13 13)" />
+        {complete && (
+          <path d="M9 13.5l2.5 2.5 5-5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        )}
+      </svg>
+      <span style={{ fontSize: 10, fontWeight: 600, color: '#888' }}>준비물 {done}/{total}</span>
+    </div>
+  )
+}
 
 const statusConfig = {
   신청완료: { label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8', Icon: Check },
@@ -84,7 +115,7 @@ export default function MyPage() {
                 { label: '이사 날짜', value: userInfo.movedAt },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 14, color: '#888', letterSpacing: '-0.1px' }}>{label}</span>
+                  <span style={{ fontSize: 14, color: '#555', letterSpacing: '-0.1px' }}>{label}</span>
                   <span style={{ fontSize: 14, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{value}</span>
                 </div>
               ))}
@@ -108,7 +139,7 @@ export default function MyPage() {
               {[
                 { key: '신청완료', label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8' },
                 { key: '신청예정', label: '신청 예정', color: '#C96A1B', bg: '#fff3e0' },
-                { key: null, label: '미설정', color: '#bbb', bg: '#f5f5f5' },
+                { key: null, label: '미설정', color: '#888', bg: '#f5f5f5' },
               ].map(({ key, label, color, bg }, i, arr) => {
                 const count = grantStatuses.filter(g => g.status === key).length
                 return (
@@ -122,10 +153,7 @@ export default function MyPage() {
                     }}
                   >
                     <p style={{ fontSize: 25, fontWeight: 800, color, letterSpacing: '-0.5px' }}>{count}</p>
-                    <span style={{
-                      fontSize: 12, fontWeight: 600, color,
-                      letterSpacing: '-0.1px',
-                    }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color, letterSpacing: '-0.1px' }}>
                       {label}
                     </span>
                   </div>
@@ -158,11 +186,14 @@ export default function MyPage() {
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px', marginBottom: 2 }}>{g.title}</p>
-                      <p style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{g.subtitle}</p>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: cfg.bg, borderRadius: 8, padding: '3px 7px' }}>
+                        <Icon size={10} color={cfg.color} strokeWidth={2.5} />
+                        <span style={{ fontSize: 11, fontWeight: 700, color: cfg.color }}>{cfg.label}</span>
+                      </div>
                     </div>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: cfg.bg, borderRadius: 8, padding: '4px 8px', flexShrink: 0 }}>
-                      <Icon size={11} color={cfg.color} strokeWidth={2.5} />
-                      <span style={{ fontSize: 11, fontWeight: 700, color: cfg.color, letterSpacing: '-0.1px' }}>{cfg.label}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: '#d93025' }}>{getDday(g.deadline)}</span>
+                      <MiniRing done={g.checkDone} total={g.checkTotal} />
                     </div>
                   </div>
                 </Card>
