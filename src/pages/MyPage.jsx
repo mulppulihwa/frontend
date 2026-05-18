@@ -20,7 +20,7 @@ const grantStatuses = [
 
 const statusConfig = {
   신청완료: { label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8', Icon: Check },
-  신청예정: { label: '신청 예정', color: '#e07b00', bg: '#fff3e0', Icon: Clock3 },
+  신청예정: { label: '신청 예정', color: '#C96A1B', bg: '#fff3e0', Icon: Clock3 },
   관심없음: { label: '관심 없음', color: '#d93025', bg: '#fff0ef', Icon: X },
 }
 
@@ -107,7 +107,7 @@ export default function MyPage() {
             <div style={{ display: 'flex' }}>
               {[
                 { key: '신청완료', label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8' },
-                { key: '신청예정', label: '신청 예정', color: '#e07b00', bg: '#fff3e0' },
+                { key: '신청예정', label: '신청 예정', color: '#C96A1B', bg: '#fff3e0' },
                 { key: null, label: '미설정', color: '#bbb', bg: '#f5f5f5' },
               ].map(({ key, label, color, bg }, i, arr) => {
                 const count = grantStatuses.filter(g => g.status === key).length

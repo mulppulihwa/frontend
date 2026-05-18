@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
 
@@ -7,9 +8,9 @@ export default function Home() {
   const [showLogin, setShowLogin] = useState(false)
 
   const buttons = [
-    { label: '진단하기', onClick: () => setShowLogin(true), bg: '#e07b00', color: '#fff' },
-    { label: '지원 현황', onClick: () => navigate('/grant-status'), bg: '#e07b00', color: '#fff' },
-    { label: '사용처', onClick: () => navigate('/map'), bg: '#f5ede0', color: '#e07b00' },
+    { label: '진단하기', onClick: () => setShowLogin(true), bg: '#C96A1B', color: '#fff' },
+    { label: '지원 현황', onClick: () => navigate('/grant-status'), bg: '#C96A1B', color: '#fff' },
+    { label: '사용처', onClick: () => navigate('/map'), bg: '#f5ede0', color: '#C96A1B' },
   ]
 
   return (
@@ -40,7 +41,7 @@ export default function Home() {
           padding: '14px 0',
           borderRadius: 50,
           border: 'none',
-          background: '#e07b00',
+          background: '#C96A1B',
           color: '#fff',
           fontSize: 15,
           fontWeight: 700,
@@ -49,7 +50,9 @@ export default function Home() {
           cursor: 'pointer',
         }}
       >
-        진단하기 시작
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          진단하기 시작 <ArrowRight size={16} strokeWidth={2.5} />
+        </span>
       </button>
 
       {/* Login modal */}

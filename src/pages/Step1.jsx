@@ -11,11 +11,11 @@ const fieldGap = 12
 
 const textInputStyle = {
   width: '100%',
-  padding: '12px 14px',
+  padding: '9px 12px',
   boxSizing: 'border-box',
   border: '1.5px solid #e8e8e8',
-  borderRadius: 16,
-  fontSize: 18,
+  borderRadius: 12,
+  fontSize: 15,
   fontWeight: 400,
   color: '#1a1a1a',
   background: '#fff',
@@ -25,7 +25,7 @@ const textInputStyle = {
 }
 
 const labelStyle = {
-  fontSize: 14,
+  fontSize: 13,
   fontWeight: 400,
   color: '#1a1a1a',
   letterSpacing: '-0.1px',
@@ -38,11 +38,11 @@ const radioRows = [
 
 function Header() {
   return (
-    <div style={{ padding: '20px 18px 16px' }}>
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease both' }}>
+    <div style={{ padding: '10px 18px 8px' }}>
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.5, animation: 'fadeUp 0.5s ease both' }}>
         귀농·귀향하셨나요?
       </h2>
-      <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.3px', lineHeight: 1.55, animation: 'fadeUp 0.5s ease 0.15s both' }}>
+      <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.3px', lineHeight: 1.5, animation: 'fadeUp 0.5s ease 0.15s both' }}>
         받을 수 있는 지원금을 찾아드려요
       </p>
       <SearchAnimation />
@@ -71,8 +71,8 @@ function TextField({ label, value, onChange, placeholder, type = 'text', min, ma
           onBlur={() => setFocused(false)}
           style={{
             ...textInputStyle,
-            minHeight: 56,
-            paddingRight: suffix ? 46 : 14,
+            minHeight: 46,
+            paddingRight: suffix ? 40 : 12,
             borderColor: focused ? '#2d6a2d' : '#e8e8e8',
             boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
             transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
@@ -112,8 +112,8 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
             color: '#2d6a2d',
           } : {
             bg: '#fff4e5',
-            border: '#FF9500',
-            color: '#FF9500',
+            border: '#C96A1B',
+            color: '#C96A1B',
           }
           return (
             <button
@@ -122,17 +122,17 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
               onClick={() => onChange(opt.value)}
               aria-pressed={active}
               style={{
-                minHeight: 56,
-                padding: '0 14px',
+                minHeight: 46,
+                padding: '0 12px',
                 border: `1.5px solid ${active ? tone.border : '#e8e8e8'}`,
-                borderRadius: 16,
+                borderRadius: 12,
                 background: active ? tone.bg : '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: 400,
                 color: active ? tone.color : '#1a1a1a',
                 letterSpacing: '-0.2px',
@@ -195,7 +195,7 @@ export default function Step1() {
 
       <Header />
 
-      <div style={{ padding: '0 18px 140px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+      <div style={{ padding: '0 18px 100px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
         {page === 1 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
             <TextField label="생년월일이 어떻게 되세요?" value={birthDate} onChange={setBirthDate} type="date" />
@@ -253,8 +253,8 @@ export default function Step1() {
         )}
       </div>
 
-      <div style={{ position: 'fixed', bottom: 64, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 480, padding: '12px 18px 16px', background: 'linear-gradient(to top, #FDFCF8 75%, transparent)', zIndex: 50 }}>
-        <Button onClick={goNext} style={{ fontWeight: 500 }}>{page === 4 ? '내 지원금 찾기' : '다음'}</Button>
+      <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 18px 80px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
+        <Button onClick={goNext} style={{ padding: '14px 0', borderRadius: 50, fontSize: 15, fontWeight: 700, minHeight: 'unset' }}>{page === 4 ? '내 지원금 찾기' : '다음'}</Button>
       </div>
     </div>
   )

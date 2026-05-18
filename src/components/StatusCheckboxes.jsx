@@ -1,9 +1,9 @@
 import { Check, Clock3, X } from 'lucide-react'
 
 const statuses = [
-  { key: '신청완료', label: '신청 완료', Icon: Check,    activeColor: '#2d6a2d' },
-  { key: '신청예정', label: '신청 예정', Icon: Clock3, activeColor: '#FF9500' },
-  { key: '관심없음', label: '관심 없음', Icon: X,        activeColor: '#d93025' },
+  { key: '신청완료', label: '신청 완료', Icon: Check,  activeColor: '#2d6a2d', activeBg: '#e8f3e8' },
+  { key: '신청예정', label: '신청 예정', Icon: Clock3, activeColor: '#C96A1B', activeBg: '#fff3e0' },
+  { key: '관심없음', label: '관심 없음', Icon: X,       activeColor: '#d93025', activeBg: '#fff0ef' },
 ]
 
 export default function StatusCheckboxes({ value, onChange }) {
@@ -16,7 +16,7 @@ export default function StatusCheckboxes({ value, onChange }) {
       padding: 4,
       gap: 4,
     }}>
-      {statuses.map(({ key, label, Icon, activeColor }) => {
+      {statuses.map(({ key, label, Icon, activeColor, activeBg }) => {
         const active = value === key
         return (
           <button
@@ -27,15 +27,15 @@ export default function StatusCheckboxes({ value, onChange }) {
               flex: 1,
               minHeight: 54,
               padding: '8px 4px',
-              border: `1.5px solid ${active ? activeColor : 'transparent'}`,
+              border: '1.5px solid transparent',
               borderRadius: 12,
-              background: active ? activeColor : 'transparent',
+              background: active ? activeBg : 'transparent',
               boxShadow: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
               fontSize: 14,
               fontWeight: 500,
-              color: active ? '#fff' : '#444',
+              color: active ? activeColor : '#444',
               letterSpacing: '-0.2px',
               transition: 'border-color 0.15s ease, background 0.15s ease, color 0.15s ease',
               display: 'flex',

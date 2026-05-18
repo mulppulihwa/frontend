@@ -22,7 +22,7 @@ const grantsData = [
 const initialStatuses = { 1: '신청예정', 2: '신청예정', 3: '신청예정', 4: '신청완료', 5: '신청완료' }
 
 const statusConfig = {
-  신청예정: { label: '신청 예정', color: '#e07b00', bg: '#fff3e0' },
+  신청예정: { label: '신청 예정', color: '#C96A1B', bg: '#fff3e0' },
   신청완료: { label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8' },
   관심없음: { label: '관심 없음', color: '#d93025', bg: '#fff0ef' },
 }
@@ -40,29 +40,18 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
         {/* Title row */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
           <p style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', flex: 1 }}>{grant.title}</p>
-          {cfg && (
-            <div style={{
-              display: 'inline-flex', alignItems: 'center',
-              background: cfg.bg, borderRadius: 10,
-              padding: '4px 10px', flexShrink: 0,
-            }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: cfg.color, letterSpacing: '-0.1px' }}>{cfg.label}</span>
-            </div>
-          )}
-        </div>
-        <p style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
-        {/* Countdown + button row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-          <p style={{ fontSize: 12, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px' }}>
-            {isCompleted ? '지급일까지' : '마감까지'} D- {grant.days}일 {grant.hours}시간 {grant.minutes}분
-          </p>
           <button
-            onClick={e => { e.stopPropagation(); isCompleted ? navigate('/map') : navigate('/alarm', { state: { grant } }) }}
-            style={{ padding: '6px 12px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}
+            onClick={e => { e.stopPropagation(); navigate('/alarm', { state: { grant } }) }}
+            style={{ padding: '6px 12px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
-            {isCompleted ? '사용처 보기' : '알림 받기'}
+            알림 받기
           </button>
         </div>
+        <p style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
+        {/* Countdown row */}
+        <p style={{ fontSize: 12, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px' }}>
+          {isCompleted ? '지급일까지' : '마감까지'} D- {grant.days}일 {grant.hours}시간 {grant.minutes}분
+        </p>
       </div>
 
       <div style={{ borderTop: '1.5px solid #f0f0f0', padding: '12px 14px' }}>

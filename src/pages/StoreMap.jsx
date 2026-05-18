@@ -7,7 +7,7 @@ const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
 
 const categories = [
   { id: 'farm', label: '농기구 구입처', icon: Tractor, color: '#2d6a2d', bg: '#e8f3e8' },
-  { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#e07b00', bg: '#fff3e0' },
+  { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#C96A1B', bg: '#fff3e0' },
 ]
 
 const stores = {
@@ -23,7 +23,7 @@ const stores = {
   ],
 }
 
-const markerColors = { farm: '#2d6a2d', local: '#e07b00' }
+const markerColors = { farm: '#2d6a2d', local: '#C96A1B' }
 
 const COLLAPSED_H = 160
 const EXPANDED_H = 440
@@ -309,8 +309,8 @@ export default function StoreMap() {
                       onClick={e => e.stopPropagation()}
                       style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none', borderRight: '1.5px solid #ebebeb' }}
                     >
-                      <MapPin size={15} color="#e07b00" strokeWidth={2.5} />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#e07b00', fontFamily: 'inherit' }}>지도 보기</span>
+                      <MapPin size={15} color="#C96A1B" strokeWidth={2.5} />
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#C96A1B', fontFamily: 'inherit' }}>지도 보기</span>
                     </a>
                     <button
                       onClick={e => { e.stopPropagation(); navigate(`/store-detail?category=${activeCategory}&store=${i}`) }}
