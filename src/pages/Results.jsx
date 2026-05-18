@@ -65,19 +65,19 @@ export default function Results() {
       </div>
 
       {/* Indicator + Header */}
-      <div style={{ padding: '20px 18px 16px' }}>
-        <div style={{ marginBottom: 20 }}>
+      <div style={{ padding: '12px 18px 10px' }}>
+        <div style={{ marginBottom: 12 }}>
           <StepIndicator current={index + 1} total={total} />
         </div>
-        <div style={{ textAlign: 'center', lineHeight: 1.55 }}>
-          <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease both' }}>
+        <div style={{ textAlign: 'center', lineHeight: 1.45 }}>
+          <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease both' }}>
             ○○○님이 받을 수 있는 지원금
           </p>
-          <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease 0.18s both' }}>
+          <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease 0.18s both' }}>
             <span style={{ color: '#2d6a2d' }}>총 {total}개</span> 찾았어요
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 10 }}>
           <button
             type="button"
             onClick={() => changeGrant(Math.max(0, index - 1), 'prev')}
