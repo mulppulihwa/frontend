@@ -95,13 +95,13 @@ export default function Alarm() {
       </div>
 
       <div style={{
-        position: 'fixed', bottom: 76,
+        position: 'fixed', bottom: 104,
         left: '50%', transform: 'translateX(-50%)',
-        width: '100%', maxWidth: 480,
-        padding: '12px 18px 0',
-        background: 'linear-gradient(to top, #FDFCF8 75%, transparent)',
+        width: '100%', maxWidth: 390,
+        padding: '12px 28px 16px',
       }}>
         <Button
+          variant="pill"
           disabled={selected.length === 0}
           style={{ opacity: selected.length === 0 ? 0.4 : 1 }}
           onClick={handleSubmit}
