@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
+import Button from '../components/Button'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -34,26 +35,11 @@ export default function Home() {
 
       <div style={{ flex: 1 }} />
 
-      <button
-        onClick={() => setShowLogin(true)}
-        style={{
-          width: '100%',
-          padding: '14px 0',
-          borderRadius: 50,
-          border: 'none',
-          background: '#C96A1B',
-          color: '#fff',
-          fontSize: 15,
-          fontWeight: 700,
-          fontFamily: 'inherit',
-          letterSpacing: '-0.2px',
-          cursor: 'pointer',
-        }}
-      >
+      <Button onClick={() => setShowLogin(true)} variant="pill" style={{ background: '#C96A1B' }}>
         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
           진단하기 시작 <ArrowRight size={16} strokeWidth={2.5} />
         </span>
-      </button>
+      </Button>
 
       {/* Login modal */}
       {showLogin && (

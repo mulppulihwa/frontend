@@ -58,8 +58,8 @@ export default function Step2() {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 64, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 480, padding: '12px 18px 16px', background: 'linear-gradient(to top, #FDFCF8 75%, transparent)', zIndex: 50 }}>
-        <Button onClick={() => navigate('/loading')} style={{ fontWeight: 500 }}>내 지원금 찾기</Button>
+      <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 80px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
+        <Button onClick={() => navigate('/loading')} variant="pill">내 지원금 찾기</Button>
       </div>
     </div>
   )

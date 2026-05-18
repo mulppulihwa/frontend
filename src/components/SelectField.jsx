@@ -17,7 +17,7 @@ export default function SelectField({ label, value, options, onChange, required 
   return (
     <div ref={ref} style={{ display: 'flex', flexDirection: 'column', gap: 6, position: 'relative' }}>
       {label && (
-        <label style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
+        <label style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
           {label}{required && <span style={{ color: '#e53e3e', marginLeft: 2 }}>*</span>}
         </label>
       )}
@@ -28,11 +28,11 @@ export default function SelectField({ label, value, options, onChange, required 
         onClick={() => setOpen(o => !o)}
         style={{
           width: '100%',
-          minHeight: 56,
-          padding: '12px 14px',
+          minHeight: 46,
+          padding: '9px 12px',
           border: `1.5px solid ${open || focused ? '#2d6a2d' : '#e8e8e8'}`,
-          borderRadius: 16,
-          fontSize: 18,
+          borderRadius: 12,
+          fontSize: 15,
           color: '#1a1a1a',
           background: '#fff',
           fontFamily: 'inherit',
@@ -93,7 +93,7 @@ export default function SelectField({ label, value, options, onChange, required 
                   border: 'none',
                   borderTop: i > 0 ? '1px solid #f4f4f4' : 'none',
                   background: isSelected ? '#f0f7f0' : '#fff',
-                  fontSize: 19,
+                  fontSize: 15,
                   fontFamily: 'inherit',
                   fontWeight: isSelected ? 500 : 400,
                   color: isSelected ? '#2d6a2d' : '#1a1a1a',
