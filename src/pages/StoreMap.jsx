@@ -319,7 +319,7 @@ export default function StoreMap() {
                   style={{
                     borderRadius: 18, marginBottom: 10,
                     background: '#fff',
-                    border: '1.5px solid #ebebeb',
+                    border: `1.5px solid ${isSelected ? activeCat.color : '#ebebeb'}`,
                     cursor: 'pointer', overflow: 'hidden',
                     transition: 'border-color 0.18s ease',
                   }}

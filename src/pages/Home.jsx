@@ -19,22 +19,35 @@ export default function Home() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
+      alignItems: 'center',
       height: '100vh',
       background: '#FDFCF8',
       padding: '60px 28px 120px',
       boxSizing: 'border-box',
     }}>
-      <p style={{
-        fontSize: 34,
-        fontWeight: 800,
-        color: '#2d6a2d',
-        letterSpacing: '-0.8px',
-        lineHeight: 1.25,
-      }}>
-        내 손안에<br />옥천 가이드
-      </p>
+      <div style={{ textAlign: 'center' }}>
+        <p style={{
+          fontSize: 34,
+          fontWeight: 800,
+          color: '#2d6a2d',
+          letterSpacing: '-0.8px',
+          lineHeight: 1.25,
+        }}>
+          귀농OK
+        </p>
+        <p style={{
+          fontSize: 14,
+          fontWeight: 400,
+          color: '#aaa',
+          letterSpacing: '-0.2px',
+          lineHeight: 1.4,
+          marginTop: 6,
+        }}>
+          내 손안에 옥천 가이드
+        </p>
+      </div>
 
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Folder
           size={2.5}
           color="#C96A1B"
