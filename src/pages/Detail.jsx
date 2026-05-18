@@ -173,7 +173,7 @@ export default function Detail() {
 
       </div>
 
-      <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 80px', background: 'linear-gradient(to top, #FDFCF8 75%, transparent)' }}>
+      <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 75%, transparent)' }}>
         <Button onClick={() => navigate('/checklist')} variant="pill">준비물 확인 →</Button>
       </div>
 

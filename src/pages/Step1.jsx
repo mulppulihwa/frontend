@@ -253,7 +253,7 @@ export default function Step1() {
         )}
       </div>
 
-      <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 80px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
+      <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
         <Button onClick={goNext} variant="pill">{page === 4 ? '내 지원금 찾기' : '다음'}</Button>
       </div>
     </div>

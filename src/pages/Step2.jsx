@@ -37,7 +37,7 @@ export default function Step2() {
 
       <Header />
 
-      <div style={{ padding: '0 18px 0', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div style={{ padding: '0 18px 160px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <SelectField label="시작한 지" value={since} onChange={setSince} options={[
             { value: '1년 이내', label: '1년 이내' },
@@ -58,7 +58,7 @@ export default function Step2() {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 80px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
+      <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
         <Button onClick={() => navigate('/loading')} variant="pill">내 지원금 찾기</Button>
       </div>
     </div>
