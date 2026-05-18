@@ -28,6 +28,34 @@ const office = {
   hours: '평일 09:00~18:00',
 }
 
+function ProgressRing({ done, total }) {
+  const r = 9
+  const circ = 2 * Math.PI * r
+  const pct = total === 0 ? 0 : done / total
+  const complete = done === total && total > 0
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+      <svg width="22" height="22" viewBox="0 0 22 22">
+        <circle cx="11" cy="11" r={r} fill="none" stroke="#e8e8e8" strokeWidth="2.5" />
+        <circle
+          cx="11" cy="11" r={r} fill="none"
+          stroke={complete ? '#2d6a2d' : accentColor}
+          strokeWidth="2.5"
+          strokeDasharray={`${pct * circ} ${circ}`}
+          strokeLinecap="round"
+          transform="rotate(-90 11 11)"
+        />
+        {complete && (
+          <path d="M7 11.5l2.5 2.5 5-5" stroke="#2d6a2d" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        )}
+      </svg>
+      <span style={{ fontSize: 12, fontWeight: 500, color: complete ? '#2d6a2d' : '#aaa', letterSpacing: '-0.1px' }}>
+        {done}/{total}
+      </span>
+    </div>
+  )
+}
+
 function CheckItem({ label, checked, onToggle }) {
   return (
     <button
@@ -131,96 +159,101 @@ export default function Checklist() {
         주민센터 방문 전 놓친 것이 있나 확인해보세요
       </p>
 
-      <div style={{ padding: '0 18px 100px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <div style={{ padding: '0 18px 100px' }}>
+        {/* Section steps */}
         {sections.map((section, si) => (
-          <div key={section.title}>
-            <div style={{
-              background: '#fff', borderRadius: 18,
-              border: '1.5px solid #e8e8e8',
-              padding: '16px 18px',
-            }}>
-              <p style={{
-                fontSize: 14, fontWeight: 700, color: accentColor,
-                letterSpacing: '-0.2px', marginBottom: 12,
+          <div key={section.title} style={{ display: 'grid', gridTemplateColumns: '36px 1fr', gap: '0 12px' }}>
+            {/* Stepper left */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                background: '#2d6a2d', color: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 13, fontWeight: 700,
               }}>
-                {section.title}
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {section.items.map((item) => (
-                  <CheckItem
-                    key={item}
-                    label={item}
-                    checked={!!checked[`${si}-${item}`]}
-                    onToggle={() => toggle(`${si}-${item}`)}
-                  />
-                ))}
+                {si + 1}
               </div>
-              {section.link && (
-                <a
-                  href={section.link.href}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 4,
-                    fontSize: 13, fontWeight: 500, color: '#888',
-                    textDecoration: 'none', marginTop: 10,
-                  }}
-                >
-                  {section.link.label}
-                  <ArrowUpRight size={14} color="#888" strokeWidth={2} />
-                </a>
-              )}
+              <div style={{ flex: 1, width: 2, background: '#e0e0e0', margin: '4px 0' }} />
             </div>
-
-            {si < sections.length - 1 && (
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0' }}>
-                <ArrowDown size={18} color="#ccc" strokeWidth={2} />
+            {/* Card */}
+            <div style={{ paddingBottom: 12 }}>
+              <div style={{ background: '#fff', borderRadius: 18, border: '1.5px solid #e8e8e8', padding: '16px 18px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: accentColor, letterSpacing: '-0.2px' }}>
+                    {section.title}
+                  </p>
+                  <ProgressRing
+                    done={section.items.filter(item => !!checked[`${si}-${item}`]).length}
+                    total={section.items.length}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {section.items.map((item) => (
+                    <CheckItem
+                      key={item}
+                      label={item}
+                      checked={!!checked[`${si}-${item}`]}
+                      onToggle={() => toggle(`${si}-${item}`)}
+                    />
+                  ))}
+                </div>
+                {section.link && (
+                  <a href={section.link.href} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500, color: '#888', textDecoration: 'none', marginTop: 10 }}>
+                    {section.link.label}
+                    <ArrowUpRight size={14} color="#888" strokeWidth={2} />
+                  </a>
+                )}
               </div>
-            )}
+            </div>
           </div>
         ))}
 
-        {/* divider arrow */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0' }}>
-          <ArrowDown size={18} color="#ccc" strokeWidth={2} />
-        </div>
-
-        {/* Office card */}
-        <div style={{
-          background: '#fff', borderRadius: 18,
-          border: '1.5px solid #e8e8e8',
-          overflow: 'hidden',
-        }}>
-          <p style={{
-            fontSize: 14, fontWeight: 700, color: accentColor,
-            letterSpacing: '-0.2px', padding: '16px 18px 12px',
-          }}>
-            행정복지센터 방문하기
-          </p>
-
-          {/* Map */}
-          <div style={{
-            margin: '0 18px 14px',
-            height: 160,
-            borderRadius: 12,
-            overflow: 'hidden',
-          }}>
-            <OfficeMap />
+        {/* Office step */}
+        <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr', gap: '0 12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{
+              width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+              background: '#2d6a2d', color: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 13, fontWeight: 700,
+            }}>
+              {sections.length + 1}
+            </div>
           </div>
-
-          <div style={{ padding: '0 18px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
-              {office.name}
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                { Icon: MapPin, label: '주소', value: office.address },
-                { Icon: Phone, label: '연락처', value: office.phone },
-                { Icon: Clock, label: '운영시간', value: office.hours },
-              ].map(({ Icon, label, value }) => (
-                <div key={label}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: '#888', letterSpacing: '-0.1px', marginBottom: 2 }}>{label}</p>
-                  <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5 }}>{value}</p>
+          <div>
+            <div style={{ background: '#fff', borderRadius: 18, border: '1.5px solid #e8e8e8', overflow: 'hidden' }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: accentColor, letterSpacing: '-0.2px', padding: '16px 18px 12px' }}>
+                행정복지센터 방문하기
+              </p>
+              <div style={{ margin: '0 18px 14px', height: 160, borderRadius: 12, overflow: 'hidden' }}>
+                <OfficeMap />
+              </div>
+              <div style={{ padding: '0 18px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{office.name}</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {[
+                    { Icon: MapPin, label: '주소', value: office.address },
+                    { Icon: Phone, label: '연락처', value: office.phone },
+                    { Icon: Clock, label: '운영시간', value: office.hours },
+                  ].map(({ Icon, label, value }) => (
+                    <div key={label}>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: '#888', letterSpacing: '-0.1px', marginBottom: 2 }}>{label}</p>
+                      <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5 }}>{value}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+                  <a
+                    href={`https://map.kakao.com/?q=${encodeURIComponent(office.name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500, color: '#888', textDecoration: 'none' }}
+                  >
+                    지도에서 보기
+                    <ArrowUpRight size={14} color="#888" strokeWidth={2} />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
