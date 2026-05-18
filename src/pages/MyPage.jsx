@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, MapPin, Check, Clock3, X, Bookmark, ChevronRight, Banknote, ArrowRight } from 'lucide-react'
+import { User, MapPin, Check, Clock3, X, ChevronRight, ArrowRight, ClipboardList } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
 
@@ -19,11 +18,6 @@ const grantStatuses = [
   { id: 3, title: '귀농인 농기계 구입지원', subtitle: '구입 비용 50% 지원', status: null, deadline: '2026.11.30' },
 ]
 
-const bookmarks = [
-  { id: 1, title: '귀농 농업창업 지원금', subtitle: '최대 300만원', agency: '농림축산식품부 · 옥천군', deadline: '2026.06.30' },
-  { id: 2, title: '농촌 정착 지원금', subtitle: '최대 500만원', agency: '농림축산식품부 · 옥천군', deadline: '2026.08.15' },
-]
-
 const statusConfig = {
   신청완료: { label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8', Icon: Check },
   신청예정: { label: '신청 예정', color: '#e07b00', bg: '#fff3e0', Icon: Clock3 },
@@ -40,7 +34,6 @@ function SectionTitle({ children }) {
 
 export default function MyPage() {
   const navigate = useNavigate()
-  const [savedBookmarks, setSavedBookmarks] = useState({ 1: true, 2: true })
 
   return (
     <div style={{
@@ -142,44 +135,38 @@ export default function MyPage() {
           </Card>
         </div>
 
-        {/* 북마크 */}
+        {/* 준비물 확인하기 */}
         <div>
-          <SectionTitle>북마크</SectionTitle>
-          {Object.values(savedBookmarks).some(Boolean) ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {bookmarks.filter(b => savedBookmarks[b.id]).map(b => (
-                <Card key={b.id}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                    <div style={{
-                      width: 44, height: 44, borderRadius: 14, flexShrink: 0,
-                      background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <Banknote size={20} color="#2d6a2d" strokeWidth={2} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 16, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.2px', marginBottom: 3 }}>
-                        {b.title}
-                      </p>
-                      <p style={{ fontSize: 14, color: '#888', letterSpacing: '-0.1px' }}>{b.agency}</p>
-                    </div>
-                    <button
-                      onClick={() => setSavedBookmarks(p => ({ ...p, [b.id]: false }))}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, flexShrink: 0 }}
-                    >
-                      <Bookmark size={20} color="#2d6a2d" fill="#2d6a2d" strokeWidth={2} />
-                    </button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0', gap: 8 }}>
-                <Bookmark size={28} color="#ddd" strokeWidth={1.8} />
-                <p style={{ fontSize: 15, color: '#bbb', letterSpacing: '-0.1px' }}>북마크한 지원금이 없어요</p>
+          <SectionTitle>준비물</SectionTitle>
+          <button
+            onClick={() => navigate('/checklist')}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '18px 20px',
+              background: '#fff',
+              border: '1.5px solid #e8e8e8',
+              borderRadius: 20,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 14,
+                background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}>
+                <ClipboardList size={22} color="#2d6a2d" strokeWidth={2} />
               </div>
-            </Card>
-          )}
+              <div style={{ textAlign: 'left' }}>
+                <p style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>준비물 확인하기</p>
+                <p style={{ fontSize: 14, color: '#888', marginTop: 2, letterSpacing: '-0.1px' }}>신청에 필요한 서류를 확인해요</p>
+              </div>
+            </div>
+            <ArrowRight size={20} color="#aaa" strokeWidth={2.2} />
+          </button>
         </div>
 
       </div>
