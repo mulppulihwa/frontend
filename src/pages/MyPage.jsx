@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { User, MapPin, Check, Clock3, X, ChevronRight, ArrowRight, ClipboardList } from 'lucide-react'
+import { User, MapPin, Check, Clock3, X, ChevronRight, Banknote } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
 
@@ -135,38 +135,40 @@ export default function MyPage() {
           </Card>
         </div>
 
-        {/* 준비물 확인하기 */}
+        {/* 신청 진행 중 */}
         <div>
-          <SectionTitle>준비물</SectionTitle>
-          <button
-            onClick={() => navigate('/checklist')}
-            style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '18px 20px',
-              background: '#fff',
-              border: '1.5px solid #e8e8e8',
-              borderRadius: 20,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 14,
-                background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-              }}>
-                <ClipboardList size={22} color="#2d6a2d" strokeWidth={2} />
-              </div>
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>준비물 확인하기</p>
-                <p style={{ fontSize: 13, color: '#888', marginTop: 2, letterSpacing: '-0.1px' }}>신청에 필요한 서류를 확인해요</p>
-              </div>
-            </div>
-            <ArrowRight size={20} color="#aaa" strokeWidth={2.2} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, paddingLeft: 2 }}>
+            <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>신청 진행 중</p>
+            <button
+              onClick={() => navigate('/grant-status')}
+              style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 500, color: '#888' }}
+            >
+              전체 보기 <ChevronRight size={15} color="#aaa" strokeWidth={2.2} />
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {grantStatuses.filter(g => g.status === '신청예정' || g.status === '신청완료').map(g => {
+              const cfg = statusConfig[g.status]
+              const Icon = cfg.Icon
+              return (
+                <Card key={g.id}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0, background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Banknote size={18} color={cfg.color} strokeWidth={2} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px', marginBottom: 2 }}>{g.title}</p>
+                      <p style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{g.subtitle}</p>
+                    </div>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: cfg.bg, borderRadius: 8, padding: '4px 8px', flexShrink: 0 }}>
+                      <Icon size={11} color={cfg.color} strokeWidth={2.5} />
+                      <span style={{ fontSize: 11, fontWeight: 700, color: cfg.color, letterSpacing: '-0.1px' }}>{cfg.label}</span>
+                    </div>
+                  </div>
+                </Card>
+              )
+            })}
+          </div>
         </div>
 
       </div>
