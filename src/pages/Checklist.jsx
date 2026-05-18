@@ -161,31 +161,41 @@ export default function Checklist() {
 
       <div style={{ padding: '0 18px 100px' }}>
         {/* Section steps */}
-        {sections.map((section, si) => (
-          <div key={section.title} style={{ display: 'grid', gridTemplateColumns: '36px 1fr', gap: '0 12px' }}>
+        {sections.map((section, si) => {
+          const done = section.items.filter(item => !!checked[`${si}-${item}`]).length
+          const total = section.items.length
+          const complete = done === total
+          const started = done > 0
+
+          return (
+          <div key={section.title} style={{ display: 'grid', gridTemplateColumns: '32px 1fr', gap: '0 14px' }}>
             {/* Stepper left */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{
-                width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                background: '#2d6a2d', color: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 13, fontWeight: 700,
-              }}>
-                {si + 1}
-              </div>
-              <div style={{ flex: 1, width: 2, background: '#e0e0e0', margin: '4px 0' }} />
+              {complete ? (
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#2d6a2d', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+                    <path d="M1 5L4.5 8.5L11 1.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              ) : started ? (
+                <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #2d6a2d', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2d6a2d' }} />
+                </div>
+              ) : (
+                <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #e0e0e0', background: '#fff', flexShrink: 0 }} />
+              )}
+              <div style={{ flex: 1, width: 2, background: '#e8e8e8', margin: '4px 0' }} />
             </div>
             {/* Card */}
-            <div style={{ paddingBottom: 12 }}>
+            <div style={{ paddingBottom: 16 }}>
               <div style={{ background: '#fff', borderRadius: 18, border: '1.5px solid #e8e8e8', padding: '16px 18px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <p style={{ fontSize: 14, fontWeight: 700, color: accentColor, letterSpacing: '-0.2px' }}>
                     {section.title}
                   </p>
-                  <ProgressRing
-                    done={section.items.filter(item => !!checked[`${si}-${item}`]).length}
-                    total={section.items.length}
-                  />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: complete ? '#2d6a2d' : '#aaa' }}>
+                    {done}/{total}
+                  </span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {section.items.map((item) => (
@@ -198,7 +208,7 @@ export default function Checklist() {
                   ))}
                 </div>
                 {section.link && (
-                  <a href={section.link.href} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500, color: '#888', textDecoration: 'none', marginTop: 10 }}>
+                  <a href={section.link.href} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500, color: '#888', textDecoration: 'none', marginTop: 10 }}>
                     {section.link.label}
                     <ArrowUpRight size={14} color="#888" strokeWidth={2} />
                   </a>
@@ -206,19 +216,13 @@ export default function Checklist() {
               </div>
             </div>
           </div>
-        ))}
+          )
+        })}
 
         {/* Office step */}
-        <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr', gap: '0 12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '32px 1fr', gap: '0 14px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-              background: '#2d6a2d', color: '#fff',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 13, fontWeight: 700,
-            }}>
-              {sections.length + 1}
-            </div>
+            <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #e0e0e0', background: '#fff', flexShrink: 0 }} />
           </div>
           <div>
             <div style={{ background: '#fff', borderRadius: 18, border: '1.5px solid #e8e8e8', overflow: 'hidden' }}>
