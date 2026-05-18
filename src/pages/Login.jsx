@@ -70,7 +70,7 @@ export default function Login() {
         </button>
 
         <button
-          onClick={() => navigate('/step1')}
+          onClick={() => navigate('/home')}
           style={{
             background: 'none',
             border: 'none',

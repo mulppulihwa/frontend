@@ -8,6 +8,26 @@ import SearchAnimation from '../components/SearchAnimation'
 
 const fieldGap = 12
 
+const currentYear = new Date().getFullYear()
+const years = Array.from({ length: 80 }, (_, i) => { const y = currentYear - i; return { value: String(y), label: `${y}년` } })
+const months = Array.from({ length: 12 }, (_, i) => { const m = i + 1; return { value: String(m).padStart(2, '0'), label: `${m}월` } })
+const days = Array.from({ length: 31 }, (_, i) => { const d = i + 1; return { value: String(d).padStart(2, '0'), label: `${d}일` } })
+
+function DateSelectField({ label, value, onChange }) {
+  const [y, m, d] = (value || '--').split('-')
+  const update = (newY, newM, newD) => onChange(`${newY}-${newM}-${newD}`)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <label style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{label}</label>
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8 }}>
+        <SelectField value={y} onChange={v => update(v, m, d)} options={years} />
+        <SelectField value={m} onChange={v => update(y, v, d)} options={months} />
+        <SelectField value={d} onChange={v => update(y, m, v)} options={days} />
+      </div>
+    </div>
+  )
+}
+
 
 const textInputStyle = {
   width: '100%',
@@ -198,7 +218,7 @@ export default function Step1() {
       <div style={{ padding: '0 18px 100px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
         {page === 1 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-            <TextField label="생년월일이 어떻게 되세요?" value={birthDate} onChange={setBirthDate} type="date" />
+            <DateSelectField label="생년월일이 어떻게 되세요?" value={birthDate} onChange={setBirthDate} />
             <SelectField label="성별이 어떻게 되세요?" value={gender} onChange={setGender} options={[
               { value: '남자', label: '남자' },
               { value: '여자', label: '여자' },
@@ -217,13 +237,13 @@ export default function Step1() {
               { value: '옥천군', label: '옥천군' },
               { value: '옥천 외', label: '옥천 외' },
             ]} />
-            <TextField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} type="date" />
+            <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} />
             <SelectField label="이전 거주지는 어디인가요?" value={previousResidence} onChange={setPreviousResidence} options={[
               { value: '내국인', label: '내국인' },
               { value: '옥천 외', label: '옥천 외' },
               { value: '충북 외', label: '충북 외' },
             ]} />
-            <TextField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} type="date" />
+            <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} />
           </div>
         )}
 
