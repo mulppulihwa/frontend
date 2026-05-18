@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
 import Button from '../components/Button'
+import Folder from '../components/Folder'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -33,7 +34,23 @@ export default function Home() {
         내 손안에<br />옥천 가이드
       </p>
 
-      <div style={{ flex: 1 }} />
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Folder
+          size={2.5}
+          color="#C96A1B"
+          items={[
+            <div onClick={e => { e.stopPropagation(); navigate('/detail') }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
+              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#C96A1B', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>귀농{'\n'}농업창업{'\n'}지원금</span>
+            </div>,
+            <div onClick={e => { e.stopPropagation(); navigate('/detail') }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
+              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#C96A1B', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>농촌{'\n'}정착{'\n'}지원금</span>
+            </div>,
+            <div onClick={e => { e.stopPropagation(); navigate('/detail') }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
+              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#C96A1B', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>농기계{'\n'}구입{'\n'}지원</span>
+            </div>,
+          ]}
+        />
+      </div>
 
       <Button onClick={() => setShowLogin(true)} variant="pill" style={{ background: '#C96A1B' }}>
         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
