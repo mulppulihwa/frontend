@@ -4,7 +4,7 @@ import { ArrowLeft, Search, X, MapPin, Phone, Tractor, Wallet } from 'lucide-rea
 
 const categories = [
   { id: 'farm', label: '농기구 구입처', icon: Tractor, color: '#2d6a2d', bg: '#e8f3e8' },
-  { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#C96A1B', bg: '#fff3e0' },
+  { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#FFA100', bg: '#fff3e0' },
 ]
 
 const stores = [
@@ -99,8 +99,8 @@ export default function StoreSearch() {
                   rel="noopener noreferrer"
                   style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none' }}
                 >
-                  <MapPin size={14} color="#C96A1B" strokeWidth={2.5} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#C96A1B', fontFamily: 'inherit' }}>지도 보기</span>
+                  <MapPin size={14} color="#FFA100" strokeWidth={2.5} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#FFA100', fontFamily: 'inherit' }}>지도 보기</span>
                 </a>
               </div>
             </div>

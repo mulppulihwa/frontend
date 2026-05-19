@@ -7,7 +7,7 @@ const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
 
 const categories = [
   { id: 'farm', label: '농기구 구입처', icon: Tractor, color: '#2d6a2d', bg: '#e8f3e8' },
-  { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#C96A1B', bg: '#fff3e0' },
+  { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#FFA100', bg: '#fff3e0' },
 ]
 
 const stores = {
@@ -32,7 +32,7 @@ function haversine(lat1, lng1, lat2, lng2) {
   return d < 1000 ? `${Math.round(d)}m` : `${(d/1000).toFixed(1)}km`
 }
 
-const markerColors = { farm: '#2d6a2d', local: '#C96A1B' }
+const markerColors = { farm: '#2d6a2d', local: '#FFA100' }
 
 const COLLAPSED_H = 160
 const EXPANDED_H = 440
@@ -338,7 +338,7 @@ export default function StoreMap() {
                         {store.name}
                       </p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: '#f59e0b' }}>★ {store.rating}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#FFA100' }}>★ {store.rating}</span>
                         <span style={{ fontSize: 11, color: '#888' }}>({store.reviews})</span>
                         {userPos && (
                           <>

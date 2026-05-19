@@ -132,8 +132,8 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
             color: '#2d6a2d',
           } : {
             bg: '#fff4e5',
-            border: '#C96A1B',
-            color: '#C96A1B',
+            border: '#FFA100',
+            color: '#FFA100',
           }
           return (
             <button

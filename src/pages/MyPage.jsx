@@ -32,7 +32,7 @@ function MiniRing({ done, total }) {
   const circ = 2 * Math.PI * r
   const pct = total === 0 ? 0 : done / total
   const complete = done === total && total > 0
-  const color = complete ? '#2d6a2d' : '#C96A1B'
+  const color = complete ? '#2d6a2d' : '#FFA100'
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, flexShrink: 0 }}>
       <svg width="26" height="26" viewBox="0 0 26 26">
@@ -51,7 +51,7 @@ function MiniRing({ done, total }) {
 
 const statusConfig = {
   신청완료: { label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8', Icon: Check },
-  신청예정: { label: '신청 예정', color: '#C96A1B', bg: '#fff3e0', Icon: Clock3 },
+  신청예정: { label: '신청 예정', color: '#FFA100', bg: '#fff3e0', Icon: Clock3 },
   관심없음: { label: '관심 없음', color: '#d93025', bg: '#fff0ef', Icon: X },
 }
 
@@ -138,7 +138,7 @@ export default function MyPage() {
             <div style={{ display: 'flex' }}>
               {[
                 { key: '신청완료', label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8' },
-                { key: '신청예정', label: '신청 예정', color: '#C96A1B', bg: '#fff3e0' },
+                { key: '신청예정', label: '신청 예정', color: '#FFA100', bg: '#fff3e0' },
                 { key: null, label: '미설정', color: '#888', bg: '#f5f5f5' },
               ].map(({ key, label, color, bg }, i, arr) => {
                 const count = grantStatuses.filter(g => g.status === key).length

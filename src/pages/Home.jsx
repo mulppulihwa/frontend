@@ -10,9 +10,9 @@ export default function Home() {
   const [showLogin, setShowLogin] = useState(false)
 
   const buttons = [
-    { label: '진단하기', onClick: () => setShowLogin(true), bg: '#C96A1B', color: '#fff' },
-    { label: '지원 현황', onClick: () => navigate('/grant-status'), bg: '#C96A1B', color: '#fff' },
-    { label: '사용처', onClick: () => navigate('/map'), bg: '#f5ede0', color: '#C96A1B' },
+    { label: '진단하기', onClick: () => setShowLogin(true), bg: '#FFA100', color: '#fff' },
+    { label: '지원 현황', onClick: () => navigate('/grant-status'), bg: '#FFA100', color: '#fff' },
+    { label: '사용처', onClick: () => navigate('/map'), bg: '#f5ede0', color: '#FFA100' },
   ]
 
   return (
@@ -50,22 +50,22 @@ export default function Home() {
       <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Folder
           size={2.5}
-          color="#C96A1B"
+          color="#FFA100"
           items={[
             <div onClick={e => { e.stopPropagation(); navigate('/detail') }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
-              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#C96A1B', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>귀농{'\n'}농업창업{'\n'}지원금</span>
+              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#FFA100', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>귀농{'\n'}농업창업{'\n'}지원금</span>
             </div>,
             <div onClick={e => { e.stopPropagation(); navigate('/detail') }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
-              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#C96A1B', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>농촌{'\n'}정착{'\n'}지원금</span>
+              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#FFA100', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>농촌{'\n'}정착{'\n'}지원금</span>
             </div>,
             <div onClick={e => { e.stopPropagation(); navigate('/detail') }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
-              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#C96A1B', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>농기계{'\n'}구입{'\n'}지원</span>
+              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#FFA100', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>농기계{'\n'}구입{'\n'}지원</span>
             </div>,
           ]}
         />
       </div>
 
-      <Button onClick={() => setShowLogin(true)} variant="pill" style={{ background: '#C96A1B' }}>
+      <Button onClick={() => setShowLogin(true)} variant="pill" style={{ background: '#FFA100' }}>
         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
           진단하기 시작 <ArrowRight size={16} strokeWidth={2.5} />
         </span>
