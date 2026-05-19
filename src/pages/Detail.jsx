@@ -29,7 +29,7 @@ function Toast({ visible }) {
         animation: 'fadeInUp 0.22s ease',
         whiteSpace: 'nowrap',
       }}>
-        <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#2d6a2d', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#076818', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Check size={13} color="#fff" strokeWidth={2.5} />
         </div>
         <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
@@ -81,8 +81,8 @@ export default function Detail() {
             display: 'inline-flex', alignItems: 'center', gap: 6,
             background: '#e8f3e8', borderRadius: 12, padding: '8px 18px', marginTop: 12,
           }}>
-            <Banknote size={16} color="#2d6a2d" strokeWidth={2.2} />
-            <span style={{ fontSize: 15, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>최대 300만원 지원</span>
+            <Banknote size={16} color="#076818" strokeWidth={2.2} />
+            <span style={{ fontSize: 15, fontWeight: 500, color: '#076818', letterSpacing: '-0.2px' }}>최대 300만원 지원</span>
           </div>
         </div>
       </div>
@@ -93,14 +93,14 @@ export default function Detail() {
             {/* Section title row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, paddingBottom: 10, borderBottom: '1.5px solid #e3e3e3' }}>
               <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <section.icon size={16} color="#2d6a2d" strokeWidth={2.2} />
+                <section.icon size={16} color="#076818" strokeWidth={2.2} />
               </div>
               <p style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{section.title}</p>
             </div>
 
             {section.type === 'bullet' && section.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2d6a2d', marginTop: 8, flexShrink: 0 }} />
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#076818', marginTop: 8, flexShrink: 0 }} />
                 <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.6 }}>{item}</p>
               </div>
             ))}
@@ -108,7 +108,7 @@ export default function Detail() {
             {section.type === 'check' && section.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: i < section.items.length - 1 ? 10 : 0 }}>
                 <div style={{ width: 22, height: 22, borderRadius: 999, background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Check size={12} color="#2d6a2d" strokeWidth={3} />
+                  <Check size={12} color="#076818" strokeWidth={3} />
                 </div>
                 <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item}</p>
               </div>
@@ -118,7 +118,7 @@ export default function Detail() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {section.items.map((item, i) => (
                   <span key={i} style={{
-                    fontSize: 13, fontWeight: 600, color: '#2d6a2d',
+                    fontSize: 13, fontWeight: 600, color: '#076818',
                     background: '#e8f3e8', borderRadius: 20,
                     padding: '6px 14px', letterSpacing: '-0.1px',
                   }}>
@@ -132,7 +132,7 @@ export default function Detail() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {section.items.map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2d6a2d', marginTop: 8, flexShrink: 0 }} />
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#076818', marginTop: 8, flexShrink: 0 }} />
                     <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.6 }}>{item}</p>
                   </div>
                 ))}
@@ -141,12 +141,12 @@ export default function Detail() {
                     href={section.link.href}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
-                      fontSize: 14, fontWeight: 500, color: '#2d6a2d', textDecoration: 'none',
+                      fontSize: 14, fontWeight: 500, color: '#076818', textDecoration: 'none',
                       marginTop: 2,
                     }}
                   >
                     {section.link.label}
-                    <ArrowUpRight size={15} color="#2d6a2d" strokeWidth={2.2} />
+                    <ArrowUpRight size={15} color="#076818" strokeWidth={2.2} />
                   </a>
                 )}
               </div>
@@ -159,11 +159,11 @@ export default function Detail() {
                   href={`tel:${item.phone}`}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6, alignSelf: 'flex-start',
-                    fontSize: 15, fontWeight: 500, color: '#2d6a2d', textDecoration: 'none',
+                    fontSize: 15, fontWeight: 500, color: '#076818', textDecoration: 'none',
                     background: '#e8f3e8', padding: '8px 16px', borderRadius: 16, letterSpacing: '-0.1px',
                   }}
                 >
-                  <Phone size={14} color="#2d6a2d" strokeWidth={2.5} />
+                  <Phone size={14} color="#076818" strokeWidth={2.5} />
                   {item.phone}
                 </a>
               </div>

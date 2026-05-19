@@ -119,8 +119,8 @@ export default function StoreDetail() {
           display: 'inline-flex', alignItems: 'center', gap: 6,
           background: '#e8f3e8', borderRadius: 12, padding: '8px 18px', marginTop: 12,
         }}>
-          <Banknote size={16} color="#2d6a2d" strokeWidth={2.2} />
-          <span style={{ fontSize: 15, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>{detail.highlight}</span>
+          <Banknote size={16} color="#076818" strokeWidth={2.2} />
+          <span style={{ fontSize: 15, fontWeight: 500, color: '#076818', letterSpacing: '-0.2px' }}>{detail.highlight}</span>
         </div>
       </div>
 
@@ -129,7 +129,7 @@ export default function StoreDetail() {
         <Card>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, paddingBottom: 10, borderBottom: '1.5px solid #e3e3e3' }}>
             <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <MapPin size={16} color="#2d6a2d" strokeWidth={2.2} />
+              <MapPin size={16} color="#076818" strokeWidth={2.2} />
             </div>
             <p style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>매장 정보</p>
           </div>
@@ -138,11 +138,11 @@ export default function StoreDetail() {
             href={`tel:${store.phone}`}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, alignSelf: 'flex-start',
-              fontSize: 15, fontWeight: 500, color: '#2d6a2d', textDecoration: 'none',
+              fontSize: 15, fontWeight: 500, color: '#076818', textDecoration: 'none',
               background: '#e8f3e8', padding: '8px 16px', borderRadius: 16, letterSpacing: '-0.1px',
             }}
           >
-            <Phone size={14} color="#2d6a2d" strokeWidth={2.5} />
+            <Phone size={14} color="#076818" strokeWidth={2.5} />
             {store.phone}
           </a>
         </Card>
@@ -154,14 +154,14 @@ export default function StoreDetail() {
           <Card key={section.title}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, paddingBottom: 10, borderBottom: '1.5px solid #e3e3e3' }}>
               <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <section.icon size={16} color="#2d6a2d" strokeWidth={2.2} />
+                <section.icon size={16} color="#076818" strokeWidth={2.2} />
               </div>
               <p style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{section.title}</p>
             </div>
 
             {section.type === 'bullet' && section.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: i < section.items.length - 1 ? 8 : 0 }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2d6a2d', marginTop: 8, flexShrink: 0 }} />
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#076818', marginTop: 8, flexShrink: 0 }} />
                 <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.6 }}>{item}</p>
               </div>
             ))}
@@ -169,7 +169,7 @@ export default function StoreDetail() {
             {section.type === 'check' && section.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: i < section.items.length - 1 ? 10 : 0 }}>
                 <div style={{ width: 22, height: 22, borderRadius: 999, background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Check size={12} color="#2d6a2d" strokeWidth={3} />
+                  <Check size={12} color="#076818" strokeWidth={3} />
                 </div>
                 <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item}</p>
               </div>
@@ -182,11 +182,11 @@ export default function StoreDetail() {
                   href={`tel:${item.phone}`}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6, alignSelf: 'flex-start',
-                    fontSize: 15, fontWeight: 500, color: '#2d6a2d', textDecoration: 'none',
+                    fontSize: 15, fontWeight: 500, color: '#076818', textDecoration: 'none',
                     background: '#e8f3e8', padding: '8px 16px', borderRadius: 16, letterSpacing: '-0.1px',
                   }}
                 >
-                  <Phone size={14} color="#2d6a2d" strokeWidth={2.5} />
+                  <Phone size={14} color="#076818" strokeWidth={2.5} />
                   {item.phone}
                 </a>
               </div>

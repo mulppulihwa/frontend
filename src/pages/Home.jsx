@@ -29,16 +29,16 @@ export default function Home() {
         <p style={{
           fontSize: 34,
           fontWeight: 800,
-          color: '#2d6a2d',
+          color: '#076818',
           letterSpacing: '-0.8px',
           lineHeight: 1.25,
         }}>
           귀농OK
         </p>
         <p style={{
-          fontSize: 14,
-          fontWeight: 400,
-          color: '#aaa',
+          fontSize: 17,
+          fontWeight: 500,
+          color: '#666',
           letterSpacing: '-0.2px',
           lineHeight: 1.4,
           marginTop: 6,

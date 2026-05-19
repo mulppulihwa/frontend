@@ -4,7 +4,7 @@ export default function ProgressBar({ value }) {
       <div style={{
         height: '100%',
         width: `${value}%`,
-        background: '#2d6a2d',
+        background: '#076818',
         borderRadius: 999,
         transition: 'width 0.4s ease',
       }} />

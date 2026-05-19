@@ -8,7 +8,7 @@ export default function SearchAnimation() {
         <div className="analysis-card analysis-card-two" />
         <div className="analysis-card analysis-card-three" />
         <div className="analysis-search-icon">
-          <FileSearch size={30} color="#2d6a2d" strokeWidth={2.2} />
+          <FileSearch size={30} color="#076818" strokeWidth={2.2} />
         </div>
       </div>
     </div>

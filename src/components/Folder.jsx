@@ -25,8 +25,8 @@ const Folder = ({ color = '#5227FF', size = 1, items = [], className = '' }) => 
   const [paperOffsets, setPaperOffsets] = useState(Array.from({ length: maxItems }, () => ({ x: 0, y: 0 })));
 
   const folderBackColor = color;
-  const paper1 = darkenColor('#ffffff', 0.1);
-  const paper2 = darkenColor('#ffffff', 0.05);
+  const paper1 = '#ffffff';
+  const paper2 = '#ffffff';
   const paper3 = '#ffffff';
 
   const handleClick = () => {

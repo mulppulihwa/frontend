@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Search, X, MapPin, Phone, Tractor, Wallet } from 'lucide-react'
 
 const categories = [
-  { id: 'farm', label: '농기구 구입처', icon: Tractor, color: '#2d6a2d', bg: '#e8f3e8' },
+  { id: 'farm', label: '농기구 구입처', icon: Tractor, color: '#076818', bg: '#e8f3e8' },
   { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#FFA100', bg: '#fff3e0' },
 ]
 
@@ -90,8 +90,8 @@ export default function StoreSearch() {
                   href={`tel:${store.phone}`}
                   style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none', borderRight: '1.5px solid #ebebeb' }}
                 >
-                  <Phone size={14} color="#2d6a2d" strokeWidth={2.5} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#2d6a2d', fontFamily: 'inherit' }}>전화하기</span>
+                  <Phone size={14} color="#076818" strokeWidth={2.5} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#076818', fontFamily: 'inherit' }}>전화하기</span>
                 </a>
                 <a
                   href={`https://map.kakao.com/?q=${encodeURIComponent(store.name)}`}

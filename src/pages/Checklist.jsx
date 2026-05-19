@@ -39,17 +39,17 @@ function ProgressRing({ done, total }) {
         <circle cx="11" cy="11" r={r} fill="none" stroke="#e8e8e8" strokeWidth="2.5" />
         <circle
           cx="11" cy="11" r={r} fill="none"
-          stroke={complete ? '#2d6a2d' : accentColor}
+          stroke={complete ? '#076818' : accentColor}
           strokeWidth="2.5"
           strokeDasharray={`${pct * circ} ${circ}`}
           strokeLinecap="round"
           transform="rotate(-90 11 11)"
         />
         {complete && (
-          <path d="M7 11.5l2.5 2.5 5-5" stroke="#2d6a2d" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <path d="M7 11.5l2.5 2.5 5-5" stroke="#076818" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         )}
       </svg>
-      <span style={{ fontSize: 12, fontWeight: 500, color: complete ? '#2d6a2d' : '#aaa', letterSpacing: '-0.1px' }}>
+      <span style={{ fontSize: 12, fontWeight: 500, color: complete ? '#076818' : '#aaa', letterSpacing: '-0.1px' }}>
         {done}/{total}
       </span>
     </div>
@@ -172,14 +172,14 @@ export default function Checklist() {
             {/* Stepper left */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {complete ? (
-                <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#2d6a2d', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#076818', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
                     <path d="M1 5L4.5 8.5L11 1.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               ) : started ? (
-                <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #2d6a2d', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#2d6a2d' }} />
+                <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #076818', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#076818' }} />
                 </div>
               ) : (
                 <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #e0e0e0', background: '#fff', flexShrink: 0 }} />
@@ -193,7 +193,7 @@ export default function Checklist() {
                   <p style={{ fontSize: 14, fontWeight: 700, color: accentColor, letterSpacing: '-0.2px' }}>
                     {section.title}
                   </p>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: complete ? '#2d6a2d' : '#aaa' }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: complete ? '#076818' : '#aaa' }}>
                     {done}/{total}
                   </span>
                 </div>

@@ -14,7 +14,7 @@ export default function StepIndicator({ current, total }) {
         <div style={{
           height: '100%',
           borderRadius: 999,
-          background: '#2d6a2d',
+          background: '#076818',
           width: `${width}%`,
           transition: 'width 0.5s ease',
         }} />

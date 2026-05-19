@@ -33,7 +33,7 @@ const grants = [
 ]
 
 const statusConfig = {
-  신청기간: { label: '신청 기간', color: '#1a6b3a', bg: '#e6f4ec' },
+  신청기간: { label: '신청 기간', color: '#076818', bg: '#e6f4ec' },
   마감임박: { label: '마감 임박', color: '#d93025', bg: '#fff0ef' },
   신청예정: { label: '신청 예정', color: '#1a5a8a', bg: '#e8f2fb' },
   마감:    { label: '마감',     color: '#777',    bg: '#f5f5f5' },
@@ -74,7 +74,7 @@ export default function Results() {
             ○○○님이 받을 수 있는 지원금
           </p>
           <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease 0.18s both' }}>
-            <span style={{ color: '#2d6a2d' }}>총 {total}개</span> 찾았어요
+            <span style={{ color: '#076818' }}>총 {total}개</span> 찾았어요
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 10 }}>
@@ -89,7 +89,7 @@ export default function Results() {
               borderRadius: 14,
               border: '1.5px solid #e8e8e8',
               background: '#fff',
-              color: '#2d6a2d',
+              color: '#076818',
               opacity: index === 0 ? 0.35 : 1,
               cursor: index === 0 ? 'not-allowed' : 'pointer',
               display: 'flex',
@@ -113,7 +113,7 @@ export default function Results() {
               borderRadius: 14,
               border: '1.5px solid #e8e8e8',
               background: '#fff',
-              color: '#2d6a2d',
+              color: '#076818',
               opacity: index === total - 1 ? 0.35 : 1,
               cursor: index === total - 1 ? 'not-allowed' : 'pointer',
               display: 'flex',

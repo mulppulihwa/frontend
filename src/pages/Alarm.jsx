@@ -66,7 +66,7 @@ export default function Alarm() {
                   display: 'flex', alignItems: 'center', gap: 14,
                   padding: '16px 20px',
                   borderRadius: 16,
-                  border: `1.5px solid ${checked ? '#2d6a2d' : '#e8e8e8'}`,
+                  border: `1.5px solid ${checked ? '#076818' : '#e8e8e8'}`,
                   background: '#fff',
                   cursor: 'pointer', fontFamily: 'inherit',
                   transition: 'border-color 0.15s ease',
@@ -74,8 +74,8 @@ export default function Alarm() {
               >
                 <div style={{
                   width: 22, height: 22, borderRadius: 6,
-                  border: `2px solid ${checked ? '#2d6a2d' : '#ccc'}`,
-                  background: checked ? '#2d6a2d' : '#fff',
+                  border: `2px solid ${checked ? '#076818' : '#ccc'}`,
+                  background: checked ? '#076818' : '#fff',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, transition: 'all 0.15s ease',
                 }}>
@@ -123,10 +123,10 @@ export default function Alarm() {
             animation: 'fadeInScale 0.2s ease',
           }}>
             <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Check size={26} color="#2d6a2d" strokeWidth={2.5} />
+              <Check size={26} color="#076818" strokeWidth={2.5} />
             </div>
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: 18, fontWeight: 700, color: '#2d6a2d', letterSpacing: '-0.2px', marginBottom: 6 }}>
+              <p style={{ fontSize: 18, fontWeight: 700, color: '#076818', letterSpacing: '-0.2px', marginBottom: 6 }}>
                 {[...selected].sort((a, b) => b - a).map(n => `${n}일전`).join(', ')}
               </p>
               <p style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>알림 설정을 해두었어요!</p>

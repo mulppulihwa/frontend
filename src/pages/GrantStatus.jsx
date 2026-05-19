@@ -23,7 +23,7 @@ const initialStatuses = { 1: '신청예정', 2: '신청예정', 3: '신청예정
 
 const statusConfig = {
   신청예정: { label: '신청 예정', color: '#FFA100', bg: '#fff3e0' },
-  신청완료: { label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8' },
+  신청완료: { label: '신청 완료', color: '#076818', bg: '#e8f3e8' },
   관심없음: { label: '관심 없음', color: '#d93025', bg: '#fff0ef' },
 }
 
@@ -96,7 +96,7 @@ function Toast({ visible }) {
         animation: 'fadeInUp 0.22s ease',
         whiteSpace: 'nowrap',
       }}>
-        <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#2d6a2d', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#076818', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Check size={13} color="#fff" strokeWidth={2.5} />
         </div>
         <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
@@ -148,7 +148,7 @@ export default function GrantStatus() {
 
         <div style={{ textAlign: 'center', lineHeight: 1.55, padding: '4px 0 0' }}>
           <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
-            ○○○님의 <span style={{ color: '#2d6a2d' }}>지원 현황</span>은
+            ○○○님의 <span style={{ color: '#076818' }}>지원 현황</span>은
           </p>
           <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
             다음과 같아요
@@ -180,8 +180,8 @@ export default function GrantStatus() {
                 onClick={() => setActiveFilter(f.key)}
                 style={{
                   padding: '8px 16px', borderRadius: 20,
-                  border: `1.5px solid ${active ? '#2d6a2d' : '#e8e8e8'}`,
-                  background: active ? '#2d6a2d' : '#fff',
+                  border: `1.5px solid ${active ? '#076818' : '#e8e8e8'}`,
+                  background: active ? '#076818' : '#fff',
                   cursor: 'pointer', fontFamily: 'inherit',
                   fontSize: 13, fontWeight: active ? 700 : 500,
                   color: active ? '#fff' : '#666',

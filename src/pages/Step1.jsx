@@ -93,7 +93,7 @@ function TextField({ label, value, onChange, placeholder, type = 'text', min, ma
             ...textInputStyle,
             minHeight: 46,
             paddingRight: suffix ? 40 : 12,
-            borderColor: focused ? '#2d6a2d' : '#e8e8e8',
+            borderColor: focused ? '#076818' : '#e8e8e8',
             boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
             transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
             colorScheme: 'light',
@@ -128,8 +128,8 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
           const active = value === opt.value
           const tone = opt.value ? {
             bg: '#f0f7f0',
-            border: '#2d6a2d',
-            color: '#2d6a2d',
+            border: '#076818',
+            color: '#076818',
           } : {
             bg: '#fff4e5',
             border: '#FFA100',

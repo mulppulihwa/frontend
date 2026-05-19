@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { User, MapPin, Check, Clock3, X, ChevronRight, Banknote } from 'lucide-react'
+import { User, MapPin, Check, Clock3, X, ChevronRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
 
@@ -32,7 +32,7 @@ function MiniRing({ done, total }) {
   const circ = 2 * Math.PI * r
   const pct = total === 0 ? 0 : done / total
   const complete = done === total && total > 0
-  const color = complete ? '#2d6a2d' : '#FFA100'
+  const color = complete ? '#076818' : '#FFA100'
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, flexShrink: 0 }}>
       <svg width="26" height="26" viewBox="0 0 26 26">
@@ -50,7 +50,7 @@ function MiniRing({ done, total }) {
 }
 
 const statusConfig = {
-  신청완료: { label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8', Icon: Check },
+  신청완료: { label: '신청 완료', color: '#076818', bg: '#e8f3e8', Icon: Check },
   신청예정: { label: '신청 예정', color: '#FFA100', bg: '#fff3e0', Icon: Clock3 },
   관심없음: { label: '관심 없음', color: '#d93025', bg: '#fff0ef', Icon: X },
 }
@@ -86,7 +86,7 @@ export default function MyPage() {
                 width: 56, height: 56, borderRadius: 18,
                 background: '#e8f3e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}>
-                <User size={26} color="#2d6a2d" strokeWidth={2} />
+                <User size={26} color="#076818" strokeWidth={2} />
               </div>
               <div>
                 <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>{userInfo.name}님</p>
@@ -137,7 +137,7 @@ export default function MyPage() {
           <Card>
             <div style={{ display: 'flex' }}>
               {[
-                { key: '신청완료', label: '신청 완료', color: '#2d6a2d', bg: '#e8f3e8' },
+                { key: '신청완료', label: '신청 완료', color: '#076818', bg: '#e8f3e8' },
                 { key: '신청예정', label: '신청 예정', color: '#FFA100', bg: '#fff3e0' },
                 { key: null, label: '미설정', color: '#888', bg: '#f5f5f5' },
               ].map(({ key, label, color, bg }, i, arr) => {
@@ -181,8 +181,8 @@ export default function MyPage() {
               return (
                 <Card key={g.id}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0, background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Banknote size={18} color={cfg.color} strokeWidth={2} />
+                    <div style={{ width: 48, height: 48, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: '#FF0000', letterSpacing: '-0.3px' }}>{getDday(g.deadline)}</span>
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px', marginBottom: 2 }}>{g.title}</p>
@@ -191,8 +191,7 @@ export default function MyPage() {
                         <span style={{ fontSize: 11, fontWeight: 700, color: cfg.color }}>{cfg.label}</span>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: '#d93025' }}>{getDday(g.deadline)}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
                       <MiniRing done={g.checkDone} total={g.checkTotal} />
                     </div>
                   </div>

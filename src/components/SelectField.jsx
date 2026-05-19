@@ -30,7 +30,7 @@ export default function SelectField({ label, value, options, onChange, required 
           width: '100%',
           minHeight: 46,
           padding: '9px 12px',
-          border: `1.5px solid ${open || focused ? '#2d6a2d' : '#e8e8e8'}`,
+          border: `1.5px solid ${open || focused ? '#076818' : '#e8e8e8'}`,
           borderRadius: 12,
           fontSize: 15,
           color: '#1a1a1a',
@@ -56,7 +56,7 @@ export default function SelectField({ label, value, options, onChange, required 
         <span>{selected?.label}</span>
         <ChevronDown
           size={18}
-          color="#2d6a2d"
+          color="#076818"
           strokeWidth={2.5}
           style={{ flexShrink: 0, transition: 'transform 0.2s ease', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
@@ -96,7 +96,7 @@ export default function SelectField({ label, value, options, onChange, required 
                   fontSize: 15,
                   fontFamily: 'inherit',
                   fontWeight: isSelected ? 500 : 400,
-                  color: isSelected ? '#2d6a2d' : '#1a1a1a',
+                  color: isSelected ? '#076818' : '#1a1a1a',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -107,7 +107,7 @@ export default function SelectField({ label, value, options, onChange, required 
                 }}
               >
                 {opt.label}
-                {isSelected && <Check size={16} color="#2d6a2d" strokeWidth={2.5} />}
+                {isSelected && <Check size={16} color="#076818" strokeWidth={2.5} />}
               </button>
             )
           })}

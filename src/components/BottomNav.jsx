@@ -44,11 +44,11 @@ export default function BottomNav() {
               fontFamily: 'inherit',
             }}
           >
-            <Icon size={26} color={active ? '#2d6a2d' : '#ccc'} strokeWidth={active ? 2.2 : 1.8} />
+            <Icon size={26} color={active ? '#076818' : '#ccc'} strokeWidth={active ? 2.2 : 1.8} />
             <span style={{
               fontSize: 11,
               fontWeight: active ? 700 : 500,
-              color: active ? '#2d6a2d' : '#ccc',
+              color: active ? '#076818' : '#ccc',
               letterSpacing: '-0.1px',
             }}>
               {label}

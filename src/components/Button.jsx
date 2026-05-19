@@ -1,6 +1,6 @@
 const styles = {
   primary: {
-    background: '#2d6a2d',
+    background: '#076818',
     color: '#fff',
     border: 'none',
     minHeight: 58,
@@ -10,7 +10,7 @@ const styles = {
     fontWeight: 600,
   },
   pill: {
-    background: '#2d6a2d',
+    background: '#076818',
     color: '#fff',
     border: 'none',
     minHeight: 'unset',
@@ -21,8 +21,8 @@ const styles = {
   },
   outline: {
     background: '#fff',
-    color: '#2d6a2d',
-    border: '2px solid #2d6a2d',
+    color: '#076818',
+    border: '2px solid #076818',
     minHeight: 58,
     padding: '16px',
     borderRadius: 18,

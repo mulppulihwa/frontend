@@ -71,7 +71,7 @@ export default function Loading() {
               width: `${progress}%`,
               height: '100%',
               borderRadius: 999,
-              background: '#2d6a2d',
+              background: '#076818',
               transition: 'width 0.12s ease',
             }} />
           </div>
@@ -79,7 +79,7 @@ export default function Loading() {
             <span style={{ fontSize: 14, fontWeight: 400, color: '#777', letterSpacing: '-0.1px' }}>
               분석 진행률
             </span>
-            <span style={{ fontSize: 15, fontWeight: 500, color: '#2d6a2d', letterSpacing: '-0.2px' }}>{progress}%</span>
+            <span style={{ fontSize: 15, fontWeight: 500, color: '#076818', letterSpacing: '-0.2px' }}>{progress}%</span>
           </div>
         </div>
 
@@ -98,7 +98,7 @@ export default function Loading() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 5,
-                  color: complete ? '#2d6a2d' : '#777',
+                  color: complete ? '#076818' : '#777',
                   fontSize: 13,
                   fontWeight: 400,
                   letterSpacing: '-0.1px',

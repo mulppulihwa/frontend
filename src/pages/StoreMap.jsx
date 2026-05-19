@@ -6,7 +6,7 @@ import TopBar from '../components/TopBar'
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
 
 const categories = [
-  { id: 'farm', label: '농기구 구입처', icon: Tractor, color: '#2d6a2d', bg: '#e8f3e8' },
+  { id: 'farm', label: '농기구 구입처', icon: Tractor, color: '#076818', bg: '#e8f3e8' },
   { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#FFA100', bg: '#fff3e0' },
 ]
 
@@ -32,7 +32,7 @@ function haversine(lat1, lng1, lat2, lng2) {
   return d < 1000 ? `${Math.round(d)}m` : `${(d/1000).toFixed(1)}km`
 }
 
-const markerColors = { farm: '#2d6a2d', local: '#FFA100' }
+const markerColors = { farm: '#076818', local: '#FFA100' }
 
 const COLLAPSED_H = 160
 const EXPANDED_H = 440
@@ -415,7 +415,7 @@ export default function StoreMap() {
               </a>
               <a
                 href={`tel:${detailPopup.kakaoResult?.phone || detailPopup.phone}`}
-                style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#2d6a2d', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#fff', fontFamily: 'inherit' }}
+                style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#076818', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#fff', fontFamily: 'inherit' }}
               >
                 전화하기
               </a>
