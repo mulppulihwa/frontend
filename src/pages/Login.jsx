@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
-import okcheonLogo from '../assets/okcheon-ok.png'
+import okcheonLogo from '../assets/okcheon-ok-green.png'
 
 export default function Login() {
   const navigate = useNavigate()
