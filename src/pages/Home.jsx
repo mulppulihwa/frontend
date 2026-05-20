@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
+import farmer from '../assets/farmer.png'
 import Button from '../components/Button'
 import Folder from '../components/Folder'
 
@@ -51,6 +52,9 @@ export default function Home() {
         <Folder
           size={2.5}
           color="#FFA100"
+          frontContent={
+            <img src={farmer} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'bottom center' }} />
+          }
           items={[
             <div onClick={e => { e.stopPropagation(); navigate('/detail') }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
               <span style={{ fontSize: 7.5, fontWeight: 700, color: '#FFA100', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>귀농{'\n'}농업창업{'\n'}지원금</span>
