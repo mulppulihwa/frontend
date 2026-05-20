@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
 import farmer from '../assets/farmer.png'
+import okcheonLogo from '../assets/okcheon-ok-green.png'
 import Button from '../components/Button'
 import Folder from '../components/Folder'
 
@@ -27,25 +28,7 @@ export default function Home() {
       boxSizing: 'border-box',
     }}>
       <div style={{ textAlign: 'center' }}>
-        <p style={{
-          fontSize: 34,
-          fontWeight: 800,
-          color: '#076818',
-          letterSpacing: '-0.8px',
-          lineHeight: 1.25,
-        }}>
-          귀농OK
-        </p>
-        <p style={{
-          fontSize: 17,
-          fontWeight: 500,
-          color: '#666',
-          letterSpacing: '-0.2px',
-          lineHeight: 1.4,
-          marginTop: 6,
-        }}>
-          내 손안에 옥천 가이드
-        </p>
+        <img src={okcheonLogo} alt="옥천OK" style={{ width: 200, height: 'auto', display: 'block', margin: '0 auto' }} />
       </div>
 
       <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
