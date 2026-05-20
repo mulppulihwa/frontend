@@ -132,7 +132,7 @@ export default function Results() {
             fontSize: 15,
             fontWeight: 700,
             cursor: index === 0 ? 'not-allowed' : 'pointer',
-            opacity: index === 0 ? 0.35 : 1,
+            opacity: 1,
             fontFamily: 'inherit',
           }}
         >
