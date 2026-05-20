@@ -302,7 +302,7 @@ export default function StoreMap() {
           </div>
 
           {/* Store list */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 12px' }}>
+	          <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 118px', scrollPaddingBottom: 118 }}>
             {filteredStores.length === 0 && (
               <div style={{ textAlign: 'center', padding: '24px 0', color: '#bbb', fontSize: 14 }}>
                 검색 결과가 없어요
@@ -356,11 +356,11 @@ export default function StoreMap() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', borderTop: '1.5px solid #ebebeb' }}>
-                    <button
-                      onClick={e => { e.stopPropagation(); openDetail(store) }}
-                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
-                    >
+	                  <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 14px' }}>
+	                    <button
+	                      onClick={e => { e.stopPropagation(); openDetail(store) }}
+	                      style={{ minWidth: 132, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px 18px', background: '#f7f7f7', border: '1.5px solid #e5e5e5', borderRadius: 999, cursor: 'pointer', fontFamily: 'inherit' }}
+	                    >
                       <Navigation size={15} color="#555" strokeWidth={2.5} />
                       <span style={{ fontSize: 13, fontWeight: 600, color: '#555' }}>자세히 보기</span>
                     </button>
