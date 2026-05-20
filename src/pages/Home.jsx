@@ -65,7 +65,7 @@ export default function Home() {
         />
       </div>
 
-      <Button onClick={() => setShowLogin(true)} variant="pill" style={{ background: '#FFA100' }}>
+      <Button onClick={() => setShowLogin(true)} variant="pill" style={{ background: '#076818' }}>
         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
           진단하기 시작 <ArrowRight size={16} strokeWidth={2.5} />
         </span>
