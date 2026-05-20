@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
@@ -77,56 +76,14 @@ export default function Results() {
             <span style={{ color: '#076818' }}>총 {total}개</span> 찾았어요
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 10 }}>
-          <button
-            type="button"
-            onClick={() => changeGrant(Math.max(0, index - 1), 'prev')}
-            disabled={index === 0}
-            aria-label="이전 지원금"
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: 14,
-              border: '1.5px solid #e8e8e8',
-              background: '#fff',
-              color: '#076818',
-              opacity: index === 0 ? 0.35 : 1,
-              cursor: index === 0 ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <ChevronLeft size={23} strokeWidth={2.4} />
-          </button>
-          <span style={{ fontSize: 14, fontWeight: 500, color: '#777', minWidth: 44, textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', marginTop: 10 }}>
+          <span style={{ fontSize: 14, fontWeight: 500, color: '#777' }}>
             {index + 1} / {total}
           </span>
-          <button
-            type="button"
-            onClick={() => changeGrant(Math.min(total - 1, index + 1), 'next')}
-            disabled={index === total - 1}
-            aria-label="다음 지원금"
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: 14,
-              border: '1.5px solid #e8e8e8',
-              background: '#fff',
-              color: '#076818',
-              opacity: index === total - 1 ? 0.35 : 1,
-              cursor: index === total - 1 ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <ChevronRight size={23} strokeWidth={2.4} />
-          </button>
         </div>
       </div>
 
-      <div style={{ padding: '0 18px 116px', flex: 1, overflowX: 'hidden' }}>
+      <div style={{ padding: '0 18px 176px', flex: 1, overflowX: 'hidden' }}>
         <div
           key={index}
           style={{
@@ -158,6 +115,49 @@ export default function Results() {
         </Card>
 
         </div>
+      </div>
+
+      <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <button
+          type="button"
+          onClick={() => changeGrant(Math.max(0, index - 1), 'prev')}
+          disabled={index === 0}
+          style={{
+            minHeight: 'unset',
+            padding: '14px 0',
+            borderRadius: 999,
+            border: '2px solid #076818',
+            background: '#fff',
+            color: '#076818',
+            fontSize: 15,
+            fontWeight: 700,
+            cursor: index === 0 ? 'not-allowed' : 'pointer',
+            opacity: index === 0 ? 0.35 : 1,
+            fontFamily: 'inherit',
+          }}
+        >
+          뒤로 가기
+        </button>
+        <button
+          type="button"
+          onClick={() => changeGrant(Math.min(total - 1, index + 1), 'next')}
+          disabled={index === total - 1}
+          style={{
+            minHeight: 'unset',
+            padding: '14px 0',
+            borderRadius: 999,
+            border: 'none',
+            background: '#076818',
+            color: '#fff',
+            fontSize: 15,
+            fontWeight: 700,
+            cursor: index === total - 1 ? 'not-allowed' : 'pointer',
+            opacity: index === total - 1 ? 0.35 : 1,
+            fontFamily: 'inherit',
+          }}
+        >
+          다음
+        </button>
       </div>
 
     </div>

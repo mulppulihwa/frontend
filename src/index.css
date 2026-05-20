@@ -107,17 +107,17 @@ input:focus-visible {
 
 .analysis-card-one {
   top: 0;
-  animation: analysisCardPulse 1.8s ease-in-out infinite;
+  animation: analysisCardPulse 3s ease-in-out infinite;
 }
 
 .analysis-card-two {
   top: 44px;
-  animation: analysisCardPulse 1.8s ease-in-out 0.25s infinite;
+  animation: analysisCardPulse 3s ease-in-out 0.4s infinite;
 }
 
 .analysis-card-three {
   top: 88px;
-  animation: analysisCardPulse 1.8s ease-in-out 0.5s infinite;
+  animation: analysisCardPulse 3s ease-in-out 0.8s infinite;
 }
 
 .analysis-search-icon {
@@ -132,7 +132,7 @@ input:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: analysisSearchSweep 2.1s cubic-bezier(0.42, 0, 0.18, 1) infinite;
+  animation: analysisSearchSweep 4s cubic-bezier(0.42, 0, 0.18, 1) infinite;
 }
 
 @keyframes analysisSearchSweep {
