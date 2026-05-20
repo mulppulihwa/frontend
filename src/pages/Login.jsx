@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
+import okcheonLogo from '../assets/okcheon-ok.png'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -21,20 +22,14 @@ export default function Login() {
         paddingBottom: 54,
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{
-            width: 112,
-            height: 112,
-            borderRadius: 32,
-            background: '#fff',
-            border: '1.5px solid #e8e8e8',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 16,
-          }}>
-            <p style={{ fontSize: 12, fontWeight: 400, color: '#777', textAlign: 'center', lineHeight: 1.45, letterSpacing: '-0.1px' }}>
-              서비스 이름<br />로고
-            </p>
+	          <div style={{
+	            width: 112,
+	            height: 112,
+	            display: 'flex',
+	            alignItems: 'center',
+	            justifyContent: 'center',
+	          }}>
+            <img src={okcheonLogo} alt="옥천OK" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <p style={{ fontSize: 30, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.6px', marginTop: 22 }}>귀농OK</p>
           <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: 12, textAlign: 'center' }}>
