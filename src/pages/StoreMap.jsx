@@ -166,7 +166,10 @@ export default function StoreMap() {
 
   const handleStoreClick = (store) => {
     setSelectedStore(store)
-    mapInstanceRef.current?.panTo(new window.kakao.maps.LatLng(store.lat, store.lng))
+    if (fullscreen) setSheetH(COLLAPSED_H)
+    window.setTimeout(() => {
+      mapInstanceRef.current?.panTo(new window.kakao.maps.LatLng(store.lat, store.lng))
+    }, fullscreen ? 120 : 0)
   }
 
   const activeCat = categories.find(c => c.id === activeCategory)

@@ -139,7 +139,6 @@ export default function MyPage() {
               {[
                 { key: '신청완료', label: '신청 완료', color: '#076818', bg: '#e8f3e8' },
                 { key: '신청예정', label: '신청 예정', color: '#FFA100', bg: '#fff3e0' },
-                { key: null, label: '미설정', color: '#888', bg: '#f5f5f5' },
               ].map(({ key, label, color, bg }, i, arr) => {
                 const count = grantStatuses.filter(g => g.status === key).length
                 return (

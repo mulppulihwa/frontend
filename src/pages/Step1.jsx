@@ -183,7 +183,7 @@ export default function Step1() {
   const [movedAt, setMovedAt] = useState('2026-05-15')
   const [previousResidence, setPreviousResidence] = useState('내국인')
   const [previousSince, setPreviousSince] = useState('2023-03-01')
-  const [job, setJob] = useState('퇴직 / 직장인 / 기타')
+  const [job, setJob] = useState('퇴직')
   const [farmBusiness, setFarmBusiness] = useState(true)
   const [outsideIncome, setOutsideIncome] = useState('')
   const [region, setRegion] = useState('옥천군')
@@ -250,9 +250,10 @@ export default function Step1() {
         {page === 3 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
             <SelectField label="현재 직업이 어떻게 되시나요?" value={job} onChange={setJob} options={[
-              { value: '퇴직 / 직장인 / 기타', label: '퇴직 / 직장인 / 기타' },
-              { value: '자영업', label: '자영업' },
+              { value: '퇴직', label: '퇴직' },
+              { value: '직장인', label: '직장인' },
               { value: '농업', label: '농업' },
+              { value: '기타', label: '기타' },
             ]} />
             <RadioGroup label="농사 지으세요?" value={farming} onChange={setFarming} />
             <RadioGroup label="농업경영체를 운영하시나요?" value={farmBusiness} onChange={setFarmBusiness} options={[
