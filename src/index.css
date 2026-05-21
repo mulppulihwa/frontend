@@ -155,6 +155,19 @@ input:focus-visible {
   overflow: hidden;
 }
 
+.loading-spinner {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  border: 7px solid #e8f3e8;
+  border-top-color: #076818;
+  animation: loadingSpin 0.9s linear infinite;
+}
+
+@keyframes loadingSpin {
+  to { transform: rotate(360deg); }
+}
+
 .loading-wave-fill {
   position: absolute;
   left: 0;
