@@ -90,7 +90,7 @@ export default function Results() {
         </div>
       </div>
 
-      <div style={{ padding: '0 18px 176px', flex: 1, overflowX: 'hidden' }}>
+      <div style={{ padding: '0 18px 152px', flex: 1, overflowX: 'hidden' }}>
         <div
           key={index}
           style={{
@@ -124,7 +124,7 @@ export default function Results() {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+      <div style={{ position: 'fixed', bottom: 76, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <button
           type="button"
           onClick={() => changeGrant(Math.max(0, index - 1), 'prev')}
