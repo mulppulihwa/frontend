@@ -25,15 +25,15 @@ export default function StatusCheckboxes({ value, onChange }) {
             onClick={() => onChange(active ? null : key)}
             style={{
               flex: 1,
-              minHeight: 54,
-              padding: '8px 4px',
+              minHeight: 40,
+              padding: '6px 4px',
               border: '1.5px solid transparent',
-              borderRadius: 12,
+              borderRadius: 10,
               background: active ? activeBg : 'transparent',
               boxShadow: 'none',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: 500,
               color: active ? activeColor : '#444',
               letterSpacing: '-0.2px',
@@ -42,10 +42,10 @@ export default function StatusCheckboxes({ value, onChange }) {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 5,
+              gap: 4,
             }}
           >
-            <Icon size={16} strokeWidth={2.4} />
+            <Icon size={14} strokeWidth={2.4} />
             {label}
           </button>
         )

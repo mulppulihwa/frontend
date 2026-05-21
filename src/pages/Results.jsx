@@ -77,9 +77,16 @@ export default function Results() {
           </p>
         </div>
         <div style={{ textAlign: 'center', marginTop: 10 }}>
-          <span style={{ fontSize: 14, fontWeight: 500, color: '#777' }}>
-            {index + 1} / {total}
-          </span>
+          {(() => {
+            const unchecked = total - Object.keys(statuses).length
+            return unchecked > 0
+              ? <span style={{ fontSize: 13, fontWeight: 600, color: '#FFA100', background: '#fff8ee', border: '1.5px solid #ffe0a0', borderRadius: 20, padding: '4px 12px' }}>
+                  현황 미입력 {unchecked}개 남았어요
+                </span>
+              : <span style={{ fontSize: 13, fontWeight: 600, color: '#076818', background: '#e8f3e8', border: '1.5px solid #b8ddb8', borderRadius: 20, padding: '4px 12px' }}>
+                  모두 확인했어요 ✓
+                </span>
+          })()}
         </div>
       </div>
 
@@ -106,8 +113,8 @@ export default function Results() {
         />
 
         {/* Status card */}
-        <Card>
-          <p style={{ fontSize: 15, fontWeight: 500, color: '#1a1a1a', marginBottom: 12, letterSpacing: '-0.1px' }}>지원현황을 체크해주세요</p>
+        <Card style={{ padding: '10px 14px' }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: '#1a1a1a', marginBottom: 8, letterSpacing: '-0.1px' }}>지원현황을 체크해주세요</p>
           <StatusCheckboxes
             value={statuses[grant.id] ?? null}
             onChange={handleStatusChange}
@@ -117,7 +124,7 @@ export default function Results() {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+      <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <button
           type="button"
           onClick={() => changeGrant(Math.max(0, index - 1), 'prev')}
@@ -140,23 +147,23 @@ export default function Results() {
         </button>
         <button
           type="button"
-          onClick={() => changeGrant(Math.min(total - 1, index + 1), 'next')}
-          disabled={index === total - 1}
+          onClick={() => index === total - 1 ? navigate('/grant-status') : changeGrant(index + 1, 'next')}
           style={{
             minHeight: 'unset',
             padding: '14px 0',
             borderRadius: 999,
             border: 'none',
-            background: '#076818',
+            background: index === total - 1 ? '#FFA100' : '#076818',
             color: '#fff',
             fontSize: 15,
             fontWeight: 700,
-            cursor: index === total - 1 ? 'not-allowed' : 'pointer',
-            opacity: index === total - 1 ? 0.35 : 1,
+            cursor: 'pointer',
+            opacity: 1,
             fontFamily: 'inherit',
+            transition: 'background 0.2s ease',
           }}
         >
-          다음
+          {index === total - 1 ? '완료' : '다음'}
         </button>
       </div>
 

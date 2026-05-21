@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
@@ -170,6 +170,8 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
   )
 }
 
+const STORAGE_KEY = 'diagnosisProgress'
+
 export default function Step1() {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
@@ -179,14 +181,54 @@ export default function Step1() {
   const [nationality, setNationality] = useState('내국인')
   const [farming, setFarming] = useState(true)
   const [farmingDate, setFarmingDate] = useState('')
-  const [location, setLocation] = useState('옥천군 or 옥천 외')
+  const [location, setLocation] = useState('옥천')
   const [movedAt, setMovedAt] = useState('2026-05-15')
-  const [previousResidence, setPreviousResidence] = useState('내국인')
+  const [previousResidence, setPreviousResidence] = useState('경기도')
   const [previousSince, setPreviousSince] = useState('2023-03-01')
   const [job, setJob] = useState('퇴직')
   const [farmBusiness, setFarmBusiness] = useState(true)
   const [outsideIncome, setOutsideIncome] = useState('')
   const [region, setRegion] = useState('옥천군')
+  const [showResumeModal, setShowResumeModal] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) setShowResumeModal(true)
+  }, [])
+
+  const saveProgress = (currentPage) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      page: currentPage, birthDate, age, gender, nationality, farming,
+      farmingDate, location, movedAt, previousResidence, previousSince,
+      job, farmBusiness, outsideIncome, region,
+    }))
+  }
+
+  const handleResume = () => {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
+    if (!saved) return
+    setBirthDate(saved.birthDate ?? birthDate)
+    setAge(saved.age ?? age)
+    setGender(saved.gender ?? gender)
+    setNationality(saved.nationality ?? nationality)
+    setFarming(saved.farming ?? farming)
+    setFarmingDate(saved.farmingDate ?? farmingDate)
+    setLocation(saved.location ?? location)
+    setMovedAt(saved.movedAt ?? movedAt)
+    setPreviousResidence(saved.previousResidence ?? previousResidence)
+    setPreviousSince(saved.previousSince ?? previousSince)
+    setJob(saved.job ?? job)
+    setFarmBusiness(saved.farmBusiness ?? farmBusiness)
+    setOutsideIncome(saved.outsideIncome ?? outsideIncome)
+    setRegion(saved.region ?? region)
+    setPage(saved.page ?? 1)
+    setShowResumeModal(false)
+  }
+
+  const handleRestart = () => {
+    localStorage.removeItem(STORAGE_KEY)
+    setShowResumeModal(false)
+  }
 
   const goBack = () => {
     if (page === 1) {
@@ -198,14 +240,16 @@ export default function Step1() {
 
   const goNext = () => {
     if (page === 4) {
-      navigate('/step2')
+      localStorage.removeItem(STORAGE_KEY)
+      navigate('/loading')
       return
     }
+    saveProgress(page + 1)
     setPage(prev => prev + 1)
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#FDFCF8' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: '#FDFCF8' }}>
       <div style={{ background: '#FDFCF8' }}>
         <TopBar title="정보 입력" onBack={goBack} />
         <div style={{ padding: '8px 18px 10px' }}>
@@ -215,7 +259,7 @@ export default function Step1() {
 
       <Header />
 
-      <div style={{ padding: '0 18px 100px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+      <div style={{ padding: '20px 18px 120px', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
         {page === 1 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
             <DateSelectField label="생년월일이 어떻게 되세요?" value={birthDate} onChange={setBirthDate} />
@@ -233,15 +277,17 @@ export default function Step1() {
         {page === 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
             <SelectField label="현재 어디 사세요?" value={location} onChange={setLocation} options={[
-              { value: '옥천군 or 옥천 외', label: '옥천군 or 옥천 외' },
-              { value: '옥천군', label: '옥천군' },
+              { value: '옥천', label: '옥천' },
               { value: '옥천 외', label: '옥천 외' },
             ]} />
             <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} />
             <SelectField label="이전 거주지는 어디인가요?" value={previousResidence} onChange={setPreviousResidence} options={[
-              { value: '내국인', label: '내국인' },
-              { value: '옥천 외', label: '옥천 외' },
-              { value: '충북 외', label: '충북 외' },
+              { value: '경기도', label: '경기도' },
+              { value: '충청남도', label: '충청남도' },
+              { value: '충청북도', label: '충청북도' },
+              { value: '전라남도', label: '전라남도' },
+              { value: '경상남도', label: '경상남도' },
+              { value: '경상북도', label: '경상북도' },
             ]} />
             <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} />
           </div>
@@ -274,9 +320,31 @@ export default function Step1() {
         )}
       </div>
 
-      <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
+      <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
         <Button onClick={goNext} variant="pill">{page === 4 ? '내 지원금 찾기' : '다음'}</Button>
       </div>
+
+      {showResumeModal && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 28px' }}>
+          <div style={{ width: '100%', maxWidth: 320, background: '#fff', borderRadius: 24, padding: '32px 24px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, animation: 'fadeInScale 0.2s ease' }}>
+            <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', textAlign: 'center', lineHeight: 1.5 }}>이전에 작성 중이던<br />진단 내역이 있습니다</p>
+            <p style={{ fontSize: 14, color: '#888', marginBottom: 12, textAlign: 'center', letterSpacing: '-0.1px' }}>이어서 하시겠습니까?</p>
+            <button
+              onClick={handleResume}
+              style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: '#076818', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px' }}
+            >
+              이어서 하기
+            </button>
+            <button
+              onClick={handleRestart}
+              style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: '1.5px solid #e8e8e8', background: '#fff', color: '#555', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px' }}
+            >
+              새로하기
+            </button>
+          </div>
+          <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }`}</style>
+        </div>
+      )}
     </div>
   )
 }

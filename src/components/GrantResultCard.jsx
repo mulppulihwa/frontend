@@ -14,22 +14,22 @@ export default function GrantResultCard({
   const countdown = grant.countdown ?? { days: 0, hours: 0, minutes: 0 }
 
   return (
-    <Card style={{ padding: '14px 16px 12px' }}>
+    <Card style={{ padding: '16px 18px 12px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
         <div style={{ flex: 1, paddingRight: 6 }}>
-          <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.4px', lineHeight: 1.28 }}>{grant.title}</p>
-          <p style={{ fontSize: 13, fontWeight: 400, color: '#888', marginTop: 4, letterSpacing: '-0.1px' }}>{grant.agency}</p>
+          <p style={{ fontSize: 19, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.4px', lineHeight: 1.28 }}>{grant.title}</p>
+          <p style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', marginTop: 4, letterSpacing: '-0.1px' }}>{grant.agency}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, paddingTop: 1 }}>
           {statusCfg && (
             <span style={{
               display: 'inline-flex',
               alignItems: 'center',
-              minHeight: 34,
+              minHeight: 36,
               fontSize: 14,
               fontWeight: 500,
               borderRadius: 999,
-              padding: '0 12px',
+              padding: '0 14px',
               color: statusCfg.color, background: statusCfg.bg,
               letterSpacing: '-0.2px',
               whiteSpace: 'nowrap',
@@ -42,16 +42,12 @@ export default function GrantResultCard({
 
       <div style={{ borderTop: '1px solid #eeeeee', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Banknote size={18} color="#076818" strokeWidth={2.2} />
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#076818', letterSpacing: '-0.2px' }}>{grant.subtitle}</p>
+          <Banknote size={17} color="#076818" strokeWidth={2.2} />
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#076818', letterSpacing: '-0.2px' }}>{grant.subtitle}</p>
         </div>
 
-        <div style={{
-          background: '#f9f9f9',
-          borderRadius: 12,
-          padding: '10px 12px',
-        }}>
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#888', letterSpacing: '-0.1px', marginBottom: 6 }}>해당 이유</p>
+        <div style={{ background: '#f9f9f9', borderRadius: 10, padding: '10px 14px' }}>
+          <p style={{ fontSize: 12, fontWeight: 500, color: '#888', letterSpacing: '-0.1px', marginBottom: 5 }}>해당 이유</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {reasons.map((reason) => (
               <div key={reason} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
@@ -73,16 +69,16 @@ export default function GrantResultCard({
             {grant.period}
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 7 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6 }}>
           <Clock size={13} color="#076818" strokeWidth={2} />
           <p style={{ fontSize: 13, fontWeight: 500, color: '#1a1a1a', letterSpacing: '-0.1px' }}>마감까지</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr auto', alignItems: 'center', columnGap: 6 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr auto', alignItems: 'center', columnGap: 5 }}>
           {[[countdown.days, '일'], [countdown.hours, '시간'], [countdown.minutes, '분']].map(([val, unit]) => (
             <Fragment key={unit}>
               <div style={{
-                minHeight: 46,
-                borderRadius: 12,
+                minHeight: 44,
+                borderRadius: 10,
                 background: '#fff',
                 border: '1.5px solid #e8e8e8',
                 display: 'flex',
@@ -105,7 +101,7 @@ export default function GrantResultCard({
         type="button"
         onClick={onViewDetail}
         style={{
-          marginTop: 12,
+          marginTop: 10,
           width: '100%',
           minHeight: 36,
           border: 'none',

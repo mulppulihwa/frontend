@@ -179,7 +179,10 @@ export default function MyPage() {
               const Icon = cfg.Icon
               return (
                 <Card key={g.id}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div
+                    onClick={() => navigate('/detail')}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
+                  >
                     <div style={{ width: 48, height: 48, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <span style={{ fontSize: 13, fontWeight: 800, color: '#FF0000', letterSpacing: '-0.3px' }}>{getDday(g.deadline)}</span>
                     </div>
@@ -194,6 +197,17 @@ export default function MyPage() {
                       <MiniRing done={g.checkDone} total={g.checkTotal} />
                     </div>
                   </div>
+                  <button
+                    onClick={() => navigate('/checklist')}
+                    style={{
+                      marginTop: 10, width: '100%', padding: '10px 0', borderRadius: 12,
+                      border: '1.5px solid #e8e8e8', background: '#fafafa',
+                      color: '#444', fontSize: 13, fontWeight: 600,
+                      cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px',
+                    }}
+                  >
+                    준비물 확인하기
+                  </button>
                 </Card>
               )
             })}

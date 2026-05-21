@@ -12,14 +12,14 @@ const categories = [
 
 const stores = {
   farm: [
-    { name: '옥천농기계센터', address: '옥천읍 금구리 123', phone: '043-730-1111', lat: 36.3068, lng: 127.5725, rating: 4.3, reviews: 12 },
-    { name: '농협 농자재마트', address: '옥천읍 하계리 45', phone: '043-730-2222', lat: 36.3045, lng: 127.5700, rating: 4.7, reviews: 28 },
-    { name: '금강농기계', address: '옥천읍 문정리 67', phone: '043-730-3333', lat: 36.3080, lng: 127.5750, rating: 4.1, reviews: 7 },
+    { name: '옥천농기계센터', address: '옥천읍 금구리 123', phone: '043-730-1111', hours: '평일 09:00 ~ 18:00', lat: 36.3068, lng: 127.5725, rating: 4.3, reviews: 12 },
+    { name: '농협 농자재마트', address: '옥천읍 하계리 45', phone: '043-730-2222', hours: '평일 08:30 ~ 17:30 / 토 09:00 ~ 13:00', lat: 36.3045, lng: 127.5700, rating: 4.7, reviews: 28 },
+    { name: '금강농기계', address: '옥천읍 문정리 67', phone: '043-730-3333', hours: '평일 09:00 ~ 17:00 (일 휴무)', lat: 36.3080, lng: 127.5750, rating: 4.1, reviews: 7 },
   ],
   local: [
-    { name: '옥천전통시장', address: '옥천읍 문정리 1', phone: '043-730-4444', lat: 36.3055, lng: 127.5730, rating: 4.5, reviews: 41 },
-    { name: '하나로마트 옥천점', address: '옥천읍 금구리 200', phone: '043-730-5555', lat: 36.3072, lng: 127.5695, rating: 4.2, reviews: 19 },
-    { name: '옥천군 가맹점 일대', address: '옥천읍 일원', phone: '043-730-6666', lat: 36.3090, lng: 127.5710, rating: 4.0, reviews: 5 },
+    { name: '옥천전통시장', address: '옥천읍 문정리 1', phone: '043-730-4444', hours: '매일 08:00 ~ 20:00', lat: 36.3055, lng: 127.5730, rating: 4.5, reviews: 41 },
+    { name: '하나로마트 옥천점', address: '옥천읍 금구리 200', phone: '043-730-5555', hours: '매일 09:00 ~ 21:00', lat: 36.3072, lng: 127.5695, rating: 4.2, reviews: 19 },
+    { name: '옥천군 가맹점 일대', address: '옥천읍 일원', phone: '043-730-6666', hours: '가맹점별 상이', lat: 36.3090, lng: 127.5710, rating: 4.0, reviews: 5 },
   ],
 }
 
@@ -350,10 +350,16 @@ export default function StoreMap() {
                           </>
                         )}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
                         <MapPin size={13} color="#999" strokeWidth={2} />
                         <span style={{ fontSize: 12, color: '#666', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.address}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Clock size={13} color="#999" strokeWidth={2} />
+                        <span style={{ fontSize: 12, color: '#666', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {store.hours}
                         </span>
                       </div>
                     </div>
@@ -399,7 +405,8 @@ export default function StoreMap() {
                 {[
                   { Icon: MapPin, value: detailPopup.kakaoResult?.address || detailPopup.address },
                   { Icon: Phone, value: detailPopup.kakaoResult?.phone || detailPopup.phone },
-                ].map(({ Icon, value }) => (
+                  { Icon: Clock, value: detailPopup.hours },
+                ].filter(({ value }) => value).map(({ Icon, value }) => (
                   <div key={value} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                     <Icon size={16} color="#888" strokeWidth={2} style={{ marginTop: 2, flexShrink: 0 }} />
                     <span style={{ fontSize: 14, color: '#1a1a1a', letterSpacing: '-0.1px', lineHeight: 1.5 }}>{value}</span>
@@ -409,13 +416,17 @@ export default function StoreMap() {
             )}
 
             <div style={{ display: 'flex', gap: 10 }}>
-              <a
-                href={detailPopup.kakaoResult?.placeUrl ?? `https://map.kakao.com/?q=${encodeURIComponent(detailPopup.name)}`}
-                target="_blank" rel="noopener noreferrer"
-                style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#555', fontFamily: 'inherit' }}
+              <button
+                onClick={() => {
+                  const catId = activeCategory
+                  const storeIdx = stores[catId].findIndex(s => s.name === detailPopup.name)
+                  setDetailPopup(null)
+                  navigate(`/store-detail?category=${catId}&store=${storeIdx}`)
+                }}
+                style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#f5f5f5', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600, color: '#555', fontFamily: 'inherit', cursor: 'pointer' }}
               >
-                카카오맵 보기
-              </a>
+                지도에서 보기
+              </button>
               <a
                 href={`tel:${detailPopup.kakaoResult?.phone || detailPopup.phone}`}
                 style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#076818', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#fff', fontFamily: 'inherit' }}
