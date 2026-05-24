@@ -5,6 +5,19 @@ const LOGIN_REDIRECT_KEY = 'loginRedirectTo'
 const KAKAO_STATE_KEY = 'kakaoOAuthState'
 const KAKAO_USER_NAME_KEY = 'kakaoUserName'
 let pendingCallback = null
+const DISPLAY_NAME_KEYS = [
+  'nickname',
+  'kakao_nickname',
+  'kakaoNickname',
+  'profile_nickname',
+  'profileNickname',
+  'name',
+  'username',
+  'display_name',
+  'displayName',
+  'full_name',
+  'fullName',
+]
 
 function getRedirectUri() {
   if (KAKAO_REDIRECT_URI) return KAKAO_REDIRECT_URI
@@ -44,7 +57,7 @@ function decodeJwtPayload(token) {
   }
 }
 
-function findString(payload, names) {
+export function findString(payload, names) {
   if (!payload || typeof payload !== 'object') return ''
   for (const name of names) {
     const value = payload[name]
@@ -55,6 +68,10 @@ function findString(payload, names) {
     if (match) return match
   }
   return ''
+}
+
+export function findDisplayName(payload) {
+  return findString(payload, DISPLAY_NAME_KEYS)
 }
 
 export function startKakaoLogin(redirectTo = '/home') {
@@ -107,8 +124,7 @@ async function exchangeKakaoCode(params, code) {
 
   const accessToken = findToken(payload, ['access', 'accessToken', 'access_token', 'token'])
   const refreshToken = findToken(payload, ['refresh', 'refreshToken', 'refresh_token'])
-  const displayName = findString(payload, ['nickname', 'name', 'username', 'display_name', 'displayName'])
-    || findString(decodeJwtPayload(accessToken), ['nickname', 'name', 'username', 'display_name', 'displayName'])
+  const displayName = findDisplayName(payload) || findDisplayName(decodeJwtPayload(accessToken))
 
   if (accessToken) {
     localStorage.setItem('accessToken', accessToken)
