@@ -130,6 +130,19 @@ export function getKakaoUserName() {
   return localStorage.getItem(KAKAO_USER_NAME_KEY) || ''
 }
 
+export function logout() {
+  ;[
+    'accessToken',
+    'access',
+    'token',
+    'refreshToken',
+    'refresh',
+    KAKAO_USER_NAME_KEY,
+  ].forEach(key => localStorage.removeItem(key))
+  sessionStorage.removeItem(LOGIN_REDIRECT_KEY)
+  sessionStorage.removeItem(KAKAO_STATE_KEY)
+}
+
 export function consumeLoginRedirect(fallback = '/home') {
   const redirectTo = sessionStorage.getItem(LOGIN_REDIRECT_KEY) || fallback
   sessionStorage.removeItem(LOGIN_REDIRECT_KEY)

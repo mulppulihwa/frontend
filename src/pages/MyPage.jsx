@@ -4,7 +4,7 @@ import { User, MapPin, Check, Clock3, X, ChevronRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
 import { fetchProfile, fetchSavedPolicies, getAccessToken } from '../lib/api'
-import { getKakaoUserName, startKakaoLogin } from '../lib/auth'
+import { getKakaoUserName, logout, startKakaoLogin } from '../lib/auth'
 
 function getDday(deadlineStr) {
   const today = new Date('2026-05-18')
@@ -87,6 +87,14 @@ export default function MyPage() {
   const [loading, setLoading] = useState(true)
   const [authRequired, setAuthRequired] = useState(false)
   const [error, setError] = useState('')
+
+  function handleLogout() {
+    logout()
+    setUserInfo(null)
+    setGrantStatuses([])
+    setError('')
+    setAuthRequired(true)
+  }
 
   useEffect(() => {
     let active = true
@@ -227,6 +235,19 @@ export default function MyPage() {
                 </div>
               ))}
             </div>
+
+            <button
+              onClick={handleLogout}
+              style={{
+                width: '100%', height: 46, marginTop: 18,
+                borderRadius: 14, border: '1.5px solid #e4e4e4',
+                background: '#fff', color: '#666',
+                fontSize: 14, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              로그아웃
+            </button>
           </Card>
         </div>
         )}
