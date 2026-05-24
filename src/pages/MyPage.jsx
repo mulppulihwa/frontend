@@ -4,7 +4,7 @@ import { User, MapPin, Check, Clock3, X, ChevronRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
 import { fetchProfile, fetchSavedPolicies, getAccessToken } from '../lib/api'
-import { startKakaoLogin } from '../lib/auth'
+import { getKakaoUserName, startKakaoLogin } from '../lib/auth'
 
 function getDday(deadlineStr) {
   const today = new Date('2026-05-18')
@@ -54,10 +54,16 @@ function firstValue(source, keys) {
 function normalizeProfile(profile) {
   const kakaoAccount = profile.kakao_account || profile.kakaoAccount || {}
   const kakaoProfile = kakaoAccount.profile || profile.properties || profile.kakao_profile || {}
+  const user = profile.user || profile.account || profile.member || {}
+  const kakao = profile.kakao || profile.kakao_user || profile.kakaoUser || {}
   const region = firstValue(profile.region, ['name', 'region_name']) || firstValue(profile, ['region_name', 'region'])
 
   return {
-    name: firstValue(profile, ['name', 'nickname', 'username']) || firstValue(kakaoProfile, ['nickname', 'name']),
+    name: firstValue(profile, ['nickname', 'name', 'username'])
+      || firstValue(user, ['nickname', 'name', 'username'])
+      || firstValue(kakaoProfile, ['nickname', 'name'])
+      || firstValue(kakao, ['nickname', 'name'])
+      || getKakaoUserName(),
     age: firstValue(profile, ['age']),
     gender: firstValue(profile, ['gender']) || firstValue(kakaoAccount, ['gender']),
     region,

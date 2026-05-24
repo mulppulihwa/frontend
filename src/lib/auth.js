@@ -3,6 +3,7 @@ const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI
 
 const LOGIN_REDIRECT_KEY = 'loginRedirectTo'
 const KAKAO_STATE_KEY = 'kakaoOAuthState'
+const KAKAO_USER_NAME_KEY = 'kakaoUserName'
 let pendingCallback = null
 
 function getRedirectUri() {
@@ -25,6 +26,35 @@ function findToken(payload, names) {
     if (token) return token
   }
   return null
+}
+
+function decodeJwtPayload(token) {
+  if (!token || !token.includes('.')) return null
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    const json = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(char => `%${char.charCodeAt(0).toString(16).padStart(2, '0')}`)
+        .join(''),
+    )
+    return JSON.parse(json)
+  } catch {
+    return null
+  }
+}
+
+function findString(payload, names) {
+  if (!payload || typeof payload !== 'object') return ''
+  for (const name of names) {
+    const value = payload[name]
+    if (typeof value === 'string' && value.trim()) return value.trim()
+  }
+  for (const value of Object.values(payload)) {
+    const match = findString(value, names)
+    if (match) return match
+  }
+  return ''
 }
 
 export function startKakaoLogin(redirectTo = '/home') {
@@ -77,6 +107,8 @@ async function exchangeKakaoCode(params, code) {
 
   const accessToken = findToken(payload, ['access', 'accessToken', 'access_token', 'token'])
   const refreshToken = findToken(payload, ['refresh', 'refreshToken', 'refresh_token'])
+  const displayName = findString(payload, ['nickname', 'name', 'username', 'display_name', 'displayName'])
+    || findString(decodeJwtPayload(accessToken), ['nickname', 'name', 'username', 'display_name', 'displayName'])
 
   if (accessToken) {
     localStorage.setItem('accessToken', accessToken)
@@ -86,9 +118,16 @@ async function exchangeKakaoCode(params, code) {
     localStorage.setItem('refreshToken', refreshToken)
     localStorage.setItem('refresh', refreshToken)
   }
+  if (displayName) {
+    localStorage.setItem(KAKAO_USER_NAME_KEY, displayName)
+  }
 
   sessionStorage.removeItem(KAKAO_STATE_KEY)
   return { completed: true, payload }
+}
+
+export function getKakaoUserName() {
+  return localStorage.getItem(KAKAO_USER_NAME_KEY) || ''
 }
 
 export function consumeLoginRedirect(fallback = '/home') {
