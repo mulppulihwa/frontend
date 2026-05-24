@@ -40,7 +40,7 @@ export default function Login() {
   const handleKakaoLogin = () => {
     try {
       setError('')
-      startKakaoLogin('/step1')
+      startKakaoLogin('/home')
     } catch (err) {
       setError(err.message)
     }
