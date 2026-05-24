@@ -137,7 +137,14 @@ export async function fetchProfile() {
 
 export async function fetchSavedPolicies() {
   const data = await request('/api/users/me/policies/')
-  return toArray(data).map((item, index) => normalizePolicy(item.policy || item, index))
+  return toArray(data).map((item, index) => {
+    const policy = item.policy || item
+    const userStatus = item.user_status || item.status || item.policy_status || policy.user_status
+    return {
+      ...normalizePolicy(policy, index),
+      user_status: userStatus || null,
+    }
+  })
 }
 
 export async function updateSavedPolicyStatus(policyId, status) {

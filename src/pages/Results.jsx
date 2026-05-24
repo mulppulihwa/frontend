@@ -5,7 +5,7 @@ import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import Card from '../components/Card'
 import GrantResultCard from '../components/GrantResultCard'
-import { fetchMatchedPolicies } from '../lib/api'
+import { fetchMatchedPolicies, updateSavedPolicyStatus } from '../lib/api'
 
 const fallbackGrants = [
   {
@@ -45,6 +45,7 @@ export default function Results() {
   const [pageDirection, setPageDirection] = useState('next')
   const [statuses, setStatuses] = useState({})
   const [grants, setGrants] = useState(fallbackGrants)
+  const [statusError, setStatusError] = useState('')
   const grant = grants[index]
   const total = grants.length
 
@@ -52,7 +53,13 @@ export default function Results() {
     let active = true
     fetchMatchedPolicies()
       .then(policies => {
-        if (active && policies.length > 0) setGrants(policies)
+        if (active && policies.length > 0) {
+          setGrants(policies)
+          setStatuses(policies.reduce((acc, policy) => ({
+            ...acc,
+            [policy.id]: policy.user_status || null,
+          }), {}))
+        }
       })
       .catch(() => {})
     return () => {
@@ -60,8 +67,16 @@ export default function Results() {
     }
   }, [])
 
-  const handleStatusChange = (val) => {
+  const handleStatusChange = async (val) => {
+    const previous = statuses[grant.id] || null
+    setStatusError('')
     setStatuses(p => ({ ...p, [grant.id]: val }))
+    try {
+      await updateSavedPolicyStatus(grant.id, val)
+    } catch (err) {
+      setStatuses(p => ({ ...p, [grant.id]: previous }))
+      setStatusError(err.message || '지원현황을 저장하지 못했습니다.')
+    }
   }
 
   const changeGrant = (nextIndex, direction) => {
@@ -129,6 +144,11 @@ export default function Results() {
             value={statuses[grant.id] ?? null}
             onChange={handleStatusChange}
           />
+          {statusError && (
+            <p style={{ fontSize: 12, fontWeight: 600, color: '#d93025', marginTop: 8 }}>
+              {statusError}
+            </p>
+          )}
         </Card>
 
         </div>

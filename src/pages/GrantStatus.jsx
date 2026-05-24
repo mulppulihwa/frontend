@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Check, Search, X, ArrowUpDown } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
-import { fetchPreviewPolicies, fetchSavedPolicies, updateSavedPolicyStatus } from '../lib/api'
+import { fetchSavedPolicies, updateSavedPolicyStatus } from '../lib/api'
 
 const filters = [
   { key: '전체', label: '전체' },
@@ -11,16 +11,6 @@ const filters = [
   { key: '신청완료', label: '신청 완료' },
   { key: '관심없음', label: '관심 없음' },
 ]
-
-const fallbackGrantsData = [
-  { id: 1, title: '귀농 농업창업 지원금', subtitle: '최대 300만원', days: 19, hours: 5, minutes: 5 },
-  { id: 2, title: '농촌 정착 지원금', subtitle: '최대 500만원', days: 64, hours: 2, minutes: 30 },
-  { id: 3, title: '귀농인 농기계 구입지원', subtitle: '구입 비용 50% 지원', days: 198, hours: 8, minutes: 0 },
-  { id: 4, title: '귀농 농업창업 지원금', subtitle: '최대 300만원', days: 19, hours: 5, minutes: 5 },
-  { id: 5, title: '농촌 정착 지원금', subtitle: '최대 500만원', days: 64, hours: 2, minutes: 30 },
-]
-
-const initialStatuses = { 1: '신청예정', 2: '신청예정', 3: '신청예정', 4: '신청완료', 5: '신청완료' }
 
 const statusConfig = {
   신청예정: { label: '신청 예정', color: '#FFA100', bg: '#fff3e0' },
@@ -30,6 +20,9 @@ const statusConfig = {
 
 function GrantCard({ grant, status, onStatusChange, navigate }) {
   const isCompleted = status === '신청완료'
+  const days = grant.days ?? grant.countdown?.days ?? 0
+  const hours = grant.hours ?? grant.countdown?.hours ?? 0
+  const minutes = grant.minutes ?? grant.countdown?.minutes ?? 0
 
   return (
     <div style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 20, overflow: 'hidden' }}>
@@ -50,7 +43,7 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
         <p style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
         {/* Countdown row */}
         <p style={{ fontSize: 12, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px' }}>
-          {isCompleted ? '지급일까지' : '마감까지'} D- {grant.days}일 {grant.hours}시간 {grant.minutes}분
+          {isCompleted ? '지급일까지' : '마감까지'} D- {days}일 {hours}시간 {minutes}분
         </p>
       </div>
 
@@ -122,26 +115,32 @@ function Toast({ visible }) {
 export default function GrantStatus() {
   const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState('전체')
-  const [statuses, setStatuses] = useState(initialStatuses)
-  const [grantsData, setGrantsData] = useState(fallbackGrantsData)
+  const [statuses, setStatuses] = useState({})
+  const [grantsData, setGrantsData] = useState([])
   const [toastVisible, setToastVisible] = useState(false)
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('마감순')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const toastTimer = useRef(null)
 
   useEffect(() => {
     let active = true
     fetchSavedPolicies()
-      .catch(() => fetchPreviewPolicies())
       .then(policies => {
-        if (!active || policies.length === 0) return
+        if (!active) return
         setGrantsData(policies)
-        setStatuses(prev => policies.reduce((acc, policy) => ({
+        setStatuses(policies.reduce((acc, policy) => ({
           ...acc,
-          [policy.id]: prev[policy.id] || '신청예정',
+          [policy.id]: policy.user_status || null,
         }), {}))
       })
-      .catch(() => {})
+      .catch(err => {
+        if (active) setError(err.message || '지원 현황을 불러오지 못했습니다.')
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
     return () => {
       active = false
     }
@@ -153,10 +152,16 @@ export default function GrantStatus() {
     toastTimer.current = setTimeout(() => setToastVisible(false), 2000)
   }
 
-  const handleStatusChange = (grantId, val) => {
+  const handleStatusChange = async (grantId, val) => {
+    const previous = statuses[grantId] || null
     setStatuses(p => ({ ...p, [grantId]: val }))
-    updateSavedPolicyStatus(grantId, val).catch(() => {})
-    showToast()
+    try {
+      await updateSavedPolicyStatus(grantId, val)
+      showToast()
+    } catch (err) {
+      setStatuses(p => ({ ...p, [grantId]: previous }))
+      setError(err.message || '지원현황을 수정하지 못했습니다.')
+    }
   }
 
   const grants = grantsData.map(g => ({ ...g, status: statuses[g.id] }))
@@ -245,7 +250,19 @@ export default function GrantStatus() {
           </button>
         </div>
 
-        {isAll ? (
+        {loading && (
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#888', fontSize: 14 }}>
+            지원 현황을 불러오는 중입니다.
+          </div>
+        )}
+
+        {error && (
+          <div style={{ textAlign: 'center', padding: '12px 16px', color: '#d93025', fontSize: 14, border: '1.5px solid #f1d0cd', borderRadius: 16, background: '#fff' }}>
+            {error}
+          </div>
+        )}
+
+        {!loading && isAll ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {filtered.map(g => (
               <GrantCard
@@ -257,7 +274,7 @@ export default function GrantStatus() {
               />
             ))}
           </div>
-        ) : (
+        ) : !loading ? (
           ['신청예정', '신청완료', '관심없음'].map(status =>
             grouped[status]?.length ? (
               <StatusSection
@@ -270,9 +287,9 @@ export default function GrantStatus() {
               />
             ) : null
           )
-        )}
+        ) : null}
 
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px 0', color: '#bbb', fontSize: 14 }}>
             해당하는 지원금이 없어요
           </div>
