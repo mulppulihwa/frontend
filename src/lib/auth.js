@@ -64,7 +64,7 @@ async function exchangeKakaoCode(params, code) {
   const response = await fetch('/api/auth/kakao/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code }),
+    body: JSON.stringify({ code, redirect_uri: getRedirectUri() }),
   })
   const text = await response.text()
   const payload = text ? JSON.parse(text) : {}
