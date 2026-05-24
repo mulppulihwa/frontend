@@ -174,6 +174,10 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
 const STORAGE_KEY = 'diagnosisProgress'
 const REGION_LOADING_OPTIONS = [{ value: '__loading_regions', label: '지역을 불러오는 중...', disabled: true }]
 const REGION_ERROR_OPTIONS = [{ value: '__region_error', label: '지역을 불러오지 못했어요', disabled: true }]
+const GENDER_API_VALUES = {
+  남자: 'male',
+  여자: 'female',
+}
 
 export default function Step1() {
   const navigate = useNavigate()
@@ -266,7 +270,7 @@ export default function Step1() {
     return {
       birth_date: birthDate,
       age: Number.isFinite(parsedAge) ? parsedAge : null,
-      gender,
+      gender: GENDER_API_VALUES[gender] || gender,
       nationality,
       location,
       region: location === '옥천' ? '옥천군' : region,
