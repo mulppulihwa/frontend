@@ -63,11 +63,10 @@ async function exchangeKakaoCode(params, code) {
     throw new Error('카카오 로그인 상태 값이 일치하지 않습니다. 다시 시도해 주세요.')
   }
 
-  const redirectUri = getRedirectUri()
   const response = await fetch('/api/auth/kakao/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code, redirect_uri: redirectUri, redirectUri }),
+    body: JSON.stringify({ code }),
   })
   const text = await response.text()
   const payload = text ? JSON.parse(text) : {}
