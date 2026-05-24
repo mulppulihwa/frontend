@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { ChevronDown, Check } from 'lucide-react'
 
-export default function SelectField({ label, value, options, onChange, required }) {
+export default function SelectField({ label, value, options, onChange, required, placeholder = '선택해 주세요' }) {
   const [open, setOpen] = useState(false)
   const [focused, setFocused] = useState(false)
   const ref = useRef(null)
@@ -53,7 +53,7 @@ export default function SelectField({ label, value, options, onChange, required 
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span>{selected?.label}</span>
+        <span style={{ color: selected ? '#1a1a1a' : '#aaa' }}>{selected?.label || placeholder}</span>
         <ChevronDown
           size={18}
           color="#076818"
@@ -84,7 +84,12 @@ export default function SelectField({ label, value, options, onChange, required 
               <button
                 key={opt.value}
                 type="button"
-                onClick={() => { onChange(opt.value); setOpen(false) }}
+                disabled={opt.disabled}
+                onClick={() => {
+                  if (opt.disabled) return
+                  onChange(opt.value)
+                  setOpen(false)
+                }}
                 onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#f8f8f8' }}
                 onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = '#fff' }}
                 style={{
@@ -96,8 +101,8 @@ export default function SelectField({ label, value, options, onChange, required 
                   fontSize: 15,
                   fontFamily: 'inherit',
                   fontWeight: isSelected ? 500 : 400,
-                  color: isSelected ? '#076818' : '#1a1a1a',
-                  cursor: 'pointer',
+                  color: opt.disabled ? '#aaa' : isSelected ? '#076818' : '#1a1a1a',
+                  cursor: opt.disabled ? 'default' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',

@@ -1,8 +1,7 @@
-import { useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Check, Banknote, ClipboardCheck, Calendar, Phone, MousePointerClick, ArrowUpRight, GraduationCap, FileText } from 'lucide-react'
 import TopBar from '../components/TopBar'
-import StatusCheckboxes from '../components/StatusCheckboxes'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import kakaoLogo from '../assets/kkt_logo.png'
@@ -17,43 +16,25 @@ const sections = [
   { title: '신청 방법', icon: MousePointerClick, items: ['인터넷, 방문, FAX, 우편, 무인발급기'], type: 'bullet' },
 ]
 
-function Toast({ visible }) {
-  if (!visible) return null
-  return (
-    <div style={{
-      position: 'fixed', bottom: 120, left: '50%', transform: 'translateX(-50%)',
-      zIndex: 200, pointerEvents: 'none',
-    }}>
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        background: '#1a1a1a', borderRadius: 50, padding: '12px 20px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-        animation: 'fadeInUp 0.22s ease',
-        whiteSpace: 'nowrap',
-      }}>
-        <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#076818', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <Check size={13} color="#fff" strokeWidth={2.5} />
-        </div>
-        <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
-      </div>
-      <style>{`@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
-    </div>
-  )
+function buildSections(grant) {
+  if (!grant) return sections
+  return [
+    { title: '지원 내용', icon: Banknote, items: [grant.summary || grant.subtitle || '지원 내용을 확인해 주세요'], type: 'bullet' },
+    { title: '신청 자격', icon: ClipboardCheck, items: grant.reasons?.length ? grant.reasons : ['신청 자격을 확인해 주세요'], type: 'check' },
+    { title: '신청 기간', icon: Calendar, items: [grant.period || '신청 기간 확인'], type: 'bullet' },
+    { title: '담당 기관', icon: Phone, items: [{ text: grant.agency || '담당 기관 확인', phone: grant.phone || '043-730-XXXX' }], type: 'contact' },
+    { title: '신청 요건', icon: GraduationCap, items: ['세부 요건은 담당 기관 공고를 확인해 주세요'], type: 'requirement', link: { label: '교육이수 페이지 바로가기', href: 'https://agriedu.net/' } },
+    { title: '신청 서류', icon: FileText, items: ['주민등록등본', '귀농교육 이수서', '소득분위 증명서'], type: 'bullet' },
+    { title: '신청 방법', icon: MousePointerClick, items: ['방문 또는 담당 기관 안내에 따라 신청'], type: 'bullet' },
+  ]
 }
 
 export default function Detail() {
   const navigate = useNavigate()
-  const [status, setStatus] = useState(null)
-  const [toastVisible, setToastVisible] = useState(false)
+  const { state } = useLocation()
+  const grant = state?.grant
+  const detailSections = buildSections(grant)
   const [showLogin, setShowLogin] = useState(false)
-  const toastTimer = useRef(null)
-
-  const handleStatusChange = (val) => {
-    setStatus(val)
-    setToastVisible(true)
-    clearTimeout(toastTimer.current)
-    toastTimer.current = setTimeout(() => setToastVisible(false), 2000)
-  }
 
   return (
     <div
@@ -74,10 +55,10 @@ export default function Detail() {
         <TopBar title="상세 정보" />
         <div style={{ padding: '4px 24px 20px', textAlign: 'center' }}>
           <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.4px', lineHeight: 1.4 }}>
-            귀농 농업창업 지원금
+            {grant?.title || '귀농 농업창업 지원금'}
           </p>
           <p style={{ fontSize: 14, fontWeight: 400, color: '#888', marginTop: 4, letterSpacing: '-0.1px' }}>
-            농림축산식품부 · 옥천군
+            {grant?.agency || '농림축산식품부 · 옥천군'}
           </p>
           {/* Amount highlight */}
           <div style={{
@@ -85,13 +66,13 @@ export default function Detail() {
             background: '#e8f3e8', borderRadius: 12, padding: '8px 18px', marginTop: 12,
           }}>
             <Banknote size={16} color="#076818" strokeWidth={2.2} />
-            <span style={{ fontSize: 15, fontWeight: 500, color: '#076818', letterSpacing: '-0.2px' }}>최대 300만원 지원</span>
+            <span style={{ fontSize: 15, fontWeight: 500, color: '#076818', letterSpacing: '-0.2px' }}>{grant?.subtitle || '최대 300만원 지원'}</span>
           </div>
         </div>
       </div>
 
       <div style={{ padding: '4px 18px 176px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {sections.map(section => (
+        {detailSections.map(section => (
           <Card key={section.title}>
             {/* Section title row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, paddingBottom: 10, borderBottom: '1.5px solid #e3e3e3' }}>
@@ -234,7 +215,6 @@ export default function Detail() {
         </div>
       )}
 
-      <Toast visible={toastVisible} />
     </div>
   )
 }

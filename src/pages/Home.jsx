@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
@@ -6,16 +6,30 @@ import farmer from '../assets/farmer.png'
 import okcheonLogo from '../assets/okcheon-ok-green.png'
 import Button from '../components/Button'
 import Folder from '../components/Folder'
+import { fetchPreviewPolicies } from '../lib/api'
+
+const fallbackPolicies = [
+  { title: '귀농 농업창업 지원금' },
+  { title: '농촌 정착 지원금' },
+  { title: '농기계 구입 지원' },
+]
 
 export default function Home() {
   const navigate = useNavigate()
   const [showLogin, setShowLogin] = useState(false)
+  const [policies, setPolicies] = useState(fallbackPolicies)
 
-  const buttons = [
-    { label: '진단하기', onClick: () => setShowLogin(true), bg: '#FFA100', color: '#fff' },
-    { label: '지원 현황', onClick: () => navigate('/grant-status'), bg: '#FFA100', color: '#fff' },
-    { label: '사용처', onClick: () => navigate('/map'), bg: '#f5ede0', color: '#FFA100' },
-  ]
+  useEffect(() => {
+    let active = true
+    fetchPreviewPolicies()
+      .then(data => {
+        if (active && data.length > 0) setPolicies(data.slice(0, 3))
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
     <div style={{
@@ -38,17 +52,11 @@ export default function Home() {
           frontContent={
             <img src={farmer} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'bottom center' }} />
           }
-          items={[
-            <div onClick={e => { e.stopPropagation(); navigate('/detail') }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
-              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#FFA100', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>귀농{'\n'}농업창업{'\n'}지원금</span>
-            </div>,
-            <div onClick={e => { e.stopPropagation(); navigate('/detail') }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
-              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#FFA100', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>농촌{'\n'}정착{'\n'}지원금</span>
-            </div>,
-            <div onClick={e => { e.stopPropagation(); navigate('/detail') }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
-              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#FFA100', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>농기계{'\n'}구입{'\n'}지원</span>
-            </div>,
-          ]}
+          items={policies.map(policy => (
+            <div key={policy.id || policy.title} onClick={e => { e.stopPropagation(); navigate('/detail', { state: { grant: policy } }) }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
+              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#FFA100', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>{policy.title.replaceAll(' ', '\n')}</span>
+            </div>
+          ))}
         />
       </div>
 

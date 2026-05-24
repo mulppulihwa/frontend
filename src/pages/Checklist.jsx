@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowDown, ArrowUpRight, MapPin, Phone, Clock } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 
 const accentColor = '#c2185b'
@@ -26,34 +26,6 @@ const office = {
   address: '충북 옥천군 청산면 청산로 71 청산면행정복지센터',
   phone: '043-730-XXXX',
   hours: '평일 09:00~18:00',
-}
-
-function ProgressRing({ done, total }) {
-  const r = 9
-  const circ = 2 * Math.PI * r
-  const pct = total === 0 ? 0 : done / total
-  const complete = done === total && total > 0
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
-      <svg width="22" height="22" viewBox="0 0 22 22">
-        <circle cx="11" cy="11" r={r} fill="none" stroke="#e8e8e8" strokeWidth="2.5" />
-        <circle
-          cx="11" cy="11" r={r} fill="none"
-          stroke={complete ? '#076818' : accentColor}
-          strokeWidth="2.5"
-          strokeDasharray={`${pct * circ} ${circ}`}
-          strokeLinecap="round"
-          transform="rotate(-90 11 11)"
-        />
-        {complete && (
-          <path d="M7 11.5l2.5 2.5 5-5" stroke="#076818" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        )}
-      </svg>
-      <span style={{ fontSize: 12, fontWeight: 500, color: complete ? '#076818' : '#aaa', letterSpacing: '-0.1px' }}>
-        {done}/{total}
-      </span>
-    </div>
-  )
 }
 
 function CheckItem({ label, checked, onToggle }) {
@@ -236,10 +208,10 @@ export default function Checklist() {
                 <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{office.name}</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {[
-                    { Icon: MapPin, label: '주소', value: office.address },
-                    { Icon: Phone, label: '연락처', value: office.phone },
-                    { Icon: Clock, label: '운영시간', value: office.hours },
-                  ].map(({ Icon, label, value }) => (
+                    { label: '주소', value: office.address },
+                    { label: '연락처', value: office.phone },
+                    { label: '운영시간', value: office.hours },
+                  ].map(({ label, value }) => (
                     <div key={label}>
                       <p style={{ fontSize: 12, fontWeight: 600, color: '#888', letterSpacing: '-0.1px', marginBottom: 2 }}>{label}</p>
                       <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5 }}>{value}</p>

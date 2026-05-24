@@ -1,28 +1,33 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Search, X, MapPin, Phone, Tractor, Wallet } from 'lucide-react'
+import { fetchPlaces } from '../lib/api'
 
 const categories = [
   { id: 'farm', label: '농기구 구입처', icon: Tractor, color: '#076818', bg: '#e8f3e8' },
   { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#FFA100', bg: '#fff3e0' },
 ]
 
-const stores = [
-  { name: '옥천농기계센터', address: '옥천읍 금구리 123', phone: '043-730-1111', category: 'farm' },
-  { name: '농협 농자재마트', address: '옥천읍 하계리 45', phone: '043-730-2222', category: 'farm' },
-  { name: '금강농기계', address: '옥천읍 문정리 67', phone: '043-730-3333', category: 'farm' },
-  { name: '옥천전통시장', address: '옥천읍 문정리 1', phone: '043-730-4444', category: 'local' },
-  { name: '하나로마트 옥천점', address: '옥천읍 금구리 200', phone: '043-730-5555', category: 'local' },
-  { name: '옥천군 가맹점 일대', address: '옥천읍 일원', phone: '043-730-6666', category: 'local' },
-]
-
 export default function StoreSearch() {
   const navigate = useNavigate()
   const inputRef = useRef(null)
   const [query, setQuery] = useState('')
+  const [stores, setStores] = useState([])
 
   useEffect(() => {
     inputRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    fetchPlaces()
+      .then(places => {
+        if (active) setStores(places)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
   }, [])
 
   const filtered = query.trim()
@@ -67,6 +72,7 @@ export default function StoreSearch() {
         )}
         {filtered.map((store, i) => {
           const cat = categories.find(c => c.id === store.category)
+          if (!cat) return null
           const Icon = cat.icon
           return (
             <div key={i} style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 18, overflow: 'hidden' }}>

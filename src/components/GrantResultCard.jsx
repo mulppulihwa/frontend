@@ -5,8 +5,6 @@ import Card from './Card'
 export default function GrantResultCard({
   grant,
   statusConfig,
-  bookmarked = false,
-  onToggleBookmark,
   onViewDetail,
 }) {
   const statusCfg = statusConfig?.[grant.status]

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Tractor, Wallet, Search, X, Clock } from 'lucide-react'
 import TopBar from '../components/TopBar'
+import { fetchPlaces } from '../lib/api'
 
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
 
@@ -10,18 +11,7 @@ const categories = [
   { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#FFA100', bg: '#fff3e0' },
 ]
 
-const stores = {
-  farm: [
-    { name: '옥천농기계센터', address: '옥천읍 금구리 123', phone: '043-730-1111', hours: '평일 09:00 ~ 18:00', lat: 36.3068, lng: 127.5725, rating: 4.3, reviews: 12 },
-    { name: '농협 농자재마트', address: '옥천읍 하계리 45', phone: '043-730-2222', hours: '평일 08:30 ~ 17:30 / 토 09:00 ~ 13:00', lat: 36.3045, lng: 127.5700, rating: 4.7, reviews: 28 },
-    { name: '금강농기계', address: '옥천읍 문정리 67', phone: '043-730-3333', hours: '평일 09:00 ~ 17:00 (일 휴무)', lat: 36.3080, lng: 127.5750, rating: 4.1, reviews: 7 },
-  ],
-  local: [
-    { name: '옥천전통시장', address: '옥천읍 문정리 1', phone: '043-730-4444', hours: '매일 08:00 ~ 20:00', lat: 36.3055, lng: 127.5730, rating: 4.5, reviews: 41 },
-    { name: '하나로마트 옥천점', address: '옥천읍 금구리 200', phone: '043-730-5555', hours: '매일 09:00 ~ 21:00', lat: 36.3072, lng: 127.5695, rating: 4.2, reviews: 19 },
-    { name: '옥천군 가맹점 일대', address: '옥천읍 일원', phone: '043-730-6666', hours: '가맹점별 상이', lat: 36.3090, lng: 127.5710, rating: 4.0, reviews: 5 },
-  ],
-}
+const emptyStores = { farm: [], local: [] }
 
 function haversine(lat1, lng1, lat2, lng2) {
   const R = 6371000
@@ -48,6 +38,7 @@ export default function StoreMap() {
   const [activeCategory, setActiveCategory] = useState('farm')
   const [sheetH, setSheetH] = useState(COLLAPSED_H)
   const [selectedStore, setSelectedStore] = useState(null)
+  const [stores, setStores] = useState(emptyStores)
   const [query, setQuery] = useState('')
   const [detailPopup, setDetailPopup] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
@@ -59,6 +50,22 @@ export default function StoreMap() {
       pos => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => {}
     )
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    fetchPlaces()
+      .then(places => {
+        if (!active) return
+        setStores({
+          farm: places.filter(place => place.category === 'farm'),
+          local: places.filter(place => place.category === 'local'),
+        })
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
   }, [])
 
   const fullscreen = sheetH > EXPANDED_H + 50
@@ -125,13 +132,13 @@ export default function StoreMap() {
     document.head.appendChild(script)
   }, [])
 
-  const drawMarkers = (categoryId) => {
+  function drawMarkers(categoryId) {
     const map = mapInstanceRef.current
     if (!map) return
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
     const color = markerColors[categoryId]
-    stores[categoryId].forEach(store => {
+    ;(stores[categoryId] || []).forEach(store => {
       const position = new window.kakao.maps.LatLng(store.lat, store.lng)
       const svg = `<svg width="36" height="44" viewBox="0 0 36 44" xmlns="http://www.w3.org/2000/svg">
         <filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/></filter>
@@ -153,6 +160,10 @@ export default function StoreMap() {
     })
   }
 
+  useEffect(() => {
+    drawMarkers(activeCategory)
+  }, [stores, activeCategory])
+
   const handleCategoryChange = (categoryId) => {
     setActiveCategory(categoryId)
     setSelectedStore(null)
@@ -160,7 +171,7 @@ export default function StoreMap() {
     drawMarkers(categoryId)
   }
 
-  const filteredStores = stores[activeCategory].filter(s =>
+  const filteredStores = (stores[activeCategory] || []).filter(s =>
     s.name.includes(query) || s.address.includes(query)
   )
 
@@ -312,7 +323,7 @@ export default function StoreMap() {
               </div>
             )}
             {filteredStores.map((store) => {
-              const i = stores[activeCategory].indexOf(store)
+              const i = (stores[activeCategory] || []).indexOf(store)
               const isSelected = selectedStore?.name === store.name
               const CatIcon = activeCat.icon
               return (
@@ -418,10 +429,8 @@ export default function StoreMap() {
             <div style={{ display: 'flex', gap: 10 }}>
               <button
                 onClick={() => {
-                  const catId = activeCategory
-                  const storeIdx = stores[catId].findIndex(s => s.name === detailPopup.name)
                   setDetailPopup(null)
-                  navigate(`/store-detail?category=${catId}&store=${storeIdx}`)
+                  navigate('/store-detail', { state: { store: detailPopup } })
                 }}
                 style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#f5f5f5', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600, color: '#555', fontFamily: 'inherit', cursor: 'pointer' }}
               >

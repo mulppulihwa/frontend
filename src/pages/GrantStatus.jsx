@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, Search, X, ArrowUpDown } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
+import { fetchPreviewPolicies, fetchSavedPolicies, updateSavedPolicyStatus } from '../lib/api'
 
 const filters = [
   { key: '전체', label: '전체' },
@@ -11,7 +12,7 @@ const filters = [
   { key: '관심없음', label: '관심 없음' },
 ]
 
-const grantsData = [
+const fallbackGrantsData = [
   { id: 1, title: '귀농 농업창업 지원금', subtitle: '최대 300만원', days: 19, hours: 5, minutes: 5 },
   { id: 2, title: '농촌 정착 지원금', subtitle: '최대 500만원', days: 64, hours: 2, minutes: 30 },
   { id: 3, title: '귀농인 농기계 구입지원', subtitle: '구입 비용 50% 지원', days: 198, hours: 8, minutes: 0 },
@@ -28,13 +29,12 @@ const statusConfig = {
 }
 
 function GrantCard({ grant, status, onStatusChange, navigate }) {
-  const cfg = statusConfig[status]
   const isCompleted = status === '신청완료'
 
   return (
     <div style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 20, overflow: 'hidden' }}>
       <div
-        onClick={() => navigate('/detail')}
+        onClick={() => navigate('/detail', { state: { grant } })}
         style={{ padding: '14px 14px 12px', display: 'flex', flexDirection: 'column', gap: 8, cursor: 'pointer' }}
       >
         {/* Title row */}
@@ -123,10 +123,29 @@ export default function GrantStatus() {
   const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState('전체')
   const [statuses, setStatuses] = useState(initialStatuses)
+  const [grantsData, setGrantsData] = useState(fallbackGrantsData)
   const [toastVisible, setToastVisible] = useState(false)
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('마감순')
   const toastTimer = useRef(null)
+
+  useEffect(() => {
+    let active = true
+    fetchSavedPolicies()
+      .catch(() => fetchPreviewPolicies())
+      .then(policies => {
+        if (!active || policies.length === 0) return
+        setGrantsData(policies)
+        setStatuses(prev => policies.reduce((acc, policy) => ({
+          ...acc,
+          [policy.id]: prev[policy.id] || '신청예정',
+        }), {}))
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [])
 
   const showToast = () => {
     setToastVisible(true)
@@ -136,6 +155,7 @@ export default function GrantStatus() {
 
   const handleStatusChange = (grantId, val) => {
     setStatuses(p => ({ ...p, [grantId]: val }))
+    updateSavedPolicyStatus(grantId, val).catch(() => {})
     showToast()
   }
 

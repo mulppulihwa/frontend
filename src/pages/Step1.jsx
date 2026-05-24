@@ -5,6 +5,7 @@ import StepIndicator from '../components/StepIndicator'
 import SelectField from '../components/SelectField'
 import Button from '../components/Button'
 import SearchAnimation from '../components/SearchAnimation'
+import { fetchRegions } from '../lib/api'
 
 const fieldGap = 12
 
@@ -171,6 +172,8 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
 }
 
 const STORAGE_KEY = 'diagnosisProgress'
+const REGION_LOADING_OPTIONS = [{ value: '__loading_regions', label: '지역을 불러오는 중...', disabled: true }]
+const REGION_ERROR_OPTIONS = [{ value: '__region_error', label: '지역을 불러오지 못했어요', disabled: true }]
 
 export default function Step1() {
   const navigate = useNavigate()
@@ -189,11 +192,26 @@ export default function Step1() {
   const [farmBusiness, setFarmBusiness] = useState(true)
   const [outsideIncome, setOutsideIncome] = useState('')
   const [region, setRegion] = useState('옥천군')
-  const [showResumeModal, setShowResumeModal] = useState(false)
+  const [showResumeModal, setShowResumeModal] = useState(() => !!localStorage.getItem(STORAGE_KEY))
+  const [regionOptions, setRegionOptions] = useState(REGION_LOADING_OPTIONS)
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) setShowResumeModal(true)
+    let active = true
+    fetchRegions()
+      .then(regions => {
+        if (!active) return
+        setRegionOptions(
+          regions.length
+            ? regions.map(({ name }) => ({ value: name, label: name }))
+            : REGION_ERROR_OPTIONS
+        )
+      })
+      .catch(() => {
+        if (active) setRegionOptions(REGION_ERROR_OPTIONS)
+      })
+    return () => {
+      active = false
+    }
   }, [])
 
   const saveProgress = (currentPage) => {
@@ -281,14 +299,13 @@ export default function Step1() {
               { value: '옥천 외', label: '옥천 외' },
             ]} />
             <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} />
-            <SelectField label="이전 거주지는 어디인가요?" value={previousResidence} onChange={setPreviousResidence} options={[
-              { value: '경기도', label: '경기도' },
-              { value: '충청남도', label: '충청남도' },
-              { value: '충청북도', label: '충청북도' },
-              { value: '전라남도', label: '전라남도' },
-              { value: '경상남도', label: '경상남도' },
-              { value: '경상북도', label: '경상북도' },
-            ]} />
+            <SelectField
+              label="이전 거주지는 어디인가요?"
+              value={previousResidence}
+              onChange={setPreviousResidence}
+              options={regionOptions}
+              placeholder={regionOptions[0]?.disabled ? regionOptions[0].label : '지역 선택'}
+            />
             <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} />
           </div>
         )}

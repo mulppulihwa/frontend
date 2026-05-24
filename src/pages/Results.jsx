@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import Card from '../components/Card'
 import GrantResultCard from '../components/GrantResultCard'
+import { fetchMatchedPolicies } from '../lib/api'
 
-const grants = [
+const fallbackGrants = [
   {
     id: 1,
     title: '귀농 농업창업 지원금',
@@ -43,10 +44,21 @@ export default function Results() {
   const [index, setIndex] = useState(0)
   const [pageDirection, setPageDirection] = useState('next')
   const [statuses, setStatuses] = useState({})
-  const [bookmarks, setBookmarks] = useState({})
+  const [grants, setGrants] = useState(fallbackGrants)
   const grant = grants[index]
   const total = grants.length
-  const isBookmarked = bookmarks[grant.id] ?? false
+
+  useEffect(() => {
+    let active = true
+    fetchMatchedPolicies()
+      .then(policies => {
+        if (active && policies.length > 0) setGrants(policies)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [])
 
   const handleStatusChange = (val) => {
     setStatuses(p => ({ ...p, [grant.id]: val }))
@@ -107,9 +119,7 @@ export default function Results() {
         <GrantResultCard
           grant={grant}
           statusConfig={statusConfig}
-          bookmarked={isBookmarked}
-          onToggleBookmark={() => setBookmarks(p => ({ ...p, [grant.id]: !p[grant.id] }))}
-          onViewDetail={() => navigate('/detail')}
+          onViewDetail={() => navigate('/detail', { state: { grant } })}
         />
 
         {/* Status card */}

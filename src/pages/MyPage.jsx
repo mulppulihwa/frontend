@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { User, MapPin, Check, Clock3, X, ChevronRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
+import { fetchPreviewPolicies, fetchProfile, fetchSavedPolicies } from '../lib/api'
 
-const userInfo = {
+const fallbackUserInfo = {
   name: '김옥천',
   age: 67,
   gender: '남자',
@@ -12,7 +14,7 @@ const userInfo = {
   movedAt: '2026.05.15',
 }
 
-const grantStatuses = [
+const fallbackGrantStatuses = [
   { id: 1, title: '귀농 농업창업 지원금', subtitle: '최대 300만원', status: '신청완료', deadline: '2026-06-30', checkDone: 4, checkTotal: 5 },
   { id: 2, title: '농촌 정착 지원금', subtitle: '최대 500만원', status: '신청예정', deadline: '2026-08-15', checkDone: 1, checkTotal: 5 },
   { id: 3, title: '귀농인 농기계 구입지원', subtitle: '구입 비용 50% 지원', status: null, deadline: '2026-11-30', checkDone: 0, checkTotal: 5 },
@@ -65,6 +67,43 @@ function SectionTitle({ children }) {
 
 export default function MyPage() {
   const navigate = useNavigate()
+  const [userInfo, setUserInfo] = useState(fallbackUserInfo)
+  const [grantStatuses, setGrantStatuses] = useState(fallbackGrantStatuses)
+
+  useEffect(() => {
+    let active = true
+    fetchProfile()
+      .then(profile => {
+        if (!active) return
+        setUserInfo({
+          name: profile.name || profile.nickname || fallbackUserInfo.name,
+          age: profile.age || fallbackUserInfo.age,
+          gender: profile.gender || fallbackUserInfo.gender,
+          region: profile.region_name || profile.region || fallbackUserInfo.region,
+          farming: profile.farming ?? fallbackUserInfo.farming,
+          movedAt: profile.moved_at || profile.movedAt || fallbackUserInfo.movedAt,
+        })
+      })
+      .catch(() => {})
+
+    fetchSavedPolicies()
+      .catch(() => fetchPreviewPolicies())
+      .then(policies => {
+        if (!active || policies.length === 0) return
+        setGrantStatuses(policies.map((policy, index) => ({
+          ...policy,
+          status: policy.user_status || (index < 2 ? '신청예정' : null),
+          deadline: policy.deadline,
+          checkDone: policy.checkDone ?? 0,
+          checkTotal: policy.checkTotal ?? 5,
+        })))
+      })
+      .catch(() => {})
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
     <div style={{
@@ -139,7 +178,7 @@ export default function MyPage() {
               {[
                 { key: '신청완료', label: '신청 완료', color: '#076818', bg: '#e8f3e8' },
                 { key: '신청예정', label: '신청 예정', color: '#FFA100', bg: '#fff3e0' },
-              ].map(({ key, label, color, bg }, i, arr) => {
+              ].map(({ key, label, color }, i, arr) => {
                 const count = grantStatuses.filter(g => g.status === key).length
                 return (
                   <div
@@ -180,7 +219,7 @@ export default function MyPage() {
               return (
                 <Card key={g.id}>
                   <div
-                    onClick={() => navigate('/detail')}
+                    onClick={() => navigate('/detail', { state: { grant: g } })}
                     style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
                   >
                     <div style={{ width: 48, height: 48, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
