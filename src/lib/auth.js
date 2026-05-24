@@ -1,10 +1,12 @@
 const KAKAO_REST_KEY = import.meta.env.VITE_KAKAO_REST_KEY
+const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI
 
 const LOGIN_REDIRECT_KEY = 'loginRedirectTo'
 const KAKAO_STATE_KEY = 'kakaoOAuthState'
 let pendingCallback = null
 
 function getRedirectUri() {
+  if (KAKAO_REDIRECT_URI) return KAKAO_REDIRECT_URI
   return new URL(import.meta.env.BASE_URL, window.location.origin).href
 }
 

@@ -2,6 +2,10 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  VITE_KAKAO_REST_KEY = "2369cc0a0c3a4a0cd9f321bde587af19"
+  VITE_KAKAO_REDIRECT_URI = "https://mulppulihwa.netlify.app/"
+
 [[redirects]]
   from = "/api/*"
   to = "https://web-production-24d4f.up.railway.app/api/:splat"

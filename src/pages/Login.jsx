@@ -72,7 +72,7 @@ export default function Login() {
 	          }}>
             <img src={okcheonLogo} alt="옥천OK" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
-          <p style={{ fontSize: 30, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.6px', marginTop: 22 }}>귀농OK</p>
+          <p style={{ fontSize: 30, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.6px', marginTop: 22 }}>옥천OK</p>
           <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: 12, textAlign: 'center' }}>
             내 조건에 맞는 농업 지원금을<br />간편하게 찾아보세요
           </p>
