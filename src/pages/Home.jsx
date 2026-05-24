@@ -7,6 +7,7 @@ import okcheonLogo from '../assets/okcheon-ok-green.png'
 import Button from '../components/Button'
 import Folder from '../components/Folder'
 import { fetchPreviewPolicies } from '../lib/api'
+import { startKakaoLogin } from '../lib/auth'
 
 const fallbackPolicies = [
   { title: '귀농 농업창업 지원금' },
@@ -18,6 +19,10 @@ export default function Home() {
   const navigate = useNavigate()
   const [showLogin, setShowLogin] = useState(false)
   const [policies, setPolicies] = useState(fallbackPolicies)
+
+  const handleKakaoLogin = () => {
+    startKakaoLogin('/step1')
+  }
 
   useEffect(() => {
     let active = true
@@ -93,7 +98,7 @@ export default function Home() {
               로그인 필요합니다
             </p>
             <button
-              onClick={() => { setShowLogin(false); navigate('/step1') }}
+              onClick={handleKakaoLogin}
               style={{
                 width: '100%',
                 minHeight: 54,

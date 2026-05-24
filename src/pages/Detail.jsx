@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { Check, Banknote, ClipboardCheck, Calendar, Phone, MousePointerClick, ArrowUpRight, GraduationCap, FileText } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import kakaoLogo from '../assets/kkt_logo.png'
+import { startKakaoLogin } from '../lib/auth'
 
 const sections = [
   { title: '지원 내용', icon: Banknote, items: ['농업 창업 비용 최대 300만원 지원'], type: 'bullet' },
@@ -30,11 +31,14 @@ function buildSections(grant) {
 }
 
 export default function Detail() {
-  const navigate = useNavigate()
   const { state } = useLocation()
   const grant = state?.grant
   const detailSections = buildSections(grant)
   const [showLogin, setShowLogin] = useState(false)
+
+  const handleKakaoLogin = () => {
+    startKakaoLogin('/checklist')
+  }
 
   return (
     <div
@@ -187,7 +191,7 @@ export default function Detail() {
               로그인 필요합니다
             </p>
             <button
-              onClick={() => { setShowLogin(false); navigate('/checklist') }}
+              onClick={handleKakaoLogin}
               style={{
                 width: '100%',
                 minHeight: 54,
