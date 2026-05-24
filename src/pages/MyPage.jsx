@@ -90,10 +90,7 @@ export default function MyPage() {
 
   function handleLogout() {
     logout()
-    setUserInfo(null)
-    setGrantStatuses([])
-    setError('')
-    setAuthRequired(true)
+    navigate('/', { replace: true })
   }
 
   useEffect(() => {
