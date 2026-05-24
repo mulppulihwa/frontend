@@ -1,6 +1,6 @@
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 
-function getAccessToken() {
+export function getAccessToken() {
   return localStorage.getItem('accessToken') || localStorage.getItem('access') || localStorage.getItem('token')
 }
 

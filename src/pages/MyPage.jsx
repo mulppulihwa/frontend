@@ -3,22 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { User, MapPin, Check, Clock3, X, ChevronRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
-import { fetchPreviewPolicies, fetchProfile, fetchSavedPolicies } from '../lib/api'
-
-const fallbackUserInfo = {
-  name: '김옥천',
-  age: 67,
-  gender: '남자',
-  region: '옥천군',
-  farming: true,
-  movedAt: '2026.05.15',
-}
-
-const fallbackGrantStatuses = [
-  { id: 1, title: '귀농 농업창업 지원금', subtitle: '최대 300만원', status: '신청완료', deadline: '2026-06-30', checkDone: 4, checkTotal: 5 },
-  { id: 2, title: '농촌 정착 지원금', subtitle: '최대 500만원', status: '신청예정', deadline: '2026-08-15', checkDone: 1, checkTotal: 5 },
-  { id: 3, title: '귀농인 농기계 구입지원', subtitle: '구입 비용 50% 지원', status: null, deadline: '2026-11-30', checkDone: 0, checkTotal: 5 },
-]
+import { fetchProfile, fetchSavedPolicies, getAccessToken } from '../lib/api'
+import { startKakaoLogin } from '../lib/auth'
 
 function getDday(deadlineStr) {
   const today = new Date('2026-05-18')
@@ -57,6 +43,29 @@ const statusConfig = {
   관심없음: { label: '관심 없음', color: '#d93025', bg: '#fff0ef', Icon: X },
 }
 
+function firstValue(source, keys) {
+  for (const key of keys) {
+    const value = source?.[key]
+    if (value !== undefined && value !== null && value !== '') return value
+  }
+  return ''
+}
+
+function normalizeProfile(profile) {
+  const kakaoAccount = profile.kakao_account || profile.kakaoAccount || {}
+  const kakaoProfile = kakaoAccount.profile || profile.properties || profile.kakao_profile || {}
+  const region = firstValue(profile.region, ['name', 'region_name']) || firstValue(profile, ['region_name', 'region'])
+
+  return {
+    name: firstValue(profile, ['name', 'nickname', 'username']) || firstValue(kakaoProfile, ['nickname', 'name']),
+    age: firstValue(profile, ['age']),
+    gender: firstValue(profile, ['gender']) || firstValue(kakaoAccount, ['gender']),
+    region,
+    farming: profile.farming ?? profile.is_farmer ?? profile.isFarmer ?? null,
+    movedAt: firstValue(profile, ['moved_at', 'movedAt', 'move_in_date']),
+  }
+}
+
 function SectionTitle({ children }) {
   return (
     <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 10, paddingLeft: 2 }}>
@@ -67,38 +76,48 @@ function SectionTitle({ children }) {
 
 export default function MyPage() {
   const navigate = useNavigate()
-  const [userInfo, setUserInfo] = useState(fallbackUserInfo)
-  const [grantStatuses, setGrantStatuses] = useState(fallbackGrantStatuses)
+  const [userInfo, setUserInfo] = useState(null)
+  const [grantStatuses, setGrantStatuses] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [authRequired, setAuthRequired] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     let active = true
-    fetchProfile()
-      .then(profile => {
-        if (!active) return
-        setUserInfo({
-          name: profile.name || profile.nickname || fallbackUserInfo.name,
-          age: profile.age || fallbackUserInfo.age,
-          gender: profile.gender || fallbackUserInfo.gender,
-          region: profile.region_name || profile.region || fallbackUserInfo.region,
-          farming: profile.farming ?? fallbackUserInfo.farming,
-          movedAt: profile.moved_at || profile.movedAt || fallbackUserInfo.movedAt,
-        })
-      })
-      .catch(() => {})
+    async function loadMyPage() {
+      if (!getAccessToken()) {
+        setAuthRequired(true)
+        setLoading(false)
+        return
+      }
 
-    fetchSavedPolicies()
-      .catch(() => fetchPreviewPolicies())
-      .then(policies => {
-        if (!active || policies.length === 0) return
-        setGrantStatuses(policies.map((policy, index) => ({
+      try {
+        const [profile, policies] = await Promise.all([
+          fetchProfile(),
+          fetchSavedPolicies(),
+        ])
+        if (!active) return
+        setUserInfo(normalizeProfile(profile))
+        setGrantStatuses(policies.map(policy => ({
           ...policy,
-          status: policy.user_status || (index < 2 ? '신청예정' : null),
+          status: policy.user_status || policy.status || null,
           deadline: policy.deadline,
           checkDone: policy.checkDone ?? 0,
           checkTotal: policy.checkTotal ?? 5,
         })))
-      })
-      .catch(() => {})
+      } catch (err) {
+        if (!active) return
+        if (err.status === 401) {
+          setAuthRequired(true)
+        } else {
+          setError(err.message || '마이페이지 정보를 불러오지 못했습니다.')
+        }
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    loadMyPage()
 
     return () => {
       active = false
@@ -115,8 +134,44 @@ export default function MyPage() {
       <TopBar title="마이페이지" />
 
       <div style={{ padding: '8px 18px 100px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+        {loading && (
+          <Card>
+            <p style={{ fontSize: 15, fontWeight: 600, color: '#555' }}>마이페이지 정보를 불러오는 중입니다.</p>
+          </Card>
+        )}
+
+        {!loading && authRequired && (
+          <Card>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', marginBottom: 5 }}>로그인이 필요해요</p>
+                <p style={{ fontSize: 14, color: '#666', lineHeight: 1.45 }}>
+                  카카오 로그인 후 프로필과 지원 현황을 확인할 수 있어요.
+                </p>
+              </div>
+              <button
+                onClick={() => startKakaoLogin('/mypage')}
+                style={{
+                  height: 48, border: 'none', borderRadius: 14,
+                  background: '#FEE500', color: '#111',
+                  fontSize: 15, fontWeight: 800, cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                카카오 로그인
+              </button>
+            </div>
+          </Card>
+        )}
+
+        {!loading && error && (
+          <Card>
+            <p style={{ fontSize: 15, fontWeight: 600, color: '#d93025' }}>{error}</p>
+          </Card>
+        )}
 
         {/* Profile */}
+        {!loading && userInfo && (
         <div>
           <SectionTitle>개인 정보</SectionTitle>
           <Card>
@@ -128,10 +183,12 @@ export default function MyPage() {
                 <User size={26} color="#076818" strokeWidth={2} />
               </div>
               <div>
-                <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>{userInfo.name}님</p>
+                <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
+                  {userInfo.name || '카카오 사용자'}님
+                </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 3 }}>
                   <MapPin size={13} color="#888" strokeWidth={2} />
-                  <span style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{userInfo.region} 거주</span>
+                  <span style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{userInfo.region || '지역 미등록'} 거주</span>
                 </div>
               </div>
               <button
@@ -148,10 +205,10 @@ export default function MyPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
-                { label: '나이', value: `${userInfo.age}세` },
-                { label: '성별', value: userInfo.gender },
-                { label: '귀농 여부', value: userInfo.farming ? '귀농' : '비귀농' },
-                { label: '이사 날짜', value: userInfo.movedAt },
+                { label: '나이', value: userInfo.age ? `${userInfo.age}세` : '미등록' },
+                { label: '성별', value: userInfo.gender || '미등록' },
+                { label: '귀농 여부', value: userInfo.farming === null ? '미등록' : userInfo.farming ? '귀농' : '비귀농' },
+                { label: '이사 날짜', value: userInfo.movedAt || '미등록' },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 14, color: '#555', letterSpacing: '-0.1px' }}>{label}</span>
@@ -161,8 +218,10 @@ export default function MyPage() {
             </div>
           </Card>
         </div>
+        )}
 
         {/* 지원 현황 */}
+        {!loading && userInfo && (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, paddingLeft: 2 }}>
             <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>지원 현황</p>
@@ -200,8 +259,10 @@ export default function MyPage() {
             </div>
           </Card>
         </div>
+        )}
 
         {/* 신청 진행 중 */}
+        {!loading && userInfo && (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, paddingLeft: 2 }}>
             <p style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>신청 진행 중</p>
@@ -213,6 +274,11 @@ export default function MyPage() {
             </button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {grantStatuses.filter(g => g.status === '신청예정' || g.status === '신청완료').length === 0 && (
+              <Card>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#666' }}>아직 저장된 지원 현황이 없어요.</p>
+              </Card>
+            )}
             {grantStatuses.filter(g => g.status === '신청예정' || g.status === '신청완료').map(g => {
               const cfg = statusConfig[g.status]
               const Icon = cfg.Icon
@@ -252,6 +318,7 @@ export default function MyPage() {
             })}
           </div>
         </div>
+        )}
 
       </div>
     </div>
