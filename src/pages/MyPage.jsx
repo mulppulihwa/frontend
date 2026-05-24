@@ -92,12 +92,24 @@ export default function MyPage() {
       }
 
       try {
-        const [profile, policies] = await Promise.all([
-          fetchProfile(),
-          fetchSavedPolicies(),
-        ])
+        const profile = await fetchProfile()
         if (!active) return
         setUserInfo(normalizeProfile(profile))
+      } catch (err) {
+        if (!active) return
+        if (err.status === 401) {
+          setAuthRequired(true)
+        } else {
+          setError(err.message || '프로필 정보를 불러오지 못했습니다.')
+        }
+        return
+      } finally {
+        if (active) setLoading(false)
+      }
+
+      try {
+        const policies = await fetchSavedPolicies()
+        if (!active) return
         setGrantStatuses(policies.map(policy => ({
           ...policy,
           status: policy.user_status || policy.status || null,
@@ -105,15 +117,8 @@ export default function MyPage() {
           checkDone: policy.checkDone ?? 0,
           checkTotal: policy.checkTotal ?? 5,
         })))
-      } catch (err) {
-        if (!active) return
-        if (err.status === 401) {
-          setAuthRequired(true)
-        } else {
-          setError(err.message || '마이페이지 정보를 불러오지 못했습니다.')
-        }
-      } finally {
-        if (active) setLoading(false)
+      } catch {
+        if (active) setGrantStatuses([])
       }
     }
 
