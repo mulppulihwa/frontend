@@ -4,6 +4,16 @@ export function getAccessToken() {
   return localStorage.getItem('accessToken') || localStorage.getItem('access') || localStorage.getItem('token')
 }
 
+function getRefreshToken() {
+  return localStorage.getItem('refreshToken') || localStorage.getItem('refresh')
+}
+
+function storeAccessToken(token) {
+  if (!token) return
+  localStorage.setItem('accessToken', token)
+  localStorage.setItem('access', token)
+}
+
 function formatApiErrorValue(value) {
   if (!value) return ''
   if (typeof value === 'string') return value
@@ -17,6 +27,24 @@ function formatApiErrorValue(value) {
   return String(value)
 }
 
+async function refreshAccessToken() {
+  const refresh = getRefreshToken()
+  if (!refresh) return null
+
+  const response = await fetch(`${API_BASE_URL}/api/auth/token/refresh/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh }),
+  })
+  const text = await response.text()
+  const data = text ? JSON.parse(text) : null
+  if (!response.ok) return null
+
+  const access = data?.access || data?.accessToken || data?.access_token || data?.token
+  storeAccessToken(access)
+  return access || null
+}
+
 async function request(path, options = {}) {
   const token = getAccessToken()
   const headers = {
@@ -28,6 +56,13 @@ async function request(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers })
   const text = await response.text()
   const data = text ? JSON.parse(text) : null
+
+  if (response.status === 401 && !options._retried) {
+    const refreshedToken = await refreshAccessToken()
+    if (refreshedToken) {
+      return request(path, { ...options, _retried: true })
+    }
+  }
 
   if (!response.ok) {
     const message = formatApiErrorValue(data?.error || data?.detail || data) || 'API 요청에 실패했습니다.'
@@ -161,6 +196,12 @@ export async function fetchSavedPolicies() {
       ...normalizePolicy(policy, index),
       user_status: userStatus || null,
     }
+  })
+}
+
+export async function savePolicy(policyId) {
+  return request(`/api/users/me/policies/${policyId}/save/`, {
+    method: 'POST',
   })
 }
 

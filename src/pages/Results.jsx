@@ -5,7 +5,7 @@ import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import Card from '../components/Card'
 import GrantResultCard from '../components/GrantResultCard'
-import { fetchMatchedPolicies, updateSavedPolicyStatus } from '../lib/api'
+import { fetchMatchedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 
 const statusConfig = {
   신청기간: { label: '신청 기간', color: '#076818', bg: '#e6f4ec' },
@@ -55,6 +55,9 @@ export default function Results() {
     setStatusError('')
     setStatuses(p => ({ ...p, [grant.id]: val }))
     try {
+      await savePolicy(grant.id).catch(err => {
+        if (![400, 409].includes(err.status)) throw err
+      })
       await updateSavedPolicyStatus(grant.id, val)
     } catch (err) {
       setStatuses(p => ({ ...p, [grant.id]: previous }))
