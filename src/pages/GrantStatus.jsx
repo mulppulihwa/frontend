@@ -135,8 +135,10 @@ export default function GrantStatus() {
           [policy.id]: policy.user_status || null,
         }), {}))
       })
-      .catch(err => {
-        if (active) setError(err.message || '지원 현황을 불러오지 못했습니다.')
+      .catch(() => {
+        if (!active) return
+        setGrantsData([])
+        setStatuses({})
       })
       .finally(() => {
         if (active) setLoading(false)
