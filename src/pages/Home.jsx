@@ -6,7 +6,7 @@ import farmer from '../assets/farmer.png'
 import okcheonLogo from '../assets/okcheon-ok-green.png'
 import Button from '../components/Button'
 import Folder from '../components/Folder'
-import { fetchPreviewPolicies } from '../lib/api'
+import { fetchPreviewPolicies, getAccessToken } from '../lib/api'
 import { startKakaoLogin } from '../lib/auth'
 
 const fallbackPolicies = [
@@ -22,6 +22,14 @@ export default function Home() {
 
   const handleKakaoLogin = () => {
     startKakaoLogin('/step1')
+  }
+
+  const handleStartDiagnosis = () => {
+    if (getAccessToken()) {
+      navigate('/step1')
+      return
+    }
+    setShowLogin(true)
   }
 
   useEffect(() => {
@@ -65,7 +73,7 @@ export default function Home() {
         />
       </div>
 
-      <Button onClick={() => setShowLogin(true)} variant="pill" style={{ background: '#076818' }}>
+      <Button onClick={handleStartDiagnosis} variant="pill" style={{ background: '#076818' }}>
         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
           진단하기 시작 <ArrowRight size={16} strokeWidth={2.5} />
         </span>
