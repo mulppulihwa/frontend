@@ -4,6 +4,19 @@ export function getAccessToken() {
   return localStorage.getItem('accessToken') || localStorage.getItem('access') || localStorage.getItem('token')
 }
 
+function formatApiErrorValue(value) {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (Array.isArray(value)) return value.map(formatApiErrorValue).filter(Boolean).join(', ')
+  if (typeof value === 'object') {
+    return Object.entries(value)
+      .map(([key, nested]) => `${key}: ${formatApiErrorValue(nested)}`)
+      .filter(Boolean)
+      .join(' / ')
+  }
+  return String(value)
+}
+
 async function request(path, options = {}) {
   const token = getAccessToken()
   const headers = {
@@ -17,8 +30,10 @@ async function request(path, options = {}) {
   const data = text ? JSON.parse(text) : null
 
   if (!response.ok) {
-    const error = new Error(data?.error || data?.detail || 'API 요청에 실패했습니다.')
+    const message = formatApiErrorValue(data?.error || data?.detail || data) || 'API 요청에 실패했습니다.'
+    const error = new Error(message)
     error.status = response.status
+    error.data = data
     throw error
   }
 

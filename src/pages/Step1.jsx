@@ -288,21 +288,33 @@ export default function Step1() {
 
   const submitProfile = async () => {
     const payload = buildProfilePayload()
-    try {
-      await updateProfile(payload)
-      return
-    } catch (err) {
-      if (err.status !== 400) throw err
-    }
-
-    await updateProfile({
+    const fallbackPayload = {
       age: payload.age,
       gender: payload.gender,
       region: payload.region,
       region_name: payload.region_name,
       farming: payload.farming,
       moved_at: payload.moved_at,
-    })
+    }
+    const minimalPayload = {
+      age: payload.age,
+      gender: payload.gender,
+      farming: payload.farming,
+    }
+    const payloads = [payload, fallbackPayload, minimalPayload]
+    let lastError = null
+
+    for (const nextPayload of payloads) {
+      try {
+        await updateProfile(nextPayload)
+        return
+      } catch (err) {
+        lastError = err
+        if (err.status !== 400) throw err
+      }
+    }
+
+    throw lastError
   }
 
   const goNext = async () => {
