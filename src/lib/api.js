@@ -112,13 +112,8 @@ export async function fetchPreviewPolicies() {
 }
 
 export async function fetchMatchedPolicies() {
-  try {
-    const data = await request('/api/policies/match/')
-    const policies = toArray(data).map(normalizePolicy)
-    return policies.length ? policies : fetchPreviewPolicies()
-  } catch {
-    return fetchPreviewPolicies()
-  }
+  const data = await request('/api/policies/match/')
+  return toArray(data).map(normalizePolicy)
 }
 
 export async function fetchRegions() {
@@ -133,6 +128,13 @@ export async function fetchPlaces() {
 
 export async function fetchProfile() {
   return request('/api/profile/')
+}
+
+export async function updateProfile(profile) {
+  return request('/api/profile/', {
+    method: 'PATCH',
+    body: JSON.stringify(profile),
+  })
 }
 
 export async function fetchSavedPolicies() {

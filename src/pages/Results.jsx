@@ -7,31 +7,6 @@ import Card from '../components/Card'
 import GrantResultCard from '../components/GrantResultCard'
 import { fetchMatchedPolicies, updateSavedPolicyStatus } from '../lib/api'
 
-const fallbackGrants = [
-  {
-    id: 1,
-    title: '귀농 농업창업 지원금',
-    subtitle: '최대 300만원 지원',
-    agency: '농림축산식품부 · 옥천군',
-    reasons: ['귀농 1년 이내', '옥천 거주', '만 18세 이상'],
-    period: '2026.04.01 ~ 2026.06.30',
-    deadline: '2026.06.30',
-    status: '마감임박',
-    countdown: { days: 19, hours: 5, minutes: 5 },
-  },
-  {
-    id: 2,
-    title: '농촌 정착 지원금',
-    subtitle: '최대 500만원 지원',
-    agency: '농림축산식품부 · 옥천군',
-    reasons: ['귀농 3년 이내', '옥천군 거주'],
-    period: '2026.06.01 ~ 2026.08.15',
-    deadline: '2026.08.15',
-    status: '신청기간',
-    countdown: { days: 64, hours: 2, minutes: 30 },
-  },
-]
-
 const statusConfig = {
   신청기간: { label: '신청 기간', color: '#076818', bg: '#e6f4ec' },
   마감임박: { label: '마감 임박', color: '#d93025', bg: '#fff0ef' },
@@ -44,7 +19,9 @@ export default function Results() {
   const [index, setIndex] = useState(0)
   const [pageDirection, setPageDirection] = useState('next')
   const [statuses, setStatuses] = useState({})
-  const [grants, setGrants] = useState(fallbackGrants)
+  const [grants, setGrants] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [statusError, setStatusError] = useState('')
   const grant = grants[index]
   const total = grants.length
@@ -53,7 +30,7 @@ export default function Results() {
     let active = true
     fetchMatchedPolicies()
       .then(policies => {
-        if (active && policies.length > 0) {
+        if (active) {
           setGrants(policies)
           setStatuses(policies.reduce((acc, policy) => ({
             ...acc,
@@ -61,13 +38,19 @@ export default function Results() {
           }), {}))
         }
       })
-      .catch(() => {})
+      .catch(err => {
+        if (active) setLoadError(err.message || '맞춤 지원금을 불러오지 못했습니다.')
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
     return () => {
       active = false
     }
   }, [])
 
   const handleStatusChange = async (val) => {
+    if (!grant) return
     const previous = statuses[grant.id] || null
     setStatusError('')
     setStatuses(p => ({ ...p, [grant.id]: val }))
@@ -118,6 +101,31 @@ export default function Results() {
       </div>
 
       <div style={{ padding: '0 18px 152px', flex: 1, overflowX: 'hidden' }}>
+        {loading && (
+          <Card>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center' }}>
+              맞춤 지원금을 불러오는 중입니다.
+            </p>
+          </Card>
+        )}
+
+        {!loading && loadError && (
+          <Card>
+            <p style={{ fontSize: 14, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45 }}>
+              {loadError}
+            </p>
+          </Card>
+        )}
+
+        {!loading && !loadError && total === 0 && (
+          <Card>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center' }}>
+              조건에 맞는 지원금이 없어요.
+            </p>
+          </Card>
+        )}
+
+        {!loading && !loadError && grant && (
         <div
           key={index}
           style={{
@@ -152,8 +160,10 @@ export default function Results() {
         </Card>
 
         </div>
+        )}
       </div>
 
+      {!loading && !loadError && grant && (
       <div style={{ position: 'fixed', bottom: 76, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         <button
           type="button"
@@ -196,6 +206,7 @@ export default function Results() {
           {index === total - 1 ? '완료' : '다음'}
         </button>
       </div>
+      )}
 
     </div>
   )

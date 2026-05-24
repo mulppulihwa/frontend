@@ -5,7 +5,7 @@ import StepIndicator from '../components/StepIndicator'
 import SelectField from '../components/SelectField'
 import Button from '../components/Button'
 import SearchAnimation from '../components/SearchAnimation'
-import { fetchRegions } from '../lib/api'
+import { fetchRegions, updateProfile } from '../lib/api'
 
 const fieldGap = 12
 
@@ -190,10 +190,13 @@ export default function Step1() {
   const [previousSince, setPreviousSince] = useState('2023-03-01')
   const [job, setJob] = useState('퇴직')
   const [farmBusiness, setFarmBusiness] = useState(true)
+  const [farmingEducation, setFarmingEducation] = useState(false)
   const [outsideIncome, setOutsideIncome] = useState('')
   const [region, setRegion] = useState('옥천군')
   const [showResumeModal, setShowResumeModal] = useState(() => !!localStorage.getItem(STORAGE_KEY))
   const [regionOptions, setRegionOptions] = useState(REGION_LOADING_OPTIONS)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
     let active = true
@@ -218,7 +221,7 @@ export default function Step1() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       page: currentPage, birthDate, age, gender, nationality, farming,
       farmingDate, location, movedAt, previousResidence, previousSince,
-      job, farmBusiness, outsideIncome, region,
+      job, farmBusiness, farmingEducation, outsideIncome, region,
     }))
   }
 
@@ -237,6 +240,7 @@ export default function Step1() {
     setPreviousSince(saved.previousSince ?? previousSince)
     setJob(saved.job ?? job)
     setFarmBusiness(saved.farmBusiness ?? farmBusiness)
+    setFarmingEducation(saved.farmingEducation ?? farmingEducation)
     setOutsideIncome(saved.outsideIncome ?? outsideIncome)
     setRegion(saved.region ?? region)
     setPage(saved.page ?? 1)
@@ -256,10 +260,64 @@ export default function Step1() {
     setPage(prev => prev - 1)
   }
 
-  const goNext = () => {
+  const buildProfilePayload = () => {
+    const parsedAge = Number(age)
+    const parsedIncome = outsideIncome === '' ? null : Number(outsideIncome)
+    return {
+      birth_date: birthDate,
+      age: Number.isFinite(parsedAge) ? parsedAge : null,
+      gender,
+      nationality,
+      location,
+      region: location === '옥천' ? '옥천군' : region,
+      region_name: location === '옥천' ? '옥천군' : region,
+      moved_at: movedAt,
+      previous_residence: previousResidence,
+      previous_region: previousResidence,
+      previous_region_name: previousResidence,
+      previous_since: previousSince,
+      job,
+      farming,
+      is_farmer: farming,
+      farm_business: farmBusiness,
+      has_farm_business: farmBusiness,
+      outside_income: Number.isFinite(parsedIncome) ? parsedIncome : null,
+      completed_farming_education: farmingEducation,
+    }
+  }
+
+  const submitProfile = async () => {
+    const payload = buildProfilePayload()
+    try {
+      await updateProfile(payload)
+      return
+    } catch (err) {
+      if (err.status !== 400) throw err
+    }
+
+    await updateProfile({
+      age: payload.age,
+      gender: payload.gender,
+      region: payload.region,
+      region_name: payload.region_name,
+      farming: payload.farming,
+      moved_at: payload.moved_at,
+    })
+  }
+
+  const goNext = async () => {
     if (page === 4) {
-      localStorage.removeItem(STORAGE_KEY)
-      navigate('/loading')
+      setSubmitting(true)
+      setSubmitError('')
+      try {
+        await submitProfile()
+        localStorage.removeItem(STORAGE_KEY)
+        navigate('/loading')
+      } catch (err) {
+        setSubmitError(err.message || '입력 정보를 저장하지 못했습니다.')
+      } finally {
+        setSubmitting(false)
+      }
       return
     }
     saveProgress(page + 1)
@@ -329,16 +387,23 @@ export default function Step1() {
 
         {page === 4 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-            <RadioGroup label="귀농 교육 100시간을 이수하셨나요?" value={farming} onChange={setFarming} options={[
+            <RadioGroup label="귀농 교육 100시간을 이수하셨나요?" value={farmingEducation} onChange={setFarmingEducation} options={[
               { label: '예', value: true },
               { label: '아니요', value: false },
             ]} />
+            {submitError && (
+              <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025', lineHeight: 1.45 }}>
+                {submitError}
+              </p>
+            )}
           </div>
         )}
       </div>
 
       <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
-        <Button onClick={goNext} variant="pill">{page === 4 ? '내 지원금 찾기' : '다음'}</Button>
+        <Button onClick={goNext} disabled={submitting} variant="pill">
+          {submitting ? '저장 중...' : page === 4 ? '내 지원금 찾기' : '다음'}
+        </Button>
       </div>
 
       {showResumeModal && (

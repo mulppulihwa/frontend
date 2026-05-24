@@ -5,6 +5,7 @@ import StepIndicator from '../components/StepIndicator'
 import SelectField from '../components/SelectField'
 import Button from '../components/Button'
 import SearchAnimation from '../components/SearchAnimation'
+import { updateProfile } from '../lib/api'
 
 function Header() {
   return (
@@ -25,6 +26,25 @@ export default function Step2() {
   const [since, setSince] = useState('1년 이내')
   const [household, setHousehold] = useState('혼자')
   const [income, setIncome] = useState('기초수급')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async () => {
+    setSubmitting(true)
+    setError('')
+    try {
+      await updateProfile({
+        farming_since: since,
+        household_type: household,
+        income_level: income,
+      })
+      navigate('/loading')
+    } catch (err) {
+      setError(err.message || '입력 정보를 저장하지 못했습니다.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#FDFCF8' }}>
@@ -55,11 +75,18 @@ export default function Step2() {
             { value: '차상위', label: '차상위' },
             { value: '일반', label: '일반' },
           ]} />
+          {error && (
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025', lineHeight: 1.45 }}>
+              {error}
+            </p>
+          )}
         </div>
       </div>
 
       <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
-        <Button onClick={() => navigate('/loading')} variant="pill">내 지원금 찾기</Button>
+        <Button onClick={handleSubmit} disabled={submitting} variant="pill">
+          {submitting ? '저장 중...' : '내 지원금 찾기'}
+        </Button>
       </div>
     </div>
   )
