@@ -175,8 +175,29 @@ const STORAGE_KEY = 'diagnosisProgress'
 const REGION_LOADING_OPTIONS = [{ value: '__loading_regions', label: '지역을 불러오는 중...', disabled: true }]
 const REGION_ERROR_OPTIONS = [{ value: '__region_error', label: '지역을 불러오지 못했어요', disabled: true }]
 const GENDER_API_VALUES = {
-  남자: 'male',
-  여자: 'female',
+  남자: '남',
+  여자: '여',
+}
+const REGION_CODES = {
+  옥천: '4329',
+  옥천군: '4329',
+  충청북도: '43',
+  경기도: '41',
+  충청남도: '44',
+  전라북도: '45',
+  전라남도: '46',
+  경상북도: '47',
+  경상남도: '48',
+  서울특별시: '11',
+  부산광역시: '26',
+  대구광역시: '27',
+  인천광역시: '28',
+  광주광역시: '29',
+  대전광역시: '30',
+  울산광역시: '31',
+  세종특별자치시: '36',
+  강원도: '42',
+  제주특별자치도: '50',
 }
 
 export default function Step1() {
@@ -209,7 +230,10 @@ export default function Step1() {
         if (!active) return
         setRegionOptions(
           regions.length
-            ? regions.map(({ name }) => ({ value: name, label: name }))
+            ? regions.map(({ code, name }) => {
+                REGION_CODES[name] = code
+                return { value: name, label: name }
+              })
             : REGION_ERROR_OPTIONS
         )
       })
@@ -265,45 +289,49 @@ export default function Step1() {
   }
 
   const buildProfilePayload = () => {
-    const parsedAge = Number(age)
     const parsedIncome = outsideIncome === '' ? null : Number(outsideIncome)
+    const incomeInManwon = Number.isFinite(parsedIncome) ? Math.round(parsedIncome / 10000) : null
+    const regionName = location === '옥천' ? '옥천군' : region
+    const occupationTags = [
+      farming ? '귀농' : '귀촌',
+      farmBusiness ? '농업인' : null,
+      job && !['기타'].includes(job) ? job : null,
+    ].filter(Boolean)
     return {
       birth_date: birthDate,
-      age: Number.isFinite(parsedAge) ? parsedAge : null,
       gender: GENDER_API_VALUES[gender] || gender,
-      nationality,
-      location,
-      region: location === '옥천' ? '옥천군' : region,
-      region_name: location === '옥천' ? '옥천군' : region,
-      moved_at: movedAt,
-      previous_residence: previousResidence,
-      previous_region: previousResidence,
-      previous_region_name: previousResidence,
-      previous_since: previousSince,
-      job,
-      farming,
-      is_farmer: farming,
-      farm_business: farmBusiness,
-      has_farm_business: farmBusiness,
-      outside_income: Number.isFinite(parsedIncome) ? parsedIncome : null,
-      completed_farming_education: farmingEducation,
+      region_code: REGION_CODES[regionName] || '',
+      occupation_tags: occupationTags,
+      move_in_date: movedAt,
+      household_type: '독거',
+      income_level: '일반',
+      non_farm_income: incomeInManwon,
+      marital_status: '미혼',
+      is_farm_registered: farmBusiness,
+      farm_registered_date: farmBusiness ? movedAt : null,
+      education_hours: farmingEducation ? 100 : 0,
+      is_disabled: false,
     }
   }
 
   const submitProfile = async () => {
     const payload = buildProfilePayload()
     const fallbackPayload = {
-      age: payload.age,
+      birth_date: payload.birth_date,
       gender: payload.gender,
-      region: payload.region,
-      region_name: payload.region_name,
-      farming: payload.farming,
-      moved_at: payload.moved_at,
+      region_code: payload.region_code,
+      occupation_tags: payload.occupation_tags,
+      income_level: payload.income_level,
+      is_farm_registered: payload.is_farm_registered,
+      education_hours: payload.education_hours,
+      move_in_date: payload.move_in_date,
     }
     const minimalPayload = {
-      age: payload.age,
+      birth_date: payload.birth_date,
       gender: payload.gender,
-      farming: payload.farming,
+      region_code: payload.region_code,
+      occupation_tags: payload.occupation_tags,
+      income_level: payload.income_level,
     }
     const payloads = [payload, fallbackPayload, minimalPayload]
     let lastError = null
