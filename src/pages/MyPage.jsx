@@ -401,7 +401,7 @@ export default function MyPage() {
                 <InfoPill label="성별" value={userInfo.gender || '미등록'} />
                 <InfoPill label="유형" value={userInfo.farming === null ? '미등록' : userInfo.farming ? '귀농' : '비귀농'} />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f0eee8', paddingTop: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solidrgb(255, 255, 255)', paddingTop: 12 }}>
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#9a948a' }}>이사 날짜</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>{userInfo.movedAt || '미등록'}</span>
               </div>
