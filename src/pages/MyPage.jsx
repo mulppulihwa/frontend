@@ -134,7 +134,7 @@ function InfoPill({ label, value }) {
       minWidth: 0,
       background: '#FDFCF8',
       border: '1px solid #eee8de',
-      borderRadius: 8,
+      borderRadius: 16,
       padding: '10px 8px',
       textAlign: 'center',
     }}>
@@ -167,7 +167,7 @@ function MenuRow({ icon: Icon, label, helper, onClick, danger = false }) {
       <span style={{
         width: 30,
         height: 30,
-        borderRadius: 8,
+        borderRadius: 12,
         background: danger ? '#fff0ef' : '#e8f3e8',
         display: 'flex',
         alignItems: 'center',
@@ -285,7 +285,7 @@ export default function MyPage() {
                 style={{
                   height: 48,
                   border: 'none',
-                  borderRadius: 14,
+                  borderRadius: 18,
                   background: '#FEE500',
                   color: '#111',
                   fontSize: 15,
@@ -312,7 +312,7 @@ export default function MyPage() {
               margin: '0 -18px',
               minHeight: 154,
               background: '#076818',
-              borderRadius: '0 0 28px 28px',
+              borderRadius: '0 0 34px 34px',
               color: '#fff',
               position: 'relative',
               overflow: 'hidden',
@@ -344,7 +344,7 @@ export default function MyPage() {
                     width: 34,
                     height: 34,
                     border: '1px solid rgba(255,255,255,0.22)',
-                    borderRadius: 11,
+                    borderRadius: 14,
                     background: 'rgba(255,255,255,0.12)',
                     color: '#fff',
                     cursor: 'pointer',
@@ -364,7 +364,7 @@ export default function MyPage() {
                     width: 34,
                     height: 34,
                     border: '1px solid rgba(255,255,255,0.22)',
-                    borderRadius: 11,
+                    borderRadius: 14,
                     background: 'rgba(255,255,255,0.12)',
                     display: 'flex',
                     alignItems: 'center',
@@ -381,7 +381,7 @@ export default function MyPage() {
               marginTop: -56,
               background: '#fff',
               border: '1px solid #e8e8e8',
-              borderRadius: 8,
+              borderRadius: 24,
               padding: '0 16px 16px',
               boxShadow: '0 12px 30px rgba(7,104,24,0.08)',
               position: 'relative',
@@ -419,7 +419,7 @@ export default function MyPage() {
                   style={{
                     height: 32,
                     padding: '0 12px',
-                    borderRadius: 8,
+                    borderRadius: 14,
                     border: 'none',
                     background: '#e8f3e8',
                     color: '#076818',
@@ -461,7 +461,7 @@ export default function MyPage() {
             >
               지원 현황
             </SectionTitle>
-            <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 8, padding: 16 }}>
+            <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 24, padding: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                 <div>
                   <p style={{ fontSize: 12, fontWeight: 800, color: '#8a8a8a', marginBottom: 3 }}>저장한 정책</p>
@@ -508,7 +508,7 @@ export default function MyPage() {
             <SectionTitle>신청 진행 중</SectionTitle>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {activePolicies.length === 0 && (
-                <Card style={{ borderRadius: 8 }}>
+                <Card style={{ borderRadius: 22 }}>
                   <p style={{ fontSize: 14, fontWeight: 600, color: '#666' }}>아직 저장된 지원 현황이 없어요.</p>
                 </Card>
               )}
@@ -516,7 +516,7 @@ export default function MyPage() {
                 const cfg = statusConfig[g.status]
                 const Icon = cfg.Icon
                 return (
-                  <Card key={g.id} style={{ borderRadius: 8, padding: '14px 15px' }}>
+                  <Card key={g.id} style={{ borderRadius: 22, padding: '14px 15px' }}>
                     <div
                       onClick={() => navigate('/detail', { state: { grant: g } })}
                       style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
@@ -528,7 +528,7 @@ export default function MyPage() {
                         <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {g.title}
                         </p>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: cfg.bg, borderRadius: 8, padding: '3px 7px' }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: cfg.bg, borderRadius: 12, padding: '3px 7px' }}>
                           <Icon size={10} color={cfg.color} strokeWidth={2.5} />
                           <span style={{ fontSize: 11, fontWeight: 700, color: cfg.color }}>{cfg.label}</span>
                         </div>
@@ -541,7 +541,7 @@ export default function MyPage() {
                         marginTop: 10,
                         width: '100%',
                         padding: '10px 0',
-                        borderRadius: 8,
+                        borderRadius: 16,
                         border: '1.5px solid #e8e8e8',
                         background: '#fafafa',
                         color: '#444',
@@ -561,7 +561,7 @@ export default function MyPage() {
         )}
 
         {!loading && userInfo && (
-          <section style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 8, padding: '6px 16px' }}>
+          <section style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 24, padding: '6px 16px' }}>
             <MenuRow
               icon={User}
               label="개인 정보 관리"
@@ -591,7 +591,7 @@ export default function MyPage() {
             style={{
               width: '100%',
               height: 50,
-              borderRadius: 8,
+              borderRadius: 18,
               border: '1.5px solid #d93025',
               background: '#fff',
               color: '#d93025',
