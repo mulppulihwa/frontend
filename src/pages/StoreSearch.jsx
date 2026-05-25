@@ -45,7 +45,7 @@ export default function StoreSearch() {
         >
           <ArrowLeft size={22} color="#1a1a1a" strokeWidth={2} />
         </button>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, background: '#fff', borderRadius: 16, padding: '11px 14px', border: '1.5px solid #e8e8e8' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, background: '#fff', borderRadius: 100, padding: '11px 14px', border: '1.5px solid #e8e8e8' }}>
           <Search size={16} color="#bbb" strokeWidth={2.2} />
           <input
             ref={inputRef}
@@ -75,7 +75,7 @@ export default function StoreSearch() {
           if (!cat) return null
           const Icon = cat.icon
           return (
-            <div key={i} style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 18, overflow: 'hidden' }}>
+            <div key={i} style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 30, overflow: 'hidden' }}>
               <div
                 onClick={() => navigate('/map', { state: { store } })}
                 style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 14px 12px', cursor: 'pointer' }}

@@ -229,7 +229,7 @@ export default function StoreMap() {
             onClick={() => navigate('/store-search')}
             style={{
               display: 'flex', alignItems: 'center', gap: 10,
-              background: '#fff', borderRadius: 16, padding: '11px 16px',
+              background: '#fff', borderRadius: 100, padding: '11px 16px',
               border: '1.5px solid #e8e8e8',
               boxShadow: '0 2px 12px rgba(0,0,0,0.08)', cursor: 'pointer',
             }}
