@@ -121,7 +121,7 @@ function normalizeProfile(profile) {
 function SectionTitle({ children, action }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-      <p style={{ fontSize: 15, fontWeight: 800, color: '#1a1a1a' }}>{children}</p>
+      <p style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a' }}>{children}</p>
       {action}
     </div>
   )
@@ -139,7 +139,7 @@ function InfoPill({ label, value }) {
       textAlign: 'center',
     }}>
       <p style={{ fontSize: 11, fontWeight: 700, color: '#9a948a', marginBottom: 5 }}>{label}</p>
-      <p style={{ fontSize: 13, fontWeight: 800, color: '#1a1a1a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {value}
       </p>
     </div>
@@ -177,7 +177,7 @@ function MenuRow({ icon: Icon, label, helper, onClick, danger = false }) {
         <Icon size={16} color={danger ? '#d93025' : '#076818'} strokeWidth={2.2} />
       </span>
       <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: 'block', fontSize: 14, fontWeight: 800, color: danger ? '#d93025' : '#1a1a1a' }}>{label}</span>
+        <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: danger ? '#d93025' : '#1a1a1a' }}>{label}</span>
         {helper && (
           <span style={{ display: 'block', marginTop: 2, fontSize: 11, fontWeight: 600, color: '#999', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {helper}
@@ -275,7 +275,7 @@ export default function MyPage() {
           <Card style={{ marginTop: 86 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
-                <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', marginBottom: 5 }}>로그인이 필요해요</p>
+                <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', marginBottom: 5 }}>로그인이 필요해요</p>
                 <p style={{ fontSize: 14, color: '#666', lineHeight: 1.45 }}>
                   카카오 로그인 후 프로필과 지원 현황을 확인할 수 있어요.
                 </p>
@@ -289,7 +289,7 @@ export default function MyPage() {
                   background: '#FEE500',
                   color: '#111',
                   fontSize: 15,
-                  fontWeight: 800,
+                  fontWeight: 700,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
@@ -356,7 +356,7 @@ export default function MyPage() {
                 >
                   ‹
                 </button>
-                <p style={{ fontSize: 16, fontWeight: 900 }}>마이페이지</p>
+                <p style={{ fontSize: 16, fontWeight: 700 }}>마이페이지</p>
                 <button
                   onClick={() => navigate('/step1')}
                   aria-label="프로필 수정"
@@ -403,7 +403,7 @@ export default function MyPage() {
                     <img src={farmerAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                   <div style={{ paddingBottom: 2, minWidth: 0 }}>
-                    <p style={{ fontSize: 17, fontWeight: 900, color: '#1a1a1a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {userInfo.name || '카카오 사용자'}님
                     </p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 3 }}>
@@ -424,7 +424,7 @@ export default function MyPage() {
                     background: '#e8f3e8',
                     color: '#076818',
                     fontSize: 12,
-                    fontWeight: 900,
+                    fontWeight: 700,
                     cursor: 'pointer',
                     fontFamily: 'inherit',
                     flexShrink: 0,
@@ -441,7 +441,7 @@ export default function MyPage() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f0eee8', paddingTop: 12 }}>
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#9a948a' }}>이사 날짜</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: '#1a1a1a' }}>{userInfo.movedAt || '미등록'}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>{userInfo.movedAt || '미등록'}</span>
               </div>
             </section>
           </>
@@ -453,7 +453,7 @@ export default function MyPage() {
               action={(
                 <button
                   onClick={() => navigate('/grant-status')}
-                  style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 800, color: '#888' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, color: '#888' }}
                 >
                   전체 보기 <ChevronRight size={15} color="#aaa" strokeWidth={2.2} />
                 </button>
@@ -464,8 +464,8 @@ export default function MyPage() {
             <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 24, padding: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                 <div>
-                  <p style={{ fontSize: 12, fontWeight: 800, color: '#8a8a8a', marginBottom: 3 }}>저장한 정책</p>
-                  <p style={{ fontSize: 27, fontWeight: 900, color: '#076818' }}>{grantStatuses.length}건</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', marginBottom: 3 }}>저장한 정책</p>
+                  <p style={{ fontSize: 27, fontWeight: 800, color: '#076818' }}>{grantStatuses.length}건</p>
                 </div>
                 <div style={{ width: 126, height: 48 }}>
                   <svg width="126" height="48" viewBox="0 0 126 48" fill="none">
@@ -493,8 +493,8 @@ export default function MyPage() {
                         borderRight: i < arr.length - 1 ? '1px solid #f0f0f0' : 'none',
                       }}
                     >
-                      <p style={{ fontSize: 20, fontWeight: 900, color }}>{count}</p>
-                      <span style={{ fontSize: 11, fontWeight: 800, color: '#8a8a8a' }}>{label}</span>
+                      <p style={{ fontSize: 20, fontWeight: 800, color }}>{count}</p>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#8a8a8a' }}>{label}</span>
                     </div>
                   )
                 })}
@@ -522,7 +522,7 @@ export default function MyPage() {
                       style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
                     >
                       <div style={{ width: 48, height: 48, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: 13, fontWeight: 800, color: '#FF0000' }}>{getDday(g.deadline)}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#FF0000' }}>{getDday(g.deadline)}</span>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -596,7 +596,7 @@ export default function MyPage() {
               background: '#fff',
               color: '#d93025',
               fontSize: 14,
-              fontWeight: 900,
+              fontWeight: 700,
               cursor: 'pointer',
               fontFamily: 'inherit',
             }}
