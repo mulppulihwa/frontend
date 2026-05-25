@@ -206,6 +206,15 @@ const REGION_CODES = {
   제주특별자치도: '50',
 }
 
+function hasValue(value) {
+  return value !== null && value !== undefined && String(value).trim() !== ''
+}
+
+function isCompleteDate(value) {
+  const [y, m, d] = (value || '').split('-')
+  return hasValue(y) && hasValue(m) && hasValue(d)
+}
+
 export default function Step1() {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
@@ -355,7 +364,30 @@ export default function Step1() {
     throw lastError
   }
 
+  const isCurrentPageComplete = (() => {
+    switch (page) {
+      case 1:
+        return isCompleteDate(birthDate) && hasValue(gender) && hasValue(nationality)
+      case 2:
+        return hasValue(location)
+          && isCompleteDate(movedAt)
+          && hasValue(previousResidence)
+          && isCompleteDate(previousSince)
+      case 3:
+        return hasValue(job)
+          && farming !== null
+          && farmBusiness !== null
+          && hasValue(outsideIncome)
+      case 4:
+        return farmingEducation !== null
+      default:
+        return false
+    }
+  })()
+
   const goNext = async () => {
+    if (!isCurrentPageComplete) return
+
     if (page === 4) {
       setSubmitting(true)
       setSubmitError('')
@@ -451,7 +483,7 @@ export default function Step1() {
       </div>
 
       <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
-        <Button onClick={goNext} disabled={submitting} variant="pill">
+        <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete} variant="pill">
           {submitting ? '저장 중...' : page === 4 ? '내 지원금 찾기' : '다음'}
         </Button>
       </div>
