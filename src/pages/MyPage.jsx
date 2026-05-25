@@ -220,38 +220,66 @@ export default function MyPage() {
     }}>
       <div style={{ padding: '0 18px 104px', display: 'flex', flexDirection: 'column', gap: 18 }}>
         {loading && (
-          <Card style={{ marginTop: 86 }}>
-            <p style={{ fontSize: 15, fontWeight: 600, color: '#555' }}>마이페이지 정보를 불러오는 중입니다.</p>
-          </Card>
+          <div style={{
+            minHeight: 'calc(100vh - 104px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 10px 58px',
+          }}>
+            <div className="loading-spinner" aria-label="마이페이지 정보 로딩 중" />
+            <div style={{ textAlign: 'center', marginTop: 28 }}>
+              <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.45 }}>
+                마이페이지 정보를
+              </p>
+              <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.45 }}>
+                불러오고 있어요
+              </p>
+              <p style={{ fontSize: 14, fontWeight: 400, color: '#666', marginTop: 10 }}>
+                잠시만 기다려 주세요
+              </p>
+            </div>
+          </div>
         )}
 
         {!loading && authRequired && (
-          <Card style={{ marginTop: 86 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', marginBottom: 5 }}>로그인이 필요해요</p>
-                <p style={{ fontSize: 14, color: '#666', lineHeight: 1.45 }}>
-                  카카오 로그인 후 프로필과 지원 현황을 확인할 수 있어요.
-                </p>
-              </div>
-              <button
-                onClick={() => startKakaoLogin('/mypage')}
-                style={{
-                  height: 48,
-                  border: 'none',
-                  borderRadius: 18,
-                  background: '#FEE500',
-                  color: '#111',
-                  fontSize: 15,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
-              >
-                카카오 로그인
-              </button>
+          <div style={{
+            minHeight: 'calc(100vh - 104px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 10px 58px',
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.45 }}>
+                로그인이 필요해요
+              </p>
+              <p style={{ fontSize: 14, fontWeight: 400, color: '#666', marginTop: 10, lineHeight: 1.5 }}>
+                카카오 로그인 후 프로필과<br />지원 현황을 확인할 수 있어요
+              </p>
             </div>
-          </Card>
+            <button
+              onClick={() => startKakaoLogin('/mypage')}
+              style={{
+                width: '100%',
+                maxWidth: 320,
+                minHeight: 54,
+                marginTop: 28,
+                border: 'none',
+                borderRadius: 18,
+                background: '#FEE500',
+                color: '#111',
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              카카오 로그인
+            </button>
+          </div>
         )}
 
         {!loading && error && (
