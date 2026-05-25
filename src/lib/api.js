@@ -206,8 +206,30 @@ export async function savePolicy(policyId) {
 }
 
 export async function updateSavedPolicyStatus(policyId, status) {
-  return request(`/api/users/me/policies/${policyId}/status/`, {
-    method: 'PATCH',
-    body: JSON.stringify({ status }),
-  })
+  const mappedStatus = {
+    신청예정: 'planned',
+    신청완료: 'completed',
+    관심없음: 'not_interested',
+  }[status] || status
+  const payloads = [
+    { status },
+    { user_status: status },
+    { status: mappedStatus },
+    { user_status: mappedStatus },
+  ]
+  let lastError = null
+
+  for (const payload of payloads) {
+    try {
+      return await request(`/api/users/me/policies/${policyId}/status/`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      })
+    } catch (err) {
+      lastError = err
+      if (![400, 422].includes(err.status)) throw err
+    }
+  }
+
+  throw lastError
 }

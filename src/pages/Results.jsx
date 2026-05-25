@@ -55,9 +55,7 @@ export default function Results() {
     setStatusError('')
     setStatuses(p => ({ ...p, [grant.id]: val }))
     try {
-      await savePolicy(grant.id).catch(err => {
-        if (![400, 409].includes(err.status)) throw err
-      })
+      await savePolicy(grant.id).catch(() => null)
       await updateSavedPolicyStatus(grant.id, val)
     } catch (err) {
       setStatuses(p => ({ ...p, [grant.id]: previous }))
