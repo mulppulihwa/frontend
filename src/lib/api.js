@@ -1,5 +1,6 @@
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
+const SAVED_POLICY_CACHE_KEY = 'savedPolicyCache'
 
 export function getAccessToken() {
   return localStorage.getItem('accessToken') || localStorage.getItem('access') || localStorage.getItem('token')
@@ -149,12 +150,27 @@ function readPolicyStatusCache() {
   }
 }
 
-export function cachePolicyStatus(policyId, status) {
+function readSavedPolicyCache() {
+  try {
+    return JSON.parse(localStorage.getItem(SAVED_POLICY_CACHE_KEY) || '{}')
+  } catch {
+    return {}
+  }
+}
+
+export function cachePolicyStatus(policyId, status, policy) {
   const normalizedStatus = normalizeUserPolicyStatus(status)
   if (!policyId || !normalizedStatus) return
-  const cache = readPolicyStatusCache()
-  cache[String(policyId)] = normalizedStatus
-  localStorage.setItem(POLICY_STATUS_CACHE_KEY, JSON.stringify(cache))
+  const id = String(policyId)
+  const statusCache = readPolicyStatusCache()
+  statusCache[id] = normalizedStatus
+  localStorage.setItem(POLICY_STATUS_CACHE_KEY, JSON.stringify(statusCache))
+
+  if (policy) {
+    const savedPolicyCache = readSavedPolicyCache()
+    savedPolicyCache[id] = { ...policy, user_status: normalizedStatus }
+    localStorage.setItem(SAVED_POLICY_CACHE_KEY, JSON.stringify(savedPolicyCache))
+  }
 }
 
 export function normalizePolicy(policy, index = 0) {
@@ -229,7 +245,8 @@ export async function updateProfile(profile) {
 export async function fetchSavedPolicies() {
   const data = await request('/api/users/me/policies/')
   const statusCache = readPolicyStatusCache()
-  return toArray(data).map((item, index) => {
+  const savedPolicyCache = readSavedPolicyCache()
+  const policies = toArray(data).map((item, index) => {
     const policy = item.policy || item
     const userStatus = item.user_status || item.status || item.policy_status || item.application_status || policy.user_status
     const normalizedPolicy = normalizePolicy(policy, index)
@@ -238,6 +255,14 @@ export async function fetchSavedPolicies() {
       user_status: normalizeUserPolicyStatus(userStatus) || statusCache[String(normalizedPolicy.id)] || null,
     }
   })
+  const ids = new Set(policies.map(policy => String(policy.id)))
+  const cachedPolicies = Object.entries(savedPolicyCache)
+    .filter(([id]) => !ids.has(id))
+    .map(([, policy], index) => ({
+      ...normalizePolicy(policy, policies.length + index),
+      user_status: normalizeUserPolicyStatus(policy.user_status) || statusCache[String(policy.id)] || null,
+    }))
+  return [...policies, ...cachedPolicies]
 }
 
 export async function savePolicy(policyId) {
