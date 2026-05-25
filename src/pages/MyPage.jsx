@@ -3,12 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import {
   Check,
   ChevronRight,
-  ClipboardList,
   Clock3,
   MapPin,
   Pencil,
-  ShieldCheck,
-  User,
   X,
 } from 'lucide-react'
 import Card from '../components/Card'
@@ -143,49 +140,6 @@ function InfoPill({ label, value }) {
         {value}
       </p>
     </div>
-  )
-}
-
-function MenuRow({ icon: Icon, label, helper, onClick, danger = false }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        width: '100%',
-        minHeight: 52,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        border: 'none',
-        background: '#fff',
-        cursor: 'pointer',
-        fontFamily: 'inherit',
-        textAlign: 'left',
-        padding: 0,
-      }}
-    >
-      <span style={{
-        width: 30,
-        height: 30,
-        borderRadius: 12,
-        background: danger ? '#fff0ef' : '#e8f3e8',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}>
-        <Icon size={16} color={danger ? '#d93025' : '#076818'} strokeWidth={2.2} />
-      </span>
-      <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: danger ? '#d93025' : '#1a1a1a' }}>{label}</span>
-        {helper && (
-          <span style={{ display: 'block', marginTop: 2, fontSize: 11, fontWeight: 600, color: '#999', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {helper}
-          </span>
-        )}
-      </span>
-      {!danger && <ChevronRight size={18} color="#b8b8b8" strokeWidth={2.3} />}
-    </button>
   )
 }
 
@@ -557,31 +511,6 @@ export default function MyPage() {
                 )
               })}
             </div>
-          </section>
-        )}
-
-        {!loading && userInfo && (
-          <section style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 24, padding: '6px 16px' }}>
-            <MenuRow
-              icon={User}
-              label="개인 정보 관리"
-              helper={`${userInfo.region || '지역 미등록'} · ${userInfo.age ? `${userInfo.age}세` : '나이 미등록'}`}
-              onClick={() => navigate('/step1')}
-            />
-            <div style={{ height: 1, background: '#f2f2f2' }} />
-            <MenuRow
-              icon={ClipboardList}
-              label="지원 현황"
-              helper={`${plannedCount + completedCount}건 진행 중`}
-              onClick={() => navigate('/grant-status')}
-            />
-            <div style={{ height: 1, background: '#f2f2f2' }} />
-            <MenuRow
-              icon={ShieldCheck}
-              label="계정 보안"
-              helper="카카오 로그인 연결됨"
-              onClick={() => {}}
-            />
           </section>
         )}
 
