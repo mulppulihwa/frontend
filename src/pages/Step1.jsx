@@ -5,7 +5,7 @@ import StepIndicator from '../components/StepIndicator'
 import SelectField from '../components/SelectField'
 import Button from '../components/Button'
 import SearchAnimation from '../components/SearchAnimation'
-import { fetchRegions, updateProfile } from '../lib/api'
+import { fetchProfile, fetchRegions, updateProfile } from '../lib/api'
 
 const fieldGap = 12
 
@@ -178,6 +178,7 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
 }
 
 const STORAGE_KEY = 'diagnosisProgress'
+const SUBMITTED_PROFILE_KEY = 'submittedDiagnosisProfile'
 const REGION_LOADING_OPTIONS = [{ value: '__loading_regions', label: '지역을 불러오는 중...', disabled: true }]
 const REGION_ERROR_OPTIONS = [{ value: '__region_error', label: '지역을 불러오지 못했어요', disabled: true }]
 const GENDER_API_VALUES = {
@@ -215,6 +216,38 @@ function isCompleteDate(value) {
   return hasValue(y) && hasValue(m) && hasValue(d)
 }
 
+function firstValue(source, keys) {
+  for (const key of keys) {
+    const value = source?.[key]
+    if (value !== undefined && value !== null && value !== '') return value
+  }
+  return ''
+}
+
+function normalizeApiGender(value) {
+  if (value === '남') return '남자'
+  if (value === '여') return '여자'
+  return value || ''
+}
+
+function normalizeProfileResponse(profile) {
+  const profileData = profile?.profile || profile?.user_profile || profile?.userProfile || profile || {}
+  return {
+    birthDate: firstValue(profileData, ['birth_date', 'birthDate']),
+    gender: normalizeApiGender(firstValue(profileData, ['gender'])),
+    farming: (profileData.occupation_tags || []).includes('귀농')
+      ? true
+      : (profileData.occupation_tags || []).includes('귀촌')
+        ? false
+        : null,
+    movedAt: firstValue(profileData, ['move_in_date', 'moved_at', 'movedAt']),
+    farmBusiness: firstValue(profileData, ['is_farm_registered', 'farmBusiness']),
+    farmingEducation: Number(firstValue(profileData, ['education_hours', 'educationHours']) || 0) >= 100,
+    outsideIncome: firstValue(profileData, ['non_farm_income', 'outsideIncome']),
+    regionCode: firstValue(profileData, ['region_code', 'regionCode']),
+  }
+}
+
 export default function Step1() {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
@@ -238,6 +271,42 @@ export default function Step1() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
+  const applySavedForm = (saved) => {
+    if (!saved) return
+    setBirthDate(saved.birthDate ?? birthDate)
+    setAge(saved.age ?? age)
+    setGender(saved.gender ?? gender)
+    setNationality(saved.nationality ?? nationality)
+    setFarming(saved.farming ?? farming)
+    setFarmingDate(saved.farmingDate ?? farmingDate)
+    setLocation(saved.location ?? location)
+    setMovedAt(saved.movedAt ?? movedAt)
+    setPreviousResidence(saved.previousResidence ?? previousResidence)
+    setPreviousSince(saved.previousSince ?? previousSince)
+    setJob(saved.job ?? job)
+    setFarmBusiness(saved.farmBusiness ?? farmBusiness)
+    setFarmingEducation(saved.farmingEducation ?? farmingEducation)
+    setOutsideIncome(saved.outsideIncome ?? outsideIncome)
+    setRegion(saved.region ?? region)
+  }
+
+  const applyProfile = (profile, regions = []) => {
+    const normalized = normalizeProfileResponse(profile)
+    if (normalized.birthDate) setBirthDate(normalized.birthDate)
+    if (normalized.gender) setGender(normalized.gender)
+    if (normalized.farming !== null) setFarming(normalized.farming)
+    if (normalized.movedAt) setMovedAt(normalized.movedAt)
+    if (normalized.farmBusiness !== '') setFarmBusiness(Boolean(normalized.farmBusiness))
+    if (normalized.farmingEducation !== null) setFarmingEducation(normalized.farmingEducation)
+    if (normalized.outsideIncome !== '') setOutsideIncome(String(Number(normalized.outsideIncome) * 10000))
+
+    const regionName = regions.find(({ code }) => String(code) === String(normalized.regionCode))?.name
+    if (regionName) {
+      setLocation(regionName === '옥천군' ? '옥천' : '옥천 외')
+      setRegion(regionName)
+    }
+  }
+
   useEffect(() => {
     let active = true
     fetchRegions()
@@ -260,6 +329,34 @@ export default function Step1() {
     }
   }, [])
 
+  useEffect(() => {
+    let active = true
+    const draft = localStorage.getItem(STORAGE_KEY)
+    const submitted = localStorage.getItem(SUBMITTED_PROFILE_KEY)
+
+    if (draft) return () => { active = false }
+
+    if (submitted) {
+      try {
+        applySavedForm(JSON.parse(submitted))
+      } catch {
+        localStorage.removeItem(SUBMITTED_PROFILE_KEY)
+      }
+    }
+
+    fetchProfile()
+      .then(profile => {
+        if (!active) return
+        const usableRegions = regionOptions.filter(option => !option.disabled)
+        applyProfile(profile, usableRegions)
+      })
+      .catch(() => {})
+
+    return () => {
+      active = false
+    }
+  }, [regionOptions])
+
   const saveProgress = (currentPage) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       page: currentPage, birthDate, age, gender, nationality, farming,
@@ -271,21 +368,7 @@ export default function Step1() {
   const handleResume = () => {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
     if (!saved) return
-    setBirthDate(saved.birthDate ?? birthDate)
-    setAge(saved.age ?? age)
-    setGender(saved.gender ?? gender)
-    setNationality(saved.nationality ?? nationality)
-    setFarming(saved.farming ?? farming)
-    setFarmingDate(saved.farmingDate ?? farmingDate)
-    setLocation(saved.location ?? location)
-    setMovedAt(saved.movedAt ?? movedAt)
-    setPreviousResidence(saved.previousResidence ?? previousResidence)
-    setPreviousSince(saved.previousSince ?? previousSince)
-    setJob(saved.job ?? job)
-    setFarmBusiness(saved.farmBusiness ?? farmBusiness)
-    setFarmingEducation(saved.farmingEducation ?? farmingEducation)
-    setOutsideIncome(saved.outsideIncome ?? outsideIncome)
-    setRegion(saved.region ?? region)
+    applySavedForm(saved)
     setPage(saved.page ?? 1)
     setShowResumeModal(false)
   }
@@ -404,6 +487,11 @@ export default function Step1() {
       try {
         await submitProfile()
         localStorage.removeItem(STORAGE_KEY)
+        localStorage.setItem(SUBMITTED_PROFILE_KEY, JSON.stringify({
+          birthDate, age, gender, nationality, farming,
+          farmingDate, location, movedAt, previousResidence, previousSince,
+          job, farmBusiness, farmingEducation, outsideIncome, region,
+        }))
         navigate('/loading')
       } catch (err) {
         setSubmitError(err.message || '입력 정보를 저장하지 못했습니다.')
