@@ -342,17 +342,16 @@ export default function MyPage() {
               background: '#fff',
               border: '1px solid #e8e8e8',
               borderRadius: 24,
-              padding: '0 16px 16px',
+              padding: '18px 16px 16px',
               boxShadow: '0 12px 30px rgba(7,104,24,0.08)',
               position: 'relative',
               zIndex: 2,
             }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 14 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, minWidth: 0 }}>
+              <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
                   <div style={{
-                    width: 68,
-                    height: 68,
-                    marginTop: -22,
+                    width: 76,
+                    height: 76,
                     borderRadius: '50%',
                     background: '#e8f3e8',
                     border: '4px solid #fff',
@@ -362,11 +361,11 @@ export default function MyPage() {
                   }}>
                     <img src={farmerAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
-                  <div style={{ paddingBottom: 2, minWidth: 0 }}>
+                  <div style={{ marginTop: 8, minWidth: 0, textAlign: 'center' }}>
                     <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {userInfo.name || '카카오 사용자'}님
                     </p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 3 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 3 }}>
                       <MapPin size={13} color="#8a8a8a" strokeWidth={2} />
                       <span style={{ fontSize: 12, fontWeight: 700, color: '#8a8a8a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {userInfo.region || '지역 미등록'} 거주
@@ -377,6 +376,9 @@ export default function MyPage() {
                 <button
                   onClick={() => navigate('/step1')}
                   style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 10,
                     height: 32,
                     padding: '0 12px',
                     borderRadius: 14,
