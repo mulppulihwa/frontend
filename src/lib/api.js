@@ -243,9 +243,14 @@ export async function updateProfile(profile) {
 }
 
 export async function fetchSavedPolicies() {
-  const data = await request('/api/users/me/policies/')
   const statusCache = readPolicyStatusCache()
   const savedPolicyCache = readSavedPolicyCache()
+  let data = []
+  try {
+    data = await request('/api/users/me/policies/')
+  } catch {
+    data = []
+  }
   const policies = toArray(data).map((item, index) => {
     const policy = item.policy || item
     const userStatus = item.user_status || item.status || item.policy_status || item.application_status || policy.user_status

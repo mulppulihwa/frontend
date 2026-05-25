@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Check, Search, X, ArrowUpDown } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
-import { fetchSavedPolicies, updateSavedPolicyStatus } from '../lib/api'
+import { cachePolicyStatus, fetchSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 
 const filters = [
   { key: '전체', label: '전체' },
@@ -156,8 +156,11 @@ export default function GrantStatus() {
 
   const handleStatusChange = async (grantId, val) => {
     const previous = statuses[grantId] || null
+    const grant = grantsData.find(item => item.id === grantId)
     setStatuses(p => ({ ...p, [grantId]: val }))
+    cachePolicyStatus(grantId, val, grant)
     try {
+      await savePolicy(grantId).catch(() => null)
       await updateSavedPolicyStatus(grantId, val)
       showToast()
     } catch (err) {

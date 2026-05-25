@@ -54,10 +54,10 @@ export default function Results() {
     const previous = statuses[grant.id] || null
     setStatusError('')
     setStatuses(p => ({ ...p, [grant.id]: val }))
+    cachePolicyStatus(grant.id, val, grant)
     try {
       await savePolicy(grant.id).catch(() => null)
       await updateSavedPolicyStatus(grant.id, val)
-      cachePolicyStatus(grant.id, val, grant)
     } catch (err) {
       setStatuses(p => ({ ...p, [grant.id]: previous }))
       setStatusError(err.message || '지원현황을 저장하지 못했습니다.')
