@@ -58,6 +58,10 @@ function normalizeProfile(profile) {
   const user = profile.user || profile.account || profile.member || {}
   const kakao = profile.kakao || profile.kakao_user || profile.kakaoUser || {}
   const region = firstValue(profile.region, ['name', 'region_name']) || firstValue(profile, ['region_name', 'region'])
+  const occupationTags = profile.occupation_tags || profileData.occupation_tags || []
+  const isReturnFarmer = Array.isArray(occupationTags)
+    ? occupationTags.includes('귀농')
+    : null
 
   return {
     name: findDisplayName(profile)
@@ -69,7 +73,7 @@ function normalizeProfile(profile) {
     age: firstValue(profile, ['age']),
     gender: firstValue(profile, ['gender']) || firstValue(kakaoAccount, ['gender']),
     region,
-    farming: profile.farming ?? profile.is_farmer ?? profile.isFarmer ?? null,
+    farming: isReturnFarmer ?? profile.farming ?? profile.is_farmer ?? profile.isFarmer ?? null,
     movedAt: firstValue(profile, ['moved_at', 'movedAt', 'move_in_date']),
   }
 }
