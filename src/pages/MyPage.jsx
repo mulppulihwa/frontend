@@ -292,32 +292,11 @@ export default function MyPage() {
           <>
             <div style={{
               margin: '0 -18px',
-              minHeight: 154,
-              background: '#076818',
-              borderRadius: '0 0 34px 34px',
-              color: '#fff',
+              background: '#FDFCF8',
+              color: '#1a1a1a',
               position: 'relative',
-              overflow: 'hidden',
-              padding: '30px 22px 74px',
+              padding: '30px 22px 18px',
             }}>
-              <div style={{
-                position: 'absolute',
-                right: -34,
-                top: -40,
-                width: 150,
-                height: 150,
-                borderRadius: '50%',
-                background: 'rgba(255,255,255,0.08)',
-              }} />
-              <div style={{
-                position: 'absolute',
-                left: -38,
-                bottom: -66,
-                width: 170,
-                height: 170,
-                borderRadius: '50%',
-                background: 'rgba(255,255,255,0.07)',
-              }} />
               <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <button
                   onClick={() => navigate('/home')}
@@ -325,10 +304,10 @@ export default function MyPage() {
                   style={{
                     width: 34,
                     height: 34,
-                    border: '1px solid rgba(255,255,255,0.22)',
+                    border: '1px solid #e8e8e8',
                     borderRadius: 14,
-                    background: 'rgba(255,255,255,0.12)',
-                    color: '#fff',
+                    background: '#fff',
+                    color: '#1a1a1a',
                     cursor: 'pointer',
                     fontSize: 20,
                     fontWeight: 700,
@@ -345,22 +324,21 @@ export default function MyPage() {
                   style={{
                     width: 34,
                     height: 34,
-                    border: '1px solid rgba(255,255,255,0.22)',
+                    border: '1px solid #e8e8e8',
                     borderRadius: 14,
-                    background: 'rgba(255,255,255,0.12)',
+                    background: '#fff',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
                   }}
                 >
-                  <Pencil size={15} color="#fff" strokeWidth={2.3} />
+                  <Pencil size={15} color="#1a1a1a" strokeWidth={2.3} />
                 </button>
               </div>
             </div>
 
             <section style={{
-              marginTop: -56,
               background: '#fff',
               border: '1px solid #e8e8e8',
               borderRadius: 24,
