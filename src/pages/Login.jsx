@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
 import okcheonLogo from '../assets/okcheon-ok-green.png'
-import { completeKakaoLogin, consumeLoginRedirect, startKakaoLogin } from '../lib/auth'
+import { completeKakaoLogin, consumeLoginRedirect, logout, startKakaoLogin } from '../lib/auth'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -44,6 +44,11 @@ export default function Login() {
     } catch (err) {
       setError(err.message)
     }
+  }
+
+  const handleGuestStart = () => {
+    logout()
+    navigate('/home')
   }
 
   return (
@@ -113,7 +118,7 @@ export default function Login() {
         </button>
 
         <button
-          onClick={() => navigate('/home')}
+          onClick={handleGuestStart}
           style={{
             background: 'none',
             border: 'none',

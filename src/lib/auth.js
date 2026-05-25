@@ -4,6 +4,8 @@ const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI
 const LOGIN_REDIRECT_KEY = 'loginRedirectTo'
 const KAKAO_STATE_KEY = 'kakaoOAuthState'
 const KAKAO_USER_NAME_KEY = 'kakaoUserName'
+const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
+const SAVED_POLICY_CACHE_KEY = 'savedPolicyCache'
 let pendingCallback = null
 const DISPLAY_NAME_KEYS = [
   'nickname',
@@ -153,6 +155,8 @@ export function logout() {
     'token',
     'refreshToken',
     'refresh',
+    POLICY_STATUS_CACHE_KEY,
+    SAVED_POLICY_CACHE_KEY,
     KAKAO_USER_NAME_KEY,
   ].forEach(key => localStorage.removeItem(key))
   sessionStorage.removeItem(LOGIN_REDIRECT_KEY)
