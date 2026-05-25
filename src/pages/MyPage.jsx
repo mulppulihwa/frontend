@@ -129,14 +129,11 @@ function InfoPill({ label, value }) {
     <div style={{
       flex: 1,
       minWidth: 0,
-      background: '#FDFCF8',
-      border: '1px solid #eee8de',
-      borderRadius: 16,
-      padding: '10px 8px',
+      padding: '2px 8px',
       textAlign: 'center',
     }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: '#9a948a', marginBottom: 5 }}>{label}</p>
-      <p style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <p style={{ fontSize: 11, fontWeight: 600, color: '#9a948a', marginBottom: 4 }}>{label}</p>
+      <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {value}
       </p>
     </div>
@@ -396,12 +393,22 @@ export default function MyPage() {
                 </button>
               </div>
 
-              <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: 10,
+                padding: '12px 6px',
+                borderRadius: 18,
+                background: '#FDFCF8',
+                border: '1px solid #f0eee8',
+              }}>
                 <InfoPill label="나이" value={userInfo.age ? `${userInfo.age}세` : '미등록'} />
+                <div style={{ width: 1, alignSelf: 'stretch', background: '#ece8df' }} />
                 <InfoPill label="성별" value={userInfo.gender || '미등록'} />
+                <div style={{ width: 1, alignSelf: 'stretch', background: '#ece8df' }} />
                 <InfoPill label="유형" value={userInfo.farming === null ? '미등록' : userInfo.farming ? '귀농' : '비귀농'} />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solidrgb(255, 255, 255)', paddingTop: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f0eee8', paddingTop: 12 }}>
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#9a948a' }}>이사 날짜</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>{userInfo.movedAt || '미등록'}</span>
               </div>
