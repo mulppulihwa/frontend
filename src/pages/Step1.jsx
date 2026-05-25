@@ -364,8 +364,8 @@ export default function Step1() {
     throw lastError
   }
 
-  const isCurrentPageComplete = (() => {
-    switch (page) {
+  const isPageComplete = (pageNumber) => {
+    switch (pageNumber) {
       case 1:
         return isCompleteDate(birthDate) && hasValue(gender) && hasValue(nationality)
       case 2:
@@ -383,12 +383,22 @@ export default function Step1() {
       default:
         return false
     }
-  })()
+  }
+
+  const firstIncompletePage = [1, 2, 3, 4].find(pageNumber => !isPageComplete(pageNumber)) || null
+  const isCurrentPageComplete = isPageComplete(page)
+  const isFormComplete = firstIncompletePage === null
 
   const goNext = async () => {
     if (!isCurrentPageComplete) return
 
     if (page === 4) {
+      if (!isFormComplete) {
+        setPage(firstIncompletePage)
+        setSubmitError('')
+        return
+      }
+
       setSubmitting(true)
       setSubmitError('')
       try {
@@ -483,7 +493,7 @@ export default function Step1() {
       </div>
 
       <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
-        <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete} variant="pill">
+        <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete || (page === 4 && !isFormComplete)} variant="pill">
           {submitting ? '저장 중...' : page === 4 ? '내 지원금 찾기' : '다음'}
         </Button>
       </div>
