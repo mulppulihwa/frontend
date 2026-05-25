@@ -1,4 +1,5 @@
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
 
 export function getAccessToken() {
   return localStorage.getItem('accessToken') || localStorage.getItem('access') || localStorage.getItem('token')
@@ -118,6 +119,44 @@ function getPolicyStatus(policy) {
   return '신청기간'
 }
 
+export function normalizeUserPolicyStatus(status) {
+  const value = typeof status === 'string' ? status.trim() : status
+  const map = {
+    신청예정: '신청예정',
+    신청완료: '신청완료',
+    관심없음: '관심없음',
+    planned: '신청예정',
+    pending: '신청예정',
+    scheduled: '신청예정',
+    todo: '신청예정',
+    completed: '신청완료',
+    complete: '신청완료',
+    done: '신청완료',
+    applied: '신청완료',
+    not_interested: '관심없음',
+    uninterested: '관심없음',
+    ignored: '관심없음',
+    none: '관심없음',
+  }
+  return map[value] || null
+}
+
+function readPolicyStatusCache() {
+  try {
+    return JSON.parse(localStorage.getItem(POLICY_STATUS_CACHE_KEY) || '{}')
+  } catch {
+    return {}
+  }
+}
+
+export function cachePolicyStatus(policyId, status) {
+  const normalizedStatus = normalizeUserPolicyStatus(status)
+  if (!policyId || !normalizedStatus) return
+  const cache = readPolicyStatusCache()
+  cache[String(policyId)] = normalizedStatus
+  localStorage.setItem(POLICY_STATUS_CACHE_KEY, JSON.stringify(cache))
+}
+
 export function normalizePolicy(policy, index = 0) {
   const deadline = policy.apply_end_date || policy.deadline || policy.end_date
   const amount = policy.amount_text || policy.amount || policy.benefit || '지원 내용 확인'
@@ -189,12 +228,14 @@ export async function updateProfile(profile) {
 
 export async function fetchSavedPolicies() {
   const data = await request('/api/users/me/policies/')
+  const statusCache = readPolicyStatusCache()
   return toArray(data).map((item, index) => {
     const policy = item.policy || item
-    const userStatus = item.user_status || item.status || item.policy_status || policy.user_status
+    const userStatus = item.user_status || item.status || item.policy_status || item.application_status || policy.user_status
+    const normalizedPolicy = normalizePolicy(policy, index)
     return {
-      ...normalizePolicy(policy, index),
-      user_status: userStatus || null,
+      ...normalizedPolicy,
+      user_status: normalizeUserPolicyStatus(userStatus) || statusCache[String(normalizedPolicy.id)] || null,
     }
   })
 }

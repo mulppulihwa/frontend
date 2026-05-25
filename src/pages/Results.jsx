@@ -5,7 +5,7 @@ import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import Card from '../components/Card'
 import GrantResultCard from '../components/GrantResultCard'
-import { fetchMatchedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
+import { cachePolicyStatus, fetchMatchedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 
 const statusConfig = {
   신청기간: { label: '신청 기간', color: '#076818', bg: '#e6f4ec' },
@@ -57,6 +57,7 @@ export default function Results() {
     try {
       await savePolicy(grant.id).catch(() => null)
       await updateSavedPolicyStatus(grant.id, val)
+      cachePolicyStatus(grant.id, val)
     } catch (err) {
       setStatuses(p => ({ ...p, [grant.id]: previous }))
       setStatusError(err.message || '지원현황을 저장하지 못했습니다.')
