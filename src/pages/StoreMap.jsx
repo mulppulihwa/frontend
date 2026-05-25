@@ -1,17 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Tractor, Wallet, Search, X, Clock } from 'lucide-react'
+import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import { fetchPlaces } from '../lib/api'
+import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
 
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
-
-const categories = [
-  { id: 'farm', label: '농기구 구입처', icon: Tractor, color: '#076818', bg: '#e8f3e8' },
-  { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#FFA100', bg: '#fff3e0' },
-]
-
-const emptyStores = { farm: [], local: [] }
 
 function haversine(lat1, lng1, lat2, lng2) {
   const R = 6371000
@@ -21,8 +15,6 @@ function haversine(lat1, lng1, lat2, lng2) {
   const d = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
   return d < 1000 ? `${Math.round(d)}m` : `${(d/1000).toFixed(1)}km`
 }
-
-const markerColors = { farm: '#076818', local: '#FFA100' }
 
 const COLLAPSED_H = 160
 const EXPANDED_H = 440
@@ -35,10 +27,10 @@ export default function StoreMap() {
   const mapInstanceRef = useRef(null)
   const markersRef = useRef([])
   const mapAreaRef = useRef(null)
-  const [activeCategory, setActiveCategory] = useState('farm')
+  const [activeCategory, setActiveCategory] = useState('')
   const [sheetH, setSheetH] = useState(COLLAPSED_H)
   const [selectedStore, setSelectedStore] = useState(null)
-  const [stores, setStores] = useState(emptyStores)
+  const [stores, setStores] = useState([])
   const [query, setQuery] = useState('')
   const [detailPopup, setDetailPopup] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
@@ -57,10 +49,9 @@ export default function StoreMap() {
     fetchPlaces()
       .then(places => {
         if (!active) return
-        setStores({
-          farm: places.filter(place => place.category === 'farm'),
-          local: places.filter(place => place.category === 'local'),
-        })
+        setStores(places)
+        const nextCategory = state?.store?.category || places[0]?.category || ''
+        if (nextCategory) setActiveCategory(nextCategory)
       })
       .catch(() => {})
     return () => {
@@ -110,7 +101,7 @@ export default function StoreMap() {
           ? new window.kakao.maps.LatLng(state.store.lat, state.store.lng)
           : new window.kakao.maps.LatLng(OKCHEON_CENTER.lat, OKCHEON_CENTER.lng)
         mapInstanceRef.current = new window.kakao.maps.Map(container, { center, level: 3 })
-        const category = state?.store?.category ?? activeCategory
+        const category = state?.store?.category || activeCategory
         if (state?.store) setActiveCategory(category)
         drawMarkers(category)
         if (state?.store) {
@@ -134,11 +125,11 @@ export default function StoreMap() {
 
   function drawMarkers(categoryId) {
     const map = mapInstanceRef.current
-    if (!map) return
+    if (!map || !categoryId) return
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
-    const color = markerColors[categoryId]
-    ;(stores[categoryId] || []).forEach(store => {
+    const color = getPlaceCategoryMeta(categoryId, categories.findIndex(cat => cat.id === categoryId)).color
+    stores.filter(place => place.category === categoryId).forEach(store => {
       const position = new window.kakao.maps.LatLng(store.lat, store.lng)
       const svg = `<svg width="36" height="44" viewBox="0 0 36 44" xmlns="http://www.w3.org/2000/svg">
         <filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/></filter>
@@ -171,7 +162,8 @@ export default function StoreMap() {
     drawMarkers(categoryId)
   }
 
-  const filteredStores = (stores[activeCategory] || []).filter(s =>
+  const categories = getPlaceCategories(stores)
+  const filteredStores = stores.filter(s => s.category === activeCategory).filter(s =>
     s.name.includes(query) || s.address.includes(query)
   )
 
@@ -183,7 +175,7 @@ export default function StoreMap() {
     }, fullscreen ? 120 : 0)
   }
 
-  const activeCat = categories.find(c => c.id === activeCategory)
+  const activeCat = categories.find(c => c.id === activeCategory) || getPlaceCategoryMeta(activeCategory)
 
   const openDetail = (store) => {
     setDetailPopup({ ...store, kakaoResult: null })
@@ -323,7 +315,7 @@ export default function StoreMap() {
               </div>
             )}
             {filteredStores.map((store) => {
-              const i = (stores[activeCategory] || []).indexOf(store)
+              const i = stores.indexOf(store)
               const isSelected = selectedStore?.name === store.name
               const CatIcon = activeCat.icon
               return (

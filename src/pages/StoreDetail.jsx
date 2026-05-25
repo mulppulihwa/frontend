@@ -32,7 +32,7 @@ export default function StoreDetail() {
           {store.name}
         </p>
         <p style={{ fontSize: 14, fontWeight: 400, color: '#888', marginTop: 4, letterSpacing: '-0.1px' }}>
-          {store.category === 'local' ? '지역화폐 사용처' : '농기구 구입처'}
+          {store.category || '사용처'}
         </p>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,

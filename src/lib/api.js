@@ -195,7 +195,7 @@ export function normalizePolicy(policy, index = 0) {
 }
 
 export function normalizePlace(place, index = 0) {
-  const category = place.category || place.type || (place.benefit_type === '지역화폐' ? 'local' : 'farm')
+  const category = place.category || place.type || place.benefit_type || ''
   return {
     ...place,
     id: place.id ?? index + 1,
@@ -207,7 +207,7 @@ export function normalizePlace(place, index = 0) {
     lng: Number(place.lng ?? place.longitude ?? place.x),
     rating: place.rating ?? 4.0,
     reviews: place.reviews ?? 0,
-    category: category === 'local' ? 'local' : 'farm',
+    category,
   }
 }
 

@@ -1,12 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Search, X, MapPin, Phone, Tractor, Wallet } from 'lucide-react'
+import { ArrowLeft, Search, X, MapPin, Phone } from 'lucide-react'
 import { fetchPlaces } from '../lib/api'
-
-const categories = [
-  { id: 'farm', label: '농기구 구입처', icon: Tractor, color: '#076818', bg: '#e8f3e8' },
-  { id: 'local', label: '지역화폐 사용처', icon: Wallet, color: '#FFA100', bg: '#fff3e0' },
-]
+import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
 
 export default function StoreSearch() {
   const navigate = useNavigate()
@@ -33,6 +29,7 @@ export default function StoreSearch() {
   const filtered = query.trim()
     ? stores.filter(s => s.name.includes(query) || s.address.includes(query))
     : []
+  const categories = getPlaceCategories(stores)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#FDFCF8' }}>
@@ -71,8 +68,7 @@ export default function StoreSearch() {
           <p style={{ textAlign: 'center', color: '#bbb', fontSize: 14, marginTop: 40 }}>검색 결과가 없어요</p>
         )}
         {filtered.map((store, i) => {
-          const cat = categories.find(c => c.id === store.category)
-          if (!cat) return null
+          const cat = categories.find(c => c.id === store.category) || getPlaceCategoryMeta(store.category)
           const Icon = cat.icon
           return (
             <div key={i} style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 30, overflow: 'hidden' }}>
