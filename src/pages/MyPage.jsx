@@ -51,17 +51,37 @@ function firstValue(source, keys) {
   return ''
 }
 
+function normalizeTags(value) {
+  if (Array.isArray(value)) return value
+  if (typeof value === 'string') return value.split(',').map(tag => tag.trim()).filter(Boolean)
+  return []
+}
+
+function getReturnFarming(profile, profileData) {
+  const occupationTags = normalizeTags(profile.occupation_tags || profileData.occupation_tags)
+  if (occupationTags.includes('귀농')) return true
+  if (occupationTags.includes('귀촌')) return false
+
+  const explicitValue = profile.farming
+    ?? profile.is_farmer
+    ?? profile.isFarmer
+    ?? profileData.farming
+    ?? profileData.is_farmer
+    ?? profileData.isFarmer
+
+  return explicitValue ?? null
+}
+
 function normalizeProfile(profile) {
   const kakaoAccount = profile.kakao_account || profile.kakaoAccount || {}
   const kakaoProfile = kakaoAccount.profile || profile.properties || profile.kakao_profile || {}
   const profileData = profile.profile || profile.user_profile || profile.userProfile || {}
   const user = profile.user || profile.account || profile.member || {}
   const kakao = profile.kakao || profile.kakao_user || profile.kakaoUser || {}
-  const region = firstValue(profile.region, ['name', 'region_name']) || firstValue(profile, ['region_name', 'region'])
-  const occupationTags = profile.occupation_tags || profileData.occupation_tags || []
-  const isReturnFarmer = Array.isArray(occupationTags)
-    ? occupationTags.includes('귀농')
-    : null
+  const region = firstValue(profile.region, ['name', 'region_name'])
+    || firstValue(profileData.region, ['name', 'region_name'])
+    || firstValue(profile, ['region_name', 'region'])
+    || firstValue(profileData, ['region_name', 'region'])
 
   return {
     name: findDisplayName(profile)
@@ -70,11 +90,12 @@ function normalizeProfile(profile) {
       || findDisplayName(kakaoProfile)
       || findDisplayName(kakao)
       || getKakaoUserName(),
-    age: firstValue(profile, ['age']),
-    gender: firstValue(profile, ['gender']) || firstValue(kakaoAccount, ['gender']),
+    age: firstValue(profile, ['age']) || firstValue(profileData, ['age']),
+    gender: firstValue(profile, ['gender']) || firstValue(profileData, ['gender']) || firstValue(kakaoAccount, ['gender']),
     region,
-    farming: isReturnFarmer ?? profile.farming ?? profile.is_farmer ?? profile.isFarmer ?? null,
-    movedAt: firstValue(profile, ['moved_at', 'movedAt', 'move_in_date']),
+    farming: getReturnFarming(profile, profileData),
+    movedAt: firstValue(profile, ['moved_at', 'movedAt', 'move_in_date'])
+      || firstValue(profileData, ['moved_at', 'movedAt', 'move_in_date']),
   }
 }
 
