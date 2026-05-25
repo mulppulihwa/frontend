@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
-import Card from '../components/Card'
 import GrantResultCard from '../components/GrantResultCard'
 import { cachePolicyStatus, fetchMatchedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 
@@ -104,27 +103,27 @@ export default function Results() {
 
       <div style={{ padding: '0 18px 152px', flex: 1, overflowX: 'hidden' }}>
         {loading && (
-          <Card>
+          <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center' }}>
               맞춤 지원금을 불러오는 중입니다.
             </p>
-          </Card>
+          </div>
         )}
 
         {!loading && loadError && (
-          <Card>
+          <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45 }}>
               {loadError}
             </p>
-          </Card>
+          </div>
         )}
 
         {!loading && !loadError && total === 0 && (
-          <Card>
+          <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center' }}>
               조건에 맞는 지원금이 없어요.
             </p>
-          </Card>
+          </div>
         )}
 
         {!loading && !loadError && grant && (
@@ -148,7 +147,7 @@ export default function Results() {
         />
 
         {/* Status card */}
-        <Card style={{ padding: '10px 14px' }}>
+        <div style={{ background: '#fff', borderRadius: 22, border: '1.5px solid #e8e8e8', padding: '10px 14px' }}>
           <p style={{ fontSize: 13, fontWeight: 500, color: '#1a1a1a', marginBottom: 8, letterSpacing: '-0.1px' }}>지원현황을 체크해주세요</p>
           <StatusCheckboxes
             value={statuses[grant.id] ?? null}
@@ -159,7 +158,7 @@ export default function Results() {
               {statusError}
             </p>
           )}
-        </Card>
+        </div>
 
         </div>
         )}
