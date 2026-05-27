@@ -4,7 +4,8 @@ import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import GrantResultCard from '../components/GrantResultCard'
-import { cachePolicyStatus, fetchMatchedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
+import { cachePolicyStatus, fetchMatchedPolicies, fetchProfile, savePolicy, updateSavedPolicyStatus } from '../lib/api'
+import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
 const statusConfig = {
   신청기간: { label: '신청 기간', color: '#076818', bg: '#e6f4ec' },
@@ -22,11 +23,22 @@ export default function Results() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
   const [statusError, setStatusError] = useState('')
+  const [userName, setUserName] = useState(getKakaoUserName)
   const grant = grants[index]
   const total = grants.length
 
   useEffect(() => {
     let active = true
+    fetchProfile()
+      .then(profile => {
+        if (!active) return
+        const name = findDisplayName(profile)
+        if (name) {
+          setUserName(name)
+          if (!getKakaoUserName()) localStorage.setItem('kakaoUserName', name)
+        }
+      })
+      .catch(() => {})
     fetchMatchedPolicies()
       .then(policies => {
         if (active) {
@@ -81,7 +93,7 @@ export default function Results() {
         </div>
         <div style={{ textAlign: 'center', lineHeight: 1.45 }}>
           <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease both' }}>
-            ○○○님이 받을 수 있는 지원금
+            {userName || '회원'}님이 받을 수 있는 지원금
           </p>
           <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease 0.18s both' }}>
             <span style={{ color: '#076818' }}>총 {total}개</span> 찾았어요
