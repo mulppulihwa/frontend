@@ -181,7 +181,7 @@ export function normalizePolicy(policy, index = 0) {
   return {
     ...policy,
     id: policy.id ?? policy.policy_id ?? index + 1,
-    title: policy.title || policy.name || `지원 정책 ${index + 1}`,
+    title: policy.title || policy.name || policy.policy_name || policy.grant_name || policy.policy_title || `지원 정책 ${index + 1}`,
     subtitle: amount,
     agency: policy.managing_org || policy.agency || policy.organization || '담당 기관 확인',
     reasons: [summary, policy.benefit_type].filter(Boolean),
@@ -248,11 +248,13 @@ export async function fetchSavedPolicies() {
   let data = []
   try {
     data = await request('/api/users/me/policies/')
-  } catch {
+    console.log('[fetchSavedPolicies] raw API response:', JSON.stringify(data).slice(0, 1000))
+  } catch (err) {
+    console.warn('[fetchSavedPolicies] API error:', err)
     data = []
   }
   const policies = toArray(data).map((item, index) => {
-    const policy = item.policy || item
+    const policy = (item.policy && typeof item.policy === 'object') ? item.policy : item
     const userStatus = item.user_status || item.status || item.policy_status || item.application_status || policy.user_status
     const normalizedPolicy = normalizePolicy(policy, index)
     return {
