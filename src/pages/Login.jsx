@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
-import okcheonLogo from '../assets/okcheon-ok-green.png'
+import okcheonTypo from '../assets/okcheon_typo.png'
+import okTypo from '../assets/ok_typo.png'
 import { completeKakaoLogin, consumeLoginRedirect, logout, startKakaoLogin } from '../lib/auth'
 
 export default function Login() {
@@ -68,17 +69,19 @@ export default function Login() {
         paddingBottom: 54,
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-	          <div style={{
-	            width: 112,
-	            height: 112,
-	            display: 'flex',
-	            alignItems: 'center',
-	            justifyContent: 'center',
-	          }}>
-            <img src={okcheonLogo} alt="옥천OK" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          <style>{`
+            @keyframes spinRock {
+              0%   { transform: rotate(0deg); }
+              50%  { transform: rotate(-90deg); }
+              100% { transform: rotate(0deg); }
+            }
+            .logo-spin-login { animation: spinRock 2s ease-in-out infinite; transform-origin: center center; }
+          `}</style>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            <img src={okcheonTypo} alt="옥천" style={{ height: 64, width: 'auto' }} />
+            <img src={okTypo} alt="OK" className="logo-spin-login" style={{ height: 64, width: 'auto' }} />
           </div>
-          <p style={{ fontSize: 30, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.6px', marginTop: 22 }}>옥천OK</p>
-          <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: 12, textAlign: 'center' }}>
+          <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: 20, textAlign: 'center' }}>
             내 조건에 맞는 농업 지원금을<br />간편하게 찾아보세요
           </p>
         </div>

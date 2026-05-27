@@ -532,7 +532,7 @@ export default function Step1() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: '#FDFCF8' }}>
       <div style={{ background: '#FDFCF8' }}>
-        <TopBar title="정보 입력" onBack={goBack} />
+        <TopBar title="정보 입력" onBack={goBack} onClose={page === 3 ? () => navigate('/home') : undefined} />
         <div style={{ padding: '8px 18px 10px' }}>
           <StepIndicator current={page} total={3} />
         </div>
