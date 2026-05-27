@@ -232,7 +232,9 @@ export async function fetchPlaces() {
 }
 
 export async function fetchProfile() {
-  return request('/api/profile/')
+  const data = await request('/api/profile/')
+  console.log('[fetchProfile] response:', JSON.stringify(data))
+  return data
 }
 
 export async function updateProfile(profile) {
