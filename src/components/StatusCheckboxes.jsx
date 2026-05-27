@@ -1,22 +1,15 @@
 import { Check, Clock3, X } from 'lucide-react'
 
 const statuses = [
-  { key: '신청완료', label: '신청 완료', Icon: Check,  activeColor: '#076818', activeBg: '#e8f3e8' },
-  { key: '신청예정', label: '신청 예정', Icon: Clock3, activeColor: '#FFA100', activeBg: '#fff3e0' },
-  { key: '관심없음', label: '관심 없음', Icon: X,       activeColor: '#d93025', activeBg: '#fff0ef' },
+  { key: '신청완료', label: '신청 완료', Icon: Check,  activeColor: '#076818', activeBg: '#e8f3e8', activeBorder: '#076818' },
+  { key: '신청예정', label: '신청 예정', Icon: Clock3, activeColor: '#d07000', activeBg: '#fff3e0', activeBorder: '#FFA100' },
+  { key: '관심없음', label: '관심 없음', Icon: X,       activeColor: '#b52a20', activeBg: '#fff0ef', activeBorder: '#d93025' },
 ]
 
 export default function StatusCheckboxes({ value, onChange }) {
   return (
-    <div style={{
-      display: 'flex',
-      background: '#fff',
-      border: '1.5px solid #e8e8e8',
-      borderRadius: 16,
-      padding: 4,
-      gap: 4,
-    }}>
-      {statuses.map(({ key, label, Icon, activeColor, activeBg }) => {
+    <div style={{ display: 'flex', gap: 7 }}>
+      {statuses.map(({ key, label, Icon, activeColor, activeBg, activeBorder }) => {
         const active = value === key
         return (
           <button
@@ -25,27 +18,26 @@ export default function StatusCheckboxes({ value, onChange }) {
             onClick={() => onChange(active ? null : key)}
             style={{
               flex: 1,
-              minHeight: 40,
-              padding: '6px 4px',
-              border: '1.5px solid transparent',
-              borderRadius: 10,
-              background: active ? activeBg : 'transparent',
-              boxShadow: 'none',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              fontSize: 12,
-              fontWeight: 500,
-              color: active ? activeColor : '#444',
-              letterSpacing: '-0.2px',
-              transition: 'border-color 0.15s ease, background 0.15s ease, color 0.15s ease',
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 4,
+              gap: 5,
+              padding: '9px 4px',
+              borderRadius: 12,
+              border: `1.5px solid ${active ? activeBorder : '#e8e8e8'}`,
+              background: active ? activeBg : '#fafafa',
+              boxShadow: active ? `0 2px 8px ${activeBorder}22` : 'none',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              fontSize: 12,
+              fontWeight: active ? 700 : 500,
+              color: active ? activeColor : '#999',
+              letterSpacing: '-0.2px',
+              transition: 'all 0.15s ease',
             }}
           >
-            <Icon size={14} strokeWidth={2.4} />
+            <Icon size={13} strokeWidth={active ? 2.8 : 2.2} />
             {label}
           </button>
         )
