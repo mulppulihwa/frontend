@@ -3,7 +3,8 @@ import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
 import farmer from '../assets/farmer.png'
-import okcheonLogo from '../assets/okcheon-ok-green.png'
+import okcheonTypo from '../assets/okcheon_typo.png'
+import okTypo from '../assets/ok_typo.png'
 import Button from '../components/Button'
 import Folder from '../components/Folder'
 import { fetchPreviewPolicies, getAccessToken } from '../lib/api'
@@ -54,8 +55,20 @@ export default function Home() {
       padding: '60px 28px 120px',
       boxSizing: 'border-box',
     }}>
-      <div style={{ textAlign: 'center' }}>
-        <img src={okcheonLogo} alt="옥천OK" style={{ width: 200, height: 'auto', display: 'block', margin: '0 auto' }} />
+      <style>{`
+        @keyframes spinRock {
+          0%   { transform: rotate(0deg); }
+          50%  { transform: rotate(-90deg); }
+          100% { transform: rotate(0deg); }
+        }
+        .logo-spin {
+          animation: spinRock 2s ease-in-out infinite;
+          transform-origin: center center;
+        }
+      `}</style>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+        <img src={okcheonTypo} alt="옥천" style={{ height: 48, width: 'auto' }} />
+        <img src={okTypo} alt="OK" className="logo-spin" style={{ height: 48, width: 'auto' }} />
       </div>
 
       <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
