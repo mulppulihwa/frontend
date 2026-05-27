@@ -257,8 +257,11 @@ export async function fetchSavedPolicies() {
   }
   const policies = toArray(data).map((item, index) => {
     const policy = (item.policy && typeof item.policy === 'object') ? item.policy : item
+    // policy_id = the Policy's PK (used in /save/ and /status/ URLs)
+    // item.id   = the UserPolicy join-table PK — NOT what the API expects
+    const policyForNormalize = item.policy_id ? { ...policy, id: item.policy_id } : policy
     const userStatus = item.user_status || item.status || item.policy_status || item.application_status || policy.user_status
-    const normalizedPolicy = normalizePolicy(policy, index)
+    const normalizedPolicy = normalizePolicy(policyForNormalize, index)
     return {
       ...normalizedPolicy,
       user_status: normalizeUserPolicyStatus(userStatus) || statusCache[String(normalizedPolicy.id)] || null,
@@ -281,30 +284,9 @@ export async function savePolicy(policyId) {
 }
 
 export async function updateSavedPolicyStatus(policyId, status) {
-  const mappedStatus = {
-    신청예정: 'planned',
-    신청완료: 'completed',
-    관심없음: 'not_interested',
-  }[status] || status
-  const payloads = [
-    { status },
-    { user_status: status },
-    { status: mappedStatus },
-    { user_status: mappedStatus },
-  ]
-  let lastError = null
-
-  for (const payload of payloads) {
-    try {
-      return await request(`/api/users/me/policies/${policyId}/status/`, {
-        method: 'PATCH',
-        body: JSON.stringify(payload),
-      })
-    } catch (err) {
-      lastError = err
-      if (![400, 422].includes(err.status)) throw err
-    }
-  }
-
-  throw lastError
+  // Backend expects { status: '신청예정'|'신청완료'|'관심없음' }
+  return request(`/api/users/me/policies/${policyId}/status/`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  })
 }

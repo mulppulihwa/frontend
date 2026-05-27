@@ -5,21 +5,9 @@ import SelectField from '../components/SelectField'
 import Button from '../components/Button'
 import { fetchProfile, updateProfile } from '../lib/api'
 
-const currentYear = new Date().getFullYear()
-const years = Array.from({ length: 80 }, (_, i) => {
-  const y = currentYear - i
-  return { value: String(y), label: `${y}년` }
-})
-const months = Array.from({ length: 12 }, (_, i) => {
-  const m = i + 1
-  return { value: String(m).padStart(2, '0'), label: `${m}월` }
-})
-const days = Array.from({ length: 31 }, (_, i) => {
-  const d = i + 1
-  return { value: String(d).padStart(2, '0'), label: `${d}일` }
-})
 
 const GENDER_API_VALUES = { 남자: '남', 여자: '여' }
+const SUBMITTED_KEY = 'submittedDiagnosisProfile'
 
 function hasValue(v) {
   return v !== null && v !== undefined && String(v).trim() !== ''
@@ -31,19 +19,41 @@ function isCompleteDate(value) {
 }
 
 function DateSelectField({ label, value, onChange }) {
-  const [y = '', m = '', d = ''] = (value || '').split('-')
-  const update = (ny, nm, nd) => {
-    if (!ny && !nm && !nd) { onChange(''); return }
-    onChange(`${ny || ''}-${nm || ''}-${nd || ''}`)
-  }
+  const [focused, setFocused] = useState(false)
+  const parts = (value || '').split('-')
+  const inputValue =
+    parts[0] && parts[1] && parts[2]
+      ? `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`
+      : ''
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <label style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{label}</label>
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8 }}>
-        <SelectField value={y} onChange={v => update(v, m, d)} options={years} placeholder="년" />
-        <SelectField value={m} onChange={v => update(y, v, d)} options={months} placeholder="월" />
-        <SelectField value={d} onChange={v => update(y, m, v)} options={days} placeholder="일" />
-      </div>
+      <input
+        type="date"
+        value={inputValue}
+        onChange={e => onChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          width: '100%',
+          padding: '13px 16px',
+          boxSizing: 'border-box',
+          border: `1.5px solid ${focused ? '#076818' : '#e8e8e8'}`,
+          borderRadius: 14,
+          fontSize: 15,
+          fontWeight: 400,
+          color: inputValue ? '#1a1a1a' : '#aaa',
+          background: '#fff',
+          fontFamily: 'inherit',
+          outline: 'none',
+          letterSpacing: '-0.2px',
+          colorScheme: 'light',
+          cursor: 'pointer',
+          boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
+          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+        }}
+      />
     </div>
   )
 }
@@ -63,13 +73,16 @@ export default function BasicInfo() {
         const p = data?.profile || data?.user_profile || data || {}
         const bd = p.birth_date || p.birthDate || ''
         const g = p.gender === '남' ? '남자' : p.gender === '여' ? '여자' : p.gender || ''
-        const nat = p.nationality || ''
         if (bd) setBirthDate(bd)
         if (g) setGender(g)
-        if (nat) setNationality(nat)
       })
       .catch(() => {})
       .finally(() => setLoading(false))
+    // nationality lives in localStorage (backend has no such field)
+    try {
+      const saved = JSON.parse(localStorage.getItem(SUBMITTED_KEY) || '{}')
+      if (saved.nationality) setNationality(saved.nationality)
+    } catch {}
   }, [])
 
   const isComplete = isCompleteDate(birthDate) && hasValue(gender) && hasValue(nationality)
@@ -82,8 +95,12 @@ export default function BasicInfo() {
       await updateProfile({
         birth_date: birthDate,
         gender: GENDER_API_VALUES[gender] || gender,
-        nationality,
       })
+      // persist nationality locally (backend has no such field)
+      try {
+        const saved = JSON.parse(localStorage.getItem(SUBMITTED_KEY) || '{}')
+        localStorage.setItem(SUBMITTED_KEY, JSON.stringify({ ...saved, nationality }))
+      } catch {}
       navigate('/mypage')
     } catch (err) {
       setError(err.message || '저장하지 못했습니다.')

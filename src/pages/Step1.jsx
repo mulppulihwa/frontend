@@ -9,28 +9,44 @@ import { fetchProfile, fetchRegions, updateProfile } from '../lib/api'
 
 const fieldGap = 12
 
-const currentYear = new Date().getFullYear()
-const years = Array.from({ length: 80 }, (_, i) => { const y = currentYear - i; return { value: String(y), label: `${y}년` } })
-const months = Array.from({ length: 12 }, (_, i) => { const m = i + 1; return { value: String(m).padStart(2, '0'), label: `${m}월` } })
-const days = Array.from({ length: 31 }, (_, i) => { const d = i + 1; return { value: String(d).padStart(2, '0'), label: `${d}일` } })
 
 function DateSelectField({ label, value, onChange }) {
-  const [y = '', m = '', d = ''] = (value || '').split('-')
-  const update = (newY, newM, newD) => {
-    if (!newY && !newM && !newD) {
-      onChange('')
-      return
-    }
-    onChange(`${newY || ''}-${newM || ''}-${newD || ''}`)
-  }
+  const [focused, setFocused] = useState(false)
+  // Normalise to strict YYYY-MM-DD or empty string for the native date input
+  const parts = (value || '').split('-')
+  const inputValue =
+    parts[0] && parts[1] && parts[2]
+      ? `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`
+      : ''
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <label style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{label}</label>
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8 }}>
-        <SelectField value={y} onChange={v => update(v, m, d)} options={years} placeholder="년" />
-        <SelectField value={m} onChange={v => update(y, v, d)} options={months} placeholder="월" />
-        <SelectField value={d} onChange={v => update(y, m, v)} options={days} placeholder="일" />
-      </div>
+      <input
+        type="date"
+        value={inputValue}
+        onChange={e => onChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          width: '100%',
+          padding: '13px 16px',
+          boxSizing: 'border-box',
+          border: `1.5px solid ${focused ? '#076818' : '#e8e8e8'}`,
+          borderRadius: 14,
+          fontSize: 15,
+          fontWeight: 400,
+          color: inputValue ? '#1a1a1a' : '#aaa',
+          background: '#fff',
+          fontFamily: 'inherit',
+          outline: 'none',
+          letterSpacing: '-0.2px',
+          colorScheme: 'light',
+          cursor: 'pointer',
+          boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
+          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+        }}
+      />
     </div>
   )
 }
