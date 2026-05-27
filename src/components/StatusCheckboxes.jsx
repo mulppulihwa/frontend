@@ -26,7 +26,7 @@ export default function StatusCheckboxes({ value, onChange }) {
               padding: '9px 4px',
               borderRadius: 12,
               border: 'none',
-              background: active ? activeBg : '#f0f0f0',
+              background: active ? activeBg : '#f7f7f7',
               cursor: 'pointer',
               fontFamily: 'inherit',
               fontSize: 12,
