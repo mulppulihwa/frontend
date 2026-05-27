@@ -4,6 +4,7 @@ import { Check, Search, X, ArrowUpDown } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import { cachePolicyStatus, fetchSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
+import { getKakaoUserName } from '../lib/auth'
 
 const filters = [
   { key: '전체', label: '전체' },
@@ -191,7 +192,7 @@ export default function GrantStatus() {
 
         <div style={{ textAlign: 'center', lineHeight: 1.55, padding: '4px 0 0' }}>
           <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
-            ○○○님의 <span style={{ color: '#076818' }}>지원 현황</span>은
+            {getKakaoUserName() || '내'}님의 <span style={{ color: '#076818' }}>지원 현황</span>은
           </p>
           <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
             다음과 같아요
