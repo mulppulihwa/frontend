@@ -53,7 +53,7 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
             onClick={e => { e.stopPropagation(); navigate('/map') }}
             style={{
               width: '100%', padding: '11px 0', borderRadius: 12,
-              border: '1.5px solid #076818', background: '#e8f3e8',
+              border: '1.5px solid #076818', background: '#fff',
               color: '#076818', fontSize: 14, fontWeight: 700,
               cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px',
             }}
