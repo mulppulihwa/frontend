@@ -455,9 +455,7 @@ export default function Step1() {
 
   const isPageComplete = (pageNumber) => {
     switch (pageNumber) {
-      case 1:
-        return isCompleteDate(birthDate) && hasValue(gender) && hasValue(nationality)
-      case 2: {
+      case 1: {
         const movedAtDate = parseDateStr(movedAt)
         const prevSinceDate = parseDateStr(previousSince)
         const dateOrderOk = !(movedAtDate && prevSinceDate && movedAtDate < prevSinceDate)
@@ -467,26 +465,26 @@ export default function Step1() {
           && isCompleteDate(previousSince)
           && dateOrderOk
       }
-      case 3:
+      case 2:
         return hasValue(job)
           && farming !== null
           && farmBusiness !== null
           && hasValue(outsideIncome)
-      case 4:
+      case 3:
         return farmingEducation !== null
       default:
         return false
     }
   }
 
-  const firstIncompletePage = [1, 2, 3, 4].find(pageNumber => !isPageComplete(pageNumber)) || null
+  const firstIncompletePage = [1, 2, 3].find(pageNumber => !isPageComplete(pageNumber)) || null
   const isCurrentPageComplete = isPageComplete(page)
   const isFormComplete = firstIncompletePage === null
 
   const goNext = async () => {
     if (!isCurrentPageComplete) return
 
-    if (page === 4) {
+    if (page === 3) {
       if (!isFormComplete) {
         setPage(firstIncompletePage)
         setSubmitError('')
@@ -520,28 +518,14 @@ export default function Step1() {
       <div style={{ background: '#FDFCF8' }}>
         <TopBar title="정보 입력" onBack={goBack} />
         <div style={{ padding: '8px 18px 10px' }}>
-          <StepIndicator current={page} total={4} />
+          <StepIndicator current={page} total={3} />
         </div>
       </div>
 
       <Header />
 
       <div style={{ padding: '20px 18px 120px', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-        {page === 1 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-            <DateSelectField label="생년월일이 어떻게 되세요?" value={birthDate} onChange={setBirthDate} />
-            <SelectField label="성별이 어떻게 되세요?" value={gender} onChange={setGender} options={[
-              { value: '남자', label: '남자' },
-              { value: '여자', label: '여자' },
-            ]} placeholder="성별 선택" />
-            <SelectField label="국적이 어떻게 되세요?" value={nationality} onChange={setNationality} options={[
-              { value: '내국인', label: '내국인' },
-              { value: '외국인', label: '외국인' },
-            ]} placeholder="국적 선택" />
-          </div>
-        )}
-
-        {page === 2 && (() => {
+        {page === 1 && (() => {
           const movedAtDate = parseDateStr(movedAt)
           const prevSinceDate = parseDateStr(previousSince)
           const dateOrderError = movedAtDate && prevSinceDate && movedAtDate < prevSinceDate
@@ -580,7 +564,7 @@ export default function Step1() {
           )
         })()}
 
-        {page === 3 && (
+        {page === 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
             <SelectField label="현재 직업이 어떻게 되시나요?" value={job} onChange={setJob} options={[
               { value: '퇴직', label: '퇴직' },
@@ -597,7 +581,7 @@ export default function Step1() {
           </div>
         )}
 
-        {page === 4 && (
+        {page === 3 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
             <RadioGroup label="귀농 교육 100시간을 이수하셨나요?" value={farmingEducation} onChange={setFarmingEducation} options={[
               { label: '예', value: true },
@@ -613,8 +597,8 @@ export default function Step1() {
       </div>
 
       <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
-        <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete || (page === 4 && !isFormComplete)} variant="pill">
-          {submitting ? '저장 중...' : page === 4 ? '내 지원금 찾기' : '다음'}
+        <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete || (page === 3 && !isFormComplete)} variant="pill">
+          {submitting ? '저장 중...' : page === 3 ? '내 지원금 찾기' : '다음'}
         </Button>
       </div>
 
