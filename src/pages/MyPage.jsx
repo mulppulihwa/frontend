@@ -13,7 +13,8 @@ import { fetchProfile, fetchSavedPolicies, getAccessToken } from '../lib/api'
 import { findDisplayName, getKakaoUserName, logout, startKakaoLogin } from '../lib/auth'
 
 function getDday(deadlineStr) {
-  const today = new Date('2026-05-18')
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
   const deadline = new Date(deadlineStr)
   const diff = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24))
   if (diff === 0) return 'D-DAY'
@@ -423,12 +424,6 @@ export default function MyPage() {
                 <div>
                   <p style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', marginBottom: 3 }}>저장한 정책</p>
                   <p style={{ fontSize: 27, fontWeight: 800, color: '#076818' }}>{completedCount + plannedCount + ignoredCount}건</p>
-                </div>
-                <div style={{ width: 126, height: 48 }}>
-                  <svg width="126" height="48" viewBox="0 0 126 48" fill="none">
-                    <path d="M2 36C14 21 25 33 37 22C49 11 60 28 72 17C84 6 96 30 124 11" stroke="#dcefdc" strokeWidth="8" strokeLinecap="round" />
-                    <path d="M2 36C14 21 25 33 37 22C49 11 60 28 72 17C84 6 96 30 124 11" stroke="#076818" strokeWidth="2.5" strokeLinecap="round" />
-                  </svg>
                 </div>
               </div>
               <div style={{ display: 'flex', borderTop: '1px solid #f0f0f0', paddingTop: 13 }}>

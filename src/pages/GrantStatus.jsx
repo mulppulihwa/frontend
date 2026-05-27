@@ -21,9 +21,7 @@ const statusConfig = {
 
 function GrantCard({ grant, status, onStatusChange, navigate }) {
   const isCompleted = status === '신청완료'
-  const days = grant.days ?? grant.countdown?.days ?? 0
-  const hours = grant.hours ?? grant.countdown?.hours ?? 0
-  const minutes = grant.minutes ?? grant.countdown?.minutes ?? 0
+  const days = grant.countdown?.days ?? grant.days ?? 0
 
   return (
     <div style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 20, overflow: 'hidden' }}>
@@ -35,16 +33,16 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
           <p style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', flex: 1 }}>{grant.title}</p>
           <button
-            onClick={e => { e.stopPropagation(); navigate('/alarm', { state: { grant } }) }}
+            onClick={e => { e.stopPropagation(); navigate('/detail', { state: { grant } }) }}
             style={{ padding: '6px 12px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
-            알림 받기
+            자세히 보기
           </button>
         </div>
         <p style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
         {/* Countdown row */}
         <p style={{ fontSize: 12, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px' }}>
-          {isCompleted ? '지급일까지' : '마감까지'} D- {days}일 {hours}시간 {minutes}분
+          {isCompleted ? '지급일까지' : '마감까지'} D-{days}
         </p>
       </div>
 
