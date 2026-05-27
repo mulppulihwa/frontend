@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { Check, Search, X, ArrowUpDown } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
-import { cachePolicyStatus, fetchSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
-import { getKakaoUserName } from '../lib/auth'
+import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
+import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
 const filters = [
   { key: '전체', label: '전체' },
@@ -123,10 +123,22 @@ export default function GrantStatus() {
   const [sort, setSort] = useState('마감순')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [userName, setUserName] = useState(getKakaoUserName)
   const toastTimer = useRef(null)
 
   useEffect(() => {
     let active = true
+    // fetch real name from profile API (works even without re-login)
+    fetchProfile()
+      .then(profile => {
+        if (!active) return
+        const name = findDisplayName(profile)
+        if (name) {
+          setUserName(name)
+          if (!getKakaoUserName()) localStorage.setItem('kakaoUserName', name)
+        }
+      })
+      .catch(() => {})
     fetchSavedPolicies()
       .then(policies => {
         if (!active) return
@@ -192,7 +204,7 @@ export default function GrantStatus() {
 
         <div style={{ textAlign: 'center', lineHeight: 1.55, padding: '4px 0 0' }}>
           <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
-            {getKakaoUserName() || '내'}님의 <span style={{ color: '#076818' }}>지원 현황</span>은
+            {userName || '내'}님의 <span style={{ color: '#076818' }}>지원 현황</span>은
           </p>
           <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
             다음과 같아요
