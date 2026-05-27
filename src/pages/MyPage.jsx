@@ -421,8 +421,8 @@ export default function MyPage() {
             <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 24, padding: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                 <div>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', marginBottom: 3 }}>매친된 정책</p>
-                  <p style={{ fontSize: 27, fontWeight: 800, color: '#076818' }}>{grantStatuses.length}건</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', marginBottom: 3 }}>저장한 정책</p>
+                  <p style={{ fontSize: 27, fontWeight: 800, color: '#076818' }}>{completedCount + plannedCount + ignoredCount}건</p>
                 </div>
                 <div style={{ width: 126, height: 48 }}>
                   <svg width="126" height="48" viewBox="0 0 126 48" fill="none">
