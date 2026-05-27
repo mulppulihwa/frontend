@@ -228,6 +228,9 @@ export default function GrantStatus() {
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
           {filters.map(f => {
             const active = activeFilter === f.key
+            const count = f.key === '전체'
+              ? grants.length
+              : grants.filter(g => statuses[g.id] === f.key).length
             return (
               <button
                 key={f.key}
@@ -244,7 +247,7 @@ export default function GrantStatus() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {f.label}
+                {f.label} ({count})
               </button>
             )
           })}

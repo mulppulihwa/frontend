@@ -267,14 +267,27 @@ export async function fetchSavedPolicies() {
       user_status: normalizeUserPolicyStatus(userStatus) || statusCache[String(normalizedPolicy.id)] || null,
     }
   })
-  const ids = new Set(policies.map(policy => String(policy.id)))
+  // Collect all IDs the API returned (both UserPolicy.id and policy_id)
+  // so stale localStorage entries don't create duplicates
+  const apiPolicyIds = new Set(
+    toArray(data).flatMap(item => [String(item.id), String(item.policy_id)].filter(Boolean))
+  )
+  const ids = new Set(policies.map(p => String(p.id)))
+
   const cachedPolicies = Object.entries(savedPolicyCache)
-    .filter(([id]) => !ids.has(id))
+    .filter(([id]) => !ids.has(id) && !apiPolicyIds.has(id))
     .map(([, policy], index) => ({
       ...normalizePolicy(policy, policies.length + index),
       user_status: normalizeUserPolicyStatus(policy.user_status) || statusCache[String(policy.id)] || null,
     }))
-  return [...policies, ...cachedPolicies]
+
+  // Final dedup by id, in case of any remaining stale cache collisions
+  const seen = new Set()
+  return [...policies, ...cachedPolicies].filter(p => {
+    if (seen.has(String(p.id))) return false
+    seen.add(String(p.id))
+    return true
+  })
 }
 
 export async function savePolicy(policyId) {
