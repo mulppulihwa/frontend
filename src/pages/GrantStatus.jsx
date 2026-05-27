@@ -225,7 +225,7 @@ export default function GrantStatus() {
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
           {filters.map(f => {
             const active = activeFilter === f.key
             const count = f.key === '전체'
@@ -245,6 +245,7 @@ export default function GrantStatus() {
                   letterSpacing: '-0.1px',
                   transition: 'all 0.15s ease',
                   whiteSpace: 'nowrap',
+                  flexShrink: 0,
                 }}
               >
                 {f.label} ({count})

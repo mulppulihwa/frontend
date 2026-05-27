@@ -208,6 +208,7 @@ export default function MyPage() {
   const completedCount = grantStatuses.filter(g => g.status === '신청완료').length
   const plannedCount = grantStatuses.filter(g => g.status === '신청예정').length
   const ignoredCount = grantStatuses.filter(g => g.status === '관심없음').length
+  const noStatusCount = grantStatuses.filter(g => !g.status).length
   const activePolicies = grantStatuses.filter(g => g.status === '신청예정' || g.status === '신청완료')
 
   return (
@@ -423,19 +424,18 @@ export default function MyPage() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                 <div>
                   <p style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', marginBottom: 3 }}>저장한 정책</p>
-                  <p style={{ fontSize: 27, fontWeight: 800, color: '#076818' }}>{completedCount + plannedCount + ignoredCount}건</p>
+                  <p style={{ fontSize: 27, fontWeight: 800, color: '#076818' }}>{completedCount + plannedCount + ignoredCount + noStatusCount}건</p>
                 </div>
               </div>
               <div style={{ display: 'flex', borderTop: '1px solid #f0f0f0', paddingTop: 13 }}>
                 {[
-                  { key: '신청완료', label: '신청 완료', color: '#076818' },
-                  { key: '신청예정', label: '신청 예정', color: '#FFA100' },
-                  { key: '관심없음', label: '관심 없음', color: '#d93025' },
-                ].map(({ key, label, color }, i, arr) => {
-                  const count = key === '신청완료' ? completedCount : key === '신청예정' ? plannedCount : ignoredCount
-                  return (
+                  { key: '신청완료', label: '신청 완료', color: '#076818', count: completedCount },
+                  { key: '신청예정', label: '신청 예정', color: '#FFA100', count: plannedCount },
+                  { key: '관심없음', label: '관심 없음', color: '#d93025', count: ignoredCount },
+                  { key: '미입력',   label: '미입력',    color: '#aaa',     count: noStatusCount },
+                ].map(({ key, label, color, count }, i, arr) => (
                     <div
-                      key={label}
+                      key={key}
                       style={{
                         flex: 1,
                         display: 'flex',
@@ -449,7 +449,7 @@ export default function MyPage() {
                       <span style={{ fontSize: 11, fontWeight: 600, color: '#8a8a8a' }}>{label}</span>
                     </div>
                   )
-                })}
+                )}
               </div>
             </div>
           </section>
