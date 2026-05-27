@@ -216,6 +216,12 @@ function isCompleteDate(value) {
   return hasValue(y) && hasValue(m) && hasValue(d)
 }
 
+function parseDateStr(str) {
+  const [y, m, d] = (str || '').split('-')
+  if (!y || !m || !d) return null
+  return new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`)
+}
+
 function firstValue(source, keys) {
   for (const key of keys) {
     const value = source?.[key]
@@ -451,11 +457,16 @@ export default function Step1() {
     switch (pageNumber) {
       case 1:
         return isCompleteDate(birthDate) && hasValue(gender) && hasValue(nationality)
-      case 2:
+      case 2: {
+        const movedAtDate = parseDateStr(movedAt)
+        const prevSinceDate = parseDateStr(previousSince)
+        const dateOrderOk = !(movedAtDate && prevSinceDate && movedAtDate < prevSinceDate)
         return hasValue(location)
           && isCompleteDate(movedAt)
           && hasValue(previousResidence)
           && isCompleteDate(previousSince)
+          && dateOrderOk
+      }
       case 3:
         return hasValue(job)
           && farming !== null
@@ -530,23 +541,44 @@ export default function Step1() {
           </div>
         )}
 
-        {page === 2 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-            <SelectField label="현재 어디 사세요?" value={location} onChange={setLocation} options={[
-              { value: '옥천', label: '옥천' },
-              { value: '옥천 외', label: '옥천 외' },
-            ]} placeholder="지역 선택" />
-            <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} />
-            <SelectField
-              label="이전 거주지는 어디인가요?"
-              value={previousResidence}
-              onChange={setPreviousResidence}
-              options={regionOptions}
-              placeholder={regionOptions[0]?.disabled ? regionOptions[0].label : '지역 선택'}
-            />
-            <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} />
-          </div>
-        )}
+        {page === 2 && (() => {
+          const movedAtDate = parseDateStr(movedAt)
+          const prevSinceDate = parseDateStr(previousSince)
+          const dateOrderError = movedAtDate && prevSinceDate && movedAtDate < prevSinceDate
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
+              <SelectField label="현재 어디 사세요?" value={location} onChange={setLocation} options={[
+                { value: '옥천', label: '옥천' },
+                { value: '옥천 외', label: '옥천 외' },
+              ]} placeholder="지역 선택" />
+              <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} />
+              <SelectField
+                label="이전 거주지는 어디인가요?"
+                value={previousResidence}
+                onChange={setPreviousResidence}
+                options={regionOptions}
+                placeholder={regionOptions[0]?.disabled ? regionOptions[0].label : '지역 선택'}
+              />
+              <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} />
+              {dateOrderError && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 8,
+                  background: '#fff5f5',
+                  border: '1.5px solid #f5c6c6',
+                  borderRadius: 12,
+                  padding: '10px 14px',
+                }}>
+                  <span style={{ fontSize: 15, lineHeight: 1, marginTop: 1 }}>⚠️</span>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025', lineHeight: 1.5, letterSpacing: '-0.1px' }}>
+                    옥천군 이사 날짜가 이전 거주지 거주 시작일보다 빠를 수 없어요. 날짜를 다시 확인해 주세요.
+                  </p>
+                </div>
+              )}
+            </div>
+          )
+        })()}
 
         {page === 3 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
