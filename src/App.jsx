@@ -13,6 +13,7 @@ import Home from './pages/Home'
 import Alarm from './pages/Alarm'
 import Checklist from './pages/Checklist'
 import StoreSearch from './pages/StoreSearch'
+import BasicInfo from './pages/BasicInfo'
 import BottomNav from './components/BottomNav'
 
 const NO_NAV = ['/', '/loading']
@@ -38,6 +39,7 @@ function Layout() {
         <Route path="/alarm" element={<Alarm />} />
         <Route path="/checklist" element={<Checklist />} />
         <Route path="/store-search" element={<StoreSearch />} />
+        <Route path="/basic-info" element={<BasicInfo />} />
       </Routes>
       {showNav && <BottomNav />}
     </>

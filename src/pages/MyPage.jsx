@@ -360,7 +360,7 @@ export default function MyPage() {
                   </div>
                 </div>
                 <button
-                  onClick={() => navigate('/step1')}
+                  onClick={() => navigate('/basic-info')}
                   style={{
                     position: 'absolute',
                     right: 0,
