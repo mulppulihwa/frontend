@@ -5,7 +5,6 @@ import {
   ChevronRight,
   Clock3,
   MapPin,
-  Pencil,
   X,
 } from 'lucide-react'
 import Card from '../components/Card'
@@ -315,23 +314,7 @@ export default function MyPage() {
                   ‹
                 </button>
                 <p style={{ fontSize: 16, fontWeight: 700 }}>마이페이지</p>
-                <button
-                  onClick={() => navigate('/step1')}
-                  aria-label="프로필 수정"
-                  style={{
-                    width: 34,
-                    height: 34,
-                    border: '1px solid #e8e8e8',
-                    borderRadius: 14,
-                    background: '#fff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Pencil size={15} color="#1a1a1a" strokeWidth={2.3} />
-                </button>
+                <div style={{ width: 34 }} />
               </div>
             </div>
 
