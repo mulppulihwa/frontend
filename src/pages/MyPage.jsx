@@ -59,12 +59,22 @@ const statusConfig = {
   관심없음: { label: '관심 없음', color: '#d93025', bg: '#fff0ef', Icon: X },
 }
 
+const SUBMITTED_PROFILE_KEY = 'submittedDiagnosisProfile'
+
 function firstValue(source, keys) {
   for (const key of keys) {
     const value = source?.[key]
     if (value !== undefined && value !== null && value !== '') return value
   }
   return ''
+}
+
+function readJsonSafe(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || '{}')
+  } catch {
+    return {}
+  }
 }
 
 function normalizeTags(value) {
@@ -99,6 +109,17 @@ function normalizeProfile(profile) {
     || firstValue(profile, ['region_name', 'region'])
     || firstValue(profileData, ['region_name', 'region'])
 
+  let submitted = {}
+  try {
+    submitted = JSON.parse(localStorage.getItem(SUBMITTED_PROFILE_KEY) || '{}')
+  } catch {
+    submitted = {}
+  }
+
+  const movedAt = firstValue(profile, ['moved_at', 'movedAt', 'move_in_date'])
+    || firstValue(profileData, ['moved_at', 'movedAt', 'move_in_date'])
+    || submitted.movedAt
+
   return {
     name: findDisplayName(profile)
       || findDisplayName(user)
@@ -108,10 +129,11 @@ function normalizeProfile(profile) {
       || getKakaoUserName(),
     age: firstValue(profile, ['age']) || firstValue(profileData, ['age']),
     gender: firstValue(profile, ['gender']) || firstValue(profileData, ['gender']) || firstValue(kakaoAccount, ['gender']),
-    region,
+    nationality: submitted.nationality || readJsonSafe('editableProfileInfo').nationality || '',
+    region: region || submitted.location || submitted.region,
     farming: getReturnFarming(profile, profileData),
-    movedAt: firstValue(profile, ['moved_at', 'movedAt', 'move_in_date'])
-      || firstValue(profileData, ['moved_at', 'movedAt', 'move_in_date']),
+    movedAt,
+    hasDiagnosis: Boolean(movedAt || submitted.location || submitted.previousResidence || submitted.job),
   }
 }
 
@@ -151,6 +173,10 @@ export default function MyPage() {
   function handleLogout() {
     logout()
     navigate('/', { replace: true })
+  }
+
+  function handleDiagnosisStart() {
+    navigate('/step1')
   }
 
   useEffect(() => {
@@ -379,7 +405,7 @@ export default function MyPage() {
                     flexShrink: 0,
                   }}
                 >
-                  수정
+                  프로필 정보
                 </button>
               </div>
 
@@ -394,14 +420,27 @@ export default function MyPage() {
               }}>
                 <InfoPill label="나이" value={userInfo.age ? `${userInfo.age}세` : '미등록'} />
                 <div style={{ width: 1, alignSelf: 'stretch', background: '#ece8df' }} />
-                <InfoPill label="성별" value={userInfo.gender || '미등록'} />
+                <InfoPill label="내외국인" value={userInfo.nationality || '미등록'} />
                 <div style={{ width: 1, alignSelf: 'stretch', background: '#ece8df' }} />
                 <InfoPill label="유형" value={userInfo.farming === null ? '미등록' : userInfo.farming ? '귀농' : '비귀농'} />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f0eee8', paddingTop: 12 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#9a948a' }}>이사 날짜</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>{userInfo.movedAt || '미등록'}</span>
-              </div>
+              <button
+                onClick={handleDiagnosisStart}
+                style={{
+                  width: '100%',
+                  minHeight: 46,
+                  border: 'none',
+                  borderRadius: 16,
+                  background: '#076818',
+                  color: '#fff',
+                  fontSize: 14,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                {userInfo.hasDiagnosis ? '다시 진단하기' : '진단하기 시작'}
+              </button>
             </section>
           </>
         )}
