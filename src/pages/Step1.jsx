@@ -543,8 +543,8 @@ export default function Step1() {
           flex: 1,
           minHeight: 0,
           overflowY: 'auto',
-          paddingBottom: 132,
-          scrollPaddingBottom: 132,
+          paddingBottom: 220,
+          scrollPaddingBottom: 220,
           WebkitOverflowScrolling: 'touch',
           overscrollBehavior: 'contain',
         }}
@@ -624,7 +624,7 @@ export default function Step1() {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 24px', background: 'linear-gradient(to top, #FDFCF8 82%, transparent)', zIndex: 50 }}>
+      <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
         <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete || (page === 3 && !isFormComplete)} variant="pill">
           {submitting ? '저장 중...' : page === 3 ? '내 지원금 찾기' : '다음'}
         </Button>
