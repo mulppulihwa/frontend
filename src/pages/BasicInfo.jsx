@@ -111,13 +111,29 @@ function ReadOnlyRow({ label, value }) {
       alignItems: 'center',
       justifyContent: 'space-between',
       gap: 12,
-      padding: '12px 0',
-      borderBottom: '1px solid #f0eee8',
+      padding: '10px 0',
     }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: '#9a948a', flexShrink: 0 }}>{label}</span>
-      <span style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 12, fontWeight: 700, color: '#948f86', flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: 13, fontWeight: 800, color: '#1a1a1a', textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {hasValue(value) ? value : '미등록'}
       </span>
+    </div>
+  )
+}
+
+function DiagnosisChip({ label, value }) {
+  return (
+    <div style={{
+      minWidth: 0,
+      padding: '12px 12px',
+      borderRadius: 16,
+      background: '#FDFCF8',
+      border: '1px solid #f0eee8',
+    }}>
+      <p style={{ fontSize: 11, fontWeight: 700, color: '#9a948a', marginBottom: 5 }}>{label}</p>
+      <p style={{ fontSize: 15, fontWeight: 900, color: '#1a1a1a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {hasValue(value) ? value : '미등록'}
+      </p>
     </div>
   )
 }
@@ -217,11 +233,11 @@ export default function BasicInfo() {
             <section style={{
               background: '#fff',
               border: '1.5px solid #e8e8e8',
-              borderRadius: 22,
-              padding: '18px 16px 4px',
-              boxShadow: '0 10px 24px rgba(7,104,24,0.05)',
+              borderRadius: 24,
+              padding: '18px 16px 16px',
+              boxShadow: '0 12px 28px rgba(7,104,24,0.06)',
             }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
                 <div>
                   <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>진단 정보</p>
                 </div>
@@ -245,14 +261,26 @@ export default function BasicInfo() {
                   다시 진단하기
                 </button>
               </div>
-              <ReadOnlyRow label="현재 거주지" value={diagnosisInfo.location || diagnosisInfo.region} />
-              <ReadOnlyRow label="옥천 이사 날짜" value={diagnosisInfo.movedAt} />
-              <ReadOnlyRow label="이전 거주지" value={diagnosisInfo.previousResidence} />
-              <ReadOnlyRow label="이전 거주 시작일" value={diagnosisInfo.previousSince} />
-              <ReadOnlyRow label="현재 직업" value={diagnosisInfo.job} />
-              <ReadOnlyRow label="농사 여부" value={formatBoolean(diagnosisInfo.farming)} />
-              <ReadOnlyRow label="농업경영체" value={formatBoolean(diagnosisInfo.farmBusiness)} />
-              <ReadOnlyRow label="귀농 교육 100시간" value={formatBoolean(diagnosisInfo.farmingEducation)} />
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+                <DiagnosisChip label="현재 거주지" value={diagnosisInfo.location || diagnosisInfo.region} />
+                <DiagnosisChip label="옥천 이사 날짜" value={diagnosisInfo.movedAt} />
+                <DiagnosisChip label="현재 직업" value={diagnosisInfo.job} />
+                <DiagnosisChip label="농사 여부" value={formatBoolean(diagnosisInfo.farming)} />
+              </div>
+
+              <div style={{
+                marginTop: 12,
+                padding: '2px 14px',
+                borderRadius: 18,
+                background: '#fbfaf6',
+                border: '1px solid #f0eee8',
+              }}>
+                <ReadOnlyRow label="이전 거주지" value={diagnosisInfo.previousResidence} />
+                <ReadOnlyRow label="이전 거주 시작일" value={diagnosisInfo.previousSince} />
+                <ReadOnlyRow label="농업경영체" value={formatBoolean(diagnosisInfo.farmBusiness)} />
+                <ReadOnlyRow label="귀농 교육 100시간" value={formatBoolean(diagnosisInfo.farmingEducation)} />
+              </div>
             </section>
           </>
         )}
