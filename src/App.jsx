@@ -16,7 +16,7 @@ import StoreSearch from './pages/StoreSearch'
 import BasicInfo from './pages/BasicInfo'
 import BottomNav from './components/BottomNav'
 
-const NO_NAV = ['/', '/loading']
+const NO_NAV = ['/', '/step1', '/step2', '/loading']
 
 function Layout() {
   const { pathname } = useLocation()
