@@ -41,6 +41,28 @@ input:focus-visible {
   background: #c9c5bd;
 }
 
+.step-form-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #ddd9d0 transparent;
+}
+
+.step-form-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.step-form-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.step-form-scroll::-webkit-scrollbar-thumb {
+  background: #ddd9d0;
+  border-radius: 999px;
+}
+
+.step-form-scroll::-webkit-scrollbar-thumb:hover {
+  background: #d2cec5;
+}
+
 #root {
   width: 100%;
   max-width: 390px;

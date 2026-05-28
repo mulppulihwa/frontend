@@ -83,7 +83,7 @@ export default function Step2() {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
+      <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '16px 28px 16px', background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
         <Button onClick={handleSubmit} disabled={submitting} variant="pill">
           {submitting ? '저장 중...' : '내 지원금 찾기'}
         </Button>
