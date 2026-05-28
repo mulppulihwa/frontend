@@ -420,7 +420,7 @@ export default function MyPage() {
               }}>
                 <InfoPill label="나이" value={userInfo.age ? `${userInfo.age}세` : '미등록'} />
                 <div style={{ width: 1, alignSelf: 'stretch', background: '#ece8df' }} />
-                <InfoPill label="내외국인" value={userInfo.nationality || '미등록'} />
+                <InfoPill label="국적" value={userInfo.nationality || '미등록'} />
                 <div style={{ width: 1, alignSelf: 'stretch', background: '#ece8df' }} />
                 <InfoPill label="유형" value={userInfo.farming === null ? '미등록' : userInfo.farming ? '귀농' : '비귀농'} />
               </div>

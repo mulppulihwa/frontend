@@ -200,14 +200,14 @@ export default function BasicInfo() {
               <ProfileTextField label="이름" value={name} onChange={setName} placeholder="이름 입력" />
               <DateSelectField label="생년월일" value={birthDate} onChange={setBirthDate} />
               <SelectField
-                label="내외국인"
+                label="국적이 어떻게 되세요?"
                 value={nationality}
                 onChange={setNationality}
                 options={[
                   { value: '내국인', label: '내국인' },
                   { value: '외국인', label: '외국인' },
                 ]}
-                placeholder="내외국인 선택"
+                placeholder="국적 선택"
               />
               {error && (
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025' }}>{error}</p>
