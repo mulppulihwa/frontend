@@ -196,9 +196,6 @@ export default function BasicInfo() {
             <section style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
                 <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>기본 정보</p>
-                <p style={{ fontSize: 12, fontWeight: 500, color: '#888', marginTop: 4, lineHeight: 1.45 }}>
-                  이름, 생년월일, 내외국인 여부는 여기서 수정할 수 있어요.
-                </p>
               </div>
               <ProfileTextField label="이름" value={name} onChange={setName} placeholder="이름 입력" />
               <DateSelectField label="생년월일" value={birthDate} onChange={setBirthDate} />
@@ -227,9 +224,6 @@ export default function BasicInfo() {
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 4 }}>
                 <div>
                   <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>진단 정보</p>
-                  <p style={{ fontSize: 12, fontWeight: 500, color: '#888', marginTop: 4, lineHeight: 1.45 }}>
-                    진단 결과에 쓰이는 정보라 이 화면에서는 수정할 수 없어요.
-                  </p>
                 </div>
                 <button
                   type="button"
