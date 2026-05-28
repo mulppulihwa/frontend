@@ -538,89 +538,78 @@ export default function Step1() {
         </div>
       </div>
 
-      <div
-        style={{
-          flex: 1,
-          minHeight: 0,
-          overflowY: 'auto',
-          paddingBottom: 220,
-          WebkitOverflowScrolling: 'touch',
-          overscrollBehavior: 'contain',
-        }}
-      >
-        <Header />
+      <Header />
 
-        <div style={{ padding: '20px 18px 0', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-          {page === 1 && (() => {
-            const movedAtDate = parseDateStr(movedAt)
-            const prevSinceDate = parseDateStr(previousSince)
-            const dateOrderError = movedAtDate && prevSinceDate && movedAtDate < prevSinceDate
-            return (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-                <SelectField label="현재 어디 사세요?" value={location} onChange={setLocation} options={[
-                  { value: '옥천', label: '옥천' },
-                  { value: '옥천 외', label: '옥천 외' },
-                ]} placeholder="지역 선택" />
-                <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} />
-                <SelectField
-                  label="이전 거주지는 어디인가요?"
-                  value={previousResidence}
-                  onChange={setPreviousResidence}
-                  options={regionOptions}
-                  placeholder={regionOptions[0]?.disabled ? regionOptions[0].label : '지역 선택'}
-                />
-                <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} />
-                {dateOrderError && (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: 8,
-                    background: '#fff5f5',
-                    border: '1.5px solid #f5c6c6',
-                    borderRadius: 12,
-                    padding: '10px 14px',
-                  }}>
-                    <span style={{ fontSize: 15, lineHeight: 1, marginTop: 1 }}>⚠️</span>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025', lineHeight: 1.5, letterSpacing: '-0.1px' }}>
-                      옥천군 이사 날짜가 이전 거주지 거주 시작일보다 빠를 수 없어요. 날짜를 다시 확인해 주세요.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )
-          })()}
-
-          {page === 2 && (
+      <div style={{ padding: '20px 18px 120px', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+        {page === 1 && (() => {
+          const movedAtDate = parseDateStr(movedAt)
+          const prevSinceDate = parseDateStr(previousSince)
+          const dateOrderError = movedAtDate && prevSinceDate && movedAtDate < prevSinceDate
+          return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-              <SelectField label="현재 직업이 어떻게 되시나요?" value={job} onChange={setJob} options={[
-                { value: '퇴직', label: '퇴직' },
-                { value: '직장인', label: '직장인' },
-                { value: '농업', label: '농업' },
-                { value: '기타', label: '기타' },
-              ]} placeholder="직업 선택" />
-              <RadioGroup label="농사 지으세요?" value={farming} onChange={setFarming} />
-              <RadioGroup label="농업경영체를 운영하시나요?" value={farmBusiness} onChange={setFarmBusiness} options={[
-                { label: '예', value: true },
-                { label: '아니요', value: false },
-              ]} />
-              <TextField label="농업 외 소득이 있으신가요? (월 단위)" value={outsideIncome} onChange={setOutsideIncome} type="number" placeholder="약 --- 원" min={0} suffix="원" />
-            </div>
-          )}
-
-          {page === 3 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-              <RadioGroup label="귀농 교육 100시간을 이수하셨나요?" value={farmingEducation} onChange={setFarmingEducation} options={[
-                { label: '예', value: true },
-                { label: '아니요', value: false },
-              ]} />
-              {submitError && (
-                <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025', lineHeight: 1.45 }}>
-                  {submitError}
-                </p>
+              <SelectField label="현재 어디 사세요?" value={location} onChange={setLocation} options={[
+                { value: '옥천', label: '옥천' },
+                { value: '옥천 외', label: '옥천 외' },
+              ]} placeholder="지역 선택" />
+              <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} />
+              <SelectField
+                label="이전 거주지는 어디인가요?"
+                value={previousResidence}
+                onChange={setPreviousResidence}
+                options={regionOptions}
+                placeholder={regionOptions[0]?.disabled ? regionOptions[0].label : '지역 선택'}
+              />
+              <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} />
+              {dateOrderError && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 8,
+                  background: '#fff5f5',
+                  border: '1.5px solid #f5c6c6',
+                  borderRadius: 12,
+                  padding: '10px 14px',
+                }}>
+                  <span style={{ fontSize: 15, lineHeight: 1, marginTop: 1 }}>⚠️</span>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025', lineHeight: 1.5, letterSpacing: '-0.1px' }}>
+                    옥천군 이사 날짜가 이전 거주지 거주 시작일보다 빠를 수 없어요. 날짜를 다시 확인해 주세요.
+                  </p>
+                </div>
               )}
             </div>
-          )}
-        </div>
+          )
+        })()}
+
+        {page === 2 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
+            <SelectField label="현재 직업이 어떻게 되시나요?" value={job} onChange={setJob} options={[
+              { value: '퇴직', label: '퇴직' },
+              { value: '직장인', label: '직장인' },
+              { value: '농업', label: '농업' },
+              { value: '기타', label: '기타' },
+            ]} placeholder="직업 선택" />
+            <RadioGroup label="농사 지으세요?" value={farming} onChange={setFarming} />
+            <RadioGroup label="농업경영체를 운영하시나요?" value={farmBusiness} onChange={setFarmBusiness} options={[
+              { label: '예', value: true },
+              { label: '아니요', value: false },
+            ]} />
+            <TextField label="농업 외 소득이 있으신가요? (월 단위)" value={outsideIncome} onChange={setOutsideIncome} type="number" placeholder="약 --- 원" min={0} suffix="원" />
+          </div>
+        )}
+
+        {page === 3 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
+            <RadioGroup label="귀농 교육 100시간을 이수하셨나요?" value={farmingEducation} onChange={setFarmingEducation} options={[
+              { label: '예', value: true },
+              { label: '아니요', value: false },
+            ]} />
+            {submitError && (
+              <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025', lineHeight: 1.45 }}>
+                {submitError}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px', background: 'linear-gradient(to top, #FDFCF8 80%, transparent)', zIndex: 50 }}>
