@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Banknote } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
 import farmer from '../assets/farmer.png'
@@ -11,10 +11,90 @@ import { fetchPreviewPolicies, getAccessToken } from '../lib/api'
 import { startKakaoLogin } from '../lib/auth'
 
 const fallbackPolicies = [
-  { title: '귀농 농업창업 지원금' },
-  { title: '농촌 정착 지원금' },
-  { title: '농기계 구입 지원' },
+  {
+    title: '신규농업인 영농 기초기술교육 (충청북도)',
+    agency: '충청북도 농업기술원 지원기획과 (043-220-5613)',
+    subtitle: '교육비 무료 (연 40시간)',
+    reasons: ['귀농귀촌인·영농 희망자에게 기초농업기술, 농업정보, 농기계 활용 교육을 제공합니다.'],
+  },
+  {
+    title: '귀농귀촌인 지역주민 융화교육 지원',
+    agency: '충청북도 농업정책과 (043-220-3532)',
+    subtitle: '교육 및 교류 프로그램 지원',
+    reasons: ['귀농귀촌인과 지역주민의 안정적인 공동체 적응을 돕습니다.'],
+  },
+  {
+    title: '충북에서 살아보기',
+    agency: '충청북도 농업정책과 (043-220-3533)',
+    subtitle: '연수비 및 거주시설 프로그램 제공',
+    reasons: ['농촌 생활을 미리 체험하고 지역 정착 가능성을 확인할 수 있습니다.'],
+  },
 ]
+
+function PolicyPaperCard({ policy }) {
+  const title = policy.title || policy.name || '지원 정책'
+  const agency = policy.agency || policy.organization || policy.managing_org || '담당 기관 확인'
+  const benefit = policy.subtitle || policy.amount || policy.period || '지원 내용 확인'
+  const reason = policy.reasons?.[0] || policy.summary || policy.description || '조건에 맞는 지원 사유를 확인할 수 있어요.'
+
+  return (
+    <div style={{
+      width: '100%',
+      height: '100%',
+      padding: '5px 5px 4px',
+      boxSizing: 'border-box',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+      color: '#1a1a1a',
+      background: '#fff',
+      borderRadius: 9,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 4 }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <p style={{ fontSize: 5.9, fontWeight: 900, lineHeight: 1.12, letterSpacing: '-0.08px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            {title}
+          </p>
+          <p style={{ fontSize: 3.8, fontWeight: 500, color: '#424242', lineHeight: 1.18, marginTop: 2, letterSpacing: '-0.03px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            {agency}
+          </p>
+        </div>
+        <span style={{
+          flexShrink: 0,
+          padding: '3px 4px',
+          borderRadius: 999,
+          background: '#dff4e5',
+          color: '#076818',
+          fontSize: 3.6,
+          fontWeight: 900,
+          whiteSpace: 'nowrap',
+          lineHeight: 1,
+        }}>
+          신청 기간
+        </span>
+      </div>
+
+      <div style={{ height: 1, background: '#eeeeee', margin: '4px 0 3px', flexShrink: 0 }} />
+
+      <p style={{ display: 'flex', alignItems: 'center', gap: 2, color: '#076818', fontSize: 4.4, fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.04px', flexShrink: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <Banknote size={5.5} strokeWidth={2.2} />
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{benefit}</span>
+      </p>
+
+      <div style={{ marginTop: 3, padding: '4px 5px', borderRadius: 8, background: '#f8f8f8', minHeight: 0, flex: 1, overflow: 'hidden' }}>
+        <p style={{ fontSize: 3.9, fontWeight: 800, color: '#9a9a9a', lineHeight: 1, marginBottom: 2 }}>
+          해당 이유
+        </p>
+        <p style={{ display: 'flex', gap: 2.5, fontSize: 4.1, fontWeight: 600, color: '#1a1a1a', lineHeight: 1.2, letterSpacing: '-0.04px' }}>
+          <span style={{ color: '#076818', lineHeight: 1.05 }}>•</span>
+          <span style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            {reason}
+          </span>
+        </p>
+      </div>
+    </div>
+  )
+}
 
 export default function Home() {
   const navigate = useNavigate()
@@ -79,8 +159,8 @@ export default function Home() {
             <img src={farmer} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'bottom center' }} />
           }
           items={policies.map(policy => (
-            <div key={policy.id || policy.title} onClick={e => { e.stopPropagation(); navigate('/detail', { state: { grant: policy } }) }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
-              <span style={{ fontSize: 7.5, fontWeight: 700, color: '#FFA100', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.1px' }}>{policy.title.replaceAll(' ', '\n')}</span>
+            <div key={policy.id || policy.title} onClick={e => { e.stopPropagation(); navigate('/detail', { state: { grant: policy } }) }} style={{ width: '100%', height: '100%', boxSizing: 'border-box' }}>
+              <PolicyPaperCard policy={policy} />
             </div>
           ))}
         />
