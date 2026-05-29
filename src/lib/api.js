@@ -221,6 +221,11 @@ export async function fetchMatchedPolicies() {
   return toArray(data).map(normalizePolicy)
 }
 
+export async function fetchPolicyChecklist(policyId) {
+  if (!policyId) throw new Error('정책 ID가 없습니다.')
+  return request(`/api/policies/${policyId}/checklist/`)
+}
+
 export async function fetchRegions() {
   const data = await request('/api/regions/')
   return toArray(data)

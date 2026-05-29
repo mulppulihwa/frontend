@@ -52,7 +52,7 @@ function PolicyPaperCard({ policy }) {
     }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 4 }}>
         <div style={{ minWidth: 0, flex: 1 }}>
-          <p style={{ fontSize: 5.9, fontWeight: 900, lineHeight: 1.12, letterSpacing: '-0.08px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <p style={{ fontSize: 5.9, fontWeight: 700, lineHeight: 1.12, letterSpacing: '-0.08px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
             {title}
           </p>
           <p style={{ fontSize: 3.8, fontWeight: 500, color: '#424242', lineHeight: 1.18, marginTop: 2, letterSpacing: '-0.03px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -66,7 +66,7 @@ function PolicyPaperCard({ policy }) {
           background: '#dff4e5',
           color: '#076818',
           fontSize: 3.6,
-          fontWeight: 900,
+          fontWeight: 700,
           whiteSpace: 'nowrap',
           lineHeight: 1,
         }}>
@@ -76,16 +76,16 @@ function PolicyPaperCard({ policy }) {
 
       <div style={{ height: 1, background: '#eeeeee', margin: '4px 0 3px', flexShrink: 0 }} />
 
-      <p style={{ display: 'flex', alignItems: 'center', gap: 2, color: '#076818', fontSize: 4.4, fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.04px', flexShrink: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        <Banknote size={5.5} strokeWidth={2.2} />
+      <p style={{ display: 'flex', alignItems: 'center', gap: 2, color: '#076818', fontSize: 4.4, fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.04px', flexShrink: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <Banknote size={5.5} strokeWidth={1.9} />
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{benefit}</span>
       </p>
 
       <div style={{ marginTop: 3, padding: '4px 5px', borderRadius: 8, background: '#f8f8f8', minHeight: 0, flex: 1, overflow: 'hidden' }}>
-        <p style={{ fontSize: 3.9, fontWeight: 800, color: '#9a9a9a', lineHeight: 1, marginBottom: 2 }}>
+        <p style={{ fontSize: 3.9, fontWeight: 600, color: '#9a9a9a', lineHeight: 1, marginBottom: 2 }}>
           해당 이유
         </p>
-        <p style={{ display: 'flex', gap: 2.5, fontSize: 4.1, fontWeight: 600, color: '#1a1a1a', lineHeight: 1.2, letterSpacing: '-0.04px' }}>
+        <p style={{ display: 'flex', gap: 2.5, fontSize: 4.1, fontWeight: 400, color: '#1a1a1a', lineHeight: 1.2, letterSpacing: '-0.04px' }}>
           <span style={{ color: '#076818', lineHeight: 1.05 }}>•</span>
           <span style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
             {reason}

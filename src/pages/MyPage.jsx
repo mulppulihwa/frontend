@@ -527,7 +527,7 @@ export default function MyPage() {
                       <MiniRing done={g.checkDone} total={g.checkTotal} />
                     </div>
                     <button
-                      onClick={() => navigate('/checklist')}
+                      onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(g.id)}`, { state: { grant: g } })}
                       style={{
                         marginTop: 10,
                         width: '100%',

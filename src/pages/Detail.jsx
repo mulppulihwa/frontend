@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Check, Banknote, ClipboardCheck, Calendar, Phone, MousePointerClick, ArrowUpRight, GraduationCap, FileText } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import kakaoLogo from '../assets/kkt_logo.png'
 import { startKakaoLogin } from '../lib/auth'
+import { getAccessToken } from '../lib/api'
 
 const sections = [
   { title: '지원 내용', icon: Banknote, items: ['농업 창업 비용 최대 300만원 지원'], type: 'bullet' },
@@ -32,12 +33,23 @@ function buildSections(grant) {
 
 export default function Detail() {
   const { state } = useLocation()
+  const navigate = useNavigate()
   const grant = state?.grant
   const detailSections = buildSections(grant)
   const [showLogin, setShowLogin] = useState(false)
 
   const handleKakaoLogin = () => {
-    startKakaoLogin('/checklist')
+    const query = grant?.id ? `?policyId=${encodeURIComponent(grant.id)}` : ''
+    startKakaoLogin(`/checklist${query}`)
+  }
+
+  const handleChecklist = () => {
+    const query = grant?.id ? `?policyId=${encodeURIComponent(grant.id)}` : ''
+    if (getAccessToken()) {
+      navigate(`/checklist${query}`, { state: { grant } })
+      return
+    }
+    setShowLogin(true)
   }
 
   return (
@@ -162,7 +174,7 @@ export default function Detail() {
       </div>
 
       <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px' }}>
-        <Button onClick={() => setShowLogin(true)} variant="pill">준비물 확인 →</Button>
+        <Button onClick={handleChecklist} variant="pill">준비물 확인 →</Button>
       </div>
 
       {showLogin && (
