@@ -1,11 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Search, X, MapPin, Phone } from 'lucide-react'
 import { fetchPlaces } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
+import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 
 export default function StoreSearch() {
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const relatedPolicy = state?.policy || null
   const inputRef = useRef(null)
   const [query, setQuery] = useState('')
   const [stores, setStores] = useState([])
@@ -18,13 +21,13 @@ export default function StoreSearch() {
     let active = true
     fetchPlaces()
       .then(places => {
-        if (active) setStores(places)
+        if (active) setStores(filterPlacesByPolicy(places, relatedPolicy))
       })
       .catch(() => {})
     return () => {
       active = false
     }
-  }, [])
+  }, [relatedPolicy])
 
   const filtered = query.trim()
     ? stores.filter(s => s.name.includes(query) || s.address.includes(query))
@@ -62,7 +65,9 @@ export default function StoreSearch() {
       {/* Results */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '8px 16px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {query.trim() === '' && (
-          <p style={{ textAlign: 'center', color: '#bbb', fontSize: 14, marginTop: 40 }}>찾고 싶은 장소를 검색해보세요</p>
+          <p style={{ textAlign: 'center', color: '#bbb', fontSize: 14, marginTop: 40 }}>
+            {relatedPolicy ? `${relatedPolicy.title} 관련 사용처를 검색해보세요` : '찾고 싶은 장소를 검색해보세요'}
+          </p>
         )}
         {query.trim() !== '' && filtered.length === 0 && (
           <p style={{ textAlign: 'center', color: '#bbb', fontSize: 14, marginTop: 40 }}>검색 결과가 없어요</p>
@@ -73,7 +78,7 @@ export default function StoreSearch() {
           return (
             <div key={i} style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 30, overflow: 'hidden' }}>
               <div
-                onClick={() => navigate('/map', { state: { store } })}
+                onClick={() => navigate('/map', { state: { store, policy: relatedPolicy } })}
                 style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 14px 12px', cursor: 'pointer' }}
               >
                 <div style={{ width: 44, height: 44, borderRadius: 14, flexShrink: 0, background: cat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -50,7 +50,7 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
         <StatusCheckboxes value={status} onChange={onStatusChange} />
         {isCompleted && (
           <button
-            onClick={e => { e.stopPropagation(); navigate('/map') }}
+            onClick={e => { e.stopPropagation(); navigate('/map', { state: { policy: grant } }) }}
             style={{
               width: '100%', padding: '11px 0', borderRadius: 12,
               border: '1.5px solid #076818', background: '#fff',

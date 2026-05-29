@@ -4,6 +4,7 @@ import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock } f
 import TopBar from '../components/TopBar'
 import { fetchPlaces } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
+import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
 
@@ -36,6 +37,7 @@ export default function StoreMap() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
+  const relatedPolicy = state?.policy || null
 
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
@@ -49,15 +51,16 @@ export default function StoreMap() {
     fetchPlaces()
       .then(places => {
         if (!active) return
-        setStores(places)
-        const nextCategory = state?.store?.category || places[0]?.category || ''
+        const relatedPlaces = filterPlacesByPolicy(places, relatedPolicy)
+        setStores(relatedPlaces)
+        const nextCategory = state?.store?.category || relatedPlaces[0]?.category || ''
         if (nextCategory) setActiveCategory(nextCategory)
       })
       .catch(() => {})
     return () => {
       active = false
     }
-  }, [])
+  }, [relatedPolicy])
 
   const fullscreen = sheetH > EXPANDED_H + 50
   const expanded = sheetH > (COLLAPSED_H + EXPANDED_H) / 2
@@ -218,7 +221,7 @@ export default function StoreMap() {
           display: 'flex', flexDirection: 'column', gap: 10,
         }}>
           <div
-            onClick={() => navigate('/store-search')}
+            onClick={() => navigate('/store-search', { state: { policy: relatedPolicy } })}
             style={{
               display: 'flex', alignItems: 'center', gap: 10,
               background: '#fff', borderRadius: 100, padding: '11px 16px',
@@ -229,6 +232,13 @@ export default function StoreMap() {
             <Search size={16} color="#bbb" strokeWidth={2.2} />
             <span style={{ fontSize: 14, color: '#bbb', fontFamily: 'inherit', letterSpacing: '-0.1px' }}>장소 또는 주소 검색</span>
           </div>
+          {relatedPolicy && (
+            <div style={{ background: 'rgba(255,255,255,0.95)', border: '1.5px solid #e8e8e8', borderRadius: 18, padding: '9px 12px', boxShadow: '0 2px 10px rgba(0,0,0,0.06)' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: '#076818', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {relatedPolicy.title} 관련 사용처
+              </p>
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 8 }}>
           {categories.map(cat => {
             const Icon = cat.icon
