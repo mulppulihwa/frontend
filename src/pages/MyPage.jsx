@@ -373,7 +373,7 @@ export default function MyPage() {
             </div>
 
             <section style={{
-              background: 'linear-gradient(145deg, #fff 0%, #fbfaf6 100%)',
+              background: '#FFFFFF',
               border: '1px solid rgba(255,255,255,0.78)',
               borderRadius: 32,
               padding: '22px 18px 18px',
@@ -479,7 +479,7 @@ export default function MyPage() {
               지원 현황
             </SectionTitle>
             <div style={{
-              background: 'linear-gradient(145deg, #fff 0%, #fbfaf6 100%)',
+              background: '#FFFFFF',
               border: '1px solid rgba(255,255,255,0.78)',
               borderRadius: 30,
               padding: 18,
@@ -542,7 +542,7 @@ export default function MyPage() {
                     borderRadius: 28,
                     padding: '16px 16px 15px',
                     border: '1px solid rgba(255,255,255,0.78)',
-                    background: 'linear-gradient(145deg, #fff 0%, #fbfaf6 100%)',
+                    background: '#FFFFFF',
                     boxShadow: '0 20px 44px rgba(31,36,51,0.07)',
                   }}>
                     <div
@@ -606,7 +606,7 @@ export default function MyPage() {
               height: 50,
               borderRadius: 18,
               border: '1.5px solid #d93025',
-              background: '#fff',
+              background: '#FFFFFF',
               color: '#d93025',
               fontSize: 14,
               fontWeight: 700,
