@@ -153,9 +153,9 @@ function InfoPill({ label, value }) {
       padding: '13px 8px 12px',
       textAlign: 'left',
       borderRadius: 18,
-      background: 'rgba(255,255,255,0.72)',
-      border: '1px solid rgba(236,232,223,0.9)',
-      boxShadow: '0 10px 22px rgba(31,36,51,0.04)',
+      background: '#FFFFFF',
+      border: '1px solid rgba(218,231,211,0.95)',
+      boxShadow: '0 14px 26px rgba(76,126,82,0.08)',
     }}>
       <p style={{ fontSize: 11, fontWeight: 600, color: '#9a948a', marginBottom: 6 }}>{label}</p>
       <p style={{ fontSize: 14, fontWeight: 800, color: '#1f2433', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -171,11 +171,18 @@ function MetricTile({ label, count, color, background }) {
       minWidth: 0,
       padding: '13px 8px 12px',
       borderRadius: 18,
-      background,
-      border: '1px solid rgba(255,255,255,0.7)',
-      boxShadow: '0 12px 24px rgba(31,36,51,0.05)',
+      background: '#FFFFFF',
+      border: '1px solid rgba(218,231,211,0.95)',
+      boxShadow: '0 14px 28px rgba(76,126,82,0.09)',
       textAlign: 'center',
     }}>
+      <div style={{
+        width: 24,
+        height: 4,
+        borderRadius: 999,
+        background,
+        margin: '0 auto 9px',
+      }} />
       <p style={{ fontSize: 22, fontWeight: 800, color, lineHeight: 1 }}>{count}</p>
       <span style={{ display: 'block', marginTop: 7, fontSize: 11, fontWeight: 600, color: '#7e817e', whiteSpace: 'nowrap' }}>{label}</span>
     </div>
@@ -374,10 +381,10 @@ export default function MyPage() {
 
             <section style={{
               background: '#FFFFFF',
-              border: '1px solid rgba(255,255,255,0.78)',
+              border: '1px solid rgba(218,231,211,0.9)',
               borderRadius: 32,
               padding: '22px 18px 18px',
-              boxShadow: '0 24px 54px rgba(31,36,51,0.08)',
+              boxShadow: '0 28px 60px rgba(76,126,82,0.14)',
               position: 'relative',
               zIndex: 2,
             }}>
@@ -390,7 +397,7 @@ export default function MyPage() {
                     background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
                     border: '6px solid #fff',
                     overflow: 'hidden',
-                    boxShadow: '0 18px 34px rgba(7,104,24,0.12)',
+                    boxShadow: '0 20px 38px rgba(76,126,82,0.18)',
                     flexShrink: 0,
                   }}>
                     <img src={farmerAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -455,7 +462,7 @@ export default function MyPage() {
                   fontWeight: 800,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
-                  boxShadow: '0 16px 28px rgba(7,104,24,0.18)',
+                  boxShadow: '0 18px 34px rgba(7,104,24,0.2)',
                 }}
               >
                 {userInfo.hasDiagnosis ? '다시 진단하기' : '진단하기 시작'}
@@ -480,30 +487,59 @@ export default function MyPage() {
             </SectionTitle>
             <div style={{
               background: '#FFFFFF',
-              border: '1px solid rgba(255,255,255,0.78)',
-              borderRadius: 30,
+              border: '1px solid rgba(218,231,211,0.9)',
+              borderRadius: 32,
               padding: 18,
-              boxShadow: '0 22px 48px rgba(31,36,51,0.07)',
+              boxShadow: '0 28px 62px rgba(76,126,82,0.14)',
             }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 15 }}>
-                <div>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', marginBottom: 5 }}>진단 받은 정책</p>
-                  <p style={{ fontSize: 34, fontWeight: 800, color: '#076818', lineHeight: 1 }}>{completedCount + plannedCount + ignoredCount + noStatusCount}건</p>
-                </div>
+              <div style={{
+                position: 'relative',
+                overflow: 'hidden',
+                borderRadius: 26,
+                background: '#1f4f35',
+                padding: '18px 18px 20px',
+                marginBottom: 12,
+                boxShadow: '0 20px 40px rgba(31,79,53,0.22)',
+              }}>
                 <div style={{
-                  width: 54,
-                  height: 54,
-                  borderRadius: 20,
-                  background: '#e8f3e8',
+                  position: 'absolute',
+                  right: 18,
+                  bottom: 18,
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#076818',
-                  fontSize: 20,
-                  fontWeight: 800,
-                  boxShadow: '0 12px 24px rgba(7,104,24,0.08)',
+                  alignItems: 'flex-end',
+                  gap: 5,
+                  opacity: 0.28,
                 }}>
-                  {activePolicies.length}
+                  {[26, 38, 30, 48, 62].map((height, index) => (
+                    <span
+                      key={height}
+                      style={{
+                        display: 'block',
+                        width: 8,
+                        height,
+                        borderRadius: 999,
+                        background: index === 4 ? '#ffd36a' : '#bde2be',
+                      }}
+                    />
+                  ))}
+                </div>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.72)', marginBottom: 7 }}>진단 받은 정책</p>
+                  <p style={{ fontSize: 38, fontWeight: 800, color: '#FFFFFF', lineHeight: 1 }}>{completedCount + plannedCount + ignoredCount + noStatusCount}건</p>
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    marginTop: 12,
+                    padding: '6px 10px',
+                    borderRadius: 999,
+                    background: 'rgba(255,255,255,0.12)',
+                    color: '#dceedd',
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}>
+                    신청 진행 중 {activePolicies.length}건
+                  </div>
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
@@ -528,8 +564,8 @@ export default function MyPage() {
               {activePolicies.length === 0 && (
                 <Card style={{
                   borderRadius: 26,
-                  border: '1px solid rgba(255,255,255,0.78)',
-                  boxShadow: '0 18px 38px rgba(31,36,51,0.06)',
+                  border: '1px solid rgba(218,231,211,0.9)',
+                  boxShadow: '0 18px 38px rgba(76,126,82,0.11)',
                 }}>
                   <p style={{ fontSize: 14, fontWeight: 600, color: '#666' }}>아직 저장된 지원 현황이 없어요.</p>
                 </Card>
@@ -541,9 +577,9 @@ export default function MyPage() {
                   <Card key={g.id} style={{
                     borderRadius: 28,
                     padding: '16px 16px 15px',
-                    border: '1px solid rgba(255,255,255,0.78)',
+                    border: '1px solid rgba(218,231,211,0.9)',
                     background: '#FFFFFF',
-                    boxShadow: '0 20px 44px rgba(31,36,51,0.07)',
+                    boxShadow: '0 22px 48px rgba(76,126,82,0.13)',
                   }}>
                     <div
                       onClick={() => navigate('/detail', { state: { grant: g } })}
@@ -557,8 +593,8 @@ export default function MyPage() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        background: '#fff0ef',
-                        boxShadow: '0 12px 22px rgba(217,48,37,0.07)',
+                        background: '#fff2ee',
+                        boxShadow: '0 14px 24px rgba(217,48,37,0.09)',
                       }}>
                         <span style={{ fontSize: 13, fontWeight: 800, color: '#d93025' }}>{getDday(g.deadline)}</span>
                       </div>
@@ -581,8 +617,8 @@ export default function MyPage() {
                         padding: '10px 0',
                         borderRadius: 999,
                         border: 'none',
-                        background: '#f5f3ef',
-                        color: '#1f2433',
+                        background: '#eef7ed',
+                        color: '#076818',
                         fontSize: 13,
                         fontWeight: 700,
                         cursor: 'pointer',
