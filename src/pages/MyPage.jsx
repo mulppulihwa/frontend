@@ -582,7 +582,7 @@ export default function MyPage() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        background: '#fff2ee',
+                        background: 'transparent',
                       }}>
                         <span style={{ fontSize: 13, fontWeight: 800, color: '#d93025' }}>{getDday(g.deadline)}</span>
                       </div>
