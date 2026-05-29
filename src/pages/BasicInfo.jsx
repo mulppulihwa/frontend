@@ -114,8 +114,8 @@ function ReadOnlyRow({ label, value }) {
       padding: '12px 0',
       borderBottom: '1px solid #f0eee8',
     }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: '#9a948a', flexShrink: 0 }}>{label}</span>
-      <span style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 12, fontWeight: 400, color: '#9a948a', flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {hasValue(value) ? value : '미등록'}
       </span>
     </div>
