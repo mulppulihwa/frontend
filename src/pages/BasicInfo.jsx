@@ -137,6 +137,7 @@ export default function BasicInfo() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [showSavedPopup, setShowSavedPopup] = useState(false)
 
   useEffect(() => {
     const submitted = readJson(SUBMITTED_KEY)
@@ -176,7 +177,8 @@ export default function BasicInfo() {
       localStorage.setItem(SUBMITTED_KEY, JSON.stringify({ ...submitted, nationality }))
       localStorage.setItem(LOCAL_PROFILE_KEY, JSON.stringify({ name, birthDate, nationality }))
       if (name) localStorage.setItem('kakaoUserName', name)
-      navigate('/mypage')
+      setShowSavedPopup(true)
+      setTimeout(() => navigate('/mypage'), 900)
     } catch (err) {
       setError(err.message || '저장하지 못했습니다.')
     } finally {
@@ -274,6 +276,36 @@ export default function BasicInfo() {
           {submitting ? '저장 중...' : '저장'}
         </Button>
       </div>
+
+      {showSavedPopup && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 80,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 24,
+          background: 'rgba(26,26,26,0.16)',
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: 280,
+            minHeight: 112,
+            borderRadius: 24,
+            background: '#FFFFFF',
+            border: '1.5px solid #e8e8e8',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+          }}>
+            <p style={{ fontSize: 18, fontWeight: 800, color: '#076818' }}>
+              저장 완료되었습니다
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
