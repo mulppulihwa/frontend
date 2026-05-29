@@ -139,8 +139,8 @@ function normalizeProfile(profile) {
 
 function SectionTitle({ children, action }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-      <p style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a' }}>{children}</p>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '0 2px 12px' }}>
+      <p style={{ fontSize: 18, fontWeight: 800, color: '#1f2433', letterSpacing: 0 }}>{children}</p>
       {action}
     </div>
   )
@@ -149,15 +149,35 @@ function SectionTitle({ children, action }) {
 function InfoPill({ label, value }) {
   return (
     <div style={{
-      flex: 1,
       minWidth: 0,
-      padding: '2px 8px',
-      textAlign: 'center',
+      padding: '13px 8px 12px',
+      textAlign: 'left',
+      borderRadius: 18,
+      background: 'rgba(255,255,255,0.72)',
+      border: '1px solid rgba(236,232,223,0.9)',
+      boxShadow: '0 10px 22px rgba(31,36,51,0.04)',
     }}>
-      <p style={{ fontSize: 11, fontWeight: 600, color: '#9a948a', marginBottom: 4 }}>{label}</p>
-      <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <p style={{ fontSize: 11, fontWeight: 600, color: '#9a948a', marginBottom: 6 }}>{label}</p>
+      <p style={{ fontSize: 14, fontWeight: 800, color: '#1f2433', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {value}
       </p>
+    </div>
+  )
+}
+
+function MetricTile({ label, count, color, background }) {
+  return (
+    <div style={{
+      minWidth: 0,
+      padding: '13px 8px 12px',
+      borderRadius: 18,
+      background,
+      border: '1px solid rgba(255,255,255,0.7)',
+      boxShadow: '0 12px 24px rgba(31,36,51,0.05)',
+      textAlign: 'center',
+    }}>
+      <p style={{ fontSize: 22, fontWeight: 800, color, lineHeight: 1 }}>{count}</p>
+      <span style={{ display: 'block', marginTop: 7, fontSize: 11, fontWeight: 600, color: '#7e817e', whiteSpace: 'nowrap' }}>{label}</span>
     </div>
   )
 }
@@ -247,7 +267,7 @@ export default function MyPage() {
       boxSizing: 'border-box',
       width: '100%',
     }}>
-      <div style={{ padding: '0 18px 104px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div style={{ padding: '0 18px 116px', display: 'flex', flexDirection: 'column', gap: 22 }}>
         {loading && (
           <div style={{
             minHeight: 'calc(100vh - 104px)',
@@ -324,7 +344,7 @@ export default function MyPage() {
               background: '#FDFCF8',
               color: '#1a1a1a',
               position: 'relative',
-              padding: '30px 22px 18px',
+              padding: '28px 22px 6px',
             }}>
               <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <button
@@ -333,54 +353,55 @@ export default function MyPage() {
                   style={{
                     width: 34,
                     height: 34,
-                    border: '1px solid #e8e8e8',
-                    borderRadius: 14,
-                    background: '#fff',
-                    color: '#1a1a1a',
+                    border: 'none',
+                    borderRadius: 15,
+                    background: 'rgba(255,255,255,0.82)',
+                    color: '#1f2433',
                     cursor: 'pointer',
                     fontSize: 20,
                     fontWeight: 700,
                     lineHeight: 1,
                     fontFamily: 'inherit',
+                    boxShadow: '0 10px 22px rgba(31,36,51,0.06)',
                   }}
                 >
                   ‹
                 </button>
-                <p style={{ fontSize: 16, fontWeight: 700 }}>마이페이지</p>
+                <p style={{ fontSize: 17, fontWeight: 800, color: '#1f2433' }}>마이페이지</p>
                 <div style={{ width: 34 }} />
               </div>
             </div>
 
             <section style={{
-              background: '#fff',
-              border: '1px solid #e8e8e8',
-              borderRadius: 24,
-              padding: '18px 16px 16px',
-              boxShadow: '0 12px 30px rgba(7,104,24,0.08)',
+              background: 'linear-gradient(145deg, #fff 0%, #fbfaf6 100%)',
+              border: '1px solid rgba(255,255,255,0.78)',
+              borderRadius: 32,
+              padding: '22px 18px 18px',
+              boxShadow: '0 24px 54px rgba(31,36,51,0.08)',
               position: 'relative',
               zIndex: 2,
             }}>
-              <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
+              <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 18 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
                   <div style={{
-                    width: 76,
-                    height: 76,
+                    width: 88,
+                    height: 88,
                     borderRadius: '50%',
-                    background: '#e8f3e8',
-                    border: '4px solid #fff',
+                    background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
+                    border: '6px solid #fff',
                     overflow: 'hidden',
-                    boxShadow: '0 8px 18px rgba(0,0,0,0.08)',
+                    boxShadow: '0 18px 34px rgba(7,104,24,0.12)',
                     flexShrink: 0,
                   }}>
                     <img src={farmerAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
-                  <div style={{ marginTop: 8, minWidth: 0, textAlign: 'center' }}>
-                    <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ marginTop: 10, minWidth: 0, textAlign: 'center' }}>
+                    <p style={{ fontSize: 22, fontWeight: 800, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {userInfo.name || '카카오 사용자'}님
                     </p>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 3 }}>
                       <MapPin size={13} color="#8a8a8a" strokeWidth={2} />
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#8a8a8a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {userInfo.region || '지역 미등록'} 거주
                       </span>
                     </div>
@@ -394,7 +415,7 @@ export default function MyPage() {
                     top: 10,
                     height: 32,
                     padding: '0 12px',
-                    borderRadius: 14,
+                    borderRadius: 999,
                     border: 'none',
                     background: '#e8f3e8',
                     color: '#076818',
@@ -403,6 +424,7 @@ export default function MyPage() {
                     cursor: 'pointer',
                     fontFamily: 'inherit',
                     flexShrink: 0,
+                    boxShadow: '0 8px 18px rgba(7,104,24,0.08)',
                   }}
                 >
                   프로필 정보
@@ -410,33 +432,30 @@ export default function MyPage() {
               </div>
 
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginBottom: 10,
-                padding: '12px 6px',
-                borderRadius: 18,
-                background: '#FDFCF8',
-                border: '1px solid #f0eee8',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gap: 8,
+                marginBottom: 12,
+                padding: 0,
               }}>
                 <InfoPill label="나이" value={userInfo.age ? `${userInfo.age}세` : '미등록'} />
-                <div style={{ width: 1, alignSelf: 'stretch', background: '#ece8df' }} />
                 <InfoPill label="국적" value={userInfo.nationality || '미등록'} />
-                <div style={{ width: 1, alignSelf: 'stretch', background: '#ece8df' }} />
                 <InfoPill label="유형" value={userInfo.farming === null ? '미등록' : userInfo.farming ? '귀농' : '비귀농'} />
               </div>
               <button
                 onClick={handleDiagnosisStart}
                 style={{
                   width: '100%',
-                  minHeight: 46,
+                  minHeight: 52,
                   border: 'none',
-                  borderRadius: 16,
+                  borderRadius: 999,
                   background: '#076818',
                   color: '#fff',
                   fontSize: 14,
                   fontWeight: 800,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
+                  boxShadow: '0 16px 28px rgba(7,104,24,0.18)',
                 }}
               >
                 {userInfo.hasDiagnosis ? '다시 진단하기' : '진단하기 시작'}
@@ -451,7 +470,7 @@ export default function MyPage() {
               action={(
                 <button
                   onClick={() => navigate('/grant-status')}
-                  style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, color: '#888' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'rgba(255,255,255,0.7)', border: 'none', borderRadius: 999, cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 700, color: '#888', padding: '7px 9px 7px 12px' }}
                 >
                   전체 보기 <ChevronRight size={15} color="#aaa" strokeWidth={2.2} />
                 </button>
@@ -459,34 +478,42 @@ export default function MyPage() {
             >
               지원 현황
             </SectionTitle>
-            <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 24, padding: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{
+              background: 'linear-gradient(145deg, #fff 0%, #fbfaf6 100%)',
+              border: '1px solid rgba(255,255,255,0.78)',
+              borderRadius: 30,
+              padding: 18,
+              boxShadow: '0 22px 48px rgba(31,36,51,0.07)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 15 }}>
                 <div>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', marginBottom: 3 }}>진단 받은 정책</p>
-                  <p style={{ fontSize: 27, fontWeight: 800, color: '#076818' }}>{completedCount + plannedCount + ignoredCount + noStatusCount}건</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', marginBottom: 5 }}>진단 받은 정책</p>
+                  <p style={{ fontSize: 34, fontWeight: 800, color: '#076818', lineHeight: 1 }}>{completedCount + plannedCount + ignoredCount + noStatusCount}건</p>
+                </div>
+                <div style={{
+                  width: 54,
+                  height: 54,
+                  borderRadius: 20,
+                  background: '#e8f3e8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#076818',
+                  fontSize: 20,
+                  fontWeight: 800,
+                  boxShadow: '0 12px 24px rgba(7,104,24,0.08)',
+                }}>
+                  {activePolicies.length}
                 </div>
               </div>
-              <div style={{ display: 'flex', borderTop: '1px solid #f0f0f0', paddingTop: 13 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
                 {[
-                  { key: '신청완료', label: '신청 완료', color: '#076818', count: completedCount },
-                  { key: '신청예정', label: '신청 예정', color: '#FFA100', count: plannedCount },
-                  { key: '관심없음', label: '관심 없음', color: '#d93025', count: ignoredCount },
-                  { key: '미입력',   label: '미입력',    color: '#aaa',     count: noStatusCount },
-                ].map(({ key, label, color, count }, i, arr) => (
-                    <div
-                      key={key}
-                      style={{
-                        flex: 1,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 4,
-                        borderRight: i < arr.length - 1 ? '1px solid #f0f0f0' : 'none',
-                      }}
-                    >
-                      <p style={{ fontSize: 20, fontWeight: 800, color }}>{count}</p>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#8a8a8a' }}>{label}</span>
-                    </div>
+                  { key: '신청완료', label: '완료', color: '#076818', background: '#e8f3e8', count: completedCount },
+                  { key: '신청예정', label: '예정', color: '#FFA100', background: '#fff3e0', count: plannedCount },
+                  { key: '관심없음', label: '관심 없음', color: '#d93025', background: '#fff0ef', count: ignoredCount },
+                  { key: '미입력',   label: '미입력', color: '#8a8a8a', background: '#f5f3ef', count: noStatusCount },
+                ].map(({ key, label, color, background, count }) => (
+                    <MetricTile key={key} label={label} count={count} color={color} background={background} />
                   )
                 )}
               </div>
@@ -499,7 +526,11 @@ export default function MyPage() {
             <SectionTitle>신청 진행 중</SectionTitle>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {activePolicies.length === 0 && (
-                <Card style={{ borderRadius: 22 }}>
+                <Card style={{
+                  borderRadius: 26,
+                  border: '1px solid rgba(255,255,255,0.78)',
+                  boxShadow: '0 18px 38px rgba(31,36,51,0.06)',
+                }}>
                   <p style={{ fontSize: 14, fontWeight: 600, color: '#666' }}>아직 저장된 지원 현황이 없어요.</p>
                 </Card>
               )}
@@ -507,19 +538,35 @@ export default function MyPage() {
                 const cfg = statusConfig[g.status]
                 const Icon = cfg.Icon
                 return (
-                  <Card key={g.id} style={{ borderRadius: 22, padding: '14px 15px' }}>
+                  <Card key={g.id} style={{
+                    borderRadius: 28,
+                    padding: '16px 16px 15px',
+                    border: '1px solid rgba(255,255,255,0.78)',
+                    background: 'linear-gradient(145deg, #fff 0%, #fbfaf6 100%)',
+                    boxShadow: '0 20px 44px rgba(31,36,51,0.07)',
+                  }}>
                     <div
                       onClick={() => navigate('/detail', { state: { grant: g } })}
                       style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
                     >
-                      <div style={{ width: 48, height: 48, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#FF0000' }}>{getDday(g.deadline)}</span>
+                      <div style={{
+                        width: 52,
+                        height: 52,
+                        borderRadius: 20,
+                        flexShrink: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: '#fff0ef',
+                        boxShadow: '0 12px 22px rgba(217,48,37,0.07)',
+                      }}>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: '#d93025' }}>{getDday(g.deadline)}</span>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <p style={{ fontSize: 15, fontWeight: 800, color: '#1f2433', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {g.title}
                         </p>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: cfg.bg, borderRadius: 12, padding: '3px 7px' }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: cfg.bg, borderRadius: 999, padding: '4px 8px' }}>
                           <Icon size={10} color={cfg.color} strokeWidth={2.5} />
                           <span style={{ fontSize: 11, fontWeight: 700, color: cfg.color }}>{cfg.label}</span>
                         </div>
@@ -532,10 +579,10 @@ export default function MyPage() {
                         marginTop: 10,
                         width: '100%',
                         padding: '10px 0',
-                        borderRadius: 16,
-                        border: '1.5px solid #e8e8e8',
-                        background: '#fafafa',
-                        color: '#444',
+                        borderRadius: 999,
+                        border: 'none',
+                        background: '#f5f3ef',
+                        color: '#1f2433',
                         fontSize: 13,
                         fontWeight: 700,
                         cursor: 'pointer',
