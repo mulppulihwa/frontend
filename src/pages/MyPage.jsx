@@ -476,7 +476,7 @@ export default function MyPage() {
                 </button>
               )}
             >
-              지원 현황
+              진단 받은 정책
             </SectionTitle>
             <div style={{
               background: '#FFFFFF',
