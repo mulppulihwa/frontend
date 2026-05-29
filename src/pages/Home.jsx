@@ -5,7 +5,7 @@ import farmer from '../assets/farmer.png'
 import okcheonTypo from '../assets/okcheon_typo.png'
 import okTypo from '../assets/ok_typo.png'
 import Folder from '../components/Folder'
-import { fetchPreviewPolicies } from '../lib/api'
+import { fetchPreviewPolicies, fetchSavedPolicies } from '../lib/api'
 
 const fallbackPolicies = [
   {
@@ -93,15 +93,100 @@ function PolicyPaperCard({ policy }) {
   )
 }
 
+function HomeStatusSummary({ counts }) {
+  const items = [
+    { key: 'completed', label: '완료', value: counts.completed, color: '#076818', bar: '#e8f3e8' },
+    { key: 'planned', label: '예정', value: counts.planned, color: '#FFA100', bar: '#fff3e0' },
+    { key: 'ignored', label: '관심 없음', value: counts.ignored, color: '#d93025', bar: '#fff0ef' },
+    { key: 'unset', label: '미입력', value: counts.unset, color: '#8a8a8a', bar: '#f0efec' },
+  ]
+
+  return (
+    <div style={{
+      width: '100%',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+      gap: 10,
+      marginTop: 8,
+    }}>
+      {items.map(item => (
+        <div key={item.key} style={{
+          minWidth: 0,
+          minHeight: 96,
+          borderRadius: 22,
+          background: '#FFFFFF',
+          border: '1.5px solid #d9ead2',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '12px 4px 11px',
+          boxSizing: 'border-box',
+        }}>
+          <span style={{
+            width: 34,
+            height: 6,
+            borderRadius: 999,
+            background: item.bar,
+            marginBottom: 14,
+          }} />
+          <strong style={{
+            fontSize: 30,
+            fontWeight: 800,
+            lineHeight: 1,
+            color: item.color,
+          }}>
+            {item.value}
+          </strong>
+          <span style={{
+            marginTop: 12,
+            fontSize: 13,
+            fontWeight: 700,
+            color: '#777',
+            lineHeight: 1,
+            whiteSpace: 'nowrap',
+          }}>
+            {item.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function Home() {
   const navigate = useNavigate()
   const [policies, setPolicies] = useState(fallbackPolicies)
+  const [statusCounts, setStatusCounts] = useState({
+    completed: 0,
+    planned: 0,
+    ignored: 0,
+    unset: 0,
+  })
 
   useEffect(() => {
     let active = true
     fetchPreviewPolicies()
       .then(data => {
         if (active && data.length > 0) setPolicies(data.slice(0, 3))
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    fetchSavedPolicies()
+      .then(savedPolicies => {
+        if (!active) return
+        setStatusCounts({
+          completed: savedPolicies.filter(policy => policy.user_status === '신청완료').length,
+          planned: savedPolicies.filter(policy => policy.user_status === '신청예정').length,
+          ignored: savedPolicies.filter(policy => policy.user_status === '관심없음').length,
+          unset: savedPolicies.filter(policy => !policy.user_status).length,
+        })
       })
       .catch(() => {})
     return () => {
@@ -149,6 +234,8 @@ export default function Home() {
           ))}
         />
       </div>
+
+      <HomeStatusSummary counts={statusCounts} />
 
     </div>
   )
