@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Check } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import SelectField from '../components/SelectField'
 import Button from '../components/Button'
@@ -178,7 +179,7 @@ export default function BasicInfo() {
       localStorage.setItem(LOCAL_PROFILE_KEY, JSON.stringify({ name, birthDate, nationality }))
       if (name) localStorage.setItem('kakaoUserName', name)
       setShowSavedPopup(true)
-      setTimeout(() => navigate('/mypage'), 900)
+      setTimeout(() => navigate('/mypage'), 1600)
     } catch (err) {
       setError(err.message || '저장하지 못했습니다.')
     } finally {
@@ -281,29 +282,40 @@ export default function BasicInfo() {
         <div style={{
           position: 'fixed',
           inset: 0,
-          zIndex: 80,
+          zIndex: 200,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: 24,
-          background: 'rgba(26,26,26,0.16)',
+          pointerEvents: 'none',
         }}>
           <div style={{
-            width: '100%',
-            maxWidth: 280,
-            minHeight: 112,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 14,
             borderRadius: 24,
             background: '#FFFFFF',
-            border: '1.5px solid #e8e8e8',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            padding: '28px 36px',
             textAlign: 'center',
+            boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+            animation: 'fadeInScale 0.2s ease',
           }}>
-            <p style={{ fontSize: 18, fontWeight: 800, color: '#076818' }}>
+            <div style={{
+              width: 52,
+              height: 52,
+              borderRadius: '50%',
+              background: '#e8f3e8',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Check size={26} color="#076818" strokeWidth={2.5} />
+            </div>
+            <p style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
               저장 완료되었습니다
             </p>
           </div>
+          <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>
         </div>
       )}
     </div>
