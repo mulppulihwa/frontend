@@ -6,29 +6,6 @@ import { fetchPolicyChecklist } from '../lib/api'
 
 const accentColor = '#c2185b'
 
-const sections = [
-  {
-    title: '신청 요건',
-    items: ['귀농교육 100시간 이상 이수'],
-    link: { label: '교육이수 페이지 바로가기', href: 'https://agriedu.net/' },
-  },
-  {
-    title: '제출 서류',
-    items: ['주민등록등본', '귀농교육 이수서', '소득분위 증명서'],
-  },
-  {
-    title: '필요 물건',
-    items: ['신분증', '인감도장'],
-  },
-]
-
-const office = {
-  name: '청산면 행정복지센터',
-  address: '충북 옥천군 청산면 청산로 71 청산면행정복지센터',
-  phone: '043-730-XXXX',
-  hours: '평일 09:00~18:00',
-}
-
 const sectionTitleMap = {
   requirements: '신청 요건',
   requirement: '신청 요건',
@@ -104,17 +81,17 @@ function normalizeChecklistResponse(data) {
     if (normalized.length > 0) return normalized
   }
 
-  return sections
+  return []
 }
 
 function normalizeOffice(data) {
   const payload = data?.office || data?.center || data?.agency_office || data?.visit_office
-  if (!payload || typeof payload !== 'object') return office
+  if (!payload || typeof payload !== 'object') return null
   return {
-    name: payload.name || payload.title || payload.office_name || office.name,
-    address: payload.address || payload.road_address || office.address,
-    phone: payload.phone || payload.tel || payload.contact || office.phone,
-    hours: payload.hours || payload.opening_hours || office.hours,
+    name: payload.name || payload.title || payload.office_name || '',
+    address: payload.address || payload.road_address || '',
+    phone: payload.phone || payload.tel || payload.contact || '',
+    hours: payload.hours || payload.opening_hours || '',
     lat: Number(payload.lat ?? payload.latitude),
     lng: Number(payload.lng ?? payload.longitude),
   }
@@ -210,8 +187,8 @@ export default function Checklist() {
   const { state, search } = useLocation()
   const grant = state?.grant
   const policyId = grant?.id || new URLSearchParams(search).get('policyId')
-  const [checklistSections, setChecklistSections] = useState(sections)
-  const [officeInfo, setOfficeInfo] = useState(office)
+  const [checklistSections, setChecklistSections] = useState([])
+  const [officeInfo, setOfficeInfo] = useState(null)
   const [loading, setLoading] = useState(Boolean(policyId))
   const [error, setError] = useState('')
   const [checked, setChecked] = useState({})
@@ -221,6 +198,9 @@ export default function Checklist() {
   useEffect(() => {
     let active = true
     if (!policyId) {
+      setError('정책 ID가 없어 체크리스트를 불러올 수 없습니다.')
+      setChecklistSections([])
+      setOfficeInfo(null)
       setLoading(false)
       return () => {
         active = false
@@ -238,7 +218,8 @@ export default function Checklist() {
       .catch(err => {
         if (!active) return
         setError(err.message || '체크리스트를 불러오지 못했습니다.')
-        setChecklistSections(sections)
+        setChecklistSections([])
+        setOfficeInfo(null)
       })
       .finally(() => {
         if (active) setLoading(false)
@@ -269,6 +250,11 @@ export default function Checklist() {
         {!loading && error && (
           <p style={{ fontSize: 13, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45, padding: '14px 0 20px' }}>
             {error}
+          </p>
+        )}
+        {!loading && !error && checklistSections.length === 0 && !officeInfo && (
+          <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center', lineHeight: 1.5, padding: '24px 0' }}>
+            등록된 체크리스트 정보가 없습니다.
           </p>
         )}
         {/* Section steps */}
@@ -331,6 +317,7 @@ export default function Checklist() {
         })}
 
         {/* Office step */}
+        {!loading && officeInfo && (
         <div style={{ display: 'grid', gridTemplateColumns: '32px 1fr', gap: '0 14px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #e0e0e0', background: '#fff', flexShrink: 0 }} />
@@ -340,9 +327,11 @@ export default function Checklist() {
               <p style={{ fontSize: 14, fontWeight: 700, color: accentColor, letterSpacing: '-0.2px', padding: '16px 18px 12px' }}>
                 행정복지센터 방문하기
               </p>
+              {(Number.isFinite(officeInfo.lat) && Number.isFinite(officeInfo.lng)) && (
               <div style={{ margin: '0 18px 14px', height: 160, borderRadius: 12, overflow: 'hidden' }}>
                 <OfficeMap officeInfo={officeInfo} />
               </div>
+              )}
               <div style={{ padding: '0 18px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{officeInfo.name}</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -350,13 +339,14 @@ export default function Checklist() {
                     { label: '주소', value: officeInfo.address },
                     { label: '연락처', value: officeInfo.phone },
                     { label: '운영시간', value: officeInfo.hours },
-                  ].map(({ label, value }) => (
+                  ].filter(item => item.value).map(({ label, value }) => (
                     <div key={label}>
                       <p style={{ fontSize: 12, fontWeight: 600, color: '#888', letterSpacing: '-0.1px', marginBottom: 2 }}>{label}</p>
                       <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5 }}>{value}</p>
                     </div>
                   ))}
                 </div>
+                {officeInfo.name && (
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
                   <a
                     href={`https://map.kakao.com/?q=${encodeURIComponent(officeInfo.name)}`}
@@ -368,10 +358,12 @@ export default function Checklist() {
                     <ArrowUpRight size={14} color="#888" strokeWidth={2} />
                   </a>
                 </div>
+                )}
               </div>
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   )
