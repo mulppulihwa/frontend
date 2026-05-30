@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Banknote } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import farmer from '../assets/farmer.png'
 import okcheonTypo from '../assets/okcheon_typo.png'
 import okTypo from '../assets/ok_typo.png'
 import Folder from '../components/Folder'
@@ -224,9 +223,7 @@ export default function Home() {
         <Folder
           size={2.5}
           color="#FFA100"
-          frontContent={
-            <img src={farmer} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'bottom center' }} />
-          }
+
           items={policies.map(policy => (
             <div key={policy.id || policy.title} onClick={e => { e.stopPropagation(); navigate('/detail', { state: { grant: policy } }) }} style={{ width: '100%', height: '100%', boxSizing: 'border-box' }}>
               <PolicyPaperCard policy={policy} />
