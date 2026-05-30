@@ -1,7 +1,7 @@
 import { Check, Clock3, X } from 'lucide-react'
 
 const statuses = [
-  { key: '신청완료', label: '신청 완료', Icon: Check,  activeBg: '#076818' },
+  { key: '신청완료', label: '신청 완료', Icon: Check,  activeBg: '#1f4f35' },
   { key: '신청예정', label: '신청 예정', Icon: Clock3, activeBg: '#FFA100' },
   { key: '관심없음', label: '관심 없음', Icon: X,       activeBg: '#d93025' },
 ]
