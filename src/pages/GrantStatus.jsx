@@ -24,17 +24,17 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
   const days = grant.countdown?.days ?? grant.days ?? 0
 
   return (
-    <div style={{ background: '#fff', border: '1.5px solid #e8e8e8', borderRadius: 20, overflow: 'hidden' }}>
+    <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.9)', borderRadius: 28, overflow: 'hidden' }}>
       <div
         onClick={() => navigate('/detail', { state: { grant } })}
-        style={{ padding: '14px 14px 12px', display: 'flex', flexDirection: 'column', gap: 8, cursor: 'pointer' }}
+        style={{ padding: '16px 16px 12px', display: 'flex', flexDirection: 'column', gap: 8, cursor: 'pointer' }}
       >
         {/* Title row */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-          <p style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', flex: 1 }}>{grant.title}</p>
+          <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', flex: 1, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{grant.title}</p>
           <button
             onClick={e => { e.stopPropagation(); navigate('/detail', { state: { grant } }) }}
-            style={{ padding: '6px 12px', borderRadius: 20, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap', flexShrink: 0 }}
+            style={{ padding: '6px 12px', borderRadius: 999, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             자세히 보기
           </button>
@@ -46,13 +46,13 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
         </p>
       </div>
 
-      <div style={{ borderTop: '1.5px solid #f0f0f0', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ borderTop: '1px solid rgba(218,231,211,0.6)', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         <StatusCheckboxes value={status} onChange={onStatusChange} />
         <div style={{ display: 'flex', gap: 8 }}>
           <button
             onClick={e => { e.stopPropagation(); navigate(`/checklist?policyId=${encodeURIComponent(grant.id)}`, { state: { grant } }) }}
             style={{
-              flex: 1, padding: '11px 0', borderRadius: 12,
+              flex: 1, padding: '11px 0', borderRadius: 999,
               border: 'none', background: '#076818',
               color: '#fff', fontSize: 14, fontWeight: 700,
               cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px',
@@ -64,7 +64,7 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
             <button
               onClick={e => { e.stopPropagation(); navigate('/map', { state: { policy: grant } }) }}
               style={{
-                flex: 1, padding: '11px 0', borderRadius: 12,
+                flex: 1, padding: '11px 0', borderRadius: 999,
                 border: '1.5px solid #076818', background: '#fff',
                 color: '#076818', fontSize: 14, fontWeight: 700,
                 cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px',
@@ -249,7 +249,7 @@ export default function GrantStatus() {
                 key={f.key}
                 onClick={() => setActiveFilter(f.key)}
                 style={{
-                  padding: '8px 16px', borderRadius: 20,
+                  padding: '8px 16px', borderRadius: 999,
                   border: `1.5px solid ${active ? '#076818' : '#e8e8e8'}`,
                   background: active ? '#076818' : '#fff',
                   cursor: 'pointer', fontFamily: 'inherit',

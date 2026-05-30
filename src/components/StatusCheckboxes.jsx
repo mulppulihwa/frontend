@@ -24,7 +24,7 @@ export default function StatusCheckboxes({ value, onChange }) {
               justifyContent: 'center',
               gap: 5,
               padding: '9px 4px',
-              borderRadius: 12,
+              borderRadius: 999,
               border: 'none',
               background: active ? activeBg : '#f7f7f7',
               cursor: 'pointer',
