@@ -255,7 +255,9 @@ export async function fetchSavedPolicies() {
   let data = []
   try {
     data = await request('/api/users/me/policies/')
-    console.log('[fetchSavedPolicies] raw API response:', JSON.stringify(data).slice(0, 1000))
+    const first = toArray(data)[0]
+    console.log('[fetchSavedPolicies] first item keys:', first ? Object.keys(first) : [])
+    console.log('[fetchSavedPolicies] first item:', JSON.stringify(first))
   } catch (err) {
     console.warn('[fetchSavedPolicies] API error:', err)
     data = []
