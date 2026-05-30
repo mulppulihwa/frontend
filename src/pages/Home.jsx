@@ -93,62 +93,69 @@ function PolicyPaperCard({ policy }) {
 }
 
 function HomeStatusSummary({ counts }) {
-  const items = [
-    { key: 'completed', label: '완료', value: counts.completed, color: '#076818', bar: '#e8f3e8' },
-    { key: 'planned', label: '예정', value: counts.planned, color: '#FFA100', bar: '#fff3e0' },
-    { key: 'ignored', label: '관심 없음', value: counts.ignored, color: '#d93025', bar: '#fff0ef' },
-    { key: 'unset', label: '미입력', value: counts.unset, color: '#8a8a8a', bar: '#f0efec' },
+  const total = counts.completed + counts.planned + counts.ignored + counts.unset
+  const tiles = [
+    { key: 'completed', label: '완료',    value: counts.completed, color: '#076818', bg: '#e8f3e8' },
+    { key: 'planned',   label: '예정',    value: counts.planned,   color: '#FFA100', bg: '#fff3e0' },
+    { key: 'ignored',   label: '관심 없음', value: counts.ignored, color: '#d93025', bg: '#fff0ef' },
+    { key: 'unset',     label: '미입력',  value: counts.unset,     color: '#8a8a8a', bg: '#f5f3ef' },
   ]
 
   return (
     <div style={{
       width: '100%',
-      display: 'grid',
-      gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-      gap: 10,
-      marginTop: 8,
+      background: '#FFFFFF',
+      border: '1px solid rgba(218,231,211,0.9)',
+      borderRadius: 32,
+      padding: 18,
     }}>
-      {items.map(item => (
-        <div key={item.key} style={{
-          minWidth: 0,
-          minHeight: 96,
-          borderRadius: 22,
-          background: '#FFFFFF',
-          border: '1.5px solid #d9ead2',
+      {/* Gradient header */}
+      <div style={{
+        position: 'relative',
+        overflow: 'hidden',
+        borderRadius: 26,
+        background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
+        padding: '18px 18px 20px',
+        marginBottom: 12,
+      }}>
+        <div style={{
+          position: 'absolute',
+          right: 18,
+          bottom: 18,
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '12px 4px 11px',
-          boxSizing: 'border-box',
+          alignItems: 'flex-end',
+          gap: 5,
+          opacity: 0.28,
         }}>
-          <span style={{
-            width: 34,
-            height: 6,
-            borderRadius: 999,
-            background: item.bar,
-            marginBottom: 14,
-          }} />
-          <strong style={{
-            fontSize: 30,
-            fontWeight: 800,
-            lineHeight: 1,
-            color: item.color,
-          }}>
-            {item.value}
-          </strong>
-          <span style={{
-            marginTop: 12,
-            fontSize: 13,
-            fontWeight: 700,
-            color: '#777',
-            lineHeight: 1,
-            whiteSpace: 'nowrap',
-          }}>
-            {item.label}
-          </span>
+          {[26, 38, 30, 48, 62].map((height, index) => (
+            <span key={height} style={{
+              display: 'block', width: 8, height, borderRadius: 999,
+              background: index === 4 ? '#FFA100' : '#076818',
+            }} />
+          ))}
         </div>
-      ))}
+        <p style={{ fontSize: 12, fontWeight: 600, color: '#5a7a5e', marginBottom: 7 }}>진단 받은 정책</p>
+        <p style={{ fontSize: 38, fontWeight: 800, color: '#1f2433', lineHeight: 1 }}>{total}건</p>
+      </div>
+
+      {/* Stat tiles */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
+        {tiles.map(({ key, label, value, color, bg }) => (
+          <div key={key} style={{
+            minHeight: 88,
+            borderRadius: 20,
+            background: '#FDFCF8',
+            border: '1px solid rgba(218,231,211,0.7)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            padding: '10px 4px',
+            boxSizing: 'border-box',
+          }}>
+            <span style={{ width: 28, height: 5, borderRadius: 999, background: bg, marginBottom: 10 }} />
+            <strong style={{ fontSize: 26, fontWeight: 800, lineHeight: 1, color }}>{value}</strong>
+            <span style={{ marginTop: 8, fontSize: 12, fontWeight: 700, color: '#777', whiteSpace: 'nowrap' }}>{label}</span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
