@@ -51,7 +51,7 @@ export default function GrantResultCard({
 
       {/* Match reason */}
       {reasons.length > 0 && (
-        <div style={{ background: 'rgba(255,255,255,0.55)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
+        <div style={{ background: '#FFFFFF', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
           <p style={{ fontSize: 11, fontWeight: 600, color: '#5a7a5e', letterSpacing: '-0.1px', marginBottom: 6 }}>해당 이유</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {reasons.map((reason) => (
