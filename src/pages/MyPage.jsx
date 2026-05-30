@@ -260,6 +260,7 @@ export default function MyPage() {
   const ignoredCount = grantStatuses.filter(g => g.status === '관심없음').length
   const noStatusCount = grantStatuses.filter(g => !g.status).length
   const activePolicies = grantStatuses.filter(g => g.status === '신청예정' || g.status === '신청완료')
+  const noStatusPolicies = grantStatuses.filter(g => !g.status)
 
   return (
     <div style={{
@@ -602,6 +603,56 @@ export default function MyPage() {
                   </Card>
                 )
               })}
+            </div>
+          </section>
+        )}
+
+        {!loading && userInfo && noStatusPolicies.length > 0 && (
+          <section>
+            <SectionTitle>미입력</SectionTitle>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {noStatusPolicies.slice(0, 2).map(g => (
+                <Card key={g.id} style={{
+                  borderRadius: 28,
+                  padding: '16px 16px 15px',
+                  border: '1px solid rgba(218,231,211,0.9)',
+                  background: '#FFFFFF',
+                }}>
+                  <div
+                    onClick={() => navigate('/detail', { state: { grant: g } })}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 15, fontWeight: 800, color: '#1f2433', marginBottom: 6, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>
+                        {g.title}
+                      </p>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#f5f3ef', borderRadius: 999, padding: '4px 8px' }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#8a8a8a' }}>미입력</span>
+                      </div>
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: '#d93025', flexShrink: 0 }}>{getDday(g.deadline)}</span>
+                  </div>
+                  <button
+                    onClick={() => navigate('/grant-status')}
+                    style={{
+                      marginTop: 10,
+                      width: '100%',
+                      padding: '11px 0',
+                      borderRadius: 999,
+                      border: '1.5px solid #8a8a8a',
+                      background: '#fff',
+                      color: '#8a8a8a',
+                      fontSize: 14,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      letterSpacing: '-0.2px',
+                    }}
+                  >
+                    현황 입력하기
+                  </button>
+                </Card>
+              ))}
             </div>
           </section>
         )}
