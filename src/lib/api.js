@@ -220,8 +220,6 @@ export async function fetchPreviewPolicies() {
 
 export async function fetchMatchedPolicies() {
   const data = await request('/api/policies/match/')
-  const first = toArray(data)[0]
-  console.log('[fetchMatchedPolicies] first item:', JSON.stringify(first))
   return toArray(data).map(normalizePolicy)
 }
 
