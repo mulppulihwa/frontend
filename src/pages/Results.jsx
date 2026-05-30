@@ -66,6 +66,7 @@ export default function Results() {
     setStatusError('')
     setStatuses(p => ({ ...p, [grant.id]: val }))
     cachePolicyStatus(grant.id, val, grant)
+    if (!val) return
     try {
       await savePolicy(grant.id).catch(() => null)
       await updateSavedPolicyStatus(grant.id, val)

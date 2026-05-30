@@ -183,6 +183,7 @@ export default function GrantStatus() {
     const grant = grantsData.find(item => item.id === grantId)
     setStatuses(p => ({ ...p, [grantId]: val }))
     cachePolicyStatus(grantId, val, grant)
+    if (!val) return
     try {
       await savePolicy(grantId).catch(() => null)
       await updateSavedPolicyStatus(grantId, val)
