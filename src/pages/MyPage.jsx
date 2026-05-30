@@ -419,17 +419,6 @@ export default function MyPage() {
                 </button>
               </div>
 
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-                gap: 8,
-                marginBottom: 12,
-                padding: 0,
-              }}>
-                <InfoPill label="나이" value={userInfo.age ? `${userInfo.age}세` : '미등록'} />
-                <InfoPill label="국적" value={userInfo.nationality || '미등록'} />
-                <InfoPill label="유형" value={userInfo.farming === null ? '미등록' : userInfo.farming ? '귀농' : '비귀농'} />
-              </div>
               <button
                 onClick={handleDiagnosisStart}
                 style={{
