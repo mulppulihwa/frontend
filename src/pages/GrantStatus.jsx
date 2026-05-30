@@ -48,19 +48,32 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
 
       <div style={{ borderTop: '1.5px solid #f0f0f0', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         <StatusCheckboxes value={status} onChange={onStatusChange} />
-        {isCompleted && (
+        <div style={{ display: 'flex', gap: 8 }}>
           <button
-            onClick={e => { e.stopPropagation(); navigate('/map', { state: { policy: grant } }) }}
+            onClick={e => { e.stopPropagation(); navigate(`/checklist?policyId=${encodeURIComponent(grant.id)}`, { state: { grant } }) }}
             style={{
-              width: '100%', padding: '11px 0', borderRadius: 12,
-              border: '1.5px solid #076818', background: '#fff',
-              color: '#076818', fontSize: 14, fontWeight: 700,
+              flex: 1, padding: '11px 0', borderRadius: 12,
+              border: 'none', background: '#076818',
+              color: '#fff', fontSize: 14, fontWeight: 700,
               cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px',
             }}
           >
-            사용처 보기
+            준비물 확인 →
           </button>
-        )}
+          {isCompleted && (
+            <button
+              onClick={e => { e.stopPropagation(); navigate('/map', { state: { policy: grant } }) }}
+              style={{
+                flex: 1, padding: '11px 0', borderRadius: 12,
+                border: '1.5px solid #076818', background: '#fff',
+                color: '#076818', fontSize: 14, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px',
+              }}
+            >
+              사용처 보기
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
