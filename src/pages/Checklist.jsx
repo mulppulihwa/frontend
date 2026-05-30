@@ -152,6 +152,7 @@ export default function Checklist() {
   const [checklistSections, setChecklistSections] = useState([])
   const [officeInfo, setOfficeInfo] = useState(null)
   const [loading, setLoading] = useState(Boolean(policyId))
+  const [parsing, setParsing] = useState(false)
   const [error, setError] = useState('')
   const storageKey = policyId ? `checklist-checked-${policyId}` : null
   const [checked, setChecked] = useState(() => {
@@ -185,22 +186,40 @@ export default function Checklist() {
     }
 
     setLoading(true)
+    setParsing(false)
     setError('')
-    fetchPolicyChecklist(policyId)
-      .then(data => {
+
+    const MAX_RETRIES = 4
+    const RETRY_DELAY = 3000
+
+    const attemptFetch = async (attempt) => {
+      try {
+        const data = await fetchPolicyChecklist(policyId)
         if (!active) return
-        setChecklistSections(normalizeChecklistResponse(data))
+        const sections = normalizeChecklistResponse(data)
+        if (sections.length === 0 && attempt < MAX_RETRIES) {
+          // Backend is still parsing — show "분석 중" and retry
+          setParsing(true)
+          setLoading(false)
+          await new Promise(res => setTimeout(res, RETRY_DELAY))
+          if (active) attemptFetch(attempt + 1)
+          return
+        }
+        setParsing(false)
+        setChecklistSections(sections)
         setOfficeInfo(normalizeOffice(data))
-      })
-      .catch(err => {
+        setLoading(false)
+      } catch (err) {
         if (!active) return
         setError(err.message || '체크리스트를 불러오지 못했습니다.')
         setChecklistSections([])
         setOfficeInfo(null)
-      })
-      .finally(() => {
-        if (active) setLoading(false)
-      })
+        setParsing(false)
+        setLoading(false)
+      }
+    }
+
+    attemptFetch(0)
 
     return () => {
       active = false
@@ -220,22 +239,58 @@ export default function Checklist() {
 
       <div style={{ padding: '0 18px 100px' }}>
         {loading && (
-          <p style={{ fontSize: 14, fontWeight: 600, color: '#888', textAlign: 'center', padding: '24px 0' }}>
-            체크리스트를 불러오는 중입니다.
-          </p>
+          <div style={{
+            background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
+            border: '1px solid rgba(218,231,211,0.9)',
+            borderRadius: 28,
+            padding: '48px 20px',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+          }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: '50%',
+              border: '3px solid rgba(218,231,211,0.9)', borderTopColor: '#076818',
+              animation: 'spin 0.8s linear infinite',
+            }} />
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#1f2433', letterSpacing: '-0.2px' }}>
+              체크리스트를 불러오는 중이에요
+            </p>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
         )}
-        {!loading && error && (
+        {parsing && !error && (
+          <div style={{
+            background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
+            border: '1px solid rgba(218,231,211,0.9)',
+            borderRadius: 28,
+            padding: '40px 20px',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+          }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: '50%',
+              border: '3px solid rgba(218,231,211,0.9)', borderTopColor: '#076818',
+              animation: 'spin 0.8s linear infinite',
+            }} />
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#1f2433', letterSpacing: '-0.2px' }}>
+              준비물을 불러오는 중이에요
+            </p>
+            <p style={{ fontSize: 12, color: '#5a7a5e', letterSpacing: '-0.1px' }}>
+              잠시만 기다려 주세요
+            </p>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+        {!loading && !parsing && error && (
           <p style={{ fontSize: 13, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45, padding: '14px 0 20px' }}>
             {error}
           </p>
         )}
-        {!loading && !error && checklistSections.length === 0 && !officeInfo && (
+        {!loading && !parsing && !error && checklistSections.length === 0 && !officeInfo && (
           <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center', lineHeight: 1.5, padding: '24px 0' }}>
             등록된 체크리스트 정보가 없습니다.
           </p>
         )}
         {/* Section steps */}
-        {!loading && checklistSections.map((section) => {
+        {!loading && !parsing && checklistSections.map((section) => {
           const done = section.items.filter(item => !!checked[item.id]).length
           const total = section.items.length
           const complete = done === total
@@ -294,7 +349,7 @@ export default function Checklist() {
         })}
 
         {/* Office step */}
-        {!loading && officeInfo && (
+        {!loading && !parsing && officeInfo && (
         <div style={{ display: 'grid', gridTemplateColumns: '32px 1fr', gap: '0 14px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #e0e0e0', background: '#fff', flexShrink: 0 }} />

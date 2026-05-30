@@ -281,6 +281,7 @@ export default function MyPage() {
             alignItems: 'center',
             justifyContent: 'center',
             padding: '0 10px 58px',
+            background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
           }}>
             <div className="loading-spinner" aria-label="마이페이지 정보 로딩 중" />
             <div style={{ textAlign: 'center', marginTop: 28 }}>

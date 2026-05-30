@@ -116,10 +116,22 @@ export default function Results() {
 
       <div style={{ padding: '0 18px 152px', flex: 1, overflowX: 'hidden' }}>
         {loading && (
-          <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
-            <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center' }}>
-              맞춤 지원금을 불러오는 중입니다.
+          <div style={{
+            background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
+            border: '1px solid rgba(218,231,211,0.9)',
+            borderRadius: 28,
+            padding: '48px 20px',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+          }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: '50%',
+              border: '3px solid rgba(218,231,211,0.9)', borderTopColor: '#076818',
+              animation: 'spin 0.8s linear infinite',
+            }} />
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#1f2433', letterSpacing: '-0.2px' }}>
+              맞춤 지원금을 불러오는 중이에요
             </p>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </div>
         )}
 
