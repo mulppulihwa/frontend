@@ -193,9 +193,17 @@ export default function Checklist() {
   const [officeInfo, setOfficeInfo] = useState(null)
   const [loading, setLoading] = useState(Boolean(policyId))
   const [error, setError] = useState('')
-  const [checked, setChecked] = useState({})
+  const storageKey = policyId ? `checklist-checked-${policyId}` : null
+  const [checked, setChecked] = useState(() => {
+    if (!storageKey) return {}
+    try { return JSON.parse(localStorage.getItem(storageKey)) || {} } catch { return {} }
+  })
 
-  const toggle = (key) => setChecked(p => ({ ...p, [key]: !p[key] }))
+  const toggle = (key) => setChecked(p => {
+    const next = { ...p, [key]: !p[key] }
+    if (storageKey) localStorage.setItem(storageKey, JSON.stringify(next))
+    return next
+  })
 
   useEffect(() => {
     let active = true
