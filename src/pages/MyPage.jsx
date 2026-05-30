@@ -602,18 +602,19 @@ export default function MyPage() {
                       style={{
                         marginTop: 10,
                         width: '100%',
-                        padding: '10px 0',
-                        borderRadius: 999,
+                        padding: '11px 0',
+                        borderRadius: 12,
                         border: 'none',
-                        background: '#eef7ed',
-                        color: '#076818',
-                        fontSize: 13,
+                        background: '#076818',
+                        color: '#fff',
+                        fontSize: 14,
                         fontWeight: 700,
                         cursor: 'pointer',
                         fontFamily: 'inherit',
+                        letterSpacing: '-0.2px',
                       }}
                     >
-                      준비물 확인하기
+                      준비물 확인 →
                     </button>
                   </Card>
                 )
