@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
-import { fetchPolicyChecklist } from '../lib/api'
+import { fetchPolicyChecklist, saveCheckedItems } from '../lib/api'
 
 const accentColor = '#c2185b'
 
@@ -34,56 +34,16 @@ function normalizeItems(items) {
 }
 
 function normalizeChecklistResponse(data) {
-  const payload = data?.checklist || data?.data || data
-  const rawSections = Array.isArray(payload)
-    ? payload
-    : Array.isArray(payload?.sections)
-      ? payload.sections
-      : null
-
-  if (rawSections) {
-    const flatItems = rawSections
-      .filter(item => item && typeof item === 'object' && !Array.isArray(item) && !item.items && !item.checklist)
-      .map(item => ({
-        category: item.category || item.type || 'items',
-        label: itemLabel(item),
-      }))
-      .filter(item => item.label)
-
-    if (flatItems.length === rawSections.length) {
-      const grouped = flatItems.reduce((acc, item) => {
-        const title = sectionTitleMap[item.category] || item.category || '준비 항목'
-        acc[title] = [...(acc[title] || []), item.label]
-        return acc
-      }, {})
-      const normalized = Object.entries(grouped).map(([title, items]) => ({ title, items }))
-      if (normalized.length > 0) return normalized
-    }
-
-    const normalized = rawSections.map((section, index) => {
-      if (typeof section === 'string') {
-        return { title: index === 0 ? '준비 항목' : `준비 항목 ${index + 1}`, items: [section] }
-      }
-      return {
-        title: section.title || section.name || sectionTitleMap[section.category] || sectionTitleMap[section.type] || section.category || `준비 항목 ${index + 1}`,
-        items: normalizeItems(section.items || section.checklist || section.values || section.documents || section.requirements),
-        link: section.link || section.url ? { label: section.link_label || '관련 페이지 바로가기', href: section.link || section.url } : undefined,
-      }
-    }).filter(section => section.items.length > 0)
-    if (normalized.length > 0) return normalized
-  }
-
-  if (payload && typeof payload === 'object') {
-    const grouped = Object.entries(sectionTitleMap).reduce((acc, [key, title]) => {
-      const items = normalizeItems(payload[key])
-      if (items.length > 0) acc[title] = [...(acc[title] || []), ...items]
-      return acc
-    }, {})
-    const normalized = Object.entries(grouped).map(([title, items]) => ({ title, items }))
-    if (normalized.length > 0) return normalized
-  }
-
-  return []
+  const raw = Array.isArray(data) ? data : (data?.checklist || data?.data || [])
+  if (!Array.isArray(raw) || raw.length === 0) return []
+  const items = raw
+    .map(item => ({
+      id: item.id,
+      label: item.label || item.text || item.name || String(item),
+    }))
+    .filter(item => item.id != null && item.label)
+  if (items.length === 0) return []
+  return [{ title: '준비 항목', items }]
 }
 
 function normalizeOffice(data) {
@@ -195,15 +155,22 @@ export default function Checklist() {
   const [error, setError] = useState('')
   const storageKey = policyId ? `checklist-checked-${policyId}` : null
   const [checked, setChecked] = useState(() => {
+    // Initialize from grant.checked_items (array of IDs from backend)
+    if (grant?.checked_items?.length) {
+      return grant.checked_items.reduce((acc, id) => ({ ...acc, [id]: true }), {})
+    }
+    // Fall back to localStorage
     if (!storageKey) return {}
     try { return JSON.parse(localStorage.getItem(storageKey)) || {} } catch { return {} }
   })
 
-  const toggle = (key) => setChecked(p => {
-    const next = { ...p, [key]: !p[key] }
+  const toggle = async (itemId) => {
+    const next = { ...checked, [itemId]: !checked[itemId] }
+    setChecked(next)
     if (storageKey) localStorage.setItem(storageKey, JSON.stringify(next))
-    return next
-  })
+    const checkedIds = Object.entries(next).filter(([, v]) => v).map(([k]) => Number(k))
+    try { await saveCheckedItems(policyId, checkedIds) } catch { /* saved locally */ }
+  }
 
   useEffect(() => {
     let active = true
@@ -268,8 +235,8 @@ export default function Checklist() {
           </p>
         )}
         {/* Section steps */}
-        {!loading && checklistSections.map((section, si) => {
-          const done = section.items.filter(item => !!checked[`${si}-${item}`]).length
+        {!loading && checklistSections.map((section) => {
+          const done = section.items.filter(item => !!checked[item.id]).length
           const total = section.items.length
           const complete = done === total
           const started = done > 0
@@ -307,10 +274,10 @@ export default function Checklist() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {section.items.map((item) => (
                     <CheckItem
-                      key={item}
-                      label={item}
-                      checked={!!checked[`${si}-${item}`]}
-                      onToggle={() => toggle(`${si}-${item}`)}
+                      key={item.id}
+                      label={item.label}
+                      checked={!!checked[item.id]}
+                      onToggle={() => toggle(item.id)}
                     />
                   ))}
                 </div>
