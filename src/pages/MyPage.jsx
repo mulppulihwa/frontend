@@ -383,18 +383,17 @@ export default function MyPage() {
               position: 'relative',
               zIndex: 2,
             }}>
-              <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 18 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
-                  <div style={{ marginTop: 10, minWidth: 0, textAlign: 'center' }}>
-                    <p style={{ fontSize: 22, fontWeight: 800, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {userInfo.name || '카카오 사용자'}님
-                    </p>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 3 }}>
-                      <MapPin size={13} color="#8a8a8a" strokeWidth={2} />
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {userInfo.region || '지역 미등록'} 거주
-                      </span>
-                    </div>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: '#8a8a8a', marginBottom: 4 }}>안녕하세요,</p>
+                  <p style={{ fontSize: 22, fontWeight: 800, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {userInfo.name || '카카오 사용자'}님
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+                    <MapPin size={13} color="#8a8a8a" strokeWidth={2} />
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#8a8a8a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {userInfo.region || '지역 미등록'} 거주
+                    </span>
                   </div>
                 </div>
                 <button
