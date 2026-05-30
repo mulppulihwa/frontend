@@ -113,10 +113,10 @@ function ReadOnlyRow({ label, value }) {
       justifyContent: 'space-between',
       gap: 12,
       padding: '12px 0',
-      borderBottom: '1px solid #f0eee8',
+      borderBottom: '1px solid #edf3ea',
     }}>
       <span style={{ fontSize: 12, fontWeight: 400, color: '#9a948a', flexShrink: 0 }}>{label}</span>
-      <span style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 13, fontWeight: 400, color: '#1f2433', textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {hasValue(value) ? value : '미등록'}
       </span>
     </div>
@@ -218,25 +218,24 @@ export default function BasicInfo() {
             </section>
 
             <section style={{
-              background: '#fff',
-              border: '1.5px solid #e8e8e8',
-              borderRadius: 22,
-              padding: '18px 16px 4px',
-              boxShadow: '0 10px 24px rgba(7,104,24,0.05)',
+              background: '#FFFFFF',
+              border: '1.5px solid rgba(218,231,211,0.95)',
+              borderRadius: 28,
+              padding: '20px 16px 4px',
             }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
                 <div>
-                  <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>진단 정보</p>
+                  <p style={{ fontSize: 18, fontWeight: 800, color: '#1f2433', letterSpacing: 0 }}>진단 정보</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => navigate('/step1')}
                   style={{
                     flexShrink: 0,
-                    minHeight: 32,
-                    padding: '0 11px',
+                    minHeight: 36,
+                    padding: '0 14px',
                     border: 'none',
-                    borderRadius: 13,
+                    borderRadius: 999,
                     background: '#e8f3e8',
                     color: '#076818',
                     fontSize: 12,
