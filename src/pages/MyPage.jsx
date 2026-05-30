@@ -493,20 +493,6 @@ export default function MyPage() {
                 <div>
                   <p style={{ fontSize: 12, fontWeight: 600, color: '#5a7a5e', marginBottom: 7 }}>진단 받은 정책</p>
                   <p style={{ fontSize: 38, fontWeight: 800, color: '#1f2433', lineHeight: 1 }}>{completedCount + plannedCount + ignoredCount + noStatusCount}건</p>
-                  <div style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    marginTop: 12,
-                    padding: '6px 10px',
-                    borderRadius: 999,
-                    background: 'rgba(7,104,24,0.1)',
-                    color: '#076818',
-                    fontSize: 12,
-                    fontWeight: 700,
-                  }}>
-                    신청 진행 중 {activePolicies.length}건
-                  </div>
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
