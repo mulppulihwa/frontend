@@ -244,9 +244,7 @@ export async function fetchPlaces() {
 }
 
 export async function fetchProfile() {
-  const data = await request('/api/profile/')
-  console.log('[fetchProfile] response:', JSON.stringify(data))
-  return data
+  return request('/api/profile/')
 }
 
 export async function updateProfile(profile) {
@@ -262,9 +260,6 @@ export async function fetchSavedPolicies() {
   let data = []
   try {
     data = await request('/api/users/me/policies/')
-    const first = toArray(data)[0]
-    console.log('[fetchSavedPolicies] first item keys:', first ? Object.keys(first) : [])
-    console.log('[fetchSavedPolicies] first item:', JSON.stringify(first))
   } catch (err) {
     console.warn('[fetchSavedPolicies] API error:', err)
     data = []
