@@ -101,7 +101,7 @@ export default function Results() {
         </div>
         <div style={{ textAlign: 'center', marginTop: 10 }}>
           {(() => {
-            const unchecked = total - Object.keys(statuses).length
+            const unchecked = total - Object.values(statuses).filter(v => v !== null).length
             return unchecked > 0
               ? <span style={{ fontSize: 13, fontWeight: 600, color: '#FFA100', background: '#fff8ee', border: '1.5px solid #ffe0a0', borderRadius: 20, padding: '4px 12px' }}>
                   현황 미입력 {unchecked}개 남았어요
