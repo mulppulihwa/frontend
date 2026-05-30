@@ -223,7 +223,7 @@ export async function fetchMatchedPolicies() {
 
 export async function fetchPolicyChecklist(policyId) {
   if (!policyId) throw new Error('정책 ID가 없습니다.')
-  return request(`/api/policies/${policyId}/checklist/`)
+  return request(`/api/users/me/policies/${policyId}/checklist/`)
 }
 
 export async function fetchRegions() {
