@@ -39,7 +39,7 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
             자세히 보기
           </button>
         </div>
-        <p style={{ fontSize: 13, color: '#888', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
+        <p style={{ fontSize: 13, color: '#555', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
         {/* Countdown row */}
         <p style={{ fontSize: 12, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px' }}>
           {isCompleted ? '지급일까지' : '마감까지'} D-{days}
