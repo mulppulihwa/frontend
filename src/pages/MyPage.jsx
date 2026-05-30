@@ -549,7 +549,7 @@ export default function MyPage() {
                         <span style={{ fontSize: 13, fontWeight: 800, color: '#d93025' }}>{getDday(g.deadline)}</span>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 15, fontWeight: 800, color: '#1f2433', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <p style={{ fontSize: 15, fontWeight: 800, color: '#1f2433', marginBottom: 6, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>
                           {g.title}
                         </p>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: cfg.bg, borderRadius: 999, padding: '4px 8px' }}>
@@ -559,25 +559,46 @@ export default function MyPage() {
                       </div>
                       <MiniRing done={g.checkDone} total={g.checkTotal} />
                     </div>
-                    <button
-                      onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(g.id)}`, { state: { grant: g } })}
-                      style={{
-                        marginTop: 10,
-                        width: '100%',
-                        padding: '11px 0',
-                        borderRadius: 999,
-                        border: 'none',
-                        background: '#076818',
-                        color: '#fff',
-                        fontSize: 14,
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        fontFamily: 'inherit',
-                        letterSpacing: '-0.2px',
-                      }}
-                    >
-                      준비물 확인 →
-                    </button>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+                      <button
+                        onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(g.id)}`, { state: { grant: g } })}
+                        style={{
+                          flex: 1,
+                          padding: '11px 0',
+                          borderRadius: 999,
+                          border: 'none',
+                          background: '#076818',
+                          color: '#fff',
+                          fontSize: 14,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          letterSpacing: '-0.2px',
+                        }}
+                      >
+                        준비물 확인 →
+                      </button>
+                      {g.status === '신청완료' && (
+                        <button
+                          onClick={() => navigate('/map', { state: { policy: g } })}
+                          style={{
+                            flex: 1,
+                            padding: '11px 0',
+                            borderRadius: 999,
+                            border: '1.5px solid #076818',
+                            background: '#fff',
+                            color: '#076818',
+                            fontSize: 14,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            fontFamily: 'inherit',
+                            letterSpacing: '-0.2px',
+                          }}
+                        >
+                          사용처 보기
+                        </button>
+                      )}
+                    </div>
                   </Card>
                 )
               })}
