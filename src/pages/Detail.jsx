@@ -1,12 +1,7 @@
-import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Check, Banknote, ClipboardCheck, Calendar, Phone, MousePointerClick, ArrowUpRight, GraduationCap, FileText } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
-import Button from '../components/Button'
-import kakaoLogo from '../assets/kkt_logo.png'
-import { startKakaoLogin } from '../lib/auth'
-import { getAccessToken } from '../lib/api'
 
 const sections = [
   { title: '지원 내용', icon: Banknote, items: ['농업 창업 비용 최대 300만원 지원'], type: 'bullet' },
@@ -36,21 +31,6 @@ export default function Detail() {
   const navigate = useNavigate()
   const grant = state?.grant
   const detailSections = buildSections(grant)
-  const [showLogin, setShowLogin] = useState(false)
-
-  const handleKakaoLogin = () => {
-    const query = grant?.id ? `?policyId=${encodeURIComponent(grant.id)}` : ''
-    startKakaoLogin(`/checklist${query}`)
-  }
-
-  const handleChecklist = () => {
-    const query = grant?.id ? `?policyId=${encodeURIComponent(grant.id)}` : ''
-    if (getAccessToken()) {
-      navigate(`/checklist${query}`, { state: { grant } })
-      return
-    }
-    setShowLogin(true)
-  }
 
   return (
     <div
@@ -172,64 +152,6 @@ export default function Detail() {
         ))}
 
       </div>
-
-      <div style={{ position: 'fixed', bottom: 104, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '12px 28px 16px' }}>
-        <Button onClick={handleChecklist} variant="pill">준비물 확인 →</Button>
-      </div>
-
-      {showLogin && (
-        <div
-          onClick={() => setShowLogin(false)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 300,
-            background: 'rgba(0,0,0,0.45)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '0 28px',
-          }}
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-            style={{
-              width: '100%',
-              maxWidth: 320,
-              background: '#fff',
-              borderRadius: 24,
-              padding: '32px 24px 28px',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20,
-              animation: 'fadeInScale 0.2s ease',
-            }}
-          >
-            <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
-              로그인 필요합니다
-            </p>
-            <button
-              onClick={handleKakaoLogin}
-              style={{
-                width: '100%',
-                minHeight: 54,
-                padding: '14px 20px',
-                borderRadius: 16,
-                border: 'none',
-                background: '#FEE500',
-                color: '#1a1a1a',
-                fontSize: 16,
-                fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                letterSpacing: '-0.2px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 10,
-              }}
-            >
-              <img src={kakaoLogo} alt="카카오" style={{ width: 24, height: 24, objectFit: 'contain' }} />
-              카카오 로그인
-            </button>
-          </div>
-          <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }`}</style>
-        </div>
-      )}
 
     </div>
   )
