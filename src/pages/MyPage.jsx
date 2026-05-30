@@ -8,7 +8,6 @@ import {
   X,
 } from 'lucide-react'
 import Card from '../components/Card'
-import farmerAvatar from '../assets/farmer.png'
 import { fetchProfile, fetchSavedPolicies, getAccessToken } from '../lib/api'
 import { findDisplayName, getKakaoUserName, logout, startKakaoLogin } from '../lib/auth'
 
@@ -395,7 +394,6 @@ export default function MyPage() {
                     overflow: 'hidden',
                     flexShrink: 0,
                   }}>
-                    <img src={farmerAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                   <div style={{ marginTop: 10, minWidth: 0, textAlign: 'center' }}>
                     <p style={{ fontSize: 22, fontWeight: 800, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
