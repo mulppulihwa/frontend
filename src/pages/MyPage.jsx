@@ -385,16 +385,6 @@ export default function MyPage() {
             }}>
               <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 18 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }}>
-                  <div style={{
-                    width: 88,
-                    height: 88,
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
-                    border: '6px solid #fff',
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                  }}>
-                  </div>
                   <div style={{ marginTop: 10, minWidth: 0, textAlign: 'center' }}>
                     <p style={{ fontSize: 22, fontWeight: 800, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {userInfo.name || '카카오 사용자'}님
