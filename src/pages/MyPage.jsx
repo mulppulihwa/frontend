@@ -423,13 +423,13 @@ export default function MyPage() {
                 onClick={handleDiagnosisStart}
                 style={{
                   width: '100%',
-                  minHeight: 52,
+                  minHeight: 44,
                   border: 'none',
                   borderRadius: 999,
                   background: '#076818',
                   color: '#fff',
-                  fontSize: 14,
-                  fontWeight: 800,
+                  fontSize: 13,
+                  fontWeight: 700,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                 }}
