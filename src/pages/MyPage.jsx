@@ -486,7 +486,7 @@ export default function MyPage() {
                 position: 'relative',
                 overflow: 'hidden',
                 borderRadius: 26,
-                background: '#1f4f35',
+                background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
                 padding: '18px 18px 20px',
                 marginBottom: 12,
               }}>
@@ -507,14 +507,14 @@ export default function MyPage() {
                         width: 8,
                         height,
                         borderRadius: 999,
-                        background: index === 4 ? '#ffd36a' : '#bde2be',
+                        background: index === 4 ? '#FFA100' : '#076818',
                       }}
                     />
                   ))}
                 </div>
                 <div>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.72)', marginBottom: 7 }}>진단 받은 정책</p>
-                  <p style={{ fontSize: 38, fontWeight: 800, color: '#FFFFFF', lineHeight: 1 }}>{completedCount + plannedCount + ignoredCount + noStatusCount}건</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: '#5a7a5e', marginBottom: 7 }}>진단 받은 정책</p>
+                  <p style={{ fontSize: 38, fontWeight: 800, color: '#1f2433', lineHeight: 1 }}>{completedCount + plannedCount + ignoredCount + noStatusCount}건</p>
                   <div style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -522,8 +522,8 @@ export default function MyPage() {
                     marginTop: 12,
                     padding: '6px 10px',
                     borderRadius: 999,
-                    background: 'rgba(255,255,255,0.12)',
-                    color: '#dceedd',
+                    background: 'rgba(7,104,24,0.1)',
+                    color: '#076818',
                     fontSize: 12,
                     fontWeight: 700,
                   }}>
