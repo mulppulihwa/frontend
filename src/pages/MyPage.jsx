@@ -429,7 +429,7 @@ export default function MyPage() {
                 const dateStr = `${date.getFullYear()}.${String(date.getMonth()+1).padStart(2,'0')}.${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`
                 const ago = days === 0 ? '오늘' : `${days}일 전`
                 return (
-                  <p style={{ fontSize: 12, color: '#aaa', letterSpacing: '-0.1px', marginBottom: 4 }}>
+                  <p style={{ fontSize: 12, color: '#666', letterSpacing: '-0.1px', marginBottom: 4 }}>
                     최종 진단 : {dateStr} ({ago})
                   </p>
                 )
