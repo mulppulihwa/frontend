@@ -2,8 +2,8 @@ import { Check, Clock3, X } from 'lucide-react'
 
 const statuses = [
   { key: '신청완료', label: '신청 완료', Icon: Check,  activeBg: '#e8f3e8', activeColor: '#076818' },
-  { key: '신청예정', label: '신청 예정', Icon: Clock3, activeBg: '#FFA100' },
-  { key: '관심없음', label: '관심 없음', Icon: X,       activeBg: '#d93025' },
+  { key: '신청예정', label: '신청 예정', Icon: Clock3, activeBg: '#fff3e0', activeColor: '#FFA100' },
+  { key: '관심없음', label: '관심 없음', Icon: X,       activeBg: '#fff0ef', activeColor: '#d93025' },
 ]
 
 export default function StatusCheckboxes({ value, onChange }) {
