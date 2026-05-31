@@ -11,6 +11,7 @@ const filters = [
   { key: '신청예정', label: '신청 예정' },
   { key: '신청완료', label: '신청 완료' },
   { key: '관심없음', label: '관심 없음' },
+  { key: '미입력', label: '미입력' },
 ]
 
 const statusConfig = {
@@ -199,9 +200,13 @@ export default function GrantStatus() {
   const sortFn = sort === '마감순'
     ? (a, b) => a.days - b.days
     : (a, b) => a.title.localeCompare(b.title, 'ko')
-  const filtered = (isAll ? grants : grants.filter(g => g.status === activeFilter || !g.status))
-    .filter(g => g.title.includes(query) || g.subtitle.includes(query))
-    .sort(sortFn)
+  const filtered = (isAll
+    ? grants
+    : activeFilter === '미입력'
+      ? grants.filter(g => !g.status)
+      : grants.filter(g => g.status === activeFilter)
+  ).filter(g => g.title.includes(query) || g.subtitle.includes(query))
+   .sort(sortFn)
   const grouped = !isAll && filtered.reduce((acc, g) => {
     const key = g.status || '미입력'
     if (!acc[key]) acc[key] = []
@@ -245,7 +250,9 @@ export default function GrantStatus() {
             const active = activeFilter === f.key
             const count = f.key === '전체'
               ? grants.length
-              : grants.filter(g => statuses[g.id] === f.key).length
+              : f.key === '미입력'
+                ? grants.filter(g => !statuses[g.id]).length
+                : grants.filter(g => statuses[g.id] === f.key).length
             return (
               <button
                 key={f.key}
