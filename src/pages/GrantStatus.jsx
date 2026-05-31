@@ -294,7 +294,7 @@ export default function GrantStatus() {
 
         {loading && (
           <div style={{
-            background: 'transparent',
+            background: 'none',
             border: 'none',
             padding: '48px 20px',
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
