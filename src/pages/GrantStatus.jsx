@@ -199,12 +199,13 @@ export default function GrantStatus() {
   const sortFn = sort === '마감순'
     ? (a, b) => a.days - b.days
     : (a, b) => a.title.localeCompare(b.title, 'ko')
-  const filtered = (isAll ? grants : grants.filter(g => g.status === activeFilter))
+  const filtered = (isAll ? grants : grants.filter(g => g.status === activeFilter || !g.status))
     .filter(g => g.title.includes(query) || g.subtitle.includes(query))
     .sort(sortFn)
   const grouped = !isAll && filtered.reduce((acc, g) => {
-    if (!acc[g.status]) acc[g.status] = []
-    acc[g.status].push(g)
+    const key = g.status || '미입력'
+    if (!acc[key]) acc[key] = []
+    acc[key].push(g)
     return acc
   }, {})
 
@@ -322,18 +323,36 @@ export default function GrantStatus() {
             ))}
           </div>
         ) : !loading ? (
-          ['신청예정', '신청완료', '관심없음'].map(status =>
-            grouped[status]?.length ? (
-              <StatusSection
-                key={status}
-                title={status}
-                grants={grouped[status]}
-                statuses={statuses}
-                onStatusChange={handleStatusChange}
-                navigate={navigate}
-              />
-            ) : null
-          )
+          <>
+            {['신청예정', '신청완료', '관심없음'].map(status =>
+              grouped[status]?.length ? (
+                <StatusSection
+                  key={status}
+                  title={status}
+                  grants={grouped[status]}
+                  statuses={statuses}
+                  onStatusChange={handleStatusChange}
+                  navigate={navigate}
+                />
+              ) : null
+            )}
+            {grouped['미입력']?.length ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ paddingLeft: 2 }}>
+                  <p style={{ fontSize: 15, fontWeight: 700, color: '#8a8a8a', letterSpacing: '-0.2px' }}>미입력</p>
+                </div>
+                {grouped['미입력'].map(g => (
+                  <GrantCard
+                    key={g.id}
+                    grant={g}
+                    status={statuses[g.id]}
+                    onStatusChange={val => handleStatusChange(g.id, val)}
+                    navigate={navigate}
+                  />
+                ))}
+              </div>
+            ) : null}
+          </>
         ) : null}
 
         {!loading && filtered.length === 0 && (
