@@ -5,7 +5,7 @@ import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import GrantResultCard from '../components/GrantResultCard'
-import { cachePolicyStatus, fetchMatchedPolicies, fetchProfile, readPolicyStatusCache, savePolicy, updateSavedPolicyStatus } from '../lib/api'
+import { cachePolicyStatus, fetchMatchedPolicies, fetchProfile, fetchSavedPolicies, readPolicyStatusCache, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
 const statusConfig = {
@@ -73,17 +73,23 @@ export default function Results() {
       })
       .catch(() => {})
     fetchMatchedPolicies()
-      .then(policies => {
-        if (active) {
-          setGrants(policies)
-          localStorage.setItem('lastDiagnosisDate', new Date().toISOString())
-          const statusCache = readPolicyStatusCache()
-          setStatuses(policies.reduce((acc, policy) => ({
-            ...acc,
-            [policy.id]: policy.user_status || statusCache[String(policy.id)] || null,
-          }), {}))
-          policies.forEach(p => savePolicy(p.id).catch(() => null))
-        }
+      .then(async policies => {
+        if (!active) return
+        setGrants(policies)
+        localStorage.setItem('lastDiagnosisDate', new Date().toISOString())
+        policies.forEach(p => savePolicy(p.id).catch(() => null))
+        // Fetch actual backend statuses to sync correctly
+        const statusCache = readPolicyStatusCache()
+        let savedStatuses = {}
+        try {
+          const saved = await fetchSavedPolicies()
+          saved.forEach(p => { if (p.user_status) savedStatuses[String(p.id)] = p.user_status })
+        } catch { /* fall back to cache */ }
+        if (!active) return
+        setStatuses(policies.reduce((acc, policy) => ({
+          ...acc,
+          [policy.id]: savedStatuses[String(policy.id)] || statusCache[String(policy.id)] || null,
+        }), {}))
       })
       .catch(err => {
         if (active) setLoadError(err.message || '맞춤 지원금을 불러오지 못했습니다.')
