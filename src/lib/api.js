@@ -142,7 +142,7 @@ export function normalizeUserPolicyStatus(status) {
   return map[value] || null
 }
 
-function readPolicyStatusCache() {
+export function readPolicyStatusCache() {
   try {
     return JSON.parse(localStorage.getItem(POLICY_STATUS_CACHE_KEY) || '{}')
   } catch {

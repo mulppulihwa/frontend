@@ -5,7 +5,7 @@ import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import GrantResultCard from '../components/GrantResultCard'
-import { cachePolicyStatus, fetchMatchedPolicies, fetchProfile, savePolicy, updateSavedPolicyStatus } from '../lib/api'
+import { cachePolicyStatus, fetchMatchedPolicies, fetchProfile, readPolicyStatusCache, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
 const statusConfig = {
@@ -76,9 +76,10 @@ export default function Results() {
       .then(policies => {
         if (active) {
           setGrants(policies)
+          const statusCache = readPolicyStatusCache()
           setStatuses(policies.reduce((acc, policy) => ({
             ...acc,
-            [policy.id]: policy.user_status || null,
+            [policy.id]: policy.user_status || statusCache[String(policy.id)] || null,
           }), {}))
           policies.forEach(p => savePolicy(p.id).catch(() => null))
         }
