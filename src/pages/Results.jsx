@@ -160,9 +160,8 @@ export default function Results() {
       <div style={{ padding: '0 18px 152px', flex: 1, overflowX: 'hidden' }}>
         {loading && (
           <div style={{
-            background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
-            border: '1px solid rgba(218,231,211,0.9)',
-            borderRadius: 28,
+            background: 'none',
+            border: 'none',
             padding: '48px 20px',
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
           }}>
