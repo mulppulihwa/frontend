@@ -3,6 +3,7 @@ import { Banknote } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import okcheonTypo from '../assets/okcheon_typo.png'
 import okTypo from '../assets/ok_typo.png'
+import okcheonCharacter from '../assets/okcheon-character.png'
 import Folder from '../components/Folder'
 import { fetchPreviewPolicies, fetchSavedPolicies } from '../lib/api'
 
@@ -218,7 +219,27 @@ export default function Home() {
         <img src={okTypo} alt="OK" className="logo-spin" style={{ height: 48, width: 'auto' }} />
       </div>
 
-      <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{
+        flex: 1,
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        minHeight: 0,
+      }}>
+        <img
+          src={okcheonCharacter}
+          alt=""
+          style={{
+            width: 'min(72vw, 240px)',
+            maxHeight: 170,
+            objectFit: 'contain',
+            flexShrink: 0,
+            marginBottom: -8,
+          }}
+        />
         <Folder
           size={2.5}
           color="#FFA100"
