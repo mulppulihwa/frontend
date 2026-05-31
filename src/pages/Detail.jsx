@@ -19,7 +19,7 @@ function buildSections(grant) {
     { title: '지원 내용', icon: Banknote, items: [grant.summary || grant.subtitle || '지원 내용을 확인해 주세요'], type: 'bullet' },
     { title: '신청 자격', icon: ClipboardCheck, items: grant.reasons?.length ? grant.reasons : ['신청 자격을 확인해 주세요'], type: 'check' },
     { title: '신청 기간', icon: Calendar, items: [grant.period || '신청 기간 확인'], type: 'bullet' },
-    { title: '담당 기관', icon: Phone, items: [{ text: grant.agency || '담당 기관 확인', phone: grant.phone || '043-730-XXXX' }], type: 'contact' },
+    { title: '담당 기관', icon: Phone, items: [{ text: grant.agency || '담당 기관 확인', phone: grant.phone || (grant.agency?.match(/\(([0-9-]+)\)/)?.[1]) || null }], type: 'contact' },
     { title: '신청 요건', icon: GraduationCap, items: ['세부 요건은 담당 기관 공고를 확인해 주세요'], type: 'requirement', link: { label: '교육이수 페이지 바로가기', href: 'https://agriedu.net/' } },
     { title: '신청 서류', icon: FileText, items: ['주민등록등본', '귀농교육 이수서', '소득분위 증명서'], type: 'bullet' },
     { title: '신청 방법', icon: MousePointerClick, items: ['방문 또는 담당 기관 안내에 따라 신청'], type: 'bullet' },
@@ -135,17 +135,19 @@ export default function Detail() {
             {section.type === 'contact' && section.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{item.text}</p>
-                <a
-                  href={`tel:${item.phone}`}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6, alignSelf: 'flex-start',
-                    fontSize: 15, fontWeight: 500, color: '#076818', textDecoration: 'none',
-                    background: '#e8f3e8', padding: '8px 16px', borderRadius: 16, letterSpacing: '-0.1px',
-                  }}
-                >
-                  <Phone size={14} color="#076818" strokeWidth={2.5} />
-                  {item.phone}
-                </a>
+                {item.phone && (
+                  <a
+                    href={`tel:${item.phone}`}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6, alignSelf: 'flex-start',
+                      fontSize: 15, fontWeight: 500, color: '#076818', textDecoration: 'none',
+                      background: '#e8f3e8', padding: '8px 16px', borderRadius: 16, letterSpacing: '-0.1px',
+                    }}
+                  >
+                    <Phone size={14} color="#076818" strokeWidth={2.5} />
+                    {item.phone}
+                  </a>
+                )}
               </div>
             ))}
           </Card>
