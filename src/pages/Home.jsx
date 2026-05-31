@@ -223,27 +223,26 @@ export default function Home() {
         flex: 1,
         width: '100%',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 8,
         minHeight: 0,
       }}>
-        <img
-          src={okcheonCharacter}
-          alt=""
-          style={{
-            width: 'min(72vw, 240px)',
-            maxHeight: 170,
-            objectFit: 'contain',
-            flexShrink: 0,
-            marginBottom: -8,
-          }}
-        />
         <Folder
           size={2.5}
           color="#FFA100"
-
+          frontContent={
+            <img
+              src={okcheonCharacter}
+              alt=""
+              style={{
+                width: '170%',
+                height: '170%',
+                objectFit: 'contain',
+                objectPosition: 'center bottom',
+                transform: 'translateY(-24%)',
+              }}
+            />
+          }
           items={policies.map(policy => (
             <div key={policy.id || policy.title} onClick={e => { e.stopPropagation(); navigate('/detail', { state: { grant: policy } }) }} style={{ width: '100%', height: '100%', boxSizing: 'border-box' }}>
               <PolicyPaperCard policy={policy} />
