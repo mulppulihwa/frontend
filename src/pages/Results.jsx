@@ -80,6 +80,7 @@ export default function Results() {
             ...acc,
             [policy.id]: policy.user_status || null,
           }), {}))
+          policies.forEach(p => savePolicy(p.id).catch(() => null))
         }
       })
       .catch(err => {
