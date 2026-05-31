@@ -181,7 +181,7 @@ input:focus-visible {
   width: 78px;
   height: 78px;
   border-radius: 50%;
-  border: 7px solid #e8f3e8;
+  border: 7px solid rgba(255, 255, 255, 0.6);
   border-top-color: #076818;
   animation: loadingSpin 0.9s linear infinite;
 }
