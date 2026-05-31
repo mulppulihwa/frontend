@@ -235,11 +235,10 @@ export default function Home() {
               src={okcheonCharacter}
               alt=""
               style={{
-                width: '170%',
-                height: '170%',
+                width: '80%',
+                height: '80%',
                 objectFit: 'contain',
-                objectPosition: 'center bottom',
-                transform: 'translateY(-24%)',
+                objectPosition: 'center center',
               }}
             />
           }
