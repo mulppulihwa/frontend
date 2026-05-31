@@ -1,7 +1,7 @@
 import { Check, Clock3, X } from 'lucide-react'
 
 const statuses = [
-  { key: '신청완료', label: '신청 완료', Icon: Check,  activeBg: '#076818' },
+  { key: '신청완료', label: '신청 완료', Icon: Check,  activeBg: '#e8f3e8', activeColor: '#076818' },
   { key: '신청예정', label: '신청 예정', Icon: Clock3, activeBg: '#FFA100' },
   { key: '관심없음', label: '관심 없음', Icon: X,       activeBg: '#d93025' },
 ]
@@ -9,8 +9,9 @@ const statuses = [
 export default function StatusCheckboxes({ value, onChange }) {
   return (
     <div style={{ display: 'flex', gap: 7 }}>
-      {statuses.map(({ key, label, Icon, activeBg }) => {
+      {statuses.map(({ key, label, Icon, activeBg, activeColor }) => {
         const active = value === key
+        const fgColor = active ? (activeColor || '#fff') : '#999'
         return (
           <button
             key={key}
@@ -31,12 +32,12 @@ export default function StatusCheckboxes({ value, onChange }) {
               fontFamily: 'inherit',
               fontSize: 12,
               fontWeight: active ? 700 : 500,
-              color: active ? '#fff' : '#999',
+              color: fgColor,
               letterSpacing: '-0.2px',
               transition: 'all 0.15s ease',
             }}
           >
-            <Icon size={13} strokeWidth={active ? 2.8 : 2.2} />
+            <Icon size={13} strokeWidth={active ? 2.8 : 2.2} color={fgColor} />
             {label}
           </button>
         )
