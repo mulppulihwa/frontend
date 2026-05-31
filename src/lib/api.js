@@ -229,7 +229,7 @@ export async function fetchPolicyChecklist(policyId) {
 }
 
 export async function saveCheckedItems(policyId, checkedIds) {
-  return request(`/api/users/me/policies/${policyId}/checklist/`, {
+  return request(`/api/users/policies/${policyId}/checklist/`, {
     method: 'PATCH',
     body: JSON.stringify({ checked_items: checkedIds }),
   })
