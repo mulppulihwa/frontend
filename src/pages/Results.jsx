@@ -76,6 +76,7 @@ export default function Results() {
       .then(policies => {
         if (active) {
           setGrants(policies)
+          localStorage.setItem('lastDiagnosisDate', new Date().toISOString())
           const statusCache = readPolicyStatusCache()
           setStatuses(policies.reduce((acc, policy) => ({
             ...acc,
