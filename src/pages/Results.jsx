@@ -47,6 +47,9 @@ export default function Results() {
             ...acc,
             [policy.id]: policy.user_status || null,
           }), {}))
+          // Auto-save all matched policies so they appear in 미입력 on MyPage/GrantStatus
+          // and trigger checklist parsing on the backend
+          policies.forEach(p => savePolicy(p.id).catch(() => null))
         }
       })
       .catch(err => {
