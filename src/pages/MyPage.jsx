@@ -272,32 +272,32 @@ export default function MyPage() {
       boxSizing: 'border-box',
       width: '100%',
     }}>
-      <div style={{ padding: '0 18px 116px', display: 'flex', flexDirection: 'column', gap: 22 }}>
-        {loading && (
-          <div style={{
-            minHeight: 'calc(100vh - 104px)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 10px 58px',
-            background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
-          }}>
-            <div className="loading-spinner" aria-label="마이페이지 정보 로딩 중" />
-            <div style={{ textAlign: 'center', marginTop: 28 }}>
-              <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.45 }}>
-                마이페이지 정보를
-              </p>
-              <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.45 }}>
-                불러오고 있어요
-              </p>
-              <p style={{ fontSize: 14, fontWeight: 400, color: '#666', marginTop: 10 }}>
-                잠시만 기다려 주세요
-              </p>
-            </div>
+      {loading && (
+        <div style={{
+          flex: 1,
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '0 10px 58px',
+          background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
+        }}>
+          <div className="loading-spinner" aria-label="마이페이지 정보 로딩 중" />
+          <div style={{ textAlign: 'center', marginTop: 28 }}>
+            <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.45 }}>
+              마이페이지 정보를
+            </p>
+            <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.45 }}>
+              불러오고 있어요
+            </p>
+            <p style={{ fontSize: 14, fontWeight: 400, color: '#666', marginTop: 10 }}>
+              잠시만 기다려 주세요
+            </p>
           </div>
-        )}
-
+        </div>
+      )}
+      <div style={{ padding: '0 18px 116px', display: 'flex', flexDirection: 'column', gap: 22 }}>
         {!loading && authRequired && (
           <div style={{
             minHeight: 'calc(100vh - 104px)',
