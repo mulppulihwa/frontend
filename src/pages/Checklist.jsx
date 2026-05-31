@@ -259,8 +259,8 @@ export default function Checklist() {
         )}
         {parsing && !error && (
           <div style={{
-            background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
-            border: '1px solid rgba(218,231,211,0.9)',
+            background: 'transparent',
+            border: 'none',
             borderRadius: 28,
             padding: '40px 20px',
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
