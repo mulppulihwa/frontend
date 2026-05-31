@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Check } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
@@ -14,6 +15,30 @@ const statusConfig = {
   마감:    { label: '마감',     color: '#777',    bg: '#f5f5f5' },
 }
 
+function Toast({ visible }) {
+  if (!visible) return null
+  return (
+    <div style={{
+      position: 'fixed', bottom: 120, left: '50%', transform: 'translateX(-50%)',
+      zIndex: 200, pointerEvents: 'none',
+    }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        background: '#1a1a1a', borderRadius: 50, padding: '12px 20px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+        animation: 'fadeInUp 0.22s ease',
+        whiteSpace: 'nowrap',
+      }}>
+        <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#076818', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Check size={13} color="#fff" strokeWidth={2.5} />
+        </div>
+        <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', letterSpacing: '-0.2px' }}>지원현황이 수정되었습니다</p>
+      </div>
+      <style>{`@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+    </div>
+  )
+}
+
 export default function Results() {
   const navigate = useNavigate()
   const [index, setIndex] = useState(0)
@@ -24,8 +49,16 @@ export default function Results() {
   const [loadError, setLoadError] = useState('')
   const [statusError, setStatusError] = useState('')
   const [userName, setUserName] = useState(getKakaoUserName)
+  const [toastVisible, setToastVisible] = useState(false)
+  const toastTimer = useRef(null)
   const grant = grants[index]
   const total = grants.length
+
+  const showToast = () => {
+    setToastVisible(true)
+    clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => setToastVisible(false), 2000)
+  }
 
   useEffect(() => {
     let active = true
@@ -70,6 +103,7 @@ export default function Results() {
     try {
       await savePolicy(grant.id).catch(() => null)
       await updateSavedPolicyStatus(grant.id, val)
+      showToast()
     } catch (err) {
       setStatuses(p => ({ ...p, [grant.id]: previous }))
       setStatusError(err.message || '지원현황을 저장하지 못했습니다.')
@@ -234,6 +268,7 @@ export default function Results() {
       </div>
       )}
 
+      <Toast visible={toastVisible} />
     </div>
   )
 }
