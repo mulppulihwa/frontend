@@ -3,7 +3,7 @@ import { Banknote } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import okcheonTypo from '../assets/okcheon_typo.png'
 import okTypo from '../assets/ok_typo.png'
-import okcheonCharacter from '../assets/okcheon-character.png'
+import okcheonCharacter from '../assets/farmer.png'
 import Folder from '../components/Folder'
 import { fetchPreviewPolicies, fetchSavedPolicies } from '../lib/api'
 
