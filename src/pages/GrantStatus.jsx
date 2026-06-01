@@ -20,6 +20,12 @@ const statusConfig = {
   관심없음: { label: '관심 없음', color: '#d93025', bg: '#fff0ef' },
 }
 
+function formatAddedDate(dateLike) {
+  const date = dateLike ? new Date(dateLike) : new Date()
+  if (Number.isNaN(date.getTime())) return ''
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일에 추가되었습니다.`
+}
+
 function GrantCard({ grant, status, onStatusChange, navigate }) {
   const isCompleted = status === '신청완료'
   const days = grant.countdown?.days ?? grant.days ?? 0
@@ -44,6 +50,9 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
         {/* Countdown row */}
         <p style={{ fontSize: 12, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px' }}>
           {isCompleted ? '지급일까지' : '마감까지'} D-{days}
+        </p>
+        <p style={{ fontSize: 12, fontWeight: 400, color: '#8a8a8a', letterSpacing: '-0.1px' }}>
+          {formatAddedDate(grant.addedAt)}
         </p>
       </div>
 

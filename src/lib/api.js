@@ -168,7 +168,7 @@ export function cachePolicyStatus(policyId, status, policy) {
 
   if (policy) {
     const savedPolicyCache = readSavedPolicyCache()
-    savedPolicyCache[id] = { ...policy, user_status: normalizedStatus }
+    savedPolicyCache[id] = { ...policy, user_status: normalizedStatus, saved_at: policy.saved_at || new Date().toISOString() }
     localStorage.setItem(SAVED_POLICY_CACHE_KEY, JSON.stringify(savedPolicyCache))
   }
 }
@@ -191,6 +191,7 @@ export function normalizePolicy(policy, index = 0) {
     deadline: deadline || null,
     status: getPolicyStatus(policy),
     countdown: getCountdown(deadline),
+    addedAt: policy.added_at || policy.saved_at || policy.created_at || policy.createdAt || null,
     checkDone: policy.checkDone ?? 0,
     checkTotal: policy.checkTotal ?? 5,
   }
@@ -272,7 +273,10 @@ export async function fetchSavedPolicies() {
     // item.id   = the UserPolicy join-table PK — NOT what the API expects
     const policyForNormalize = item.policy_id ? { ...policy, id: item.policy_id } : policy
     const userStatus = item.user_status || item.status || item.policy_status || item.application_status || policy.user_status
-    const normalizedPolicy = normalizePolicy(policyForNormalize, index)
+    const normalizedPolicy = normalizePolicy({
+      ...policyForNormalize,
+      added_at: item.added_at || item.saved_at || item.created_at || item.createdAt || policy.added_at || policy.saved_at || policy.created_at,
+    }, index)
     return {
       ...normalizedPolicy,
       user_status: normalizeUserPolicyStatus(userStatus) || statusCache[String(normalizedPolicy.id)] || null,
