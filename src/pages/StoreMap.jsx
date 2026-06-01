@@ -378,13 +378,26 @@ export default function StoreMap() {
                     </div>
                   </div>
 
-	                  <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 14px' }}>
-	                    <button
-	                      onClick={e => { e.stopPropagation(); openDetail(store) }}
-	                      style={{ minWidth: 132, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px 18px', background: '#f7f7f7', border: '1.5px solid #e5e5e5', borderRadius: 999, cursor: 'pointer', fontFamily: 'inherit' }}
-	                    >
-                      <Navigation size={15} color="#555" strokeWidth={2.5} />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#555' }}>자세히 보기</span>
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 14px' }}>
+                    <button
+                      onClick={e => { e.stopPropagation(); openDetail(store) }}
+                      style={{
+                        width: '100%',
+                        minHeight: 46,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 7,
+                        padding: '11px 18px',
+                        background: '#FFFFFF',
+                        border: '1.5px solid #076818',
+                        borderRadius: 999,
+                        cursor: 'pointer',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      <Navigation size={16} color="#076818" strokeWidth={2.5} />
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#076818' }}>자세히 보기</span>
                     </button>
                   </div>
                 </div>
