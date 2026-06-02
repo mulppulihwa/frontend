@@ -6,47 +6,20 @@ import { fetchPolicyChecklist, saveCheckedItems } from '../lib/api'
 
 const accentColor = '#c2185b'
 
-const sectionTitleMap = {
-  requirements: '신청 요건',
-  requirement: '신청 요건',
-  qualifications: '신청 요건',
-  documents: '신청 서류',
-  document: '신청 서류',
-  required_documents: '신청 서류',
-  submission_documents: '신청 서류',
-  application_documents: '신청 서류',
-  apply_documents: '신청 서류',
-  supplies: '필요 물건',
-  items: '필요 물건',
-  materials: '필요 물건',
-  required_items: '필요 물건',
-  belongings: '필요 물건',
-}
-
-function itemLabel(item) {
-  if (typeof item === 'string') return item
-  return item?.label || item?.title || item?.name || item?.text || item?.content || ''
-}
-
-function normalizeItems(items) {
-  if (!Array.isArray(items)) return []
-  return items.map(itemLabel).filter(Boolean)
-}
-
 function normalizeChecklistResponse(data) {
+  // Backend returns: [{ id, order, label }, ...]
   const raw = Array.isArray(data) ? data : (data?.checklist || data?.data || [])
   if (!Array.isArray(raw) || raw.length === 0) return []
   const items = raw
-    .map(item => ({
-      id: item.id,
-      label: item.label || item.text || item.name || String(item),
-    }))
+    .map(item => ({ id: item.id, order: item.order ?? 0, label: item.label }))
     .filter(item => item.id != null && item.label)
+    .sort((a, b) => a.order - b.order)
   if (items.length === 0) return []
   return [{ title: '준비 항목', items }]
 }
 
 function normalizeOffice(data) {
+  // Backend doesn't return office info yet — reserved for future use
   const payload = data?.office || data?.center || data?.agency_office || data?.visit_office
   if (!payload || typeof payload !== 'object') return null
   return {
