@@ -277,9 +277,12 @@ export async function fetchSavedPolicies() {
       ...policyForNormalize,
       added_at: item.added_at || item.saved_at || item.created_at || item.createdAt || policy.added_at || policy.saved_at || policy.created_at,
     }, index)
+    const checkTotal = Number(localStorage.getItem(`checklist-total-${normalizedPolicy.id}`)) || 0
     return {
       ...normalizedPolicy,
       user_status: normalizeUserPolicyStatus(userStatus) || statusCache[String(normalizedPolicy.id)] || null,
+      checkDone: item.checked_items?.length ?? 0,
+      checkTotal,
     }
   })
   // Collect all IDs the API returned (both UserPolicy.id and policy_id)

@@ -208,6 +208,8 @@ export default function Checklist() {
         setParsing(false)
         setChecklistSections(sections)
         setOfficeInfo(normalizeOffice(data))
+        const total = sections.reduce((sum, s) => sum + s.items.length, 0)
+        if (policyId && total > 0) localStorage.setItem(`checklist-total-${policyId}`, total)
         setLoading(false)
       } catch (err) {
         if (!active) return
