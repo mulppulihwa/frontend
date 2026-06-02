@@ -12,9 +12,11 @@ import { fetchProfile, fetchSavedPolicies, getAccessToken } from '../lib/api'
 import { findDisplayName, getKakaoUserName, logout, startKakaoLogin } from '../lib/auth'
 
 function getDday(deadlineStr) {
+  if (!deadlineStr) return null
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const deadline = new Date(deadlineStr)
+  if (isNaN(deadline.getTime())) return null
   const diff = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24))
   if (diff === 0) return 'D-DAY'
   if (diff > 0) return `D-${diff}`
@@ -562,7 +564,7 @@ export default function MyPage() {
                         justifyContent: 'center',
                         background: 'transparent',
                       }}>
-                        <span style={{ fontSize: 13, fontWeight: 800, color: '#d93025' }}>{getDday(g.deadline)}</span>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: '#d93025' }}>{getDday(g.deadline) ?? '—'}</span>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontSize: 15, fontWeight: 800, color: '#1f2433', marginBottom: 6, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>
@@ -645,7 +647,7 @@ export default function MyPage() {
                         <span style={{ fontSize: 11, fontWeight: 700, color: '#8a8a8a' }}>미입력</span>
                       </div>
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: '#d93025', flexShrink: 0 }}>{getDday(g.deadline)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: '#d93025', flexShrink: 0 }}>{getDday(g.deadline) ?? '—'}</span>
                   </div>
                   <button
                     onClick={() => navigate('/grant-status')}
