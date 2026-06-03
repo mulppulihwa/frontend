@@ -257,6 +257,12 @@ export async function updateProfile(profile) {
   })
 }
 
+export async function deleteMyProfile() {
+  return request('/api/profile/me/', {
+    method: 'DELETE',
+  })
+}
+
 export async function fetchSavedPolicies() {
   const statusCache = readPolicyStatusCache()
   const savedPolicyCache = readSavedPolicyCache()

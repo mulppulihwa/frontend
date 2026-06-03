@@ -4,7 +4,7 @@ import { Check } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import SelectField from '../components/SelectField'
 import Button from '../components/Button'
-import { fetchProfile, updateProfile } from '../lib/api'
+import { deleteMyProfile, fetchProfile, updateProfile } from '../lib/api'
 import { findDisplayName, getKakaoUserName, logout } from '../lib/auth'
 
 const SUBMITTED_KEY = 'submittedDiagnosisProfile'
@@ -137,6 +137,7 @@ export default function BasicInfo() {
   const [diagnosisInfo, setDiagnosisInfo] = useState({})
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
   const [showSavedPopup, setShowSavedPopup] = useState(false)
 
@@ -190,6 +191,24 @@ export default function BasicInfo() {
   const handleLogout = () => {
     logout()
     navigate('/', { replace: true })
+  }
+
+  const handleDeleteAccount = async () => {
+    if (deleting) return
+    const confirmed = window.confirm('회원 탈퇴하시겠어요? 계정 정보가 삭제되며 되돌릴 수 없어요.')
+    if (!confirmed) return
+
+    setDeleting(true)
+    setError('')
+    try {
+      await deleteMyProfile()
+      logout()
+      navigate('/', { replace: true })
+    } catch (err) {
+      setError(err.message || '회원 탈퇴에 실패했습니다.')
+    } finally {
+      setDeleting(false)
+    }
   }
 
   return (
@@ -279,6 +298,27 @@ export default function BasicInfo() {
               }}
             >
               로그아웃
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDeleteAccount}
+              disabled={deleting}
+              style={{
+                width: '100%',
+                minHeight: 50,
+                borderRadius: 999,
+                border: '1.5px solid #f1d0cd',
+                background: '#FFFFFF',
+                color: '#d93025',
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: deleting ? 'not-allowed' : 'pointer',
+                fontFamily: 'inherit',
+                opacity: deleting ? 0.5 : 1,
+              }}
+            >
+              {deleting ? '탈퇴 처리 중...' : '회원 탈퇴'}
             </button>
           </>
         )}
