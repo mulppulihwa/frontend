@@ -5,7 +5,7 @@ import TopBar from '../components/TopBar'
 import SelectField from '../components/SelectField'
 import Button from '../components/Button'
 import { fetchProfile, updateProfile } from '../lib/api'
-import { findDisplayName, getKakaoUserName } from '../lib/auth'
+import { findDisplayName, getKakaoUserName, logout } from '../lib/auth'
 
 const SUBMITTED_KEY = 'submittedDiagnosisProfile'
 const LOCAL_PROFILE_KEY = 'editableProfileInfo'
@@ -187,6 +187,11 @@ export default function BasicInfo() {
     }
   }
 
+  const handleLogout = () => {
+    logout()
+    navigate('/', { replace: true })
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: '#FDFCF8', overflow: 'hidden' }}>
       <TopBar title="프로필 정보" onBack={() => navigate('/mypage')} />
@@ -256,6 +261,25 @@ export default function BasicInfo() {
               <ReadOnlyRow label="농업경영체" value={formatBoolean(diagnosisInfo.farmBusiness)} />
               <ReadOnlyRow label="귀농 교육 100시간" value={formatBoolean(diagnosisInfo.farmingEducation)} />
             </section>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              style={{
+                width: '100%',
+                minHeight: 50,
+                borderRadius: 999,
+                border: '1.5px solid #d93025',
+                background: '#FFFFFF',
+                color: '#d93025',
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              로그아웃
+            </button>
           </>
         )}
       </div>

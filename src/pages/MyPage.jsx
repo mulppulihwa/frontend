@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import Card from '../components/Card'
 import { fetchProfile, fetchSavedPolicies, getAccessToken } from '../lib/api'
-import { findDisplayName, getKakaoUserName, logout, startKakaoLogin } from '../lib/auth'
+import { findDisplayName, getKakaoUserName, startKakaoLogin } from '../lib/auth'
 
 function getDday(deadlineStr) {
   if (!deadlineStr) return null
@@ -195,11 +195,6 @@ export default function MyPage() {
   const [loading, setLoading] = useState(true)
   const [authRequired, setAuthRequired] = useState(false)
   const [error, setError] = useState('')
-
-  function handleLogout() {
-    logout()
-    navigate('/', { replace: true })
-  }
 
   function handleDiagnosisStart() {
     navigate('/step1')
@@ -672,26 +667,6 @@ export default function MyPage() {
               ))}
             </div>
           </section>
-        )}
-
-        {!loading && userInfo && (
-          <button
-            onClick={handleLogout}
-            style={{
-              width: '100%',
-              height: 50,
-              borderRadius: 999,
-              border: '1.5px solid #d93025',
-              background: '#FFFFFF',
-              color: '#d93025',
-              fontSize: 14,
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
-          >
-            로그아웃
-          </button>
         )}
       </div>
     </div>
