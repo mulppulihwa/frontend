@@ -72,10 +72,12 @@ export default function Login() {
           <style>{`
             @keyframes spinRock {
               0%   { transform: rotate(0deg); }
-              50%  { transform: rotate(-90deg); }
+              28%  { transform: rotate(90deg); }
+              58%  { transform: rotate(90deg); }
+              78%  { transform: rotate(0deg); }
               100% { transform: rotate(0deg); }
             }
-            .logo-spin-login { animation: spinRock 2s ease-in-out infinite; transform-origin: center center; }
+            .logo-spin-login { animation: spinRock 2.8s ease-in-out infinite; transform-origin: center center; }
           `}</style>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
             <img src={okcheonTypo} alt="옥천" style={{ height: 64, width: 'auto' }} />

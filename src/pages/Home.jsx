@@ -206,11 +206,13 @@ export default function Home() {
       <style>{`
         @keyframes spinRock {
           0%   { transform: rotate(0deg); }
-          50%  { transform: rotate(-90deg); }
+          28%  { transform: rotate(90deg); }
+          58%  { transform: rotate(90deg); }
+          78%  { transform: rotate(0deg); }
           100% { transform: rotate(0deg); }
         }
         .logo-spin {
-          animation: spinRock 2s ease-in-out infinite;
+          animation: spinRock 2.8s ease-in-out infinite;
           transform-origin: center center;
         }
       `}</style>
