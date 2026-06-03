@@ -61,6 +61,18 @@ const statusConfig = {
 }
 
 const SUBMITTED_PROFILE_KEY = 'submittedDiagnosisProfile'
+const REGION_CODE_LABELS = {
+  4329: '옥천',
+  43: '충청북도',
+  41: '경기도',
+  44: '충청남도',
+  45: '전라북도',
+  46: '전라남도',
+  47: '경상북도',
+  48: '경상남도',
+  11: '서울특별시',
+  26: '부산광역시',
+}
 
 function firstValue(source, keys) {
   for (const key of keys) {
@@ -105,10 +117,13 @@ function normalizeProfile(profile) {
   const profileData = profile.profile || profile.user_profile || profile.userProfile || {}
   const user = profile.user || profile.account || profile.member || {}
   const kakao = profile.kakao || profile.kakao_user || profile.kakaoUser || {}
+  const regionCode = firstValue(profile, ['region_code', 'regionCode'])
+    || firstValue(profileData, ['region_code', 'regionCode'])
   const region = firstValue(profile.region, ['name', 'region_name'])
     || firstValue(profileData.region, ['name', 'region_name'])
     || firstValue(profile, ['region_name', 'region'])
     || firstValue(profileData, ['region_name', 'region'])
+    || REGION_CODE_LABELS[String(regionCode)]
 
   let submitted = {}
   try {
@@ -119,7 +134,14 @@ function normalizeProfile(profile) {
 
   const movedAt = firstValue(profile, ['moved_at', 'movedAt', 'move_in_date'])
     || firstValue(profileData, ['moved_at', 'movedAt', 'move_in_date'])
-    || submitted.movedAt
+  const backendHasDiagnosis = Boolean(
+    movedAt
+      || regionCode
+      || normalizeTags(profile.occupation_tags || profileData.occupation_tags).length
+      || profileData.is_farm_registered !== null && profileData.is_farm_registered !== undefined
+      || profile.is_farm_registered !== null && profile.is_farm_registered !== undefined
+      || Number(profileData.education_hours || profile.education_hours || 0) > 0
+  )
 
   return {
     name: findDisplayName(profile)
@@ -130,11 +152,11 @@ function normalizeProfile(profile) {
       || getKakaoUserName(),
     age: firstValue(profile, ['age']) || firstValue(profileData, ['age']),
     gender: firstValue(profile, ['gender']) || firstValue(profileData, ['gender']) || firstValue(kakaoAccount, ['gender']),
-    nationality: submitted.nationality || readJsonSafe('editableProfileInfo').nationality || '',
-    region: region || submitted.location || submitted.region,
+    nationality: backendHasDiagnosis ? (submitted.nationality || readJsonSafe('editableProfileInfo').nationality || '') : '',
+    region,
     farming: getReturnFarming(profile, profileData),
     movedAt,
-    hasDiagnosis: Boolean(movedAt || submitted.location || submitted.previousResidence || submitted.job),
+    hasDiagnosis: backendHasDiagnosis,
   }
 }
 

@@ -6,6 +6,12 @@ const KAKAO_STATE_KEY = 'kakaoOAuthState'
 const KAKAO_USER_NAME_KEY = 'kakaoUserName'
 const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
 const SAVED_POLICY_CACHE_KEY = 'savedPolicyCache'
+const LOCAL_PROFILE_KEYS = [
+  'submittedDiagnosisProfile',
+  'editableProfileInfo',
+  'lastDiagnosisDate',
+  'diagnosisProgress',
+]
 let pendingCallback = null
 const DISPLAY_NAME_KEYS = [
   'nickname',
@@ -158,6 +164,7 @@ export function logout() {
     POLICY_STATUS_CACHE_KEY,
     SAVED_POLICY_CACHE_KEY,
     KAKAO_USER_NAME_KEY,
+    ...LOCAL_PROFILE_KEYS,
   ].forEach(key => localStorage.removeItem(key))
   sessionStorage.removeItem(LOGIN_REDIRECT_KEY)
   sessionStorage.removeItem(KAKAO_STATE_KEY)
