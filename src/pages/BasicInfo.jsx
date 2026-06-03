@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check } from 'lucide-react'
 import TopBar from '../components/TopBar'
-import SelectField from '../components/SelectField'
 import Button from '../components/Button'
 import { deleteMyProfile, fetchProfile, updateProfile } from '../lib/api'
 import { findDisplayName, getKakaoUserName, logout } from '../lib/auth'
@@ -12,18 +11,6 @@ const LOCAL_PROFILE_KEY = 'editableProfileInfo'
 
 function hasValue(v) {
   return v !== null && v !== undefined && String(v).trim() !== ''
-}
-
-function isCompleteDate(value) {
-  const [y, m, d] = (value || '').split('-')
-  return hasValue(y) && hasValue(m) && hasValue(d)
-}
-
-function normalizeDate(value) {
-  const parts = (value || '').split('-')
-  return parts[0] && parts[1] && parts[2]
-    ? `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`
-    : ''
 }
 
 function readJson(key) {
@@ -61,42 +48,6 @@ function ProfileTextField({ label, value, onChange, placeholder }) {
           fontFamily: 'inherit',
           outline: 'none',
           letterSpacing: '-0.2px',
-          boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
-          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-        }}
-      />
-    </div>
-  )
-}
-
-function DateSelectField({ label, value, onChange }) {
-  const [focused, setFocused] = useState(false)
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <label style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{label}</label>
-      <input
-        type="date"
-        value={normalizeDate(value)}
-        onChange={e => onChange(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          width: '100%',
-          minHeight: 49,
-          padding: '13px 16px',
-          boxSizing: 'border-box',
-          border: `1.5px solid ${focused ? '#076818' : '#e8e8e8'}`,
-          borderRadius: 14,
-          fontSize: 15,
-          fontWeight: 400,
-          color: value ? '#1a1a1a' : '#aaa',
-          background: '#fff',
-          fontFamily: 'inherit',
-          outline: 'none',
-          letterSpacing: '-0.2px',
-          colorScheme: 'light',
-          cursor: 'pointer',
           boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         }}
@@ -159,7 +110,7 @@ export default function BasicInfo() {
       .finally(() => setLoading(false))
   }, [])
 
-  const isComplete = hasValue(name) && isCompleteDate(birthDate) && hasValue(nationality)
+  const isComplete = hasValue(name)
 
   const handleSave = async () => {
     if (!isComplete || submitting) return
@@ -170,13 +121,12 @@ export default function BasicInfo() {
         await updateProfile({
           name,
           display_name: name,
-          birth_date: birthDate,
         })
       } catch {
-        await updateProfile({ birth_date: birthDate })
+        await updateProfile({ display_name: name })
       }
       const submitted = readJson(SUBMITTED_KEY)
-      localStorage.setItem(SUBMITTED_KEY, JSON.stringify({ ...submitted, nationality }))
+      localStorage.setItem(SUBMITTED_KEY, JSON.stringify({ ...submitted, nationality, birthDate }))
       localStorage.setItem(LOCAL_PROFILE_KEY, JSON.stringify({ name, birthDate, nationality }))
       if (name) localStorage.setItem('kakaoUserName', name)
       setShowSavedPopup(true)
@@ -225,17 +175,8 @@ export default function BasicInfo() {
                 <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>기본 정보</p>
               </div>
               <ProfileTextField label="이름" value={name} onChange={setName} placeholder="이름 입력" />
-              <DateSelectField label="생년월일" value={birthDate} onChange={setBirthDate} />
-              <SelectField
-                label="국적이 어떻게 되세요?"
-                value={nationality}
-                onChange={setNationality}
-                options={[
-                  { value: '내국인', label: '내국인' },
-                  { value: '외국인', label: '외국인' },
-                ]}
-                placeholder="국적 선택"
-              />
+              <ReadOnlyRow label="생년월일" value={birthDate} />
+              <ReadOnlyRow label="국적" value={nationality} />
               {error && (
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025' }}>{error}</p>
               )}
