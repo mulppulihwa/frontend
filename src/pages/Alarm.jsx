@@ -35,15 +35,15 @@ function getDeadlineRemainingText(deadlineStr) {
 
 function NotificationCard({ policy }) {
   return (
-    <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(218,231,211,0.95)', borderRadius: 28, padding: '20px 18px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '58px 1fr', columnGap: 12, alignItems: 'start' }}>
-        <p style={{ fontSize: 18, fontWeight: 800, color: '#d93025', lineHeight: 1.2 }}>{getDday(policy.deadline)}</p>
+    <div style={{ background: '#FFFFFF', border: '1px solid rgba(218,231,211,0.9)', borderRadius: 28, padding: '16px 16px 14px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr', columnGap: 10, alignItems: 'start' }}>
+        <p style={{ fontSize: 14, fontWeight: 800, color: '#d93025', lineHeight: 1.25 }}>{getDday(policy.deadline)}</p>
         <div>
-          <p style={{ fontSize: 22, fontWeight: 800, color: '#111', lineHeight: 1.25, wordBreak: 'keep-all' }}>{policy.title}</p>
-          <p style={{ marginTop: 20, fontSize: 17, fontWeight: 700, color: '#111', lineHeight: 1.5, wordBreak: 'keep-all' }}>
+          <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{policy.title}</p>
+          <p style={{ marginTop: 10, fontSize: 13, fontWeight: 500, color: '#555', lineHeight: 1.5, wordBreak: 'keep-all', letterSpacing: '-0.1px' }}>
             {policy.subtitle || '지원 내용을 확인할 수 있는 기회예요!'}
           </p>
-          <p style={{ marginTop: 14, fontSize: 17, fontWeight: 800, color: '#ff5538', lineHeight: 1.3 }}>
+          <p style={{ marginTop: 8, fontSize: 12, fontWeight: 700, color: '#ff5538', lineHeight: 1.35, letterSpacing: '-0.1px' }}>
             {getDeadlineRemainingText(policy.deadline)}
           </p>
         </div>
@@ -79,7 +79,7 @@ export default function Alarm() {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#FDFCF8' }}>
       <TopBar title="알림 받기" onBack={() => navigate('/home')} />
 
-      <div style={{ padding: '18px 18px 80px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ padding: '18px 18px 80px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {loading && (
           <div style={{ padding: '48px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 36, height: 36, borderRadius: '50%', border: '3px solid rgba(218,231,211,0.9)', borderTopColor: '#076818', animation: 'spin 0.8s linear infinite' }} />
