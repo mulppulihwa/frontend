@@ -15,6 +15,19 @@ function getDday(deadlineStr) {
   return diff > 0 ? `D-${diff}` : `D+${Math.abs(diff)}`
 }
 
+function getDeadlineText(deadlineStr) {
+  if (!deadlineStr) return '마감일 확인 필요'
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const deadline = new Date(deadlineStr)
+  if (Number.isNaN(deadline.getTime())) return '마감일 확인 필요'
+  deadline.setHours(0, 0, 0, 0)
+  const diff = Math.ceil((deadline - today) / 86400000)
+  if (diff === 0) return '오늘 마감'
+  if (diff > 0) return `마감까지 ${diff}일 남음`
+  return `마감 ${Math.abs(diff)}일 지남`
+}
+
 function readJsonSafe(key) {
   try {
     return JSON.parse(localStorage.getItem(key) || '{}')
@@ -184,6 +197,7 @@ function TodayChecklist({ policy, userName, navigate }) {
   const visibleItems = items.slice(0, 3)
   const done = visibleItems.filter(item => !!checked[item.id]).length
   const total = visibleItems.length
+  const deadlineText = getDeadlineText(policy?.deadline)
 
   useEffect(() => {
     let active = true
@@ -244,8 +258,11 @@ function TodayChecklist({ policy, userName, navigate }) {
       </div>
       <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 24, overflow: 'hidden' }}>
         <button type="button" onClick={() => policy?.id && navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })} style={{ width: '100%', border: 'none', background: '#e8f3e8', padding: '14px 16px 12px', textAlign: 'left', cursor: policy?.id ? 'pointer' : 'default', fontFamily: 'inherit' }}>
-          <p style={{ fontSize: 16, fontWeight: 800, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {policy?.title || '귀농인의 집 (충청북도)'} (마감까지 n일 남음)
+          <p style={{ fontSize: 16, fontWeight: 800, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all' }}>
+            {policy?.title || '귀농인의 집 (충청북도)'}
+          </p>
+          <p style={{ marginTop: 4, fontSize: 13, fontWeight: 700, color: '#5a7a5e', lineHeight: 1.25 }}>
+            {deadlineText}
           </p>
         </button>
         <div style={{ padding: '12px 16px 16px' }}>
