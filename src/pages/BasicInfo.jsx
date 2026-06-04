@@ -43,6 +43,16 @@ function formatBoolean(value) {
   return ''
 }
 
+function formatLastDiagnosis() {
+  const raw = localStorage.getItem('lastDiagnosisDate')
+  if (!raw) return ''
+  const date = new Date(raw)
+  if (Number.isNaN(date.getTime())) return ''
+  const days = Math.floor((Date.now() - date.getTime()) / 86400000)
+  const ago = days === 0 ? '오늘' : `${days}일 전`
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')} (${ago})`
+}
+
 export default function BasicInfo() {
   const navigate = useNavigate()
   const [name, setName] = useState('')
@@ -52,6 +62,7 @@ export default function BasicInfo() {
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
+  const lastDiagnosis = formatLastDiagnosis()
 
   useEffect(() => {
     const submitted = readJson(SUBMITTED_KEY)
@@ -103,6 +114,32 @@ export default function BasicInfo() {
           <p style={{ fontSize: 14, color: '#888', textAlign: 'center', marginTop: 40 }}>정보를 불러오는 중...</p>
         ) : (
           <>
+            <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {lastDiagnosis && (
+                <p style={{ fontSize: 13, fontWeight: 500, color: '#666', margin: 0 }}>
+                  최종 진단 : {lastDiagnosis}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={() => navigate('/step1')}
+                style={{
+                  width: '100%',
+                  minHeight: 54,
+                  border: 'none',
+                  borderRadius: 999,
+                  background: '#FFA100',
+                  color: '#fff',
+                  fontSize: 16,
+                  fontWeight: 800,
+                  fontFamily: 'inherit',
+                  cursor: 'pointer',
+                }}
+              >
+                나의 맞춤 지원금 다시 찾기
+              </button>
+            </section>
+
             <section style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
                 <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>기본 정보</p>

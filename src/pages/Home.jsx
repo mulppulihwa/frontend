@@ -55,16 +55,6 @@ function firstValue(source, keys) {
   return ''
 }
 
-function formatLastDiagnosis() {
-  const raw = localStorage.getItem('lastDiagnosisDate')
-  if (!raw) return ''
-  const date = new Date(raw)
-  if (Number.isNaN(date.getTime())) return ''
-  const days = Math.floor((Date.now() - date.getTime()) / 86400000)
-  const ago = days === 0 ? '오늘' : `${days}일 전`
-  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')} (${ago})`
-}
-
 function MiniRing({ done = 0, total = 0 }) {
   const r = 10
   const circ = 2 * Math.PI * r
@@ -143,6 +133,12 @@ const defaultChecklistItems = [
   { id: 'home-2', label: '아이사랑 카드발급 신청 및 개인신용정보의 조회·제공·이용 동의서', persistable: false },
 ]
 
+const homeScheduleMessages = [
+  '마감 임박! 신청 전에 꼭 챙겨야 할 것들이에요',
+  '이번 주 마감 지원금, 이것만 준비하면 끝나요!',
+  '놓치면 안 되는 마감 임박 정책 준비물이에요',
+]
+
 function normalizeChecklistItems(data) {
   const raw = Array.isArray(data) ? data : (data?.checklist || data?.data || [])
   if (!Array.isArray(raw)) return []
@@ -215,6 +211,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
   const [checked, setChecked] = useState({})
   const [completeAnimation, setCompleteAnimation] = useState(false)
   const [completedPolicyId, setCompletedPolicyId] = useState(null)
+  const [scheduleMessage] = useState(() => homeScheduleMessages[Math.floor(Math.random() * homeScheduleMessages.length)])
   const visibleItems = items.slice(0, 3)
   const done = visibleItems.filter(item => !!checked[item.id]).length
   const total = visibleItems.length
@@ -292,7 +289,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
       <div style={{ marginBottom: 14 }}>
         <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1f2433', letterSpacing: '-0.3px', lineHeight: 1.35 }}>{userName || '00'}님의 오늘의 맞춤 일정</h1>
         <p style={{ fontSize: 13, fontWeight: 500, color: '#1a1a1a', marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          마감 임박! 신청 전에 꼭 챙겨야 할 것들이에요
+          {scheduleMessage}
         </p>
       </div>
       <style>{`
@@ -367,16 +364,6 @@ function ActivePolicyCard({ policy, navigate }) {
         <button type="button" onClick={() => navigate('/map', { state: { policy } })} style={{ flex: 1, minHeight: 46, borderRadius: 999, border: '1.5px solid #076818', background: '#fff', color: '#076818', fontSize: 14, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer' }}>사용처 보기</button>
       </div>
     </div>
-  )
-}
-
-function ProfileCard({ user, navigate }) {
-  const lastDiagnosis = formatLastDiagnosis()
-  return (
-    <section>
-      {lastDiagnosis && <p style={{ fontSize: 12, color: '#666' }}>최종 진단 : {lastDiagnosis}</p>}
-      <button type="button" onClick={() => navigate('/step1')} style={{ width: '100%', minHeight: 48, border: 'none', borderRadius: 999, background: '#FFA100', color: '#fff', fontSize: 16, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer', marginTop: lastDiagnosis ? 10 : 0 }}>나의 맞춤 지원금 다시 찾기</button>
-    </section>
   )
 }
 
@@ -455,7 +442,6 @@ export default function Home() {
             <ActivePolicyCard policy={urgentPolicy} navigate={navigate} />
           </section>
         )}
-        <ProfileCard user={user} navigate={navigate} />
       </div>
       <PolicyUpdateModal visible={updateModalVisible} onClose={() => setUpdateModalVisible(false)} navigate={navigate} />
     </div>
