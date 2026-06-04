@@ -4,7 +4,7 @@ import kakaoLogo from '../assets/kkt_logo.png'
 import okcheonTypo from '../assets/okcheon_typo.png'
 import okTypo from '../assets/ok_typo.png'
 import PolicyFolder from '../components/PolicyFolder'
-import { completeKakaoLogin, consumeLoginRedirect, logout, startKakaoLogin } from '../lib/auth'
+import { completeKakaoLogin, consumeLoginRedirect, startKakaoLogin } from '../lib/auth'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -46,11 +46,6 @@ export default function Login() {
     } catch (err) {
       setError(err.message)
     }
-  }
-
-  const handleGuestStart = () => {
-    logout()
-    navigate('/home')
   }
 
   return (
@@ -130,24 +125,6 @@ export default function Login() {
         >
           <img src={kakaoLogo} alt="카카오" style={{ width: 26, height: 26, objectFit: 'contain' }} />
           {isLoggingIn ? '로그인 중...' : '카카오 간편 로그인'}
-        </button>
-
-        <button
-          onClick={handleGuestStart}
-          style={{
-            background: 'none',
-            border: 'none',
-            fontSize: 14,
-            fontWeight: 400,
-            color: '#1a1a1a',
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            letterSpacing: '-0.2px',
-            textDecoration: 'underline',
-            textUnderlineOffset: 3,
-          }}
-        >
-          로그인 없이 바로 시작하기
         </button>
       </div>
     </div>

@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check } from 'lucide-react'
 import TopBar from '../components/TopBar'
-import Button from '../components/Button'
-import { deleteMyProfile, fetchProfile, updateProfile } from '../lib/api'
+import { deleteMyProfile, fetchProfile } from '../lib/api'
 import { findDisplayName, getKakaoUserName, logout } from '../lib/auth'
 
 const SUBMITTED_KEY = 'submittedDiagnosisProfile'
@@ -87,10 +85,8 @@ export default function BasicInfo() {
   const [nationality, setNationality] = useState('')
   const [diagnosisInfo, setDiagnosisInfo] = useState({})
   const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
-  const [showSavedPopup, setShowSavedPopup] = useState(false)
 
   useEffect(() => {
     const submitted = readJson(SUBMITTED_KEY)
@@ -109,34 +105,6 @@ export default function BasicInfo() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
-
-  const isComplete = hasValue(name)
-
-  const handleSave = async () => {
-    if (!isComplete || submitting) return
-    setSubmitting(true)
-    setError('')
-    try {
-      try {
-        await updateProfile({
-          name,
-          display_name: name,
-        })
-      } catch {
-        await updateProfile({ display_name: name })
-      }
-      const submitted = readJson(SUBMITTED_KEY)
-      localStorage.setItem(SUBMITTED_KEY, JSON.stringify({ ...submitted, nationality, birthDate }))
-      localStorage.setItem(LOCAL_PROFILE_KEY, JSON.stringify({ name, birthDate, nationality }))
-      if (name) localStorage.setItem('kakaoUserName', name)
-      setShowSavedPopup(true)
-      setTimeout(() => navigate('/mypage'), 1600)
-    } catch (err) {
-      setError(err.message || '저장하지 못했습니다.')
-    } finally {
-      setSubmitting(false)
-    }
-  }
 
   const handleLogout = () => {
     logout()
@@ -165,7 +133,7 @@ export default function BasicInfo() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: '#FDFCF8', overflow: 'hidden' }}>
       <TopBar title="프로필 정보" onBack={() => navigate('/mypage')} />
 
-      <div className="step-form-scroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px 18px 156px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div className="step-form-scroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px 18px 40px', display: 'flex', flexDirection: 'column', gap: 18 }}>
         {loading ? (
           <p style={{ fontSize: 14, color: '#888', textAlign: 'center', marginTop: 40 }}>정보를 불러오는 중...</p>
         ) : (
@@ -265,63 +233,6 @@ export default function BasicInfo() {
         )}
       </div>
 
-      <div style={{
-        position: 'fixed',
-        bottom: 96,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '100%',
-        maxWidth: 390,
-        padding: '16px 28px 16px',
-        background: '#FDFCF8',
-        boxShadow: '0 -18px 28px rgba(253,252,248,0.92)',
-        zIndex: 50,
-      }}>
-        <Button onClick={handleSave} disabled={submitting || !isComplete || loading} variant="pill">
-          {submitting ? '저장 중...' : '저장'}
-        </Button>
-      </div>
-
-      {showSavedPopup && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 200,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'none',
-        }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 14,
-            borderRadius: 24,
-            background: '#FFFFFF',
-            padding: '28px 36px',
-            textAlign: 'center',
-            boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
-            animation: 'fadeInScale 0.2s ease',
-          }}>
-            <div style={{
-              width: 52,
-              height: 52,
-              borderRadius: '50%',
-              background: '#e8f3e8',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <Check size={26} color="#076818" strokeWidth={2.5} />
-            </div>
-            <p style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>
-              저장 완료되었습니다
-            </p>
-          </div>
-          <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>
-        </div>
-      )}
     </div>
   )
 }
