@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
 import okcheonTypo from '../assets/okcheon_typo.png'
 import okTypo from '../assets/ok_typo.png'
+import PolicyFolder from '../components/PolicyFolder'
 import { completeKakaoLogin, consumeLoginRedirect, logout, startKakaoLogin } from '../lib/auth'
 
 export default function Login() {
@@ -66,7 +67,8 @@ export default function Login() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: 54,
+        gap: 44,
+        paddingBottom: 30,
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <style>{`
@@ -87,9 +89,13 @@ export default function Login() {
             내 조건에 맞는 농업 지원금을<br />간편하게 찾아보세요
           </p>
         </div>
+
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 210 }}>
+          <PolicyFolder size={2.2} />
+        </div>
       </div>
 
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginBottom: 80 }}>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginBottom: 64 }}>
         {error && (
           <p role="alert" style={{ fontSize: 13, color: '#d93025', lineHeight: 1.5, textAlign: 'center', marginBottom: 2 }}>
             {error}
