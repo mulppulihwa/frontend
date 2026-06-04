@@ -241,8 +241,8 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
     if (!policy?.id || total === 0 || done !== total || completedPolicyId === policy.id) return undefined
     setCompletedPolicyId(policy.id)
     setCompleteAnimation(true)
-    const animationTimer = window.setTimeout(() => setCompleteAnimation(false), 760)
-    const swapTimer = window.setTimeout(() => onComplete?.(policy), 540)
+    const animationTimer = window.setTimeout(() => setCompleteAnimation(false), 920)
+    const swapTimer = window.setTimeout(() => onComplete?.(policy), 360)
     return () => {
       window.clearTimeout(animationTimer)
       window.clearTimeout(swapTimer)
@@ -280,11 +280,12 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
         </p>
       </div>
       <style>{`
-        @keyframes homeChecklistComplete {
-          0% { transform: translateY(0) rotateX(0deg); }
-          36% { transform: translateY(-12px) rotateX(8deg); }
-          68% { transform: translateY(6px) rotateX(-3deg); }
-          100% { transform: translateY(0) rotateX(0deg); }
+        @keyframes homeChecklistSwap {
+          0% { opacity: 1; transform: translateY(0) scale(1); }
+          38% { opacity: 0; transform: translateY(-38px) scale(0.96); }
+          39% { opacity: 0; transform: translateY(40px) scale(0.96); }
+          72% { opacity: 1; transform: translateY(-4px) scale(1.01); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
         }
       `}</style>
       <div
@@ -294,9 +295,9 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
           borderRadius: 24,
           overflow: 'hidden',
           transformOrigin: 'center center',
-          animation: completeAnimation ? 'homeChecklistComplete 0.76s cubic-bezier(0.2, 0.9, 0.2, 1)' : 'none',
-          transition: 'border-color 0.18s ease',
-          willChange: completeAnimation ? 'transform' : 'auto',
+          animation: completeAnimation ? 'homeChecklistSwap 0.92s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none',
+          transition: 'border-color 0.18s ease, opacity 0.18s ease',
+          willChange: completeAnimation ? 'transform, opacity' : 'auto',
         }}
       >
         <button type="button" onClick={() => policy?.id && navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })} style={{ width: '100%', border: 'none', background: '#e8f3e8', padding: '14px 16px 12px', textAlign: 'left', cursor: policy?.id ? 'pointer' : 'default', fontFamily: 'inherit' }}>
