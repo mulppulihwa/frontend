@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowUpDown, Bell, Check, Search, X } from 'lucide-react'
+import { ArrowUpDown, Bell, BellRing, Check, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import farmer from '../assets/farmer.png'
@@ -21,15 +21,26 @@ const statusConfig = {
   관심없음: { label: '관심 없음', color: '#d93025', bg: '#fff0ef' },
 }
 
+const NOTIFICATION_STATUS_KEY = 'policyNotificationStatus'
+
+function readNotificationStatus() {
+  try {
+    return JSON.parse(localStorage.getItem(NOTIFICATION_STATUS_KEY) || '{}')
+  } catch {
+    return {}
+  }
+}
+
 function formatAddedDate(dateLike) {
   const date = dateLike ? new Date(dateLike) : new Date()
   if (Number.isNaN(date.getTime())) return ''
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일에 추가되었습니다.`
 }
 
-function GrantCard({ grant, status, onStatusChange, navigate, onNotify }) {
+function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified }) {
   const isCompleted = status === '신청완료'
   const days = grant.countdown?.days ?? grant.days ?? 0
+  const BellIcon = notified ? BellRing : Bell
 
   return (
     <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.9)', borderRadius: 28, overflow: 'hidden' }}>
@@ -42,11 +53,24 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify }) {
           <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', flex: 1, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{grant.title}</p>
           <button
             type="button"
-            aria-label="알림 받기"
+            aria-label={notified ? '알림 설정됨' : '알림 받기'}
             onClick={e => { e.stopPropagation(); onNotify() }}
-            style={{ width: 34, height: 34, borderRadius: '50%', border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', color: '#444', flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: '50%',
+              border: `1.5px solid ${notified ? '#FFA100' : '#e8e8e8'}`,
+              background: notified ? '#fff3e0' : '#fff',
+              cursor: 'pointer',
+              color: notified ? '#FFA100' : '#444',
+              flexShrink: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.15s ease',
+            }}
           >
-            <Bell size={17} strokeWidth={2.3} />
+            <BellIcon size={17} strokeWidth={2.3} />
           </button>
         </div>
         <p style={{ fontSize: 13, color: '#555', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
@@ -90,7 +114,7 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify }) {
   )
 }
 
-function StatusSection({ title, grants, statuses, onStatusChange, navigate, onNotify }) {
+function StatusSection({ title, grants, statuses, notificationStatus, onStatusChange, navigate, onNotify }) {
   const cfg = statusConfig[title]
 
   return (
@@ -103,9 +127,10 @@ function StatusSection({ title, grants, statuses, onStatusChange, navigate, onNo
           key={g.id}
           grant={g}
           status={statuses[g.id]}
+          notified={!!notificationStatus[g.id]}
           onStatusChange={val => onStatusChange(g.id, val)}
           navigate={navigate}
-          onNotify={onNotify}
+          onNotify={() => onNotify(g.id)}
         />
       ))}
     </div>
@@ -208,6 +233,7 @@ export default function GrantStatus() {
   const [grantsData, setGrantsData] = useState([])
   const [toastVisible, setToastVisible] = useState(false)
   const [notificationModalVisible, setNotificationModalVisible] = useState(false)
+  const [notificationStatus, setNotificationStatus] = useState(() => readNotificationStatus())
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('마감순')
   const [loading, setLoading] = useState(true)
@@ -270,6 +296,13 @@ export default function GrantStatus() {
       setStatuses(p => ({ ...p, [grantId]: previous }))
       setError(err.message || '지원현황을 수정하지 못했습니다.')
     }
+  }
+
+  const handleNotificationClick = (grantId) => {
+    const next = { ...notificationStatus, [grantId]: true }
+    setNotificationStatus(next)
+    localStorage.setItem(NOTIFICATION_STATUS_KEY, JSON.stringify(next))
+    setNotificationModalVisible(true)
   }
 
   const grants = grantsData.map(g => ({ ...g, status: statuses[g.id] }))
@@ -401,9 +434,10 @@ export default function GrantStatus() {
                 key={g.id}
                 grant={g}
                 status={statuses[g.id]}
+                notified={!!notificationStatus[g.id]}
                 onStatusChange={val => handleStatusChange(g.id, val)}
                 navigate={navigate}
-                onNotify={() => setNotificationModalVisible(true)}
+                onNotify={() => handleNotificationClick(g.id)}
               />
             ))}
           </div>
@@ -416,9 +450,10 @@ export default function GrantStatus() {
                   title={status}
                   grants={grouped[status]}
                   statuses={statuses}
+                  notificationStatus={notificationStatus}
                   onStatusChange={handleStatusChange}
                   navigate={navigate}
-                  onNotify={() => setNotificationModalVisible(true)}
+                  onNotify={handleNotificationClick}
                 />
               ) : null
             )}
@@ -432,9 +467,10 @@ export default function GrantStatus() {
                     key={g.id}
                     grant={g}
                     status={statuses[g.id]}
+                    notified={!!notificationStatus[g.id]}
                     onStatusChange={val => handleStatusChange(g.id, val)}
                     navigate={navigate}
-                    onNotify={() => setNotificationModalVisible(true)}
+                    onNotify={() => handleNotificationClick(g.id)}
                   />
                 ))}
               </div>
