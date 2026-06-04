@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react'
-import okcheonTypo from '../assets/okcheon_typo.png'
-import okTypo from '../assets/ok_typo.png'
 import { fetchSavedPolicies } from '../lib/api'
 
 function HomeStatusSummary({ counts }) {
@@ -99,24 +97,6 @@ export default function Home() {
       padding: '60px 28px 120px',
       boxSizing: 'border-box',
     }}>
-      <style>{`
-        @keyframes spinRock {
-          0%   { transform: rotate(0deg); }
-          28%  { transform: rotate(90deg); }
-          58%  { transform: rotate(90deg); }
-          78%  { transform: rotate(0deg); }
-          100% { transform: rotate(0deg); }
-        }
-        .logo-spin {
-          animation: spinRock 2.8s ease-in-out infinite;
-          transform-origin: center center;
-        }
-      `}</style>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-        <img src={okcheonTypo} alt="옥천" style={{ height: 48, width: 'auto' }} />
-        <img src={okTypo} alt="OK" className="logo-spin" style={{ height: 48, width: 'auto' }} />
-      </div>
-
       <div style={{ flex: 1 }} />
 
       <HomeStatusSummary counts={statusCounts} />
