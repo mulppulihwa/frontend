@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Check, Search, X, ArrowUpDown } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
+import farmer from '../assets/farmer.png'
 import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
@@ -26,7 +27,7 @@ function formatAddedDate(dateLike) {
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일에 추가되었습니다.`
 }
 
-function GrantCard({ grant, status, onStatusChange, navigate }) {
+function GrantCard({ grant, status, onStatusChange, navigate, onNotify }) {
   const isCompleted = status === '신청완료'
   const days = grant.countdown?.days ?? grant.days ?? 0
 
@@ -40,7 +41,7 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
           <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', flex: 1, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{grant.title}</p>
           <button
-            onClick={e => { e.stopPropagation(); navigate('/detail', { state: { grant } }) }}
+            onClick={e => { e.stopPropagation(); onNotify() }}
             style={{ padding: '6px 12px', borderRadius: 999, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             알림 받기
@@ -87,7 +88,7 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
   )
 }
 
-function StatusSection({ title, grants, statuses, onStatusChange, navigate }) {
+function StatusSection({ title, grants, statuses, onStatusChange, navigate, onNotify }) {
   const cfg = statusConfig[title]
 
   return (
@@ -102,6 +103,7 @@ function StatusSection({ title, grants, statuses, onStatusChange, navigate }) {
           status={statuses[g.id]}
           onStatusChange={val => onStatusChange(g.id, val)}
           navigate={navigate}
+          onNotify={onNotify}
         />
       ))}
     </div>
@@ -132,12 +134,78 @@ function Toast({ visible }) {
   )
 }
 
+function PolicyUpdateModal({ visible, onClose, navigate }) {
+  if (!visible) return null
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 300,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 28,
+        background: 'rgba(253,252,248,0.72)',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: '100%',
+          maxWidth: 330,
+          borderRadius: 30,
+          border: '2px solid #076818',
+          background: '#FFFFFF',
+          padding: '28px 24px 26px',
+          textAlign: 'center',
+          boxSizing: 'border-box',
+          animation: 'modalPop 0.2s ease',
+        }}
+      >
+        <img src={farmer} alt="" style={{ width: 82, height: 58, objectFit: 'cover', objectPosition: 'top center', marginBottom: 24 }} />
+        <p style={{ fontSize: 24, fontWeight: 800, color: '#000', lineHeight: 1.28, letterSpacing: '-0.6px', wordBreak: 'keep-all' }}>
+          새해 맞이 2027년 옥천 귀농 정책이 업데이트되었어요!
+        </p>
+        <p style={{ marginTop: 28, fontSize: 21, fontWeight: 500, color: '#000', lineHeight: 1.38, letterSpacing: '-0.5px', wordBreak: 'keep-all' }}>
+          내 조건으로 새로 받을 수 있는 지원금이 있는지 지금 바로 확인해 보세요!
+        </p>
+        <button
+          type="button"
+          onClick={() => navigate('/step1')}
+          style={{
+            width: '100%',
+            minHeight: 54,
+            marginTop: 34,
+            border: 'none',
+            borderRadius: 999,
+            background: '#FFA100',
+            color: '#FFFFFF',
+            fontSize: 20,
+            fontWeight: 800,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            letterSpacing: '-0.5px',
+          }}
+        >
+          나의 맞춤 지원금 다시 찾기
+        </button>
+      </div>
+      <style>{`@keyframes modalPop { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }`}</style>
+    </div>
+  )
+}
+
 export default function GrantStatus() {
   const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState('전체')
   const [statuses, setStatuses] = useState({})
   const [grantsData, setGrantsData] = useState([])
   const [toastVisible, setToastVisible] = useState(false)
+  const [updateModalVisible, setUpdateModalVisible] = useState(false)
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('마감순')
   const [loading, setLoading] = useState(true)
@@ -333,6 +401,7 @@ export default function GrantStatus() {
                 status={statuses[g.id]}
                 onStatusChange={val => handleStatusChange(g.id, val)}
                 navigate={navigate}
+                onNotify={() => setUpdateModalVisible(true)}
               />
             ))}
           </div>
@@ -347,6 +416,7 @@ export default function GrantStatus() {
                   statuses={statuses}
                   onStatusChange={handleStatusChange}
                   navigate={navigate}
+                  onNotify={() => setUpdateModalVisible(true)}
                 />
               ) : null
             )}
@@ -362,6 +432,7 @@ export default function GrantStatus() {
                     status={statuses[g.id]}
                     onStatusChange={val => handleStatusChange(g.id, val)}
                     navigate={navigate}
+                    onNotify={() => setUpdateModalVisible(true)}
                   />
                 ))}
               </div>
@@ -378,6 +449,7 @@ export default function GrantStatus() {
       </div>
 
       <Toast visible={toastVisible} />
+      <PolicyUpdateModal visible={updateModalVisible} onClose={() => setUpdateModalVisible(false)} navigate={navigate} />
     </div>
   )
 }
