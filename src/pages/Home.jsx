@@ -194,6 +194,7 @@ function HomeCheckItem({ item, checked, onToggle }) {
 function TodayChecklist({ policy, userName, navigate }) {
   const [items, setItems] = useState(defaultChecklistItems)
   const [checked, setChecked] = useState({})
+  const [completeAnimation, setCompleteAnimation] = useState(false)
   const visibleItems = items.slice(0, 3)
   const done = visibleItems.filter(item => !!checked[item.id]).length
   const total = visibleItems.length
@@ -226,6 +227,13 @@ function TodayChecklist({ policy, userName, navigate }) {
     }
   }, [policy])
 
+  useEffect(() => {
+    if (total === 0 || done !== total) return undefined
+    setCompleteAnimation(true)
+    const timer = window.setTimeout(() => setCompleteAnimation(false), 760)
+    return () => window.clearTimeout(timer)
+  }, [done, total])
+
   const toggleItem = async (item) => {
     const next = { ...checked, [item.id]: !checked[item.id] }
     setChecked(next)
@@ -256,7 +264,26 @@ function TodayChecklist({ policy, userName, navigate }) {
           마감 임박! 신청 전에 꼭 챙겨야 할 것들이에요
         </p>
       </div>
-      <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 24, overflow: 'hidden' }}>
+      <style>{`
+        @keyframes homeChecklistComplete {
+          0% { transform: translateY(0) rotateX(0deg); }
+          36% { transform: translateY(-12px) rotateX(8deg); }
+          68% { transform: translateY(6px) rotateX(-3deg); }
+          100% { transform: translateY(0) rotateX(0deg); }
+        }
+      `}</style>
+      <div
+        style={{
+          background: '#fff',
+          border: `1px solid ${done === total ? 'rgba(7,104,24,0.24)' : 'rgba(218,231,211,0.95)'}`,
+          borderRadius: 24,
+          overflow: 'hidden',
+          transformOrigin: 'center center',
+          animation: completeAnimation ? 'homeChecklistComplete 0.76s cubic-bezier(0.2, 0.9, 0.2, 1)' : 'none',
+          transition: 'border-color 0.18s ease',
+          willChange: completeAnimation ? 'transform' : 'auto',
+        }}
+      >
         <button type="button" onClick={() => policy?.id && navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })} style={{ width: '100%', border: 'none', background: '#e8f3e8', padding: '14px 16px 12px', textAlign: 'left', cursor: policy?.id ? 'pointer' : 'default', fontFamily: 'inherit' }}>
           <p style={{ fontSize: 16, fontWeight: 800, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all' }}>
             {policy?.title || '귀농인의 집 (충청북도)'}
