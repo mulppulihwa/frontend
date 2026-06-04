@@ -85,14 +85,15 @@ export default function Login() {
             <img src={okcheonTypo} alt="옥천" style={{ height: 64, width: 'auto' }} />
             <img src={okTypo} alt="OK" className="logo-spin-login" style={{ height: 64, width: 'auto' }} />
           </div>
-          <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: 20, textAlign: 'center' }}>
-            내 조건에 맞는 농업 지원금을<br />간편하게 찾아보세요
-          </p>
         </div>
 
         <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 210 }}>
           <PolicyFolder size={2.2} />
         </div>
+
+        <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: -24, textAlign: 'center' }}>
+          내 조건에 맞는 농업 지원금을<br />간편하게 찾아보세요
+        </p>
       </div>
 
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginBottom: 64 }}>
