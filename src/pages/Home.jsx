@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, ChevronRight, Clock3, MapPin, User, X } from 'lucide-react'
-import { fetchProfile, fetchSavedPolicies } from '../lib/api'
+import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
 function getDday(deadlineStr) {
@@ -113,12 +113,122 @@ function SummaryCard({ counts, navigate }) {
   )
 }
 
+const defaultChecklistItems = [
+  { id: 'home-0', label: '사회복지서비스 및 급여제공(변경) 신청서', persistable: false },
+  { id: 'home-1', label: '사회복지서비스 이용권(바우처) 제공(변경) 신청서', persistable: false },
+  { id: 'home-2', label: '아이사랑 카드발급 신청 및 개인신용정보의 조회·제공·이용 동의서', persistable: false },
+]
+
+function normalizeChecklistItems(data) {
+  const raw = Array.isArray(data) ? data : (data?.checklist || data?.data || [])
+  if (!Array.isArray(raw)) return []
+  return raw
+    .map(item => ({
+      id: item.id,
+      order: item.order ?? 0,
+      label: item.label,
+      persistable: item.id !== null && item.id !== undefined,
+    }))
+    .filter(item => item.id !== null && item.id !== undefined && item.label)
+    .sort((a, b) => a.order - b.order)
+}
+
+function loadStoredChecks(policy) {
+  if (policy?.checked_items?.length) {
+    return policy.checked_items.reduce((acc, id) => ({ ...acc, [id]: true }), {})
+  }
+  if (!policy?.id) return {}
+  try {
+    return JSON.parse(localStorage.getItem(`checklist-checked-${policy.id}`) || '{}')
+  } catch {
+    return {}
+  }
+}
+
+function HomeCheckItem({ item, checked, onToggle }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      style={{ display: 'flex', alignItems: 'flex-start', gap: 10, border: 'none', background: 'transparent', padding: 0, textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit' }}
+    >
+      <span style={{
+        width: 22,
+        height: 22,
+        borderRadius: '50%',
+        border: `1.5px solid ${checked ? '#c2185b' : '#d0d0d0'}`,
+        background: checked ? '#c2185b' : '#FFFFFF',
+        flexShrink: 0,
+        marginTop: 1,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'background 0.15s ease, border-color 0.15s ease',
+      }}>
+        {checked && (
+          <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+            <path d="M1 4.5L4 7.5L10 1" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </span>
+      <p style={{ fontSize: 14, fontWeight: 600, color: checked ? '#aaa' : '#333', lineHeight: 1.35, textDecoration: checked ? 'line-through' : 'none' }}>
+        {item.label}
+      </p>
+    </button>
+  )
+}
+
 function TodayChecklist({ policy, userName, navigate }) {
-  const items = [
-    '사회복지서비스 및 급여제공(변경) 신청서',
-    '사회복지서비스 이용권(바우처) 제공(변경) 신청서',
-    '아이사랑 카드발급 신청 및 개인신용정보의 조회·제공·이용 동의서',
-  ]
+  const [items, setItems] = useState(defaultChecklistItems)
+  const [checked, setChecked] = useState({})
+  const visibleItems = items.slice(0, 3)
+  const done = visibleItems.filter(item => !!checked[item.id]).length
+  const total = visibleItems.length
+
+  useEffect(() => {
+    let active = true
+    setItems(defaultChecklistItems)
+    setChecked(loadStoredChecks(policy))
+
+    if (!policy?.id) {
+      return () => {
+        active = false
+      }
+    }
+
+    fetchPolicyChecklist(policy.id)
+      .then(data => {
+        if (!active) return
+        const nextItems = normalizeChecklistItems(data)
+        if (nextItems.length > 0) {
+          setItems(nextItems)
+          localStorage.setItem(`checklist-total-${policy.id}`, nextItems.length)
+        }
+      })
+      .catch(() => {})
+
+    return () => {
+      active = false
+    }
+  }, [policy])
+
+  const toggleItem = async (item) => {
+    const next = { ...checked, [item.id]: !checked[item.id] }
+    setChecked(next)
+    if (policy?.id) localStorage.setItem(`checklist-checked-${policy.id}`, JSON.stringify(next))
+
+    if (!policy?.id || !item.persistable) return
+    const checkedIds = Object.entries(next)
+      .filter(([, value]) => value)
+      .map(([id]) => Number(id))
+      .filter(id => Number.isFinite(id))
+    try {
+      await saveCheckedItems(policy.id, checkedIds)
+    } catch {
+      // Kept in localStorage so the UI still matches the checklist page locally.
+    }
+  }
+
   return (
     <section>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
@@ -141,14 +251,11 @@ function TodayChecklist({ policy, userName, navigate }) {
         <div style={{ padding: '12px 16px 16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <p style={{ fontSize: 14, fontWeight: 800, color: '#c2185b' }}>준비 항목</p>
-            <p style={{ fontSize: 13, fontWeight: 800, color: '#aaa' }}>0/3</p>
+            <p style={{ fontSize: 13, fontWeight: 800, color: done === total ? '#076818' : '#aaa' }}>{done}/{total}</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {items.map(item => (
-              <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                <span style={{ width: 22, height: 22, borderRadius: '50%', border: '1.5px solid #d0d0d0', flexShrink: 0, marginTop: 1 }} />
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#333', lineHeight: 1.35 }}>{item}</p>
-              </div>
+            {visibleItems.map(item => (
+              <HomeCheckItem key={item.id} item={item} checked={!!checked[item.id]} onToggle={() => toggleItem(item)} />
             ))}
           </div>
         </div>
