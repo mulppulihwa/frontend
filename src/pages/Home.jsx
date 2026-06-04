@@ -334,7 +334,6 @@ function ActivePolicyCard({ policy, navigate }) {
   const status = policy.user_status || policy.status
   const cfg = statusMeta[status] || { label: '미입력', color: '#8a8a8a', bg: '#f5f3ef', Icon: Clock3 }
   const Icon = cfg.Icon
-  const isCompleted = status === '신청완료'
   return (
     <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 26, padding: '16px 16px 14px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -349,7 +348,7 @@ function ActivePolicyCard({ policy, navigate }) {
       </div>
       <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
         <button type="button" onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })} style={{ flex: 1, minHeight: 46, borderRadius: 999, border: 'none', background: '#076818', color: '#fff', fontSize: 14, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer' }}>준비물 확인 →</button>
-        {isCompleted && <button type="button" onClick={() => navigate('/map', { state: { policy } })} style={{ flex: 1, minHeight: 46, borderRadius: 999, border: '1.5px solid #076818', background: '#fff', color: '#076818', fontSize: 14, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer' }}>사용처 보기</button>}
+        <button type="button" onClick={() => navigate('/map', { state: { policy } })} style={{ flex: 1, minHeight: 46, borderRadius: 999, border: '1.5px solid #076818', background: '#fff', color: '#076818', fontSize: 14, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer' }}>사용처 보기</button>
       </div>
     </div>
   )
@@ -358,9 +357,9 @@ function ActivePolicyCard({ policy, navigate }) {
 function ProfileCard({ user, navigate }) {
   const lastDiagnosis = formatLastDiagnosis()
   return (
-    <section style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 30, padding: '20px 18px' }}>
+    <section>
       {lastDiagnosis && <p style={{ fontSize: 12, color: '#666' }}>최종 진단 : {lastDiagnosis}</p>}
-      <button type="button" onClick={() => navigate('/step1')} style={{ width: '100%', minHeight: 48, border: 'none', borderRadius: 999, background: '#076818', color: '#fff', fontSize: 16, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer', marginTop: 10 }}>나의 맞춤 지원금 다시 찾기</button>
+      <button type="button" onClick={() => navigate('/step1')} style={{ width: '100%', minHeight: 48, border: 'none', borderRadius: 999, background: '#FFA100', color: '#fff', fontSize: 16, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer', marginTop: lastDiagnosis ? 10 : 0 }}>나의 맞춤 지원금 다시 찾기</button>
     </section>
   )
 }

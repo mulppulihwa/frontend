@@ -70,19 +70,17 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
           >
             준비물 확인 →
           </button>
-          {isCompleted && (
-            <button
-              onClick={e => { e.stopPropagation(); navigate('/map', { state: { policy: grant } }) }}
-              style={{
-                flex: 1, padding: '11px 0', borderRadius: 999,
-                border: '1.5px solid #076818', background: '#fff',
-                color: '#076818', fontSize: 14, fontWeight: 700,
-                cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px',
-              }}
-            >
-              사용처 보기
-            </button>
-          )}
+          <button
+            onClick={e => { e.stopPropagation(); navigate('/map', { state: { policy: grant } }) }}
+            style={{
+              flex: 1, padding: '11px 0', borderRadius: 999,
+              border: '1.5px solid #076818', background: '#fff',
+              color: '#076818', fontSize: 14, fontWeight: 700,
+              cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px',
+            }}
+          >
+            사용처 보기
+          </button>
         </div>
       </div>
     </div>
