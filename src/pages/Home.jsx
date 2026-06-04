@@ -158,6 +158,14 @@ function loadStoredChecks(policy) {
   }
 }
 
+function getStoredChecklistProgress(policy) {
+  if (!policy?.id) return { done: 0, total: 0, complete: false }
+  const checked = loadStoredChecks(policy)
+  const done = Object.values(checked).filter(Boolean).length
+  const total = Number(localStorage.getItem(`checklist-total-${policy.id}`)) || Number(policy.checkTotal) || 0
+  return { done, total, complete: total > 0 && done >= total }
+}
+
 function HomeCheckItem({ item, checked, onToggle }) {
   return (
     <button
@@ -191,10 +199,11 @@ function HomeCheckItem({ item, checked, onToggle }) {
   )
 }
 
-function TodayChecklist({ policy, userName, navigate }) {
+function TodayChecklist({ policy, userName, navigate, onComplete }) {
   const [items, setItems] = useState(defaultChecklistItems)
   const [checked, setChecked] = useState({})
   const [completeAnimation, setCompleteAnimation] = useState(false)
+  const [completedPolicyId, setCompletedPolicyId] = useState(null)
   const visibleItems = items.slice(0, 3)
   const done = visibleItems.filter(item => !!checked[item.id]).length
   const total = visibleItems.length
@@ -202,6 +211,7 @@ function TodayChecklist({ policy, userName, navigate }) {
 
   useEffect(() => {
     let active = true
+    setCompletedPolicyId(null)
     setItems(defaultChecklistItems)
     setChecked(loadStoredChecks(policy))
 
@@ -228,11 +238,16 @@ function TodayChecklist({ policy, userName, navigate }) {
   }, [policy])
 
   useEffect(() => {
-    if (total === 0 || done !== total) return undefined
+    if (!policy?.id || total === 0 || done !== total || completedPolicyId === policy.id) return undefined
+    setCompletedPolicyId(policy.id)
     setCompleteAnimation(true)
-    const timer = window.setTimeout(() => setCompleteAnimation(false), 760)
-    return () => window.clearTimeout(timer)
-  }, [done, total])
+    const animationTimer = window.setTimeout(() => setCompleteAnimation(false), 760)
+    const swapTimer = window.setTimeout(() => onComplete?.(policy), 540)
+    return () => {
+      window.clearTimeout(animationTimer)
+      window.clearTimeout(swapTimer)
+    }
+  }, [completedPolicyId, done, onComplete, policy, total])
 
   const toggleItem = async (item) => {
     const next = { ...checked, [item.id]: !checked[item.id] }
@@ -369,6 +384,7 @@ function normalizeUser(profile) {
 export default function Home() {
   const navigate = useNavigate()
   const [policies, setPolicies] = useState([])
+  const [selectedPolicyId, setSelectedPolicyId] = useState(null)
   const [user, setUser] = useState({ name: '', region: '' })
 
   useEffect(() => {
@@ -398,12 +414,21 @@ export default function Home() {
     const status = policy.user_status || policy.status
     return status === '신청완료' || status === '신청예정'
   })
-  const todayPolicy = activePolicies[0] || policies[0]
+  const checklistPolicies = activePolicies.length > 0 ? activePolicies : policies
+  const selectedPolicy = checklistPolicies.find(policy => String(policy.id) === String(selectedPolicyId))
+  const firstUnfinishedPolicy = checklistPolicies.find(policy => !getStoredChecklistProgress(policy).complete)
+  const todayPolicy = selectedPolicy || firstUnfinishedPolicy || checklistPolicies[0]
+
+  const handleChecklistComplete = (completedPolicy) => {
+    const candidates = checklistPolicies.filter(policy => String(policy.id) !== String(completedPolicy?.id))
+    const nextPolicy = candidates.find(policy => !getStoredChecklistProgress(policy).complete) || candidates[0]
+    if (nextPolicy?.id) setSelectedPolicyId(nextPolicy.id)
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#FDFCF8', overflowX: 'hidden' }}>
       <div style={{ padding: '26px 18px 116px', display: 'flex', flexDirection: 'column', gap: 28 }}>
-        <TodayChecklist policy={todayPolicy} userName={user.name} navigate={navigate} />
+        <TodayChecklist policy={todayPolicy} userName={user.name} navigate={navigate} onComplete={handleChecklistComplete} />
         <SummaryCard counts={counts} navigate={navigate} />
         <section>
           <SectionTitle>신청 진행 중</SectionTitle>
