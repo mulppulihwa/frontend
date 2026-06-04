@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, Search, X, ArrowUpDown } from 'lucide-react'
+import { ArrowUpDown, Bell, Check, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import farmer from '../assets/farmer.png'
@@ -41,10 +41,12 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
           <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', flex: 1, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{grant.title}</p>
           <button
+            type="button"
+            aria-label="알림 받기"
             onClick={e => { e.stopPropagation(); onNotify() }}
-            style={{ padding: '6px 12px', borderRadius: 999, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap', flexShrink: 0 }}
+            style={{ width: 34, height: 34, borderRadius: '50%', border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', color: '#444', flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
           >
-            알림 받기
+            <Bell size={17} strokeWidth={2.3} />
           </button>
         </div>
         <p style={{ fontSize: 13, color: '#555', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
