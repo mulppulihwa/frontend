@@ -424,16 +424,6 @@ export default function Home() {
       <div style={{ padding: '26px 18px 116px', display: 'flex', flexDirection: 'column', gap: 28 }}>
         <TodayChecklist policy={todayPolicy} userName={user.name} navigate={navigate} onComplete={handleChecklistComplete} />
         <SummaryCard counts={counts} navigate={navigate} />
-        <section>
-          <SectionTitle>신청 진행 중</SectionTitle>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {activePolicies.length > 0 ? activePolicies.slice(0, 2).map(policy => <ActivePolicyCard key={policy.id} policy={policy} navigate={navigate} />) : (
-              <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 26, padding: '20px 18px', color: '#666', fontSize: 14, fontWeight: 700 }}>
-                아직 저장된 지원 현황이 없어요.
-              </div>
-            )}
-          </div>
-        </section>
         <ProfileCard user={user} navigate={navigate} />
       </div>
     </div>
