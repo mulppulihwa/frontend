@@ -134,7 +134,7 @@ function Toast({ visible }) {
   )
 }
 
-function PolicyUpdateModal({ visible, onClose, navigate }) {
+function NotificationSetModal({ visible, onClose }) {
   if (!visible) return null
   return (
     <div
@@ -158,40 +158,40 @@ function PolicyUpdateModal({ visible, onClose, navigate }) {
           width: '100%',
           maxWidth: 330,
           borderRadius: 30,
-          border: '2px solid #076818',
+          border: '2.5px solid #ff5538',
           background: '#FFFFFF',
-          padding: '28px 24px 26px',
+          padding: '30px 24px 28px',
           textAlign: 'center',
           boxSizing: 'border-box',
           animation: 'modalPop 0.2s ease',
         }}
       >
-        <img src={farmer} alt="" style={{ width: 82, height: 58, objectFit: 'cover', objectPosition: 'top center', marginBottom: 24 }} />
-        <p style={{ fontSize: 20, fontWeight: 800, color: '#000', lineHeight: 1.32, letterSpacing: '-0.4px', wordBreak: 'keep-all' }}>
-          새해 맞이 2027년 옥천 귀농 정책이 업데이트되었어요!
+        <img src={farmer} alt="" style={{ width: 92, height: 74, objectFit: 'cover', objectPosition: 'top center', marginBottom: 30 }} />
+        <p style={{ fontSize: 25, fontWeight: 800, color: '#ff5538', lineHeight: 1.25, letterSpacing: '-0.5px' }}>
+          알림 설정 완료
         </p>
-        <p style={{ marginTop: 24, fontSize: 17, fontWeight: 500, color: '#000', lineHeight: 1.42, letterSpacing: '-0.3px', wordBreak: 'keep-all' }}>
-          내 조건으로 새로 받을 수 있는 지원금이 있는지 지금 바로 확인해 보세요!
+        <p style={{ marginTop: 32, fontSize: 24, fontWeight: 500, color: '#000', lineHeight: 1.38, letterSpacing: '-0.5px', wordBreak: 'keep-all' }}>
+          신청 마감일을 잊지 않도록 맞춤 알림을 보내드릴게요!
         </p>
         <button
           type="button"
-          onClick={() => navigate('/step1')}
+          onClick={onClose}
           style={{
             width: '100%',
-            minHeight: 54,
-            marginTop: 34,
+            minHeight: 58,
+            marginTop: 44,
             border: 'none',
             borderRadius: 999,
-            background: '#FFA100',
+            background: '#076818',
             color: '#FFFFFF',
-            fontSize: 17,
+            fontSize: 26,
             fontWeight: 800,
             fontFamily: 'inherit',
             cursor: 'pointer',
             letterSpacing: '-0.5px',
           }}
         >
-          나의 맞춤 지원금 다시 찾기
+          확인
         </button>
       </div>
       <style>{`@keyframes modalPop { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }`}</style>
@@ -205,7 +205,7 @@ export default function GrantStatus() {
   const [statuses, setStatuses] = useState({})
   const [grantsData, setGrantsData] = useState([])
   const [toastVisible, setToastVisible] = useState(false)
-  const [updateModalVisible, setUpdateModalVisible] = useState(false)
+  const [notificationModalVisible, setNotificationModalVisible] = useState(false)
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('마감순')
   const [loading, setLoading] = useState(true)
@@ -401,7 +401,7 @@ export default function GrantStatus() {
                 status={statuses[g.id]}
                 onStatusChange={val => handleStatusChange(g.id, val)}
                 navigate={navigate}
-                onNotify={() => setUpdateModalVisible(true)}
+                onNotify={() => setNotificationModalVisible(true)}
               />
             ))}
           </div>
@@ -416,7 +416,7 @@ export default function GrantStatus() {
                   statuses={statuses}
                   onStatusChange={handleStatusChange}
                   navigate={navigate}
-                  onNotify={() => setUpdateModalVisible(true)}
+                  onNotify={() => setNotificationModalVisible(true)}
                 />
               ) : null
             )}
@@ -432,7 +432,7 @@ export default function GrantStatus() {
                     status={statuses[g.id]}
                     onStatusChange={val => handleStatusChange(g.id, val)}
                     navigate={navigate}
-                    onNotify={() => setUpdateModalVisible(true)}
+                    onNotify={() => setNotificationModalVisible(true)}
                   />
                 ))}
               </div>
@@ -449,7 +449,7 @@ export default function GrantStatus() {
       </div>
 
       <Toast visible={toastVisible} />
-      <PolicyUpdateModal visible={updateModalVisible} onClose={() => setUpdateModalVisible(false)} navigate={navigate} />
+      <NotificationSetModal visible={notificationModalVisible} onClose={() => setNotificationModalVisible(false)} />
     </div>
   )
 }

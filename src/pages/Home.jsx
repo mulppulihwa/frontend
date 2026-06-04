@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, Check, ChevronRight, Clock3, User, X } from 'lucide-react'
+import PolicyUpdateModal from '../components/PolicyUpdateModal'
 import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
@@ -394,6 +395,7 @@ export default function Home() {
   const navigate = useNavigate()
   const [policies, setPolicies] = useState([])
   const [selectedPolicyId, setSelectedPolicyId] = useState(null)
+  const [updateModalVisible, setUpdateModalVisible] = useState(true)
   const [user, setUser] = useState({ name: '', region: '' })
 
   useEffect(() => {
@@ -455,6 +457,7 @@ export default function Home() {
         )}
         <ProfileCard user={user} navigate={navigate} />
       </div>
+      <PolicyUpdateModal visible={updateModalVisible} onClose={() => setUpdateModalVisible(false)} navigate={navigate} />
     </div>
   )
 }
