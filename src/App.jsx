@@ -7,7 +7,6 @@ import Results from './pages/Results'
 import Detail from './pages/Detail'
 import StoreMap from './pages/StoreMap'
 import StoreDetail from './pages/StoreDetail'
-import MyPage from './pages/MyPage'
 import GrantStatus from './pages/GrantStatus'
 import Home from './pages/Home'
 import Alarm from './pages/Alarm'
@@ -31,7 +30,6 @@ function Layout() {
       <Route path="/detail" element={<RequireAuth><Detail /></RequireAuth>} />
       <Route path="/map" element={<RequireAuth><StoreMap /></RequireAuth>} />
       <Route path="/store-detail" element={<RequireAuth><StoreDetail /></RequireAuth>} />
-      <Route path="/mypage" element={<RequireAuth><MyPage /></RequireAuth>} />
       <Route path="/grant-status" element={<RequireAuth><GrantStatus /></RequireAuth>} />
       <Route path="/home" element={<RequireAuth><Home /></RequireAuth>} />
       <Route path="/alarm" element={<RequireAuth><Alarm /></RequireAuth>} />

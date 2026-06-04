@@ -225,7 +225,7 @@ export default function GrantStatus() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#FDFCF8' }}>
-      <TopBar title="지원 현황" onBack={() => navigate('/mypage')} />
+      <TopBar title="지원 현황" onBack={() => navigate('/home')} />
 
       <div style={{ padding: '12px 18px 100px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 

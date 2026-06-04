@@ -96,7 +96,7 @@ export default function BasicInfo() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: '#FDFCF8', overflow: 'hidden' }}>
-      <TopBar title="프로필 정보" onBack={() => navigate('/mypage')} />
+      <TopBar title="프로필 정보" onBack={() => navigate('/home')} />
 
       <div className="step-form-scroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px 18px 40px', display: 'flex', flexDirection: 'column', gap: 18 }}>
         {loading ? (
