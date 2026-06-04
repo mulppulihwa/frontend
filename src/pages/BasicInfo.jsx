@@ -19,41 +19,6 @@ function readJson(key) {
   }
 }
 
-function ProfileTextField({ label, value, onChange, placeholder }) {
-  const [focused, setFocused] = useState(false)
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <label style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{label}</label>
-      <input
-        type="text"
-        value={value}
-        placeholder={placeholder}
-        onChange={e => onChange(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          width: '100%',
-          minHeight: 49,
-          padding: '13px 16px',
-          boxSizing: 'border-box',
-          border: `1.5px solid ${focused ? '#076818' : '#e8e8e8'}`,
-          borderRadius: 14,
-          fontSize: 15,
-          fontWeight: 400,
-          color: '#1a1a1a',
-          background: '#fff',
-          fontFamily: 'inherit',
-          outline: 'none',
-          letterSpacing: '-0.2px',
-          boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
-          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-        }}
-      />
-    </div>
-  )
-}
-
 function ReadOnlyRow({ label, value }) {
   return (
     <div style={{
@@ -142,7 +107,7 @@ export default function BasicInfo() {
               <div>
                 <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>기본 정보</p>
               </div>
-              <ProfileTextField label="이름" value={name} onChange={setName} placeholder="이름 입력" />
+              <ReadOnlyRow label="이름" value={name} />
               <ReadOnlyRow label="생년월일" value={birthDate} />
               <ReadOnlyRow label="국적" value={nationality} />
               {error && (
