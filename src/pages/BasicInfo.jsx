@@ -150,35 +150,9 @@ export default function BasicInfo() {
               )}
             </section>
 
-            <section style={{
-              background: '#FFFFFF',
-              border: '1.5px solid rgba(218,231,211,0.95)',
-              borderRadius: 28,
-              padding: '20px 16px 4px',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
-                <div>
-                  <p style={{ fontSize: 18, fontWeight: 800, color: '#1f2433', letterSpacing: 0 }}>진단 정보</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => navigate('/step1')}
-                  style={{
-                    flexShrink: 0,
-                    minHeight: 36,
-                    padding: '0 14px',
-                    border: 'none',
-                    borderRadius: 999,
-                    background: '#e8f3e8',
-                    color: '#076818',
-                    fontSize: 12,
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  다시 진단하기
-                </button>
+            <section style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>진단 정보</p>
               </div>
               <ReadOnlyRow label="현재 거주지" value={diagnosisInfo.location || diagnosisInfo.region} />
               <ReadOnlyRow label="옥천 이사 날짜" value={diagnosisInfo.movedAt} />
