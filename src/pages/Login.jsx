@@ -94,7 +94,7 @@ export default function Login() {
         <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: -24, textAlign: 'center' }}>
         숨은 귀농 혜택, 옥천옥이 알아서 챙겨드릴게요! <br />
         내게 꼭 맞는 정책 진단부터 <br />
-        복잡한 지원금 신청 준비, 알뜰한 사용처 안내까지 
+        복잡한 지원금 신청 준비, 알뜰한 사용처 안내까지<br />
         옥천옥이 든든하게 책임집니다<br />
         </p>
       </div>
