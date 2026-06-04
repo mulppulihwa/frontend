@@ -20,20 +20,25 @@ function getDday(deadlineStr) {
   return days > 0 ? `D-${days}` : `D+${Math.abs(days)}`
 }
 
-function getDeadlineRemainingText(deadlineStr) {
-  if (!deadlineStr) return '마감일 확인 필요'
-  const deadline = new Date(deadlineStr)
-  if (Number.isNaN(deadline.getTime())) return '마감일 확인 필요'
-  const diffMs = deadline.getTime() - Date.now()
-  if (diffMs <= 0) return '마감되었습니다'
-  const totalMinutes = Math.floor(diffMs / 60000)
-  const days = Math.floor(totalMinutes / 1440)
-  const hours = Math.floor((totalMinutes % 1440) / 60)
-  const minutes = totalMinutes % 60
-  return `마감까지 D- ${days}일 ${hours}시간 ${minutes}분`
+function getNotificationMessage(deadlineStr) {
+  const days = getDeadlineDays(deadlineStr)
+  if (!Number.isFinite(days)) {
+    return ['신청 마감일을 확인해 주세요.', '필요한 준비 서류를 미리 확인해보세요.']
+  }
+  if (days <= 1) {
+    return ['내일이면 신청 마감이에요.', '나도 모르게 놓친 준비물이 있을지 마지막으로 확인해 보세요.']
+  }
+  if (days <= 3) {
+    return ['마감까지 3일 남았어요!', '마감 직전에는 신청자가 몰릴 수 있으니, 미리 방문하시는 건 어떨까요?', '준비한 서류를 들고 지금 바로 행정복지센터로 출발해 보세요.']
+  }
+  if (days <= 7) {
+    return ['신청 마감이 일주일 앞으로 다가왔어요!', '아직 신청하지 않으셨다면 지금 확인해보세요.']
+  }
+  return ['최대 300만원을 지원 받을 수 있는 기회예요!', '미리 신청 자격과 준비 서류를 확인해보세요.']
 }
 
 function NotificationCard({ policy }) {
+  const messages = getNotificationMessage(policy.deadline)
   return (
     <div style={{ background: '#FFFFFF', border: '1px solid rgba(218,231,211,0.9)', borderRadius: 28, padding: '16px 16px 14px' }}>
       <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr', columnGap: 10, alignItems: 'start' }}>
@@ -43,9 +48,13 @@ function NotificationCard({ policy }) {
           <p style={{ marginTop: 10, fontSize: 13, fontWeight: 500, color: '#555', lineHeight: 1.5, wordBreak: 'keep-all', letterSpacing: '-0.1px' }}>
             {policy.subtitle || '지원 내용을 확인할 수 있는 기회예요!'}
           </p>
-          <p style={{ marginTop: 8, fontSize: 12, fontWeight: 700, color: '#ff5538', lineHeight: 1.35, letterSpacing: '-0.1px' }}>
-            {getDeadlineRemainingText(policy.deadline)}
-          </p>
+          <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {messages.map(message => (
+              <p key={message} style={{ fontSize: 13, fontWeight: 500, color: '#555', lineHeight: 1.5, wordBreak: 'keep-all', letterSpacing: '-0.1px' }}>
+                {message}
+              </p>
+            ))}
+          </div>
         </div>
       </div>
     </div>
