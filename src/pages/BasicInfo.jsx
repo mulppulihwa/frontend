@@ -116,7 +116,7 @@ export default function BasicInfo() {
           <>
             <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {lastDiagnosis && (
-                <p style={{ fontSize: 13, fontWeight: 500, color: '#666', margin: 0 }}>
+                <p style={{ fontSize: 13, fontWeight: 500, color: '#666', margin: 0, textAlign: 'center' }}>
                   최종 진단 : {lastDiagnosis}
                 </p>
               )}
