@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, ChevronRight, Clock3, MapPin, User, X } from 'lucide-react'
+import { Check, ChevronRight, Clock3, User, X } from 'lucide-react'
 import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
@@ -359,13 +359,7 @@ function ProfileCard({ user, navigate }) {
   const lastDiagnosis = formatLastDiagnosis()
   return (
     <section style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 30, padding: '20px 18px' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-        <div style={{ minWidth: 0 }}>
-          <p style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 600, color: '#8a8a8a', marginTop: 4 }}><MapPin size={13} /> {user.region || '지역 미등록'} 거주</p>
-        </div>
-        <button type="button" onClick={() => navigate('/basic-info')} style={{ border: 'none', borderRadius: 999, background: '#e8f3e8', color: '#076818', padding: '8px 12px', fontSize: 12, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer' }}>프로필 정보</button>
-      </div>
-      {lastDiagnosis && <p style={{ fontSize: 12, color: '#666', marginTop: 18 }}>최종 진단 : {lastDiagnosis}</p>}
+      {lastDiagnosis && <p style={{ fontSize: 12, color: '#666' }}>최종 진단 : {lastDiagnosis}</p>}
       <button type="button" onClick={() => navigate('/step1')} style={{ width: '100%', minHeight: 48, border: 'none', borderRadius: 999, background: '#076818', color: '#fff', fontSize: 16, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer', marginTop: 10 }}>나의 맞춤 지원금 다시 찾기</button>
     </section>
   )
