@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check, ChevronRight, Clock3, MapPin, X } from 'lucide-react'
+import { Check, ChevronRight, Clock3, MapPin, User, X } from 'lucide-react'
 import { fetchProfile, fetchSavedPolicies } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
@@ -122,8 +122,8 @@ function TodayChecklist({ policy, userName, navigate }) {
   return (
     <section>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
-        <button type="button" onClick={() => navigate('/basic-info')} style={{ border: 'none', background: 'transparent', color: '#1f2433', fontSize: 12, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer' }}>
-          프로필 수정
+        <button type="button" aria-label="프로필 수정" onClick={() => navigate('/basic-info')} style={{ width: 38, height: 38, marginLeft: 'auto', border: 'none', borderRadius: '50%', background: '#FFFFFF', color: '#1f2433', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <User size={20} strokeWidth={2.3} />
         </button>
       </div>
       <div style={{ marginBottom: 14 }}>
