@@ -43,7 +43,7 @@ function GrantCard({ grant, status, onStatusChange, navigate }) {
             onClick={e => { e.stopPropagation(); navigate('/detail', { state: { grant } }) }}
             style={{ padding: '6px 12px', borderRadius: 999, border: '1.5px solid #e8e8e8', background: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 500, color: '#444', letterSpacing: '-0.1px', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
-            자세히 보기
+            알림 받기
           </button>
         </div>
         <p style={{ fontSize: 13, color: '#555', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
