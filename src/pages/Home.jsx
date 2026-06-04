@@ -28,6 +28,16 @@ function getDeadlineText(deadlineStr) {
   return `마감 ${Math.abs(diff)}일 지남`
 }
 
+function getDeadlineDays(deadlineStr) {
+  if (!deadlineStr) return Number.POSITIVE_INFINITY
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const deadline = new Date(deadlineStr)
+  if (Number.isNaN(deadline.getTime())) return Number.POSITIVE_INFINITY
+  deadline.setHours(0, 0, 0, 0)
+  return Math.ceil((deadline - today) / 86400000)
+}
+
 function readJsonSafe(key) {
   try {
     return JSON.parse(localStorage.getItem(key) || '{}')
@@ -408,6 +418,14 @@ export default function Home() {
     const status = policy.user_status || policy.status
     return status === '신청완료' || status === '신청예정'
   })
+  const urgentPolicy = [...activePolicies].sort((a, b) => {
+    const aDays = getDeadlineDays(a.deadline)
+    const bDays = getDeadlineDays(b.deadline)
+    const aUpcoming = aDays >= 0
+    const bUpcoming = bDays >= 0
+    if (aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1
+    return Math.abs(aDays) - Math.abs(bDays)
+  })[0]
   const checklistPolicies = activePolicies.length > 0 ? activePolicies : policies
   const selectedPolicy = checklistPolicies.find(policy => String(policy.id) === String(selectedPolicyId))
   const firstUnfinishedPolicy = checklistPolicies.find(policy => !getStoredChecklistProgress(policy).complete)
@@ -424,6 +442,12 @@ export default function Home() {
       <div style={{ padding: '26px 18px 116px', display: 'flex', flexDirection: 'column', gap: 28 }}>
         <TodayChecklist policy={todayPolicy} userName={user.name} navigate={navigate} onComplete={handleChecklistComplete} />
         <SummaryCard counts={counts} navigate={navigate} />
+        {urgentPolicy && (
+          <section>
+            <SectionTitle>신청 진행 중</SectionTitle>
+            <ActivePolicyCard policy={urgentPolicy} navigate={navigate} />
+          </section>
+        )}
         <ProfileCard user={user} navigate={navigate} />
       </div>
     </div>
