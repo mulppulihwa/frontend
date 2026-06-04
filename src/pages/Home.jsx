@@ -39,6 +39,19 @@ function getDeadlineDays(deadlineStr) {
   return Math.ceil((deadline - today) / 86400000)
 }
 
+function getDeadlineRemainingText(deadlineStr) {
+  if (!deadlineStr) return '마감일 확인 필요'
+  const deadline = new Date(deadlineStr)
+  if (Number.isNaN(deadline.getTime())) return '마감일 확인 필요'
+  const diffMs = deadline.getTime() - Date.now()
+  if (diffMs <= 0) return '마감되었습니다'
+  const totalMinutes = Math.floor(diffMs / 60000)
+  const days = Math.floor(totalMinutes / 1440)
+  const hours = Math.floor((totalMinutes % 1440) / 60)
+  const minutes = totalMinutes % 60
+  return `마감까지 D- ${days}일 ${hours}시간 ${minutes}분`
+}
+
 function readJsonSafe(key) {
   try {
     return JSON.parse(localStorage.getItem(key) || '{}')
@@ -210,7 +223,7 @@ function HomeCheckItem({ item, checked, onToggle }) {
   )
 }
 
-function TodayChecklist({ policy, userName, navigate, onComplete }) {
+function TodayChecklist({ policy, userName, navigate, onComplete, onOpenNotifications }) {
   const [items, setItems] = useState(defaultChecklistItems)
   const [checked, setChecked] = useState({})
   const [completeAnimation, setCompleteAnimation] = useState(false)
@@ -281,7 +294,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
     <section>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button type="button" aria-label="알림" onClick={() => navigate('/alarm')} style={{ width: 38, height: 38, border: 'none', borderRadius: '50%', background: '#FFFFFF', color: '#1f2433', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <button type="button" aria-label="알림" onClick={onOpenNotifications} style={{ width: 38, height: 38, border: 'none', borderRadius: '50%', background: '#FFFFFF', color: '#1f2433', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             <Bell size={19} strokeWidth={2.3} />
           </button>
           <button type="button" aria-label="프로필 수정" onClick={() => navigate('/basic-info')} style={{ width: 38, height: 38, border: 'none', borderRadius: '50%', background: '#FFFFFF', color: '#1f2433', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
@@ -380,6 +393,63 @@ function ProfileCard({ user, navigate }) {
   )
 }
 
+function NotificationListModal({ visible, policies, onClose }) {
+  if (!visible) return null
+  const upcomingPolicies = [...policies]
+    .sort((a, b) => getDeadlineDays(a.deadline) - getDeadlineDays(b.deadline))
+    .slice(0, 4)
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 280,
+        background: 'rgba(253,252,248,0.78)',
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        padding: '84px 18px 28px',
+        boxSizing: 'border-box',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: '100%',
+          maxWidth: 390,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+        }}
+      >
+        {upcomingPolicies.length > 0 ? upcomingPolicies.map(policy => (
+          <div key={policy.id} style={{ background: '#FFFFFF', border: '1.5px solid rgba(218,231,211,0.95)', borderRadius: 28, padding: '20px 18px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '58px 1fr', columnGap: 12, alignItems: 'start' }}>
+              <p style={{ fontSize: 18, fontWeight: 800, color: '#d93025', lineHeight: 1.2 }}>{getDday(policy.deadline)}</p>
+              <div>
+                <p style={{ fontSize: 22, fontWeight: 800, color: '#111', lineHeight: 1.25, wordBreak: 'keep-all' }}>{policy.title}</p>
+                <p style={{ marginTop: 20, fontSize: 17, fontWeight: 700, color: '#111', lineHeight: 1.5, wordBreak: 'keep-all' }}>
+                  {policy.subtitle || '지원 내용을 확인할 수 있는 기회예요!'}
+                </p>
+                <p style={{ marginTop: 14, fontSize: 17, fontWeight: 800, color: '#ff5538', lineHeight: 1.3 }}>
+                  {getDeadlineRemainingText(policy.deadline)}
+                </p>
+              </div>
+            </div>
+          </div>
+        )) : (
+          <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(218,231,211,0.95)', borderRadius: 28, padding: '28px 20px', textAlign: 'center' }}>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#666' }}>아직 받을 알림이 없어요.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function normalizeUser(profile) {
   const profileData = profile?.profile || profile?.user_profile || profile?.userProfile || profile || {}
   const submitted = readJsonSafe('submittedDiagnosisProfile')
@@ -396,6 +466,7 @@ export default function Home() {
   const [policies, setPolicies] = useState([])
   const [selectedPolicyId, setSelectedPolicyId] = useState(null)
   const [updateModalVisible, setUpdateModalVisible] = useState(true)
+  const [notificationListVisible, setNotificationListVisible] = useState(false)
   const [user, setUser] = useState({ name: '', region: '' })
 
   useEffect(() => {
@@ -447,7 +518,7 @@ export default function Home() {
   return (
     <div style={{ minHeight: '100vh', background: '#FDFCF8', overflowX: 'hidden' }}>
       <div style={{ padding: '26px 18px 116px', display: 'flex', flexDirection: 'column', gap: 28 }}>
-        <TodayChecklist policy={todayPolicy} userName={user.name} navigate={navigate} onComplete={handleChecklistComplete} />
+        <TodayChecklist policy={todayPolicy} userName={user.name} navigate={navigate} onComplete={handleChecklistComplete} onOpenNotifications={() => setNotificationListVisible(true)} />
         <SummaryCard counts={counts} navigate={navigate} />
         {urgentPolicy && (
           <section>
@@ -458,6 +529,7 @@ export default function Home() {
         <ProfileCard user={user} navigate={navigate} />
       </div>
       <PolicyUpdateModal visible={updateModalVisible} onClose={() => setUpdateModalVisible(false)} navigate={navigate} />
+      <NotificationListModal visible={notificationListVisible} policies={policies} onClose={() => setNotificationListVisible(false)} />
     </div>
   )
 }
