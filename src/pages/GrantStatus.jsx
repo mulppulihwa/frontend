@@ -148,7 +148,7 @@ function NotificationSetModal({ visible, onClose }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 28,
+        padding: 36,
         background: 'rgba(253,252,248,0.72)',
       }}
     >
@@ -156,21 +156,21 @@ function NotificationSetModal({ visible, onClose }) {
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%',
-          maxWidth: 330,
-          borderRadius: 30,
-          border: '2.5px solid #ff5538',
+          maxWidth: 286,
+          borderRadius: 26,
+          border: '2px solid #ff5538',
           background: '#FFFFFF',
-          padding: '30px 24px 28px',
+          padding: '24px 22px 22px',
           textAlign: 'center',
           boxSizing: 'border-box',
           animation: 'modalPop 0.2s ease',
         }}
       >
-        <img src={farmer} alt="" style={{ width: 92, height: 74, objectFit: 'cover', objectPosition: 'top center', marginBottom: 30 }} />
-        <p style={{ fontSize: 25, fontWeight: 800, color: '#ff5538', lineHeight: 1.25, letterSpacing: '-0.5px' }}>
+        <img src={farmer} alt="" style={{ width: 70, height: 54, objectFit: 'cover', objectPosition: 'top center', marginBottom: 22 }} />
+        <p style={{ fontSize: 20, fontWeight: 800, color: '#ff5538', lineHeight: 1.25, letterSpacing: '-0.4px' }}>
           알림 설정 완료
         </p>
-        <p style={{ marginTop: 32, fontSize: 24, fontWeight: 500, color: '#000', lineHeight: 1.38, letterSpacing: '-0.5px', wordBreak: 'keep-all' }}>
+        <p style={{ marginTop: 24, fontSize: 17, fontWeight: 500, color: '#000', lineHeight: 1.42, letterSpacing: '-0.3px', wordBreak: 'keep-all' }}>
           신청 마감일을 잊지 않도록 맞춤 알림을 보내드릴게요!
         </p>
         <button
@@ -178,13 +178,13 @@ function NotificationSetModal({ visible, onClose }) {
           onClick={onClose}
           style={{
             width: '100%',
-            minHeight: 58,
-            marginTop: 44,
+            minHeight: 48,
+            marginTop: 30,
             border: 'none',
             borderRadius: 999,
             background: '#076818',
             color: '#FFFFFF',
-            fontSize: 26,
+            fontSize: 20,
             fontWeight: 800,
             fontFamily: 'inherit',
             cursor: 'pointer',
