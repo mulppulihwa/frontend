@@ -46,41 +46,42 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified
     <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.9)', borderRadius: 28, overflow: 'hidden' }}>
       <div
         onClick={() => navigate('/detail', { state: { grant } })}
-        style={{ padding: '16px 16px 12px', display: 'flex', flexDirection: 'column', gap: 8, cursor: 'pointer' }}
+        style={{ padding: '16px 16px 12px', display: 'grid', gridTemplateColumns: '56px minmax(0, 1fr) 34px', alignItems: 'center', gap: 10, cursor: 'pointer' }}
       >
-        {/* Title row */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-          <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', flex: 1, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{grant.title}</p>
-          <button
-            type="button"
-            aria-label={notified ? '알림 설정됨' : '알림 받기'}
-            onClick={e => { e.stopPropagation(); onNotify() }}
-            style={{
-              width: 34,
-              height: 34,
-              borderRadius: '50%',
-              border: `1.5px solid ${notified ? '#FFA100' : '#e8e8e8'}`,
-              background: notified ? '#fff3e0' : '#fff',
-              cursor: 'pointer',
-              color: notified ? '#FFA100' : '#444',
-              flexShrink: 0,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <BellIcon size={17} strokeWidth={2.3} />
-          </button>
+        <p style={{ fontSize: 15, fontWeight: 800, color: '#d93025', letterSpacing: '-0.2px', textAlign: 'center' }}>
+          D-{days}
+        </p>
+        <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{grant.title}</p>
+          <p style={{ fontSize: 13, color: '#555', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
+          <p style={{ fontSize: 12, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px' }}>
+            {isCompleted ? '지급일까지' : '마감까지'} D-{days}
+          </p>
+          <p style={{ fontSize: 12, fontWeight: 400, color: '#8a8a8a', letterSpacing: '-0.1px' }}>
+            {formatAddedDate(grant.addedAt)}
+          </p>
         </div>
-        <p style={{ fontSize: 13, color: '#555', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
-        {/* Countdown row */}
-        <p style={{ fontSize: 12, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px' }}>
-          {isCompleted ? '지급일까지' : '마감까지'} D-{days}
-        </p>
-        <p style={{ fontSize: 12, fontWeight: 400, color: '#8a8a8a', letterSpacing: '-0.1px' }}>
-          {formatAddedDate(grant.addedAt)}
-        </p>
+        <button
+          type="button"
+          aria-label={notified ? '알림 설정됨' : '알림 받기'}
+          onClick={e => { e.stopPropagation(); onNotify() }}
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: '50%',
+            border: `1.5px solid ${notified ? '#FFA100' : '#e8e8e8'}`,
+            background: notified ? '#fff3e0' : '#fff',
+            cursor: 'pointer',
+            color: notified ? '#FFA100' : '#444',
+            flexShrink: 0,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          <BellIcon size={17} strokeWidth={2.3} />
+        </button>
       </div>
 
       <div style={{ borderTop: '1px solid rgba(218,231,211,0.6)', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
