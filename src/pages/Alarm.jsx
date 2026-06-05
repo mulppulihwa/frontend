@@ -41,8 +41,8 @@ function NotificationCard({ policy }) {
   const messages = getNotificationMessage(policy.deadline)
   return (
     <div style={{ background: '#FFFFFF', border: '1px solid rgba(218,231,211,0.9)', borderRadius: 28, padding: '16px 16px 14px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr', columnGap: 10, alignItems: 'start' }}>
-        <p style={{ fontSize: 14, fontWeight: 800, color: '#d93025', lineHeight: 1.25 }}>{getDday(policy.deadline)}</p>
+      <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr', columnGap: 10, alignItems: 'center' }}>
+        <p style={{ fontSize: 14, fontWeight: 800, color: '#d93025', lineHeight: 1.25, textAlign: 'center' }}>{getDday(policy.deadline)}</p>
         <div>
           <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{policy.title}</p>
           <p style={{ marginTop: 10, fontSize: 13, fontWeight: 500, color: '#555', lineHeight: 1.5, wordBreak: 'keep-all', letterSpacing: '-0.1px' }}>
