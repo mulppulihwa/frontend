@@ -212,7 +212,7 @@ export default function Checklist() {
         주민센터 방문 전 놓친 것이 있나 확인해보세요
       </p>
 
-      <div style={{ padding: '0 18px 100px' }}>
+      <div style={{ padding: '0 18px 124px' }}>
         {loading && (
           <div style={{
             background: 'none',
@@ -371,6 +371,60 @@ export default function Checklist() {
         </div>
         )}
       </div>
+
+      {grant && (
+        <div style={{
+          position: 'fixed',
+          left: '50%',
+          bottom: 0,
+          transform: 'translateX(-50%)',
+          width: '100%',
+          maxWidth: 430,
+          padding: '14px 18px 22px',
+          boxSizing: 'border-box',
+          background: 'linear-gradient(180deg, rgba(253,252,248,0) 0%, #FDFCF8 22%, #FDFCF8 100%)',
+          display: 'flex',
+          gap: 8,
+          zIndex: 80,
+        }}>
+          <button
+            type="button"
+            onClick={() => navigate('/detail', { state: { grant } })}
+            style={{
+              flex: 1,
+              minHeight: 48,
+              borderRadius: 999,
+              border: 'none',
+              background: '#076818',
+              color: '#FFFFFF',
+              fontSize: 14,
+              fontWeight: 800,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
+            }}
+          >
+            자세히 보기
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/map', { state: { policy: grant } })}
+            style={{
+              flex: 1,
+              minHeight: 48,
+              borderRadius: 999,
+              border: '1.5px solid #076818',
+              background: '#FFFFFF',
+              color: '#076818',
+              fontSize: 14,
+              fontWeight: 800,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
+            }}
+          >
+            사용처 보기
+          </button>
+        </div>
+      )}
     </div>
   )
 }
