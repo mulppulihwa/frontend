@@ -139,17 +139,66 @@ const homeScheduleMessages = [
   '놓치면 안 되는 마감 임박 정책 준비물이에요',
 ]
 
+const checklistBucketFields = [
+  ['requirements', 'application_requirements', 'eligibility', 'conditions', 'qualification', 'qualifications', '신청 요건', '신청요건'],
+  ['documents', 'required_documents', 'submission_documents', 'application_documents', 'paperwork', '제출 서류', '제출서류', '신청 서류', '신청서류'],
+  ['items', 'required_items', 'materials', 'preparations', 'things_to_bring', '필요 물건', '필요물건', '준비물'],
+  ['visit', 'visit_office_checklist', 'office_visit', 'administrative_center', '행정복지센터 방문하기', '방문하기'],
+]
+
+function getChecklistLabel(item) {
+  if (typeof item === 'string') return item
+  if (typeof item === 'number') return String(item)
+  if (!item || typeof item !== 'object') return ''
+  return item.label || item.title || item.name || item.text || item.content || item.description || item.requirement || item.document || item.item || ''
+}
+
+function getChecklistArray(value) {
+  if (!value) return []
+  if (Array.isArray(value)) return value
+  if (typeof value === 'string') {
+    return value.split(/\r?\n|,/).map(text => text.replace(/^[-•\d.)\s]+/, '').trim()).filter(Boolean)
+  }
+  if (typeof value === 'object') {
+    if (Array.isArray(value.items)) return value.items
+    if (Array.isArray(value.results)) return value.results
+    if (Array.isArray(value.checklist)) return value.checklist
+  }
+  return []
+}
+
+function normalizeChecklistItem(item, fallbackId, index) {
+  const id = item && typeof item === 'object' ? (item.id ?? item.checklist_id ?? item.item_id) : null
+  return {
+    id: id ?? `${fallbackId}-${index}`,
+    order: item && typeof item === 'object' ? (item.order ?? item.sort_order ?? index) : index,
+    label: getChecklistLabel(item),
+    persistable: id !== null && id !== undefined,
+  }
+}
+
 function normalizeChecklistItems(data) {
-  const raw = Array.isArray(data) ? data : (data?.checklist || data?.data || [])
+  const payload = data?.checklist && !Array.isArray(data.checklist) ? data.checklist : data
+  const source = payload?.data && typeof payload.data === 'object' && !Array.isArray(payload.data) ? payload.data : payload
+  const bucketed = checklistBucketFields.flatMap((fields, bucketIndex) => {
+    const value = fields.map(field => source?.[field]).find(item => item !== undefined && item !== null)
+    return getChecklistArray(value).map((item, index) => normalizeChecklistItem(item, `home-${bucketIndex}`, index))
+  })
+  if (bucketed.length > 0) return bucketed.filter(item => item.label).sort((a, b) => a.order - b.order)
+
+  const raw = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.checklist)
+      ? data.checklist
+      : Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data?.items)
+          ? data.items
+          : []
   if (!Array.isArray(raw)) return []
   return raw
-    .map(item => ({
-      id: item.id,
-      order: item.order ?? 0,
-      label: item.label,
-      persistable: item.id !== null && item.id !== undefined,
-    }))
-    .filter(item => item.id !== null && item.id !== undefined && item.label)
+    .map((item, index) => normalizeChecklistItem(item, 'home-flat', index))
+    .filter(item => item.label)
     .sort((a, b) => a.order - b.order)
 }
 
