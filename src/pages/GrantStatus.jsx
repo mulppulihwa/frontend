@@ -162,8 +162,9 @@ function Toast({ visible }) {
   )
 }
 
-function NotificationSetModal({ visible, onClose }) {
+function NotificationSetModal({ visible, mode, onClose }) {
   if (!visible) return null
+  const isUnset = mode === 'unset'
   return (
     <div
       role="dialog"
@@ -196,10 +197,10 @@ function NotificationSetModal({ visible, onClose }) {
       >
         <img src={farmer} alt="" style={{ width: 70, height: 54, objectFit: 'cover', objectPosition: 'top center', marginBottom: 22 }} />
         <p style={{ fontSize: 20, fontWeight: 800, color: '#ff5538', lineHeight: 1.25, letterSpacing: '-0.4px' }}>
-          알림 설정 완료
+          {isUnset ? '알림 해지 완료' : '알림 설정 완료'}
         </p>
         <p style={{ marginTop: 24, fontSize: 17, fontWeight: 500, color: '#000', lineHeight: 1.42, letterSpacing: '-0.3px', wordBreak: 'keep-all' }}>
-          신청 마감일을 잊지 않도록 맞춤 알림을 보내드릴게요!
+          {isUnset ? '이제 이 정책의 마감 알림을 보내드리지 않을게요.' : '신청 마감일을 잊지 않도록 맞춤 알림을 보내드릴게요!'}
         </p>
         <button
           type="button"
@@ -234,6 +235,7 @@ export default function GrantStatus() {
   const [grantsData, setGrantsData] = useState([])
   const [toastVisible, setToastVisible] = useState(false)
   const [notificationModalVisible, setNotificationModalVisible] = useState(false)
+  const [notificationModalMode, setNotificationModalMode] = useState('set')
   const [notificationStatus, setNotificationStatus] = useState(() => readNotificationStatus())
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('마감순')
@@ -300,9 +302,16 @@ export default function GrantStatus() {
   }
 
   const handleNotificationClick = (grantId) => {
-    const next = { ...notificationStatus, [grantId]: true }
+    const currentlyNotified = !!notificationStatus[grantId]
+    const next = { ...notificationStatus }
+    if (currentlyNotified) {
+      delete next[grantId]
+    } else {
+      next[grantId] = true
+    }
     setNotificationStatus(next)
     localStorage.setItem(NOTIFICATION_STATUS_KEY, JSON.stringify(next))
+    setNotificationModalMode(currentlyNotified ? 'unset' : 'set')
     setNotificationModalVisible(true)
   }
 
@@ -488,7 +497,7 @@ export default function GrantStatus() {
       </div>
 
       <Toast visible={toastVisible} />
-      <NotificationSetModal visible={notificationModalVisible} onClose={() => setNotificationModalVisible(false)} />
+      <NotificationSetModal visible={notificationModalVisible} mode={notificationModalMode} onClose={() => setNotificationModalVisible(false)} />
     </div>
   )
 }
