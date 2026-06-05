@@ -87,7 +87,7 @@ export default function Login() {
             <img src={okcheonTypo} alt="옥천" style={{ height: 66, width: 'auto' }} />
             <img src={okTypo} alt="OK" className="logo-spin-login" style={{ height: 66, width: 'auto' }} />
           </div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: '#111', lineHeight: 1.35, margin: 0, textAlign: 'center' }}>
+          <p style={{ fontSize: 15, fontWeight: 500, color: '#111', lineHeight: 1.35, margin: 0, textAlign: 'center' }}>
             숨은 귀농 혜택, 옥천옥이 알아서 챙겨드릴게요!
           </p>
         </div>
