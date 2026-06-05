@@ -1,4 +1,4 @@
-import farmer from '../assets/farmer.png'
+import okcheonCharacter from '../assets/okcheon-character.png'
 
 export default function PolicyUpdateModal({ visible, onClose, navigate }) {
   if (!visible) return null
@@ -32,7 +32,7 @@ export default function PolicyUpdateModal({ visible, onClose, navigate }) {
           animation: 'modalPop 0.2s ease',
         }}
       >
-        <img src={farmer} alt="" style={{ width: 82, height: 58, objectFit: 'cover', objectPosition: 'top center', marginBottom: 24 }} />
+        <img src={okcheonCharacter} alt="" style={{ width: 82, height: 82, objectFit: 'contain', objectPosition: 'center', marginBottom: 20 }} />
         <p style={{ fontSize: 20, fontWeight: 800, color: '#000', lineHeight: 1.32, letterSpacing: '-0.4px', wordBreak: 'keep-all' }}>
           새해 맞이 2027년 옥천 귀농 정책이 업데이트되었어요!
         </p>

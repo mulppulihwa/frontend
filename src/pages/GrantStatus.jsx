@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowUpDown, Bell, BellRing, Check, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StatusCheckboxes from '../components/StatusCheckboxes'
-import farmer from '../assets/farmer.png'
+import okcheonCharacter from '../assets/okcheon-character.png'
 import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
@@ -195,7 +195,7 @@ function NotificationSetModal({ visible, mode, onClose }) {
           animation: 'modalPop 0.2s ease',
         }}
       >
-        <img src={farmer} alt="" style={{ width: 70, height: 54, objectFit: 'cover', objectPosition: 'top center', marginBottom: 22 }} />
+        <img src={okcheonCharacter} alt="" style={{ width: 70, height: 70, objectFit: 'contain', objectPosition: 'center', marginBottom: 18 }} />
         <p style={{ fontSize: 20, fontWeight: 800, color: '#ff5538', lineHeight: 1.25, letterSpacing: '-0.4px' }}>
           {isUnset ? '알림 해지 완료' : '알림 설정 완료'}
         </p>
