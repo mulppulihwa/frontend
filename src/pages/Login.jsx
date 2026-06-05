@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
+import farmer from '../assets/farmer.png'
 import okcheonTypo from '../assets/okcheon_typo.png'
 import okTypo from '../assets/ok_typo.png'
-import PolicyFolder from '../components/PolicyFolder'
 import { completeKakaoLogin, consumeLoginRedirect, startKakaoLogin } from '../lib/auth'
 
 export default function Login() {
@@ -54,47 +54,69 @@ export default function Login() {
       flexDirection: 'column',
       minHeight: '100vh',
       background: '#FDFCF8',
-      padding: '74px 24px 44px',
+      padding: '38px 24px 30px',
+      boxSizing: 'border-box',
+      overflowX: 'hidden',
     }}>
+      <style>{`
+        @keyframes spinRock {
+          0%   { transform: rotate(0deg); }
+          28%  { transform: rotate(90deg); }
+          58%  { transform: rotate(90deg); }
+          78%  { transform: rotate(0deg); }
+          100% { transform: rotate(0deg); }
+        }
+
+        .logo-spin-login {
+          animation: spinRock 2.8s ease-in-out infinite;
+          transform-origin: center center;
+        }
+      `}</style>
+
       <div style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        gap: 44,
-        paddingBottom: 30,
+        justifyContent: 'flex-start',
+        gap: 24,
+        paddingBottom: 18,
       }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <style>{`
-            @keyframes spinRock {
-              0%   { transform: rotate(0deg); }
-              28%  { transform: rotate(90deg); }
-              58%  { transform: rotate(90deg); }
-              78%  { transform: rotate(0deg); }
-              100% { transform: rotate(0deg); }
-            }
-            .logo-spin-login { animation: spinRock 2.8s ease-in-out infinite; transform-origin: center center; }
-          `}</style>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-            <img src={okcheonTypo} alt="옥천" style={{ height: 64, width: 'auto' }} />
-            <img src={okTypo} alt="OK" className="logo-spin-login" style={{ height: 64, width: 'auto' }} />
+            <img src={okcheonTypo} alt="옥천" style={{ height: 66, width: 'auto' }} />
+            <img src={okTypo} alt="OK" className="logo-spin-login" style={{ height: 66, width: 'auto' }} />
           </div>
+          <p style={{ fontSize: 15, fontWeight: 800, color: '#111', lineHeight: 1.35, margin: 0, textAlign: 'center' }}>
+            숨은 귀농 혜택, 옥천옥이 알아서 챙겨드릴게요!
+          </p>
         </div>
 
-        <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 210 }}>
-          <PolicyFolder size={2.2} />
+        <div style={{ position: 'relative', width: '100%', maxWidth: 390, height: 'clamp(300px, 50vh, 430px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+          <img
+            src={farmer}
+            alt=""
+            style={{
+              position: 'relative',
+              zIndex: 4,
+              width: 'min(100%, 330px)',
+              height: 'auto',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 10px 16px rgba(30, 50, 25, 0.10))',
+            }}
+          />
         </div>
 
-        <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.2px', lineHeight: 1.5, marginTop: -24, textAlign: 'center' }}>
-        숨은 귀농 혜택, 옥천옥이 알아서 챙겨드릴게요! <br />
-        내게 꼭 맞는 정책 진단부터 <br />
-        복잡한 지원금 신청 준비, 알뜰한 사용처 안내까지<br />
-        옥천옥이 든든하게 책임집니다<br />
-        </p>
+        <div style={{ width: '100%', maxWidth: 350, border: '1.5px solid #076818', borderRadius: 16, padding: '12px 14px', textAlign: 'center', background: '#FDFCF8' }}>
+          <p style={{ fontSize: 15, fontWeight: 600, color: '#1a1a1a', lineHeight: 1.55, margin: 0 }}>
+            내게 꼭 맞는 정책 진단부터<br />
+            복잡한 지원금 신청 준비, 알뜰한 사용처 안내까지<br />
+            <span style={{ color: '#076818', fontWeight: 800 }}>옥천옥</span>이 든든하게 책임집니다!
+          </p>
+        </div>
       </div>
 
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginBottom: 64 }}>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
         {error && (
           <p role="alert" style={{ fontSize: 13, color: '#d93025', lineHeight: 1.5, textAlign: 'center', marginBottom: 2 }}>
             {error}
@@ -105,9 +127,10 @@ export default function Login() {
           disabled={isLoggingIn}
           style={{
             width: '100%',
+            maxWidth: 350,
             minHeight: 58,
             padding: '16px 20px',
-            borderRadius: 18,
+            borderRadius: 999,
             border: 'none',
             background: '#FEE500',
             color: '#1a1a1a',
