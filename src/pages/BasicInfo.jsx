@@ -53,6 +53,91 @@ function formatLastDiagnosis() {
   return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')} (${ago})`
 }
 
+function ConfirmModal({ action, deleting, onCancel, onConfirm }) {
+  if (!action) return null
+  const isDelete = action === 'delete'
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      onClick={onCancel}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 300,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 28,
+        background: 'rgba(0,0,0,0.32)',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: '100%',
+          maxWidth: 318,
+          borderRadius: 24,
+          border: '1.5px solid #dbead5',
+          background: '#FFFFFF',
+          padding: '28px 22px 20px',
+          boxSizing: 'border-box',
+          textAlign: 'center',
+        }}
+      >
+        <p style={{ fontSize: 19, fontWeight: 800, color: '#1f2433', lineHeight: 1.35, letterSpacing: '-0.3px' }}>
+          {isDelete ? '회원 탈퇴하시겠어요?' : '로그아웃하시겠어요?'}
+        </p>
+        <p style={{ marginTop: 10, fontSize: 13, fontWeight: 500, color: '#777', lineHeight: 1.45, wordBreak: 'keep-all' }}>
+          {isDelete ? '계정 정보가 삭제되며 되돌릴 수 없어요.' : '다시 이용하려면 카카오 로그인이 필요해요.'}
+        </p>
+        <div style={{ display: 'flex', gap: 8, marginTop: 24 }}>
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={deleting}
+            style={{
+              flex: 1,
+              minHeight: 46,
+              borderRadius: 999,
+              border: '1.5px solid #e8e8e8',
+              background: '#FFFFFF',
+              color: '#555',
+              fontSize: 14,
+              fontWeight: 800,
+              fontFamily: 'inherit',
+              cursor: deleting ? 'default' : 'pointer',
+              opacity: deleting ? 0.5 : 1,
+            }}
+          >
+            취소
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={deleting}
+            style={{
+              flex: 1,
+              minHeight: 46,
+              borderRadius: 999,
+              border: 'none',
+              background: isDelete ? '#d93025' : '#076818',
+              color: '#FFFFFF',
+              fontSize: 14,
+              fontWeight: 800,
+              fontFamily: 'inherit',
+              cursor: deleting ? 'default' : 'pointer',
+              opacity: deleting ? 0.62 : 1,
+            }}
+          >
+            {deleting ? '처리 중...' : '확인'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function BasicInfo() {
   const navigate = useNavigate()
   const [name, setName] = useState('')
@@ -62,6 +147,7 @@ export default function BasicInfo() {
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
+  const [confirmAction, setConfirmAction] = useState(null)
   const lastDiagnosis = formatLastDiagnosis()
 
   useEffect(() => {
@@ -89,9 +175,6 @@ export default function BasicInfo() {
 
   const handleDeleteAccount = async () => {
     if (deleting) return
-    const confirmed = window.confirm('회원 탈퇴하시겠어요? 계정 정보가 삭제되며 되돌릴 수 없어요.')
-    if (!confirmed) return
-
     setDeleting(true)
     setError('')
     try {
@@ -102,6 +185,17 @@ export default function BasicInfo() {
       setError(err.message || '회원 탈퇴에 실패했습니다.')
     } finally {
       setDeleting(false)
+      setConfirmAction(null)
+    }
+  }
+
+  const handleConfirmAction = () => {
+    if (confirmAction === 'logout') {
+      handleLogout()
+      return
+    }
+    if (confirmAction === 'delete') {
+      handleDeleteAccount()
     }
   }
 
@@ -168,7 +262,7 @@ export default function BasicInfo() {
 
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={() => setConfirmAction('logout')}
               style={{
                 width: '100%',
                 minHeight: 50,
@@ -187,7 +281,7 @@ export default function BasicInfo() {
 
             <button
               type="button"
-              onClick={handleDeleteAccount}
+              onClick={() => setConfirmAction('delete')}
               disabled={deleting}
               style={{
                 width: '100%',
@@ -209,6 +303,14 @@ export default function BasicInfo() {
         )}
       </div>
 
+      <ConfirmModal
+        action={confirmAction}
+        deleting={deleting}
+        onCancel={() => {
+          if (!deleting) setConfirmAction(null)
+        }}
+        onConfirm={handleConfirmAction}
+      />
     </div>
   )
 }
