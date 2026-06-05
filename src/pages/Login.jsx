@@ -61,8 +61,8 @@ export default function Login() {
       <style>{`
         @keyframes spinRock {
           0%   { transform: rotate(0deg); }
-          28%  { transform: rotate(90deg); }
-          58%  { transform: rotate(90deg); }
+          28%  { transform: rotate(-90deg); }
+          58%  { transform: rotate(-90deg); }
           78%  { transform: rotate(0deg); }
           100% { transform: rotate(0deg); }
         }
