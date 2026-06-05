@@ -6,11 +6,11 @@ import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItem
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
 function getDday(deadlineStr) {
-  if (!deadlineStr) return 'D-0'
+  if (!deadlineStr) return '-'
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const deadline = new Date(deadlineStr)
-  if (Number.isNaN(deadline.getTime())) return 'D-0'
+  if (Number.isNaN(deadline.getTime())) return '-'
   const diff = Math.ceil((deadline - today) / 86400000)
   if (diff === 0) return 'D-DAY'
   return diff > 0 ? `D-${diff}` : `D+${Math.abs(diff)}`

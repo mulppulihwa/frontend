@@ -24,7 +24,7 @@ export default function PolicyUpdateModal({ visible, onClose, navigate }) {
           width: '100%',
           maxWidth: 330,
           borderRadius: 30,
-          border: '2px solid #076818',
+          border: '1.5px solid #dbead5',
           background: '#FFFFFF',
           padding: '28px 24px 26px',
           textAlign: 'center',

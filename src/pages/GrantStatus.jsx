@@ -186,7 +186,7 @@ function NotificationSetModal({ visible, onClose }) {
           width: '100%',
           maxWidth: 286,
           borderRadius: 26,
-          border: '2px solid #ff5538',
+          border: '1.5px solid #dbead5',
           background: '#FFFFFF',
           padding: '24px 22px 22px',
           textAlign: 'center',

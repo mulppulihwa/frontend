@@ -79,6 +79,11 @@ const radioRows = [
   { label: '아니요', value: false },
 ]
 
+const outsideIncomeOptions = [
+  { value: '3700', label: '3700만원 이상' },
+  { value: '3699', label: '3700만원 미만' },
+]
+
 function Header() {
   return (
     <div style={{ padding: '10px 18px 8px' }}>
@@ -252,6 +257,14 @@ function normalizeApiGender(value) {
   return value || ''
 }
 
+function normalizeOutsideIncome(value) {
+  if (value === '' || value === null || value === undefined) return ''
+  const numeric = Number(value)
+  if (!Number.isFinite(numeric)) return ''
+  if (numeric > 10000) return numeric >= 37000000 ? '3700' : '3699'
+  return numeric >= 3700 ? '3700' : '3699'
+}
+
 function normalizeProfileResponse(profile) {
   const profileData = profile?.profile || profile?.user_profile || profile?.userProfile || profile || {}
   return {
@@ -308,7 +321,7 @@ export default function Step1() {
     setJob(saved.job ?? job)
     setFarmBusiness(saved.farmBusiness ?? farmBusiness)
     setFarmingEducation(saved.farmingEducation ?? farmingEducation)
-    setOutsideIncome(saved.outsideIncome ?? outsideIncome)
+    setOutsideIncome(saved.outsideIncome !== undefined ? normalizeOutsideIncome(saved.outsideIncome) : outsideIncome)
     setRegion(saved.region ?? region)
   }
 
@@ -320,7 +333,7 @@ export default function Step1() {
     if (normalized.movedAt) setMovedAt(normalized.movedAt)
     if (normalized.farmBusiness !== '') setFarmBusiness(Boolean(normalized.farmBusiness))
     if (normalized.farmingEducation !== null) setFarmingEducation(normalized.farmingEducation)
-    if (normalized.outsideIncome !== '') setOutsideIncome(String(Number(normalized.outsideIncome) * 10000))
+    if (normalized.outsideIncome !== '') setOutsideIncome(normalizeOutsideIncome(normalized.outsideIncome))
 
     const regionName = regions.find(({ code }) => String(code) === String(normalized.regionCode))?.name
     if (regionName) {
@@ -410,7 +423,7 @@ export default function Step1() {
 
   const buildProfilePayload = () => {
     const parsedIncome = outsideIncome === '' ? null : Number(outsideIncome)
-    const incomeInManwon = Number.isFinite(parsedIncome) ? Math.round(parsedIncome / 10000) : null
+    const incomeInManwon = Number.isFinite(parsedIncome) ? parsedIncome : null
     const regionName = location === '옥천' ? '옥천군' : region
     const occupationTags = [
       farming ? '귀농' : '귀촌',
@@ -625,7 +638,13 @@ export default function Step1() {
                 { label: '예', value: true },
                 { label: '아니요', value: false },
               ]} />
-              <TextField label="농업 외 소득이 있으신가요? (월 단위)" value={outsideIncome} onChange={setOutsideIncome} type="number" placeholder="약 --- 원" min={0} suffix="원" />
+              <SelectField
+                label="농업 외 소득이 있으신가요? (연 단위)"
+                value={outsideIncome}
+                onChange={setOutsideIncome}
+                options={outsideIncomeOptions}
+                placeholder="농업 외 소득 선택"
+              />
             </div>
           )}
 
