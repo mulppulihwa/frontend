@@ -284,15 +284,13 @@ export default function StoreMap() {
           onTouchMove={onDragMove}
           onTouchEnd={onDragEnd}
         >
-          {/* Drag handle */}
+          {/* Drag handle (grab area, no visible bar) */}
           <div
             onMouseDown={onDragStart}
             onTouchStart={onDragStart}
             onClick={cycleSheet}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '12px 0 8px', cursor: 'grab', flexShrink: 0, userSelect: 'none' }}
-          >
-            <div style={{ width: 32, height: 4, borderRadius: 2, background: '#ddd' }} />
-          </div>
+            style={{ padding: '8px 0 4px', cursor: 'grab', flexShrink: 0, userSelect: 'none' }}
+          />
 
 
           {/* Store count + expand toggle */}
