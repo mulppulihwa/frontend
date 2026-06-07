@@ -131,7 +131,7 @@ export default function StoreMap() {
     if (!map || !categoryId) return
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
-    const color = getPlaceCategoryMeta(categoryId, categories.findIndex(cat => cat.id === categoryId)).color
+    const color = getPlaceCategoryMeta(categoryId).color
     stores.filter(place => place.category === categoryId).forEach(store => {
       const position = new window.kakao.maps.LatLng(store.lat, store.lng)
       const svg = `<svg width="36" height="44" viewBox="0 0 36 44" xmlns="http://www.w3.org/2000/svg">
@@ -239,7 +239,7 @@ export default function StoreMap() {
               </p>
             </div>
           )}
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, overflowX: 'auto' }}>
           {categories.map(cat => {
             const Icon = cat.icon
             const isActive = activeCategory === cat.id
@@ -248,7 +248,7 @@ export default function StoreMap() {
                 key={cat.id}
                 onClick={() => handleCategoryChange(cat.id)}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 7,
+                  display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0,
                   padding: '9px 16px', borderRadius: 24,
                   border: `1.5px solid ${isActive ? cat.color : '#e8e8e8'}`,
                   background: '#fff',
@@ -258,7 +258,7 @@ export default function StoreMap() {
                 }}
               >
                 <Icon size={16} color={cat.color} strokeWidth={2.2} />
-                <span style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? cat.color : '#555', letterSpacing: '-0.1px' }}>
+                <span style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: isActive ? cat.color : '#555', letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}>
                   {cat.label}
                 </span>
               </button>

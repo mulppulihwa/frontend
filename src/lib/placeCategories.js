@@ -27,18 +27,25 @@ function getIcon(category = '') {
   return Store
 }
 
-export function getPlaceCategoryMeta(category, index = 0) {
-  const safeIndex = Math.max(0, index)
-  const tone = palette[safeIndex % palette.length]
+function paletteToneFor(category) {
+  let hash = 0
+  for (let i = 0; i < category.length; i++) {
+    hash = (hash * 31 + category.charCodeAt(i)) >>> 0
+  }
+  return palette[hash % palette.length]
+}
+
+export function getPlaceCategoryMeta(category) {
+  const label = category || '기타'
   return {
     id: category,
-    label: category || '기타',
+    label,
     icon: getIcon(category),
-    ...tone,
+    ...paletteToneFor(label),
   }
 }
 
 export function getPlaceCategories(places) {
   return Array.from(new Set(places.map(place => place.category).filter(Boolean)))
-    .map((category, index) => getPlaceCategoryMeta(category, index))
+    .map(category => getPlaceCategoryMeta(category))
 }
