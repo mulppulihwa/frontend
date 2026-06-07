@@ -1,4 +1,7 @@
-import { Building2, Landmark, Store, Tractor, Wallet } from 'lucide-react'
+import {
+  Armchair, Building2, Hammer, Landmark, Pill, Shirt,
+  ShoppingBasket, Smartphone, Store, Tractor, UtensilsCrossed, Wallet,
+} from 'lucide-react'
 
 const palette = [
   { color: '#076818', bg: '#e8f3e8' },
@@ -14,6 +17,13 @@ function getIcon(category = '') {
   if (category.includes('지원금') || category.includes('화폐')) return Wallet
   if (category.includes('농협')) return Landmark
   if (category.includes('행정')) return Building2
+  if (category.includes('음식점')) return UtensilsCrossed
+  if (category.includes('약국')) return Pill
+  if (category.includes('건축')) return Hammer
+  if (category.includes('의류')) return Shirt
+  if (category.includes('식품')) return ShoppingBasket
+  if (category.includes('전자')) return Smartphone
+  if (category.includes('가구')) return Armchair
   return Store
 }
 
