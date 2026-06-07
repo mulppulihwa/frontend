@@ -33,6 +33,10 @@ export default function StoreSearch() {
     ? stores.filter(s => s.name.includes(query) || s.address.includes(query))
     : []
   const categories = getPlaceCategories(stores)
+  const categoryCounts = stores.reduce((acc, s) => {
+    if (s.category) acc[s.category] = (acc[s.category] || 0) + 1
+    return acc
+  }, {})
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#FDFCF8' }}>
@@ -61,6 +65,34 @@ export default function StoreSearch() {
           )}
         </div>
       </div>
+
+      {/* Registered place categories */}
+      {categories.length > 0 && (
+        <div style={{ display: 'flex', gap: 8, padding: '0 16px 12px', overflowX: 'auto', flexShrink: 0 }}>
+          {categories.map(cat => {
+            const Icon = cat.icon
+            return (
+              <div
+                key={cat.id}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0,
+                  padding: '8px 14px', borderRadius: 24,
+                  background: cat.bg,
+                  fontFamily: 'inherit',
+                }}
+              >
+                <Icon size={15} color={cat.color} strokeWidth={2.2} />
+                <span style={{ fontSize: 13, fontWeight: 700, color: cat.color, letterSpacing: '-0.1px' }}>
+                  {cat.label}
+                </span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: cat.color, opacity: 0.65 }}>
+                  {categoryCounts[cat.id] || 0}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       {/* Results */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '8px 16px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
