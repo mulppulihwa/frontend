@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { MapPin } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import SelectField from '../components/SelectField'
@@ -8,6 +9,35 @@ import SearchAnimation from '../components/SearchAnimation'
 import { fetchProfile, fetchRegions, updateProfile } from '../lib/api'
 
 const fieldGap = 12
+
+const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
+
+// 법정읍면동명(bname1)이 "읍" 또는 "면"으로 끝나면 읍면 지역, 그 외(동/빈 문자열)는 동 지역으로 분류
+function classifyResidenceType(bname1) {
+  return /(읍|면)$/.test(bname1 || '') ? '읍면' : '동'
+}
+
+function loadPostcodeScript() {
+  if (window.kakao?.Postcode) return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script')
+    script.src = POSTCODE_SCRIPT_SRC
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error('주소 검색 스크립트를 불러오지 못했습니다.'))
+    document.head.appendChild(script)
+  })
+}
+
+function positionPostcodeLayer(layer) {
+  const width = 300
+  const height = 400
+  const borderWidth = 5
+  layer.style.width = `${width}px`
+  layer.style.height = `${height}px`
+  layer.style.border = `${borderWidth}px solid #076818`
+  layer.style.left = `${((window.innerWidth || document.documentElement.clientWidth) - width) / 2 - borderWidth}px`
+  layer.style.top = `${((window.innerHeight || document.documentElement.clientHeight) - height) / 2 - borderWidth}px`
+}
 
 
 function DateSelectField({ label, value, onChange }) {
@@ -147,6 +177,103 @@ function TextField({ label, value, onChange, placeholder, type = 'text', min, ma
   )
 }
 
+function AddressSearchField({ label, value, onSelect, placeholder = '주소 검색하기' }) {
+  const layerRef = useRef(null)
+  const [focused, setFocused] = useState(false)
+  const [scriptError, setScriptError] = useState('')
+
+  useEffect(() => {
+    loadPostcodeScript().catch(err => setScriptError(err.message))
+  }, [])
+
+  const closeLayer = () => {
+    if (layerRef.current) layerRef.current.style.display = 'none'
+  }
+
+  const openPostcode = () => {
+    const layer = layerRef.current
+    if (!layer || !window.kakao?.Postcode) return
+
+    new window.kakao.Postcode({
+      oncomplete(data) {
+        const address = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress
+        onSelect({ address, residenceType: classifyResidenceType(data.bname1) })
+        closeLayer()
+      },
+      width: '100%',
+      height: '100%',
+      maxSuggestItems: 5,
+    }).embed(layer)
+
+    layer.style.display = 'block'
+    positionPostcodeLayer(layer)
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <label style={labelStyle}>{label}</label>
+      <button
+        type="button"
+        onClick={openPostcode}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          width: '100%',
+          minHeight: 46,
+          padding: '9px 12px',
+          border: `1.5px solid ${focused ? '#076818' : '#e8e8e8'}`,
+          borderRadius: 12,
+          fontSize: 15,
+          color: '#1a1a1a',
+          background: '#fff',
+          fontFamily: 'inherit',
+          fontWeight: 400,
+          outline: 'none',
+          letterSpacing: '-0.2px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
+          textAlign: 'left',
+          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+          boxSizing: 'border-box',
+          boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
+        }}
+      >
+        <span style={{ color: value ? '#1a1a1a' : '#aaa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {value || placeholder}
+        </span>
+        <MapPin size={18} color="#076818" strokeWidth={2.5} style={{ flexShrink: 0 }} />
+      </button>
+      {scriptError && (
+        <p style={{ fontSize: 12, fontWeight: 600, color: '#d93025', margin: 0 }}>{scriptError}</p>
+      )}
+
+      {/* iOS에서는 position:fixed 버그가 있음, 적용하는 사이트에 맞게 position:absolute 등을 이용하여 top,left값 조정 필요 */}
+      <div
+        ref={layerRef}
+        style={{
+          display: 'none',
+          position: 'fixed',
+          overflow: 'hidden',
+          zIndex: 500,
+          WebkitOverflowScrolling: 'touch',
+          background: '#fff',
+          borderRadius: 8,
+        }}
+      >
+        <img
+          src="//t1.kakaocdn.net/postcode/resource/images/close.png"
+          onClick={closeLayer}
+          alt="닫기 버튼"
+          style={{ cursor: 'pointer', position: 'absolute', right: -3, top: -3, zIndex: 1 }}
+        />
+      </div>
+    </div>
+  )
+}
+
 function RadioGroup({ label, value, onChange, options = radioRows }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -280,6 +407,7 @@ function normalizeProfileResponse(profile) {
     farmingEducation: Number(firstValue(profileData, ['education_hours', 'educationHours']) || 0) >= 100,
     outsideIncome: firstValue(profileData, ['non_farm_income', 'outsideIncome']),
     regionCode: firstValue(profileData, ['region_code', 'regionCode']),
+    previousResidenceType: firstValue(profileData, ['prev_residence_type', 'previousResidenceType']),
   }
 }
 
@@ -295,6 +423,7 @@ export default function Step1() {
   const [location, setLocation] = useState('')
   const [movedAt, setMovedAt] = useState('')
   const [previousResidence, setPreviousResidence] = useState('')
+  const [previousResidenceType, setPreviousResidenceType] = useState('')
   const [previousSince, setPreviousSince] = useState('')
   const [job, setJob] = useState('')
   const [farmBusiness, setFarmBusiness] = useState(null)
@@ -317,6 +446,7 @@ export default function Step1() {
     setLocation(saved.location ?? location)
     setMovedAt(saved.movedAt ?? movedAt)
     setPreviousResidence(saved.previousResidence ?? previousResidence)
+    setPreviousResidenceType(saved.previousResidenceType ?? previousResidenceType)
     setPreviousSince(saved.previousSince ?? previousSince)
     setJob(saved.job ?? job)
     setFarmBusiness(saved.farmBusiness ?? farmBusiness)
@@ -334,6 +464,7 @@ export default function Step1() {
     if (normalized.farmBusiness !== '') setFarmBusiness(Boolean(normalized.farmBusiness))
     if (normalized.farmingEducation !== null) setFarmingEducation(normalized.farmingEducation)
     if (normalized.outsideIncome !== '') setOutsideIncome(normalizeOutsideIncome(normalized.outsideIncome))
+    if (normalized.previousResidenceType) setPreviousResidenceType(normalized.previousResidenceType)
 
     const regionName = regions.find(({ code }) => String(code) === String(normalized.regionCode))?.name
     if (regionName) {
@@ -395,7 +526,7 @@ export default function Step1() {
   const saveProgress = (currentPage) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       page: currentPage, birthDate, age, gender, nationality, farming,
-      farmingDate, location, movedAt, previousResidence, previousSince,
+      farmingDate, location, movedAt, previousResidence, previousResidenceType, previousSince,
       job, farmBusiness, farmingEducation, outsideIncome, region,
     }))
   }
@@ -444,6 +575,7 @@ export default function Step1() {
       farm_registered_date: farmBusiness ? movedAt : null,
       education_hours: farmingEducation ? 100 : 0,
       is_disabled: false,
+      prev_residence_type: previousResidenceType || '',
     }
   }
 
@@ -458,6 +590,7 @@ export default function Step1() {
       is_farm_registered: payload.is_farm_registered,
       education_hours: payload.education_hours,
       move_in_date: payload.move_in_date,
+      prev_residence_type: payload.prev_residence_type,
     }
     const minimalPayload = {
       birth_date: payload.birth_date,
@@ -465,6 +598,7 @@ export default function Step1() {
       region_code: payload.region_code,
       occupation_tags: payload.occupation_tags,
       income_level: payload.income_level,
+      prev_residence_type: payload.prev_residence_type,
     }
     const payloads = [payload, fallbackPayload, minimalPayload]
     let lastError = null
@@ -495,6 +629,7 @@ export default function Step1() {
         return hasValue(location)
           && isCompleteDate(movedAt)
           && hasValue(previousResidence)
+          && hasValue(previousResidenceType)
           && isCompleteDate(previousSince)
           && dateOrderOk
       }
@@ -531,7 +666,7 @@ export default function Step1() {
         localStorage.removeItem(STORAGE_KEY)
         localStorage.setItem(SUBMITTED_PROFILE_KEY, JSON.stringify({
           birthDate, age, gender, nationality, farming,
-          farmingDate, location, movedAt, previousResidence, previousSince,
+          farmingDate, location, movedAt, previousResidence, previousResidenceType, previousSince,
           job, farmBusiness, farmingEducation, outsideIncome, region,
         }))
         navigate('/loading')
@@ -597,12 +732,13 @@ export default function Step1() {
                   { value: '옥천 외', label: '옥천 외' },
                 ]} placeholder="지역 선택" />
                 <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} />
-                <SelectField
+                <AddressSearchField
                   label="이전 거주지는 어디인가요?"
                   value={previousResidence}
-                  onChange={setPreviousResidence}
-                  options={regionOptions}
-                  placeholder={regionOptions[0]?.disabled ? regionOptions[0].label : '지역 선택'}
+                  onSelect={({ address, residenceType }) => {
+                    setPreviousResidence(address)
+                    setPreviousResidenceType(residenceType)
+                  }}
                 />
                 <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} />
                 {dateOrderError && (

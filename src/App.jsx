@@ -13,6 +13,7 @@ import Alarm from './pages/Alarm'
 import Checklist from './pages/Checklist'
 import StoreSearch from './pages/StoreSearch'
 import BasicInfo from './pages/BasicInfo'
+import AddressSearchTest from './pages/AddressSearchTest'
 import { getAccessToken } from './lib/api'
 
 function RequireAuth({ children }) {
@@ -36,6 +37,7 @@ function Layout() {
       <Route path="/checklist" element={<RequireAuth><Checklist /></RequireAuth>} />
       <Route path="/store-search" element={<RequireAuth><StoreSearch /></RequireAuth>} />
       <Route path="/basic-info" element={<RequireAuth><BasicInfo /></RequireAuth>} />
+      <Route path="/dev/address-search-test" element={<AddressSearchTest />} />
     </Routes>
   )
 }
