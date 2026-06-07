@@ -239,7 +239,7 @@ export default function StoreMap() {
               </p>
             </div>
           )}
-          <div style={{ display: 'flex', gap: 8, overflowX: 'auto' }}>
+          <div className="no-scrollbar" style={{ display: 'flex', gap: 8, overflowX: 'auto' }}>
           {categories.map(cat => {
             const Icon = cat.icon
             const isActive = activeCategory === cat.id

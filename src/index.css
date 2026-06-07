@@ -63,6 +63,14 @@ input:focus-visible {
   background: #d2cec5;
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 #root {
   width: 100%;
   max-width: 390px;

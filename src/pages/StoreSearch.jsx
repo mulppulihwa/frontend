@@ -68,7 +68,7 @@ export default function StoreSearch() {
 
       {/* Registered place categories */}
       {categories.length > 0 && (
-        <div style={{ display: 'flex', gap: 8, padding: '0 16px 12px', overflowX: 'auto', flexShrink: 0 }}>
+        <div className="no-scrollbar" style={{ display: 'flex', gap: 8, padding: '0 16px 12px', overflowX: 'auto', flexShrink: 0 }}>
           {categories.map(cat => {
             const Icon = cat.icon
             return (
