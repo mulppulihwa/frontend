@@ -257,7 +257,6 @@ export default function BasicInfo() {
               <ReadOnlyRow label="현재 직업" value={diagnosisInfo.job} />
               <ReadOnlyRow label="농사 여부" value={formatBoolean(diagnosisInfo.farming)} />
               <ReadOnlyRow label="농업경영체" value={formatBoolean(diagnosisInfo.farmBusiness)} />
-              <ReadOnlyRow label="귀농 교육 100시간" value={formatBoolean(diagnosisInfo.farmingEducation)} />
             </section>
 
             <button

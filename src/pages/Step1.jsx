@@ -404,7 +404,6 @@ function normalizeProfileResponse(profile) {
         : null,
     movedAt: firstValue(profileData, ['move_in_date', 'moved_at', 'movedAt']),
     farmBusiness: firstValue(profileData, ['is_farm_registered', 'farmBusiness']),
-    farmingEducation: Number(firstValue(profileData, ['education_hours', 'educationHours']) || 0) >= 100,
     outsideIncome: firstValue(profileData, ['non_farm_income', 'outsideIncome']),
     regionCode: firstValue(profileData, ['region_code', 'regionCode']),
     previousResidenceType: firstValue(profileData, ['prev_residence_type', 'previousResidenceType']),
@@ -427,7 +426,6 @@ export default function Step1() {
   const [previousSince, setPreviousSince] = useState('')
   const [job, setJob] = useState('')
   const [farmBusiness, setFarmBusiness] = useState(null)
-  const [farmingEducation, setFarmingEducation] = useState(null)
   const [outsideIncome, setOutsideIncome] = useState('')
   const [region, setRegion] = useState('')
   const [showResumeModal, setShowResumeModal] = useState(() => !!localStorage.getItem(STORAGE_KEY))
@@ -450,7 +448,6 @@ export default function Step1() {
     setPreviousSince(saved.previousSince ?? previousSince)
     setJob(saved.job ?? job)
     setFarmBusiness(saved.farmBusiness ?? farmBusiness)
-    setFarmingEducation(saved.farmingEducation ?? farmingEducation)
     setOutsideIncome(saved.outsideIncome !== undefined ? normalizeOutsideIncome(saved.outsideIncome) : outsideIncome)
     setRegion(saved.region ?? region)
   }
@@ -462,7 +459,6 @@ export default function Step1() {
     if (normalized.farming !== null) setFarming(normalized.farming)
     if (normalized.movedAt) setMovedAt(normalized.movedAt)
     if (normalized.farmBusiness !== '') setFarmBusiness(Boolean(normalized.farmBusiness))
-    if (normalized.farmingEducation !== null) setFarmingEducation(normalized.farmingEducation)
     if (normalized.outsideIncome !== '') setOutsideIncome(normalizeOutsideIncome(normalized.outsideIncome))
     if (normalized.previousResidenceType) setPreviousResidenceType(normalized.previousResidenceType)
 
@@ -527,7 +523,7 @@ export default function Step1() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       page: currentPage, birthDate, age, gender, nationality, farming,
       farmingDate, location, movedAt, previousResidence, previousResidenceType, previousSince,
-      job, farmBusiness, farmingEducation, outsideIncome, region,
+      job, farmBusiness, outsideIncome, region,
     }))
   }
 
@@ -573,7 +569,6 @@ export default function Step1() {
       marital_status: '미혼',
       is_farm_registered: farmBusiness,
       farm_registered_date: farmBusiness ? movedAt : null,
-      education_hours: farmingEducation ? 100 : 0,
       is_disabled: false,
       prev_residence_type: previousResidenceType || '',
     }
@@ -588,7 +583,6 @@ export default function Step1() {
       occupation_tags: payload.occupation_tags,
       income_level: payload.income_level,
       is_farm_registered: payload.is_farm_registered,
-      education_hours: payload.education_hours,
       move_in_date: payload.move_in_date,
       prev_residence_type: payload.prev_residence_type,
     }
@@ -638,21 +632,19 @@ export default function Step1() {
           && farming !== null
           && farmBusiness !== null
           && hasValue(outsideIncome)
-      case 4:
-        return farmingEducation !== null
       default:
         return false
     }
   }
 
-  const firstIncompletePage = [1, 2, 3, 4].find(pageNumber => !isPageComplete(pageNumber)) || null
+  const firstIncompletePage = [1, 2, 3].find(pageNumber => !isPageComplete(pageNumber)) || null
   const isCurrentPageComplete = isPageComplete(page)
   const isFormComplete = firstIncompletePage === null
 
   const goNext = async () => {
     if (!isCurrentPageComplete) return
 
-    if (page === 4) {
+    if (page === 3) {
       if (!isFormComplete) {
         setPage(firstIncompletePage)
         setSubmitError('')
@@ -667,7 +659,7 @@ export default function Step1() {
         localStorage.setItem(SUBMITTED_PROFILE_KEY, JSON.stringify({
           birthDate, age, gender, nationality, farming,
           farmingDate, location, movedAt, previousResidence, previousResidenceType, previousSince,
-          job, farmBusiness, farmingEducation, outsideIncome, region,
+          job, farmBusiness, outsideIncome, region,
         }))
         navigate('/loading')
       } catch (err) {
@@ -684,9 +676,9 @@ export default function Step1() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', minHeight: 0, overflow: 'hidden', background: '#FDFCF8' }}>
       <div style={{ background: '#FDFCF8' }}>
-        <TopBar title="정보 입력" onBack={goBack} onClose={page === 4 ? () => navigate('/home') : undefined} />
+        <TopBar title="정보 입력" onBack={goBack} onClose={page === 3 ? () => navigate('/home') : undefined} />
         <div style={{ padding: '8px 18px 10px' }}>
-          <StepIndicator current={page} total={4} />
+          <StepIndicator current={page} total={3} />
         </div>
       </div>
 
@@ -781,15 +773,6 @@ export default function Step1() {
                 options={outsideIncomeOptions}
                 placeholder="농업 외 소득 선택"
               />
-            </div>
-          )}
-
-          {page === 4 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-              <RadioGroup label="귀농 교육 100시간을 이수하셨나요?" value={farmingEducation} onChange={setFarmingEducation} options={[
-                { label: '예', value: true },
-                { label: '아니요', value: false },
-              ]} />
               {submitError && (
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025', lineHeight: 1.45 }}>
                   {submitError}
@@ -801,8 +784,8 @@ export default function Step1() {
       </div>
 
       <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '16px 28px 16px', background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
-        <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete || (page === 4 && !isFormComplete)} variant="pill">
-          {submitting ? '저장 중...' : page === 4 ? '내 지원금 찾기' : '다음'}
+        <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete || (page === 3 && !isFormComplete)} variant="pill">
+          {submitting ? '저장 중...' : page === 3 ? '내 지원금 찾기' : '다음'}
         </Button>
       </div>
 
