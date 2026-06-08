@@ -437,7 +437,11 @@ export default function Step1() {
   const [regionOptions, setRegionOptions] = useState(REGION_LOADING_OPTIONS)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
-  const [profileNotice, setProfileNotice] = useState(locationState?.profileIncompleteMessage || '')
+  const [profileNotice, setProfileNotice] = useState(
+    locationState?.profileIncompleteReason === 'match-profile-incomplete'
+      ? locationState?.profileIncompleteMessage || ''
+      : ''
+  )
 
   const applySavedForm = (saved) => {
     if (!saved) return

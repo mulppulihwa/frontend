@@ -45,7 +45,7 @@ export default function Login() {
         if (result.completed) {
           window.history.replaceState({}, '', window.location.pathname)
           const nextPath = await getPostLoginPath(result.payload)
-          navigate(nextPath, { replace: true })
+          navigate(nextPath, { replace: true, state: nextPath === '/step1' ? { firstDiagnosis: true } : undefined })
         }
       } catch (err) {
         if (active) setError(err.message)

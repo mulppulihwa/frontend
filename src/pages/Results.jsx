@@ -99,6 +99,7 @@ export default function Results() {
           navigate('/step1', {
             replace: true,
             state: {
+              profileIncompleteReason: 'match-profile-incomplete',
               profileIncompleteMessage: '프로필 저장이 완료되지 않았어요. 진단을 한 번만 다시 완료해 주세요.',
             },
           })
