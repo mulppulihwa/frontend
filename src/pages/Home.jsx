@@ -1,16 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, Check, ChevronRight, Clock3, User, X } from 'lucide-react'
-import PolicyUpdateModal from '../components/PolicyUpdateModal'
 import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
-
-const POLICY_UPDATE_MODAL_HIDE_DATE_KEY = 'policyUpdateModalHiddenDate'
-
-function getTodayKey() {
-  const now = new Date()
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-}
 
 function getDday(deadlineStr) {
   if (!deadlineStr) return '-'
@@ -440,7 +432,6 @@ export default function Home() {
   const navigate = useNavigate()
   const [policies, setPolicies] = useState([])
   const [selectedPolicyId, setSelectedPolicyId] = useState(null)
-  const [updateModalVisible, setUpdateModalVisible] = useState(() => localStorage.getItem(POLICY_UPDATE_MODAL_HIDE_DATE_KEY) !== getTodayKey())
   const [user, setUser] = useState({ name: '', region: '' })
   const [homeChecklistCompleted, setHomeChecklistCompleted] = useState(() => readHomeChecklistCompleted())
 
@@ -502,11 +493,6 @@ export default function Home() {
     else setSelectedPolicyId(null)
   }
 
-  const hideUpdateModalToday = () => {
-    localStorage.setItem(POLICY_UPDATE_MODAL_HIDE_DATE_KEY, getTodayKey())
-    setUpdateModalVisible(false)
-  }
-
   return (
     <div style={{ minHeight: '100vh', background: '#FDFCF8', overflowX: 'hidden' }}>
       <div style={{ padding: '26px 18px 116px', display: 'flex', flexDirection: 'column', gap: 28 }}>
@@ -519,7 +505,6 @@ export default function Home() {
           </section>
         )}
       </div>
-      <PolicyUpdateModal visible={updateModalVisible} onClose={() => setUpdateModalVisible(false)} onHideToday={hideUpdateModalToday} navigate={navigate} />
     </div>
   )
 }
