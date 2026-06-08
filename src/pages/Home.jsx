@@ -5,6 +5,8 @@ import { fetchPlaces, fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, sa
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 
+const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
+
 function getDday(deadlineStr) {
   if (!deadlineStr) return '-'
   const today = new Date()
@@ -441,15 +443,89 @@ function ActivePolicyCard({ policy, navigate }) {
 }
 
 function PlacesMapPreview({ policy, places, navigate }) {
+  const mapRef = useRef(null)
+  const markersRef = useRef([])
   const relatedPlaces = policy ? filterPlacesByPolicy(places, policy) : places
   const previewPlaces = relatedPlaces.slice(0, 3)
+  const mapPlaces = relatedPlaces.filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng)).slice(0, 5)
+  const openMap = () => navigate('/map', { state: policy ? { policy } : undefined })
+
+  useEffect(() => {
+    const KAKAO_KEY = import.meta.env.VITE_KAKAO_MAP_KEY
+    const scriptId = 'kakao-map-sdk'
+    if (!KAKAO_KEY || !mapRef.current) return undefined
+
+    let active = true
+
+    const clearMarkers = () => {
+      markersRef.current.forEach(marker => marker.setMap(null))
+      markersRef.current = []
+    }
+
+    const initMap = () => {
+      if (!active || !mapRef.current || !window.kakao?.maps) return
+      window.kakao.maps.load(() => {
+        if (!active || !mapRef.current) return
+        clearMarkers()
+        const centerPlace = mapPlaces[0]
+        const center = new window.kakao.maps.LatLng(
+          centerPlace?.lat || OKCHEON_CENTER.lat,
+          centerPlace?.lng || OKCHEON_CENTER.lng,
+        )
+        const map = new window.kakao.maps.Map(mapRef.current, { center, level: mapPlaces.length > 1 ? 6 : 4 })
+        map.setDraggable(false)
+        map.setZoomable(false)
+
+        const bounds = new window.kakao.maps.LatLngBounds()
+        mapPlaces.forEach((place, index) => {
+          const position = new window.kakao.maps.LatLng(place.lat, place.lng)
+          bounds.extend(position)
+          const color = ['#076818', '#FFA100', '#c2185b', '#4b7bec', '#2f8f83'][index % 5]
+          const svg = `<svg width="34" height="42" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg">
+            <filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.22"/></filter>
+            <path d="M17 2C10.4 2 5 7.4 5 14c0 9.2 12 25.5 12 25.5S29 23.2 29 14C29 7.4 23.6 2 17 2z" fill="${color}" filter="url(#s)"/>
+            <circle cx="17" cy="14" r="5.5" fill="white"/>
+          </svg>`
+          const markerImage = new window.kakao.maps.MarkerImage(
+            `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
+            new window.kakao.maps.Size(34, 42),
+            { offset: new window.kakao.maps.Point(17, 42) },
+          )
+          markersRef.current.push(new window.kakao.maps.Marker({ position, image: markerImage, map }))
+        })
+        if (mapPlaces.length > 1) map.setBounds(bounds)
+      })
+    }
+
+    if (window.kakao?.maps) {
+      initMap()
+    } else {
+      const existing = document.getElementById(scriptId)
+      if (existing) {
+        existing.addEventListener('load', initMap)
+      } else {
+        const script = document.createElement('script')
+        script.id = scriptId
+        script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_KEY}&autoload=false&libraries=services`
+        script.onload = initMap
+        document.head.appendChild(script)
+      }
+    }
+
+    return () => {
+      active = false
+      clearMarkers()
+      document.getElementById(scriptId)?.removeEventListener('load', initMap)
+    }
+  }, [mapPlaces, policy])
+
   return (
     <section>
       <SectionTitle
         action={(
           <button
             type="button"
-            onClick={() => navigate('/map', { state: policy ? { policy } : undefined })}
+            onClick={openMap}
             style={{ display: 'flex', alignItems: 'center', gap: 2, border: 'none', background: '#fff', borderRadius: 999, padding: '8px 10px 8px 13px', color: '#888', fontSize: 12, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer' }}
           >
             전체 보기 <ChevronRight size={14} />
@@ -458,9 +534,16 @@ function PlacesMapPreview({ policy, places, navigate }) {
       >
         우리 마을 곳곳 사용처
       </SectionTitle>
-      <button
-        type="button"
-        onClick={() => navigate('/map', { state: policy ? { policy } : undefined })}
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={openMap}
+        onKeyDown={event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            openMap()
+          }
+        }}
         style={{
           width: '100%',
           border: '1px solid rgba(218,231,211,0.95)',
@@ -474,37 +557,12 @@ function PlacesMapPreview({ policy, places, navigate }) {
         }}
       >
         <div style={{ position: 'relative', height: 150, background: '#eef6ea', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, opacity: 0.9 }}>
-            <span style={{ position: 'absolute', left: '-12%', top: 34, width: '124%', height: 34, borderRadius: 999, background: '#dfeede', transform: 'rotate(-7deg)' }} />
-            <span style={{ position: 'absolute', left: '-10%', top: 92, width: '118%', height: 28, borderRadius: 999, background: '#fff4de', transform: 'rotate(11deg)' }} />
-            <span style={{ position: 'absolute', left: 46, top: -24, width: 82, height: 210, borderRadius: 999, border: '16px solid rgba(255,255,255,0.72)', transform: 'rotate(35deg)' }} />
-            <span style={{ position: 'absolute', right: -22, top: 12, width: 120, height: 120, borderRadius: '50%', background: 'rgba(7,104,24,0.08)' }} />
-          </div>
-          {[
-            { left: '20%', top: '32%', color: '#076818' },
-            { left: '56%', top: '24%', color: '#FFA100' },
-            { left: '74%', top: '58%', color: '#c2185b' },
-          ].map((pin, index) => (
-            <span
-              key={index}
-              style={{
-                position: 'absolute',
-                left: pin.left,
-                top: pin.top,
-                width: 34,
-                height: 34,
-                borderRadius: '50% 50% 50% 0',
-                background: pin.color,
-                transform: 'rotate(-45deg)',
-                boxShadow: '0 6px 16px rgba(31,36,51,0.18)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#fff', display: 'block' }} />
-            </span>
-          ))}
+          <div ref={mapRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
+          {mapPlaces.length === 0 && (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#777', fontSize: 13, fontWeight: 700 }}>
+              사용처 지도를 불러오는 중이에요
+            </div>
+          )}
           <div style={{ position: 'absolute', left: 14, bottom: 14, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 10px', borderRadius: 999, background: 'rgba(255,255,255,0.92)', color: '#076818', fontSize: 12, fontWeight: 800 }}>
             <MapPin size={14} strokeWidth={2.4} />
             {relatedPlaces.length || places.length}개 장소
@@ -531,7 +589,7 @@ function PlacesMapPreview({ policy, places, navigate }) {
             지도에서 보기
           </div>
         </div>
-      </button>
+      </div>
     </section>
   )
 }
