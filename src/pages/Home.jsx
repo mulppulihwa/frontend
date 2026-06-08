@@ -589,8 +589,8 @@ function PlacesMapPreview({ policy, places, navigate }) {
                   <FeaturedIcon size={21} color={featuredMeta.color} strokeWidth={2.4} />
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 15, fontWeight: 800, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{featuredPlace.name}</p>
-                  <p style={{ marginTop: 4, fontSize: 12, fontWeight: 500, color: '#777', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{featuredPlace.address || '주소 확인 필요'}</p>
+                  <p style={{ fontSize: 15, fontWeight: 600, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{featuredPlace.name}</p>
+                  <p style={{ marginTop: 4, fontSize: 12, fontWeight: 400, color: '#777', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{featuredPlace.address || '주소 확인 필요'}</p>
                 </div>
               </div>
             ) : (
