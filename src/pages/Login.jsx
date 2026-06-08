@@ -92,7 +92,7 @@ export default function Login() {
           </p>
         </div>
 
-        <div style={{ position: 'relative', width: '100%', maxWidth: 390, height: 'clamp(240px, 36vh, 320px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: 390, height: 'clamp(240px, 36vh, 320px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginTop: 18 }}>
           <img
             src={farmer}
             alt=""
