@@ -218,7 +218,7 @@ function getStoredChecklistProgress(policy) {
   if (!policy?.id) return { done: 0, total: 0, complete: false }
   const checked = loadStoredChecks(policy)
   const done = Object.values(checked).filter(Boolean).length
-  const total = Number(localStorage.getItem(`checklist-total-${policy.id}`)) || Number(policy.checkTotal) || 0
+  const total = Number(localStorage.getItem(`home-checklist-total-${policy.id}`)) || Math.min(Number(localStorage.getItem(`checklist-total-${policy.id}`)) || Number(policy.checkTotal) || 0, 3)
   return { done, total, complete: total > 0 && done >= total }
 }
 
@@ -285,6 +285,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
         if (nextItems.length > 0) {
           setItems(nextItems)
           localStorage.setItem(`checklist-total-${policy.id}`, nextItems.length)
+          localStorage.setItem(`home-checklist-total-${policy.id}`, Math.min(nextItems.length, 3))
         }
       })
       .catch(() => {})
@@ -310,6 +311,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
     const next = { ...checked, [item.id]: !checked[item.id] }
     setChecked(next)
     if (policy?.id) localStorage.setItem(`checklist-checked-${policy.id}`, JSON.stringify(next))
+    if (policy?.id) localStorage.setItem(`home-checklist-total-${policy.id}`, total)
 
     if (!policy?.id || !item.persistable) return
     const checkedIds = Object.entries(next)
@@ -476,7 +478,7 @@ export default function Home() {
 
   const handleChecklistComplete = (completedPolicy) => {
     const candidates = checklistPolicies.filter(policy => String(policy.id) !== String(completedPolicy?.id))
-    const nextPolicy = candidates.find(policy => !getStoredChecklistProgress(policy).complete) || candidates[0]
+    const nextPolicy = candidates.find(policy => !getStoredChecklistProgress(policy).complete)
     if (nextPolicy?.id) setSelectedPolicyId(nextPolicy.id)
   }
 
