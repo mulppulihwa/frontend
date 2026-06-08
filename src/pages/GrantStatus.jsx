@@ -38,7 +38,6 @@ function formatAddedDate(dateLike) {
 }
 
 function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified }) {
-  const isCompleted = status === '신청완료'
   const days = grant.countdown?.days ?? grant.days ?? 0
   const BellIcon = notified ? BellRing : Bell
 
@@ -54,9 +53,6 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified
         <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
           <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{grant.title}</p>
           <p style={{ fontSize: 13, color: '#555', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
-          <p style={{ fontSize: 12, fontWeight: 500, color: '#d93025', letterSpacing: '-0.1px' }}>
-            {isCompleted ? '지급일까지' : '마감까지'} D-{days}
-          </p>
           <p style={{ fontSize: 12, fontWeight: 400, color: '#8a8a8a', letterSpacing: '-0.1px' }}>
             {formatAddedDate(grant.addedAt)}
           </p>
