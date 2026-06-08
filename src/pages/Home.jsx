@@ -446,7 +446,8 @@ function ActivePolicyCard({ policy, navigate }) {
 function PlacesMapPreview({ policy, places, navigate }) {
   const mapRef = useRef(null)
   const markersRef = useRef([])
-  const relatedPlaces = policy ? filterPlacesByPolicy(places, policy) : places
+  const policyPlaces = policy ? filterPlacesByPolicy(places, policy) : places
+  const relatedPlaces = policyPlaces.length > 0 ? policyPlaces : places
   const mapPlaces = relatedPlaces.filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng)).slice(0, 5)
   const featuredPlace = mapPlaces[0] || relatedPlaces[0] || null
   const featuredMeta = getPlaceCategoryMeta(featuredPlace?.category)
@@ -559,8 +560,8 @@ function PlacesMapPreview({ policy, places, navigate }) {
           textAlign: 'left',
         }}
       >
-        <div style={{ position: 'relative', minHeight: 330, background: '#FFFFFF', overflow: 'hidden' }}>
-          <div style={{ position: 'relative', height: 220, overflow: 'hidden' }}>
+        <div style={{ position: 'relative', minHeight: 380, background: '#FFFFFF', overflow: 'hidden' }}>
+          <div style={{ position: 'relative', height: 265, overflow: 'hidden' }}>
           <div ref={mapRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
           {mapPlaces.length === 0 && (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#777', fontSize: 13, fontWeight: 700 }}>
