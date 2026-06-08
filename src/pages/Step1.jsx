@@ -561,7 +561,7 @@ export default function Step1() {
   const buildProfilePayload = () => {
     const parsedIncome = outsideIncome === '' ? null : Number(outsideIncome)
     const incomeInManwon = Number.isFinite(parsedIncome) ? parsedIncome : null
-    const regionName = location === '옥천' ? '옥천군' : region
+    const regionName = location === '옥천' ? '옥천군' : ''
     const occupationTags = [
       farming ? '귀농' : '귀촌',
       farmBusiness ? '농업인' : null,
