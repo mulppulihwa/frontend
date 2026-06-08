@@ -5,6 +5,29 @@ import farmer from '../assets/farmer.png'
 import okcheonTypo from '../assets/okcheon_typo.png'
 import okTypo from '../assets/ok_typo.png'
 import { completeKakaoLogin, consumeLoginRedirect, startKakaoLogin } from '../lib/auth'
+import { fetchProfile } from '../lib/api'
+
+function readProfileCompleted(payload) {
+  const value = payload?.profile_completed
+    ?? payload?.profileCompleted
+    ?? payload?.user?.profile_completed
+    ?? payload?.user?.profileCompleted
+  return typeof value === 'boolean' ? value : null
+}
+
+async function getPostLoginPath(payload) {
+  const completedFromLogin = readProfileCompleted(payload)
+  const redirectTo = consumeLoginRedirect('/home')
+  if (completedFromLogin === false) return '/step1'
+  if (completedFromLogin === true) return redirectTo
+
+  try {
+    const profile = await fetchProfile()
+    return readProfileCompleted(profile) === false ? '/step1' : redirectTo
+  } catch {
+    return redirectTo
+  }
+}
 
 export default function Login() {
   const navigate = useNavigate()
@@ -21,7 +44,8 @@ export default function Login() {
         if (!active) return
         if (result.completed) {
           window.history.replaceState({}, '', window.location.pathname)
-          navigate(consumeLoginRedirect('/home'), { replace: true })
+          const nextPath = await getPostLoginPath(result.payload)
+          navigate(nextPath, { replace: true })
         }
       } catch (err) {
         if (active) setError(err.message)
