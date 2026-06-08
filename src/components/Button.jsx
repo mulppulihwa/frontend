@@ -48,6 +48,7 @@ export default function Button({ children, variant = 'primary', onClick, disable
       disabled={disabled}
       style={{
         width: 'min(100%, 240px)',
+        display: 'block',
         marginLeft: 'auto',
         marginRight: 'auto',
         cursor: disabled ? 'not-allowed' : 'pointer',
