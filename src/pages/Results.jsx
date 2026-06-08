@@ -232,7 +232,7 @@ export default function Results() {
       </div>
 
       {!loading && !loadError && grant && (
-      <div style={{ position: 'fixed', bottom: 'max(12px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, boxSizing: 'border-box', padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
+      <div style={{ position: 'fixed', bottom: 'max(12px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: 'min(100%, 430px)', boxSizing: 'border-box', padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
         <button
           type="button"
           onClick={() => changeGrant(Math.max(0, index - 1), 'prev')}
