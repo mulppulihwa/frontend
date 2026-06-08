@@ -525,17 +525,7 @@ function PlacesMapPreview({ policy, places, navigate }) {
 
   return (
     <section>
-      <SectionTitle
-        action={(
-          <button
-            type="button"
-            onClick={openMap}
-            style={{ display: 'flex', alignItems: 'center', gap: 2, border: 'none', background: '#fff', borderRadius: 999, padding: '8px 10px 8px 13px', color: '#888', fontSize: 12, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer' }}
-          >
-            전체 보기 <ChevronRight size={14} />
-          </button>
-        )}
-      >
+      <SectionTitle>
         우리 마을 곳곳 사용처
       </SectionTitle>
       <div
@@ -579,9 +569,6 @@ function PlacesMapPreview({ policy, places, navigate }) {
               <p style={{ fontSize: 13, fontWeight: 800, color: '#888' }}>
                 {relatedPlaces.length || places.length}개 장소
               </p>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 800, color: '#aaa' }}>
-                전체 보기 <ChevronRight size={14} strokeWidth={2.4} />
-              </span>
             </div>
             {featuredPlace ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, padding: '12px 10px', borderRadius: 18, border: '1.5px solid #ededed', background: '#FFFFFF' }}>
