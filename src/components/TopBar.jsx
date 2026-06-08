@@ -17,6 +17,7 @@ export default function TopBar({ title, onBack, onClose }) {
       transform: 'translateX(-50%)',
       width: '100%',
       maxWidth: 390,
+      boxSizing: 'border-box',
       background: '#FDFCF8',
       zIndex: 100,
     }}>

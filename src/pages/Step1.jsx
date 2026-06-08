@@ -60,6 +60,7 @@ function DateSelectField({ label, value, onChange }) {
         onBlur={() => setFocused(false)}
         style={{
           width: '100%',
+          minHeight: 46,
           padding: '13px 16px',
           boxSizing: 'border-box',
           border: `1.5px solid ${focused ? '#076818' : '#e8e8e8'}`,
@@ -71,6 +72,9 @@ function DateSelectField({ label, value, onChange }) {
           fontFamily: 'inherit',
           outline: 'none',
           letterSpacing: '-0.2px',
+          textAlign: 'left',
+          appearance: 'none',
+          WebkitAppearance: 'none',
           colorScheme: 'light',
           cursor: 'pointer',
           boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
@@ -783,7 +787,7 @@ export default function Step1() {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, padding: '16px 28px 16px', background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
+      <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, boxSizing: 'border-box', padding: '16px 28px 16px', background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
         <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete || (page === 3 && !isFormComplete)} variant="pill">
           {submitting ? '저장 중...' : page === 3 ? '내 지원금 찾기' : '다음'}
         </Button>
