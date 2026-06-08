@@ -127,12 +127,6 @@ function SummaryCard({ counts, navigate }) {
   )
 }
 
-const defaultChecklistItems = [
-  { id: 'home-0', label: '사회복지서비스 및 급여제공(변경) 신청서', persistable: false },
-  { id: 'home-1', label: '사회복지서비스 이용권(바우처) 제공(변경) 신청서', persistable: false },
-  { id: 'home-2', label: '아이사랑 카드발급 신청 및 개인신용정보의 조회·제공·이용 동의서', persistable: false },
-]
-
 const homeScheduleMessages = [
   '마감 임박! 신청 전에 꼭 챙겨야 할 것들이에요',
   '이번 주 마감 지원금, 이것만 준비하면 끝나요!',
@@ -260,7 +254,7 @@ function HomeCheckItem({ item, checked, onToggle }) {
 }
 
 function TodayChecklist({ policy, userName, navigate, onComplete }) {
-  const [items, setItems] = useState(defaultChecklistItems)
+  const [items, setItems] = useState([])
   const [checked, setChecked] = useState({})
   const [completeAnimation, setCompleteAnimation] = useState(false)
   const [completedPolicyId, setCompletedPolicyId] = useState(null)
@@ -273,7 +267,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
   useEffect(() => {
     let active = true
     setCompletedPolicyId(null)
-    setItems(defaultChecklistItems)
+    setItems([])
     setChecked(loadStoredChecks(policy))
 
     if (!policy?.id) {
@@ -356,38 +350,40 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
           100% { opacity: 1; transform: translateY(0) scale(1); }
         }
       `}</style>
-      <div
-        style={{
-          background: '#fff',
-          border: `1px solid ${done === total ? 'rgba(7,104,24,0.24)' : 'rgba(218,231,211,0.95)'}`,
-          borderRadius: 24,
-          overflow: 'hidden',
-          transformOrigin: 'center center',
-          animation: completeAnimation ? 'homeChecklistSwap 0.92s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none',
-          transition: 'border-color 0.18s ease, opacity 0.18s ease',
-          willChange: completeAnimation ? 'transform, opacity' : 'auto',
-        }}
-      >
-        <button type="button" onClick={() => policy?.id && navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })} style={{ width: '100%', border: 'none', background: '#e8f3e8', padding: '14px 16px 12px', textAlign: 'left', cursor: policy?.id ? 'pointer' : 'default', fontFamily: 'inherit' }}>
-          <p style={{ fontSize: 16, fontWeight: 800, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all' }}>
-            {policy?.title || '귀농인의 집 (충청북도)'}
-          </p>
-          <p style={{ marginTop: 4, fontSize: 13, fontWeight: 700, color: '#5a7a5e', lineHeight: 1.25 }}>
-            {deadlineText}
-          </p>
-        </button>
-        <div style={{ padding: '12px 16px 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <p style={{ fontSize: 14, fontWeight: 800, color: '#c2185b' }}>준비 항목</p>
-            <p style={{ fontSize: 13, fontWeight: 800, color: done === total ? '#076818' : '#aaa' }}>{done}/{total}</p>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {visibleItems.map(item => (
-              <HomeCheckItem key={item.id} item={item} checked={!!checked[item.id]} onToggle={() => toggleItem(item)} />
-            ))}
+      {policy?.id && (
+        <div
+          style={{
+            background: '#fff',
+            border: `1px solid ${total > 0 && done === total ? 'rgba(7,104,24,0.24)' : 'rgba(218,231,211,0.95)'}`,
+            borderRadius: 24,
+            overflow: 'hidden',
+            transformOrigin: 'center center',
+            animation: completeAnimation ? 'homeChecklistSwap 0.92s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none',
+            transition: 'border-color 0.18s ease, opacity 0.18s ease',
+            willChange: completeAnimation ? 'transform, opacity' : 'auto',
+          }}
+        >
+          <button type="button" onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })} style={{ width: '100%', border: 'none', background: '#e8f3e8', padding: '14px 16px 12px', textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit' }}>
+            <p style={{ fontSize: 16, fontWeight: 800, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all' }}>
+              {policy.title}
+            </p>
+            <p style={{ marginTop: 4, fontSize: 13, fontWeight: 700, color: '#5a7a5e', lineHeight: 1.25 }}>
+              {deadlineText}
+            </p>
+          </button>
+          <div style={{ padding: '12px 16px 16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <p style={{ fontSize: 14, fontWeight: 800, color: '#c2185b' }}>준비 항목</p>
+              <p style={{ fontSize: 13, fontWeight: 800, color: total > 0 && done === total ? '#076818' : '#aaa' }}>{done}/{total}</p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {visibleItems.map(item => (
+                <HomeCheckItem key={item.id} item={item} checked={!!checked[item.id]} onToggle={() => toggleItem(item)} />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </section>
   )
 }
