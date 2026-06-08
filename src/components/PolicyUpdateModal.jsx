@@ -1,6 +1,6 @@
 import okcheonCharacter from '../assets/okcheon-character.png'
 
-export default function PolicyUpdateModal({ visible, onClose, navigate }) {
+export default function PolicyUpdateModal({ visible, onClose, onHideToday, navigate }) {
   if (!visible) return null
   return (
     <div
@@ -58,6 +58,22 @@ export default function PolicyUpdateModal({ visible, onClose, navigate }) {
           }}
         >
           나의 맞춤 지원금 다시 찾기
+        </button>
+        <button
+          type="button"
+          onClick={onHideToday}
+          style={{
+            marginTop: 14,
+            border: 'none',
+            background: 'transparent',
+            color: '#777',
+            fontSize: 13,
+            fontWeight: 700,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+          }}
+        >
+          오늘은 그만보기
         </button>
       </div>
       <style>{`@keyframes modalPop { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }`}</style>
