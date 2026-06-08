@@ -118,14 +118,30 @@ const outsideIncomeOptions = [
   { value: '3699', label: '3700만원 미만' },
 ]
 
-function Header() {
+const stepCopy = {
+  1: {
+    title: '기본정보를 알려주세요',
+    description: '지원금을 받기 위해 필요한 가장 기초적인 정보예요!',
+  },
+  2: {
+    title: '옥천군으로 언제 이사 오시나요?',
+    description: '거주지와 전입일에 따른 주거·정착 지원금을 찾아드려요.',
+  },
+  3: {
+    title: '현재 농업에 종사하고 계시나요?',
+    description: '직업과 소득 수준에 맞는 지원금을 찾아드려요',
+  },
+}
+
+function Header({ page }) {
+  const copy = stepCopy[page] || stepCopy[1]
   return (
     <div style={{ padding: '10px 18px 8px' }}>
       <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.5, animation: 'fadeUp 0.5s ease both' }}>
-        귀농·귀향하셨나요?
+        {copy.title}
       </h2>
-      <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.3px', lineHeight: 1.5, animation: 'fadeUp 0.5s ease 0.15s both' }}>
-        받을 수 있는 지원금을 찾아드려요
+      <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.2px', lineHeight: 1.5, wordBreak: 'keep-all', animation: 'fadeUp 0.5s ease 0.15s both' }}>
+        {copy.description}
       </p>
       <SearchAnimation />
     </div>
@@ -704,7 +720,7 @@ export default function Step1() {
           overscrollBehavior: 'contain',
         }}
       >
-        <Header />
+        <Header page={page} />
 
         <div style={{ padding: '20px 18px 0', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
           {profileNotice && (
