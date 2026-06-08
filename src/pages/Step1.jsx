@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { MapPin } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
@@ -416,6 +416,7 @@ function normalizeProfileResponse(profile) {
 
 export default function Step1() {
   const navigate = useNavigate()
+  const locationState = useLocation().state
   const [page, setPage] = useState(1)
   const [birthDate, setBirthDate] = useState('')
   const [age, setAge] = useState('')
@@ -436,6 +437,7 @@ export default function Step1() {
   const [regionOptions, setRegionOptions] = useState(REGION_LOADING_OPTIONS)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [profileNotice, setProfileNotice] = useState(locationState?.profileIncompleteMessage || '')
 
   const applySavedForm = (saved) => {
     if (!saved) return
@@ -701,6 +703,17 @@ export default function Step1() {
         <Header />
 
         <div style={{ padding: '20px 18px 0', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+          {profileNotice && (
+            <div style={{ marginBottom: 14, background: '#fff8ee', border: '1.5px solid #ffe0a0', borderRadius: 14, padding: '11px 13px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#b86b00', lineHeight: 1.45, letterSpacing: '-0.1px' }}>
+                {profileNotice}
+              </p>
+              <button type="button" onClick={() => setProfileNotice('')} style={{ border: 'none', background: 'transparent', color: '#b86b00', fontSize: 14, fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit', lineHeight: 1 }}>
+                닫기
+              </button>
+            </div>
+          )}
+
           {page === 1 && (() => {
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>

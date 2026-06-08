@@ -92,7 +92,19 @@ export default function Results() {
         }), {}))
       })
       .catch(err => {
-        if (active) setLoadError(err.message || '맞춤 지원금을 불러오지 못했습니다.')
+        if (!active) return
+        if (err.data?.code === 'profile_incomplete' || err.data?.code === 'profile_missing') {
+          localStorage.removeItem('lastDiagnosisDate')
+          localStorage.removeItem('submittedDiagnosisProfile')
+          navigate('/step1', {
+            replace: true,
+            state: {
+              profileIncompleteMessage: '프로필 저장이 완료되지 않았어요. 진단을 한 번만 다시 완료해 주세요.',
+            },
+          })
+          return
+        }
+        setLoadError(err.message || '맞춤 지원금을 불러오지 못했습니다.')
       })
       .finally(() => {
         if (active) setLoading(false)
