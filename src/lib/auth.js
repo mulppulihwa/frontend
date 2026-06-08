@@ -11,6 +11,13 @@ const LOCAL_PROFILE_KEYS = [
   'editableProfileInfo',
   'lastDiagnosisDate',
   'diagnosisProgress',
+  'home-checklist-completed',
+  'policyNotificationStatus',
+]
+const LOCAL_PREFIX_KEYS = [
+  'checklist-checked-',
+  'checklist-total-',
+  'home-checklist-total-',
 ]
 let pendingCallback = null
 const DISPLAY_NAME_KEYS = [
@@ -166,6 +173,9 @@ export function logout() {
     KAKAO_USER_NAME_KEY,
     ...LOCAL_PROFILE_KEYS,
   ].forEach(key => localStorage.removeItem(key))
+  Object.keys(localStorage)
+    .filter(key => LOCAL_PREFIX_KEYS.some(prefix => key.startsWith(prefix)))
+    .forEach(key => localStorage.removeItem(key))
   sessionStorage.removeItem(LOGIN_REDIRECT_KEY)
   sessionStorage.removeItem(KAKAO_STATE_KEY)
 }
