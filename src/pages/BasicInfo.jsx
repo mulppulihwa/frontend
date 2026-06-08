@@ -219,13 +219,13 @@ export default function BasicInfo() {
                 onClick={() => navigate('/step1')}
                 style={{
                   width: '100%',
-                  minHeight: 54,
+                  minHeight: 50,
                   border: 'none',
                   borderRadius: 999,
                   background: '#FFA100',
                   color: '#fff',
-                  fontSize: 16,
-                  fontWeight: 800,
+                  fontSize: 14,
+                  fontWeight: 700,
                   fontFamily: 'inherit',
                   cursor: 'pointer',
                 }}
