@@ -47,7 +47,9 @@ export default function Button({ children, variant = 'primary', onClick, disable
       onClick={onClick}
       disabled={disabled}
       style={{
-        width: '100%',
+        width: 'min(100%, 240px)',
+        marginLeft: 'auto',
+        marginRight: 'auto',
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'inherit',
         letterSpacing: '-0.2px',

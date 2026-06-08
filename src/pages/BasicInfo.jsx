@@ -218,7 +218,8 @@ export default function BasicInfo() {
                 type="button"
                 onClick={() => navigate('/step1')}
                 style={{
-                  width: '100%',
+                  width: 'min(100%, 240px)',
+                  alignSelf: 'center',
                   minHeight: 50,
                   border: 'none',
                   borderRadius: 999,
@@ -263,7 +264,8 @@ export default function BasicInfo() {
               type="button"
               onClick={() => setConfirmAction('logout')}
               style={{
-                width: '100%',
+                width: 'min(100%, 240px)',
+                alignSelf: 'center',
                 minHeight: 50,
                 borderRadius: 999,
                 border: '1.5px solid #d93025',
@@ -283,7 +285,8 @@ export default function BasicInfo() {
               onClick={() => setConfirmAction('delete')}
               disabled={deleting}
               style={{
-                width: '100%',
+                width: 'min(100%, 240px)',
+                alignSelf: 'center',
                 minHeight: 50,
                 borderRadius: 999,
                 border: '1.5px solid #f1d0cd',
