@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Check, ChevronRight, Clock3, User, X } from 'lucide-react'
-import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
+import { Bell, Check, ChevronRight, Clock3, MapPin, Navigation, User, X } from 'lucide-react'
+import { fetchPlaces, fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
+import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 
 function getDday(deadlineStr) {
   if (!deadlineStr) return '-'
@@ -36,6 +37,18 @@ function getDeadlineDays(deadlineStr) {
   if (Number.isNaN(deadline.getTime())) return Number.POSITIVE_INFINITY
   deadline.setHours(0, 0, 0, 0)
   return Math.ceil((deadline - today) / 86400000)
+}
+
+function compareDeadlineUrgency(a, b) {
+  const aDays = getDeadlineDays(a.deadline)
+  const bDays = getDeadlineDays(b.deadline)
+  const getGroup = days => {
+    if (!Number.isFinite(days)) return 2
+    return days >= 0 ? 0 : 1
+  }
+  const groupDiff = getGroup(aDays) - getGroup(bDays)
+  if (groupDiff !== 0) return groupDiff
+  return Math.abs(aDays) - Math.abs(bDays)
 }
 
 function readJsonSafe(key) {
@@ -427,6 +440,102 @@ function ActivePolicyCard({ policy, navigate }) {
   )
 }
 
+function PlacesMapPreview({ policy, places, navigate }) {
+  const relatedPlaces = policy ? filterPlacesByPolicy(places, policy) : places
+  const previewPlaces = relatedPlaces.slice(0, 3)
+  return (
+    <section>
+      <SectionTitle
+        action={(
+          <button
+            type="button"
+            onClick={() => navigate('/map', { state: policy ? { policy } : undefined })}
+            style={{ display: 'flex', alignItems: 'center', gap: 2, border: 'none', background: '#fff', borderRadius: 999, padding: '8px 10px 8px 13px', color: '#888', fontSize: 12, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer' }}
+          >
+            전체 보기 <ChevronRight size={14} />
+          </button>
+        )}
+      >
+        우리 마을 곳곳 사용처
+      </SectionTitle>
+      <button
+        type="button"
+        onClick={() => navigate('/map', { state: policy ? { policy } : undefined })}
+        style={{
+          width: '100%',
+          border: '1px solid rgba(218,231,211,0.95)',
+          borderRadius: 26,
+          background: '#FFFFFF',
+          padding: 0,
+          overflow: 'hidden',
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+          textAlign: 'left',
+        }}
+      >
+        <div style={{ position: 'relative', height: 150, background: '#eef6ea', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.9 }}>
+            <span style={{ position: 'absolute', left: '-12%', top: 34, width: '124%', height: 34, borderRadius: 999, background: '#dfeede', transform: 'rotate(-7deg)' }} />
+            <span style={{ position: 'absolute', left: '-10%', top: 92, width: '118%', height: 28, borderRadius: 999, background: '#fff4de', transform: 'rotate(11deg)' }} />
+            <span style={{ position: 'absolute', left: 46, top: -24, width: 82, height: 210, borderRadius: 999, border: '16px solid rgba(255,255,255,0.72)', transform: 'rotate(35deg)' }} />
+            <span style={{ position: 'absolute', right: -22, top: 12, width: 120, height: 120, borderRadius: '50%', background: 'rgba(7,104,24,0.08)' }} />
+          </div>
+          {[
+            { left: '20%', top: '32%', color: '#076818' },
+            { left: '56%', top: '24%', color: '#FFA100' },
+            { left: '74%', top: '58%', color: '#c2185b' },
+          ].map((pin, index) => (
+            <span
+              key={index}
+              style={{
+                position: 'absolute',
+                left: pin.left,
+                top: pin.top,
+                width: 34,
+                height: 34,
+                borderRadius: '50% 50% 50% 0',
+                background: pin.color,
+                transform: 'rotate(-45deg)',
+                boxShadow: '0 6px 16px rgba(31,36,51,0.18)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#fff', display: 'block' }} />
+            </span>
+          ))}
+          <div style={{ position: 'absolute', left: 14, bottom: 14, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 10px', borderRadius: 999, background: 'rgba(255,255,255,0.92)', color: '#076818', fontSize: 12, fontWeight: 800 }}>
+            <MapPin size={14} strokeWidth={2.4} />
+            {relatedPlaces.length || places.length}개 장소
+          </div>
+        </div>
+        <div style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {previewPlaces.length > 0 ? previewPlaces.map(place => (
+            <div key={place.id} style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
+              <span style={{ width: 30, height: 30, borderRadius: 10, background: '#e8f3e8', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <MapPin size={16} color="#076818" strokeWidth={2.4} />
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{place.name}</p>
+                <p style={{ marginTop: 2, fontSize: 11, fontWeight: 500, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{place.address || '주소 확인 필요'}</p>
+              </div>
+            </div>
+          )) : (
+            <p style={{ fontSize: 13, fontWeight: 700, color: '#777', textAlign: 'center', padding: '8px 0' }}>
+              사용처를 지도에서 확인해보세요
+            </p>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 40, borderRadius: 999, border: '1.5px solid #076818', color: '#076818', fontSize: 14, fontWeight: 800 }}>
+            <Navigation size={15} strokeWidth={2.4} />
+            지도에서 보기
+          </div>
+        </div>
+      </button>
+    </section>
+  )
+}
+
 function normalizeUser(profile) {
   const profileData = profile?.profile || profile?.user_profile || profile?.userProfile || profile || {}
   const submitted = readJsonSafe('submittedDiagnosisProfile')
@@ -443,6 +552,7 @@ export default function Home() {
   const [policies, setPolicies] = useState([])
   const [selectedPolicyId, setSelectedPolicyId] = useState(null)
   const [user, setUser] = useState({ name: '', region: '' })
+  const [places, setPlaces] = useState([])
   const [homeChecklistCompleted, setHomeChecklistCompleted] = useState(() => readHomeChecklistCompleted())
   const [emptyChecklistPolicyIds, setEmptyChecklistPolicyIds] = useState({})
 
@@ -456,6 +566,11 @@ export default function Home() {
     fetchSavedPolicies()
       .then(savedPolicies => {
         if (active) setPolicies(savedPolicies)
+      })
+      .catch(() => {})
+    fetchPlaces()
+      .then(nextPlaces => {
+        if (active) setPlaces(nextPlaces)
       })
       .catch(() => {})
     return () => {
@@ -473,19 +588,12 @@ export default function Home() {
     const status = policy.user_status || policy.status
     return status === '신청완료' || status === '신청예정'
   })
-  const urgentPolicy = [...activePolicies].sort((a, b) => {
-    const aDays = getDeadlineDays(a.deadline)
-    const bDays = getDeadlineDays(b.deadline)
-    const aUpcoming = aDays >= 0
-    const bUpcoming = bDays >= 0
-    if (aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1
-    return Math.abs(aDays) - Math.abs(bDays)
-  })[0]
+  const urgentPolicy = [...activePolicies].sort(compareDeadlineUrgency)[0]
   const activePolicyIds = new Set(activePolicies.map(policy => String(policy.id)))
   const checklistPolicies = [
     ...activePolicies,
     ...policies.filter(policy => !activePolicyIds.has(String(policy.id))),
-  ]
+  ].sort(compareDeadlineUrgency)
   const isHomeChecklistComplete = (policy, completedMap = homeChecklistCompleted) => (
     Boolean(completedMap[String(policy?.id)]) || getStoredChecklistProgress(policy).complete
   )
@@ -526,6 +634,7 @@ export default function Home() {
             <ActivePolicyCard policy={urgentPolicy} navigate={navigate} />
           </section>
         )}
+        <PlacesMapPreview policy={urgentPolicy} places={places} navigate={navigate} />
       </div>
     </div>
   )
