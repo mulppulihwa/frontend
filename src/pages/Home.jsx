@@ -262,6 +262,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete, onEmptyCheckli
   const done = visibleItems.filter(item => !!checked[item.id]).length
   const total = visibleItems.length
   const deadlineText = getDeadlineText(policy?.deadline)
+  const dday = getDday(policy?.deadline)
 
   useEffect(() => {
     let active = true
@@ -368,9 +369,16 @@ function TodayChecklist({ policy, userName, navigate, onComplete, onEmptyCheckli
             <p style={{ fontSize: 16, fontWeight: 800, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all' }}>
               {policy.title}
             </p>
-            <p style={{ marginTop: 4, fontSize: 13, fontWeight: 700, color: '#5a7a5e', lineHeight: 1.25 }}>
-              {deadlineText}
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap', marginTop: 4 }}>
+              {dday !== '-' && (
+                <span style={{ fontSize: 13, fontWeight: 800, color: '#d93025', lineHeight: 1.25 }}>
+                  {dday}
+                </span>
+              )}
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#5a7a5e', lineHeight: 1.25 }}>
+                {deadlineText}
+              </span>
+            </div>
           </button>
           <div style={{ padding: '12px 16px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
