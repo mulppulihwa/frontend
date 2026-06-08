@@ -75,10 +75,8 @@ export default function Results() {
     fetchMatchedPolicies()
       .then(async policies => {
         if (!active) return
-        setGrants(policies)
         localStorage.setItem('lastDiagnosisDate', new Date().toISOString())
         policies.forEach(p => savePolicy(p.id).catch(() => null))
-        // Fetch actual backend statuses to sync correctly
         const statusCache = readPolicyStatusCache()
         let savedStatuses = {}
         try {
@@ -86,10 +84,12 @@ export default function Results() {
           saved.forEach(p => { if (p.user_status) savedStatuses[String(p.id)] = p.user_status })
         } catch { /* fall back to cache */ }
         if (!active) return
-        setStatuses(policies.reduce((acc, policy) => ({
+        const initialStatuses = policies.reduce((acc, policy) => ({
           ...acc,
           [policy.id]: savedStatuses[String(policy.id)] || statusCache[String(policy.id)] || null,
-        }), {}))
+        }), {})
+        setStatuses(initialStatuses)
+        setGrants(policies)
       })
       .catch(err => {
         if (!active) return
