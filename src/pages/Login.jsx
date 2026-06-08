@@ -92,15 +92,17 @@ export default function Login() {
           </p>
         </div>
 
-        <div style={{ position: 'relative', width: '100%', maxWidth: 390, height: 'clamp(300px, 50vh, 430px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: 390, height: 'clamp(190px, 28vh, 240px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
           <img
             src={farmer}
             alt=""
             style={{
               position: 'relative',
               zIndex: 4,
-              width: 'min(100%, 330px)',
-              height: 'auto',
+              width: 'auto',
+              height: '25vh',
+              maxHeight: 220,
+              minHeight: 170,
               objectFit: 'contain',
               filter: 'drop-shadow(0 10px 16px rgba(30, 50, 25, 0.10))',
             }}
