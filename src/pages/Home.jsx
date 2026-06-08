@@ -560,8 +560,8 @@ function PlacesMapPreview({ policy, places, navigate }) {
           textAlign: 'left',
         }}
       >
-        <div style={{ position: 'relative', minHeight: 380, background: '#FFFFFF', overflow: 'hidden' }}>
-          <div style={{ position: 'relative', height: 265, overflow: 'hidden' }}>
+        <div style={{ background: '#FFFFFF', overflow: 'hidden' }}>
+          <div style={{ position: 'relative', height: 210, overflow: 'hidden' }}>
           <div ref={mapRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
           {mapPlaces.length === 0 && (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#777', fontSize: 13, fontWeight: 700 }}>
@@ -573,7 +573,7 @@ function PlacesMapPreview({ policy, places, navigate }) {
               {featuredMeta.label || '사용처'}
             </div>
           </div>
-          <div style={{ position: 'absolute', left: 12, right: 12, bottom: 14, borderRadius: 22, background: '#FFFFFF', border: '1.5px solid #e8e8e8', boxShadow: '0 -4px 18px rgba(31,36,51,0.08)', padding: '12px 12px 13px' }}>
+          <div style={{ margin: '-18px 12px 14px', position: 'relative', zIndex: 2, borderRadius: 22, background: '#FFFFFF', border: '1.5px solid #e8e8e8', boxShadow: '0 -4px 18px rgba(31,36,51,0.08)', padding: '12px 12px 13px' }}>
             <div style={{ width: 40, height: 4, borderRadius: 999, background: '#e2e2e2', margin: '0 auto 10px' }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10 }}>
               <p style={{ fontSize: 13, fontWeight: 800, color: '#888' }}>
