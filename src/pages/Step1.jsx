@@ -787,7 +787,7 @@ export default function Step1() {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, boxSizing: 'border-box', padding: '16px 28px 16px', background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
+      <div style={{ position: 'fixed', bottom: 'max(12px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 390, boxSizing: 'border-box', padding: '16px 28px 16px', background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
         <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete || (page === 3 && !isFormComplete)} variant="pill">
           {submitting ? '저장 중...' : page === 3 ? '내 지원금 찾기' : '다음'}
         </Button>
