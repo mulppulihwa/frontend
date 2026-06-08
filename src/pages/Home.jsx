@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, Check, ChevronRight, Clock3, User, X } from 'lucide-react'
 import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
@@ -256,7 +256,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
   const [items, setItems] = useState([])
   const [checked, setChecked] = useState({})
   const [completeAnimation, setCompleteAnimation] = useState(false)
-  const [completedPolicyId, setCompletedPolicyId] = useState(null)
+  const completedPolicyIdRef = useRef(null)
   const [scheduleMessage] = useState(() => homeScheduleMessages[Math.floor(Math.random() * homeScheduleMessages.length)])
   const visibleItems = items.slice(0, 3)
   const done = visibleItems.filter(item => !!checked[item.id]).length
@@ -265,7 +265,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
 
   useEffect(() => {
     let active = true
-    setCompletedPolicyId(null)
+    completedPolicyIdRef.current = null
     setItems([])
     setChecked(loadStoredChecks(policy))
 
@@ -293,8 +293,8 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
   }, [policy])
 
   useEffect(() => {
-    if (!policy?.id || total === 0 || done !== total || completedPolicyId === policy.id) return undefined
-    setCompletedPolicyId(policy.id)
+    if (!policy?.id || total === 0 || done !== total || completedPolicyIdRef.current === policy.id) return undefined
+    completedPolicyIdRef.current = policy.id
     setCompleteAnimation(true)
     const animationTimer = window.setTimeout(() => setCompleteAnimation(false), 920)
     const swapTimer = window.setTimeout(() => onComplete?.(policy), 360)
@@ -302,7 +302,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete }) {
       window.clearTimeout(animationTimer)
       window.clearTimeout(swapTimer)
     }
-  }, [completedPolicyId, done, onComplete, policy, total])
+  }, [done, onComplete, policy, total])
 
   const toggleItem = async (item) => {
     const next = { ...checked, [item.id]: !checked[item.id] }
