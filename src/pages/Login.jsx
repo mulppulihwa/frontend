@@ -107,7 +107,7 @@ export default function Login() {
           />
         </div>
 
-        <div style={{ width: '100%', maxWidth: 350, border: '1.5px solid #076818', borderRadius: 16, padding: '12px 14px', textAlign: 'center', background: '#FDFCF8' }}>
+        <div style={{ width: '100%', maxWidth: 350, border: '1.5px solid #dbead5', borderRadius: 16, padding: '12px 14px', textAlign: 'center', background: '#FDFCF8' }}>
           <p style={{ fontSize: 15, fontWeight: 600, color: '#1a1a1a', lineHeight: 1.55, margin: 0 }}>
             내게 꼭 맞는 정책 진단부터<br />
             복잡한 지원금 신청 준비, 알뜰한 사용처 안내까지<br />
