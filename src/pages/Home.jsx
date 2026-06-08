@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Bell, Check, ChevronRight, Clock3, MapPin, Navigation, User, X } from 'lucide-react'
 import { fetchPlaces, fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
+import { getPlaceCategoryMeta } from '../lib/placeCategories'
 import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
@@ -446,8 +447,10 @@ function PlacesMapPreview({ policy, places, navigate }) {
   const mapRef = useRef(null)
   const markersRef = useRef([])
   const relatedPlaces = policy ? filterPlacesByPolicy(places, policy) : places
-  const previewPlaces = relatedPlaces.slice(0, 3)
   const mapPlaces = relatedPlaces.filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng)).slice(0, 5)
+  const featuredPlace = mapPlaces[0] || relatedPlaces[0] || null
+  const featuredMeta = getPlaceCategoryMeta(featuredPlace?.category)
+  const FeaturedIcon = featuredMeta.icon
   const openMap = () => navigate('/map', { state: policy ? { policy } : undefined })
 
   useEffect(() => {
@@ -556,37 +559,48 @@ function PlacesMapPreview({ policy, places, navigate }) {
           textAlign: 'left',
         }}
       >
-        <div style={{ position: 'relative', height: 150, background: '#eef6ea', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', minHeight: 330, background: '#FFFFFF', overflow: 'hidden' }}>
+          <div style={{ position: 'relative', height: 220, overflow: 'hidden' }}>
           <div ref={mapRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
           {mapPlaces.length === 0 && (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#777', fontSize: 13, fontWeight: 700 }}>
               사용처 지도를 불러오는 중이에요
             </div>
           )}
-          <div style={{ position: 'absolute', left: 14, bottom: 14, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 10px', borderRadius: 999, background: 'rgba(255,255,255,0.92)', color: '#076818', fontSize: 12, fontWeight: 800 }}>
-            <MapPin size={14} strokeWidth={2.4} />
-            {relatedPlaces.length || places.length}개 장소
-          </div>
-        </div>
-        <div style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {previewPlaces.length > 0 ? previewPlaces.map(place => (
-            <div key={place.id} style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
-              <span style={{ width: 30, height: 30, borderRadius: 10, background: '#e8f3e8', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <MapPin size={16} color="#076818" strokeWidth={2.4} />
-              </span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 13, fontWeight: 800, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{place.name}</p>
-                <p style={{ marginTop: 2, fontSize: 11, fontWeight: 500, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{place.address || '주소 확인 필요'}</p>
-              </div>
+            <div style={{ position: 'absolute', left: 14, top: 14, display: 'inline-flex', alignItems: 'center', gap: 7, padding: '8px 13px', borderRadius: 999, background: '#FFFFFF', border: '1.5px solid #076818', color: '#076818', fontSize: 12, fontWeight: 800, boxShadow: '0 4px 14px rgba(31,36,51,0.10)' }}>
+              <FeaturedIcon size={15} strokeWidth={2.3} />
+              {featuredMeta.label || '사용처'}
             </div>
-          )) : (
-            <p style={{ fontSize: 13, fontWeight: 700, color: '#777', textAlign: 'center', padding: '8px 0' }}>
-              사용처를 지도에서 확인해보세요
-            </p>
-          )}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 40, borderRadius: 999, border: '1.5px solid #076818', color: '#076818', fontSize: 14, fontWeight: 800 }}>
-            <Navigation size={15} strokeWidth={2.4} />
-            지도에서 보기
+          </div>
+          <div style={{ position: 'absolute', left: 12, right: 12, bottom: 14, borderRadius: 22, background: '#FFFFFF', border: '1.5px solid #e8e8e8', boxShadow: '0 -4px 18px rgba(31,36,51,0.08)', padding: '12px 12px 13px' }}>
+            <div style={{ width: 40, height: 4, borderRadius: 999, background: '#e2e2e2', margin: '0 auto 10px' }} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10 }}>
+              <p style={{ fontSize: 13, fontWeight: 800, color: '#888' }}>
+                {relatedPlaces.length || places.length}개 장소
+              </p>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 800, color: '#aaa' }}>
+                전체 보기 <ChevronRight size={14} strokeWidth={2.4} />
+              </span>
+            </div>
+            {featuredPlace ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, padding: '12px 10px', borderRadius: 18, border: '1.5px solid #ededed', background: '#FFFFFF' }}>
+                <span style={{ width: 42, height: 42, borderRadius: 14, background: featuredMeta.bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <FeaturedIcon size={21} color={featuredMeta.color} strokeWidth={2.4} />
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 15, fontWeight: 800, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{featuredPlace.name}</p>
+                  <p style={{ marginTop: 4, fontSize: 12, fontWeight: 500, color: '#777', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{featuredPlace.address || '주소 확인 필요'}</p>
+                </div>
+              </div>
+            ) : (
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#777', textAlign: 'center', padding: '12px 0' }}>
+                사용처를 지도에서 확인해보세요
+              </p>
+            )}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 38, marginTop: 12, borderRadius: 999, border: '1.5px solid #076818', color: '#076818', fontSize: 14, fontWeight: 800 }}>
+              <Navigation size={15} strokeWidth={2.4} />
+              지도에서 보기
+            </div>
           </div>
         </div>
       </div>
