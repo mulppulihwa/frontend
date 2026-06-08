@@ -222,6 +222,10 @@ function getStoredChecklistProgress(policy) {
   return { done, total, complete: total > 0 && done >= total }
 }
 
+function readHomeChecklistCompleted() {
+  return readJsonSafe('home-checklist-completed')
+}
+
 function HomeCheckItem({ item, checked, onToggle }) {
   return (
     <button
@@ -435,6 +439,7 @@ export default function Home() {
   const [selectedPolicyId, setSelectedPolicyId] = useState(null)
   const [updateModalVisible, setUpdateModalVisible] = useState(true)
   const [user, setUser] = useState({ name: '', region: '' })
+  const [homeChecklistCompleted, setHomeChecklistCompleted] = useState(() => readHomeChecklistCompleted())
 
   useEffect(() => {
     let active = true
@@ -471,21 +476,33 @@ export default function Home() {
     if (aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1
     return Math.abs(aDays) - Math.abs(bDays)
   })[0]
-  const checklistPolicies = activePolicies.length > 0 ? activePolicies : policies
-  const selectedPolicy = checklistPolicies.find(policy => String(policy.id) === String(selectedPolicyId))
-  const firstUnfinishedPolicy = checklistPolicies.find(policy => !getStoredChecklistProgress(policy).complete)
+  const activePolicyIds = new Set(activePolicies.map(policy => String(policy.id)))
+  const checklistPolicies = [
+    ...activePolicies,
+    ...policies.filter(policy => !activePolicyIds.has(String(policy.id))),
+  ]
+  const isHomeChecklistComplete = (policy, completedMap = homeChecklistCompleted) => (
+    Boolean(completedMap[String(policy?.id)]) || getStoredChecklistProgress(policy).complete
+  )
+  const selectedPolicy = checklistPolicies.find(policy => String(policy.id) === String(selectedPolicyId) && !isHomeChecklistComplete(policy))
+  const firstUnfinishedPolicy = checklistPolicies.find(policy => !isHomeChecklistComplete(policy))
   const todayPolicy = selectedPolicy || firstUnfinishedPolicy || checklistPolicies[0]
 
   const handleChecklistComplete = (completedPolicy) => {
+    if (!completedPolicy?.id) return
+    const completedMap = { ...homeChecklistCompleted, [String(completedPolicy.id)]: true }
+    setHomeChecklistCompleted(completedMap)
+    localStorage.setItem('home-checklist-completed', JSON.stringify(completedMap))
     const candidates = checklistPolicies.filter(policy => String(policy.id) !== String(completedPolicy?.id))
-    const nextPolicy = candidates.find(policy => !getStoredChecklistProgress(policy).complete)
+    const nextPolicy = candidates.find(policy => !isHomeChecklistComplete(policy, completedMap))
     if (nextPolicy?.id) setSelectedPolicyId(nextPolicy.id)
+    else setSelectedPolicyId(null)
   }
 
   return (
     <div style={{ minHeight: '100vh', background: '#FDFCF8', overflowX: 'hidden' }}>
       <div style={{ padding: '26px 18px 116px', display: 'flex', flexDirection: 'column', gap: 28 }}>
-        <TodayChecklist policy={todayPolicy} userName={user.name} navigate={navigate} onComplete={handleChecklistComplete} />
+        <TodayChecklist key={todayPolicy?.id || 'empty-checklist'} policy={todayPolicy} userName={user.name} navigate={navigate} onComplete={handleChecklistComplete} />
         <SummaryCard counts={counts} navigate={navigate} />
         {urgentPolicy && (
           <section>
