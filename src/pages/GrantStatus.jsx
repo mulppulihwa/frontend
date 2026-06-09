@@ -12,7 +12,6 @@ const filters = [
   { key: '신청예정', label: '신청 예정' },
   { key: '신청완료', label: '신청 완료' },
   { key: '관심없음', label: '관심 없음' },
-  { key: '미입력', label: '미입력' },
 ]
 
 const statusConfig = {
