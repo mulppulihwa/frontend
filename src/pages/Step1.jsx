@@ -110,7 +110,7 @@ const labelStyle = {
 
 const radioRows = [
   { label: '예, 귀농했어요', value: true },
-  { label: '아니요', value: false },
+  { label: '아니오, 귀촌했어요', value: false },
 ]
 
 const outsideIncomeOptions = [
