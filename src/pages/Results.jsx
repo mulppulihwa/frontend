@@ -268,7 +268,7 @@ export default function Results() {
         </button>
         <button
           type="button"
-          onClick={() => index === total - 1 ? navigate('/grant-status') : changeGrant(index + 1, 'next')}
+          onClick={() => index === total - 1 ? navigate('/home', { replace: true }) : changeGrant(index + 1, 'next')}
           style={{
             minHeight: 'unset',
             padding: '14px 0',
@@ -284,7 +284,7 @@ export default function Results() {
             transition: 'background 0.2s ease',
           }}
         >
-          {index === total - 1 ? '완료' : '다음'}
+          {index === total - 1 ? '홈으로' : '다음'}
         </button>
       </div>
       )}
