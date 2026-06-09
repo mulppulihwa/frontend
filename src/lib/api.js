@@ -287,6 +287,7 @@ export async function fetchSavedPolicies() {
     return {
       ...normalizedPolicy,
       user_status: normalizeUserPolicyStatus(userStatus) || statusCache[String(normalizedPolicy.id)] || null,
+      checked_items: item.checked_items || policy.checked_items || [],
       checkDone: item.checked_items?.length ?? 0,
       checkTotal,
     }

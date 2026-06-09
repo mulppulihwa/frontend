@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, Check, ChevronRight, Clock3, MapPin, User, X } from 'lucide-react'
 import { fetchPlaces, fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
@@ -210,31 +210,36 @@ function normalizeChecklistItems(data) {
     .sort((a, b) => a.order - b.order)
 }
 
+function getBackendCheckedItems(data) {
+  const candidates = [
+    data?.checked_items,
+    data?.checkedItems,
+    data?.checklist?.checked_items,
+    data?.data?.checked_items,
+  ]
+  const value = candidates.find(Array.isArray)
+  return value || []
+}
+
 function loadStoredChecks(policy) {
-  if (policy?.checked_items?.length) {
-    return policy.checked_items.reduce((acc, id) => ({ ...acc, [id]: true }), {})
-  }
   if (!policy?.id) return {}
+  const backendChecks = policy.checked_items?.reduce((acc, id) => ({ ...acc, [id]: true }), {}) || {}
   try {
-    return JSON.parse(localStorage.getItem(`checklist-checked-${policy.id}`) || '{}')
+    return {
+      ...backendChecks,
+      ...JSON.parse(localStorage.getItem(`checklist-checked-${policy.id}`) || '{}'),
+    }
   } catch {
-    return {}
+    return backendChecks
   }
 }
 
-function getStoredChecklistProgress(policy) {
-  if (!policy?.id) return { done: 0, total: 0, complete: false }
+function getChecklistProgress(policy, items = []) {
+  if (!policy?.id || items.length === 0) return { done: 0, total: items.length, remaining: items.length, complete: false }
   const checked = loadStoredChecks(policy)
-  const done = Object.values(checked).filter(Boolean).length
-  const total = Number(localStorage.getItem(`checklist-total-${policy.id}`))
-    || Number(localStorage.getItem(`home-checklist-total-${policy.id}`))
-    || Number(policy.checkTotal)
-    || 0
-  return { done, total, complete: total > 0 && done >= total }
-}
-
-function readHomeChecklistCompleted() {
-  return readJsonSafe('home-checklist-completed')
+  const done = items.filter(item => Boolean(checked[item.id])).length
+  const total = items.length
+  return { done, total, remaining: total - done, complete: total > 0 && done >= total }
 }
 
 function HomeCheckItem({ item, checked, onToggle }) {
@@ -270,8 +275,8 @@ function HomeCheckItem({ item, checked, onToggle }) {
   )
 }
 
-function TodayChecklist({ policy, userName, navigate, onComplete, onEmptyChecklist }) {
-  const [items, setItems] = useState([])
+function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete }) {
+  const [items, setItems] = useState(checklistItems)
   const [checked, setChecked] = useState({})
   const [completeAnimation, setCompleteAnimation] = useState(false)
   const completedPolicyIdRef = useRef(null)
@@ -281,35 +286,10 @@ function TodayChecklist({ policy, userName, navigate, onComplete, onEmptyCheckli
   const deadlineText = getDeadlineText(policy?.deadline)
 
   useEffect(() => {
-    let active = true
     completedPolicyIdRef.current = null
-    setItems([])
+    setItems(checklistItems)
     setChecked(loadStoredChecks(policy))
-
-    if (!policy?.id) {
-      return () => {
-        active = false
-      }
-    }
-
-    fetchPolicyChecklist(policy.id)
-      .then(data => {
-        if (!active) return
-        const nextItems = normalizeChecklistItems(data)
-        if (nextItems.length > 0) {
-          setItems(nextItems)
-          localStorage.setItem(`checklist-total-${policy.id}`, nextItems.length)
-          localStorage.setItem(`home-checklist-total-${policy.id}`, nextItems.length)
-        } else {
-          onEmptyChecklist?.(policy)
-        }
-      })
-      .catch(() => {})
-
-    return () => {
-      active = false
-    }
-  }, [onEmptyChecklist, policy])
+  }, [checklistItems, policy])
 
   useEffect(() => {
     if (!policy?.id || total === 0 || done !== total || completedPolicyIdRef.current === policy.id) return undefined
@@ -604,8 +584,9 @@ export default function Home() {
   const [selectedPolicyId, setSelectedPolicyId] = useState(null)
   const [user, setUser] = useState({ name: '', region: '' })
   const [places, setPlaces] = useState([])
-  const [homeChecklistCompleted, setHomeChecklistCompleted] = useState(() => readHomeChecklistCompleted())
-  const [emptyChecklistPolicyIds, setEmptyChecklistPolicyIds] = useState({})
+  const [, setChecklistRevision] = useState(0)
+  const [checklistItemsByPolicy, setChecklistItemsByPolicy] = useState({})
+  const [checklistsLoaded, setChecklistsLoaded] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -629,6 +610,44 @@ export default function Home() {
     }
   }, [])
 
+  useEffect(() => {
+    let active = true
+    if (policies.length === 0) {
+      setChecklistItemsByPolicy({})
+      setChecklistsLoaded(true)
+      return () => {
+        active = false
+      }
+    }
+
+    setChecklistsLoaded(false)
+    localStorage.removeItem('home-checklist-completed')
+    Promise.all(policies.map(async policy => {
+      try {
+        const data = await fetchPolicyChecklist(policy.id)
+        const items = normalizeChecklistItems(data)
+        const backendChecked = getBackendCheckedItems(data)
+        if (backendChecked.length > 0) {
+          const checked = backendChecked.reduce((acc, id) => ({ ...acc, [id]: true }), {})
+          localStorage.setItem(`checklist-checked-${policy.id}`, JSON.stringify(checked))
+        }
+        localStorage.setItem(`checklist-total-${policy.id}`, items.length)
+        localStorage.setItem(`home-checklist-total-${policy.id}`, items.length)
+        return [String(policy.id), items]
+      } catch {
+        return [String(policy.id), []]
+      }
+    })).then(entries => {
+      if (!active) return
+      setChecklistItemsByPolicy(Object.fromEntries(entries))
+      setChecklistsLoaded(true)
+    })
+
+    return () => {
+      active = false
+    }
+  }, [policies])
+
   const counts = {
     completed: policies.filter(policy => (policy.user_status || policy.status) === '신청완료').length,
     planned: policies.filter(policy => (policy.user_status || policy.status) === '신청예정').length,
@@ -645,39 +664,45 @@ export default function Home() {
     ...activePolicies,
     ...policies.filter(policy => !activePolicyIds.has(String(policy.id))),
   ].sort(compareDeadlineUrgency)
-  const isHomeChecklistComplete = (policy, completedMap = homeChecklistCompleted) => (
-    Boolean(completedMap[String(policy?.id)]) || getStoredChecklistProgress(policy).complete
-  )
-  const isEmptyChecklistPolicy = policy => Boolean(emptyChecklistPolicyIds[String(policy?.id)])
-  const hasKnownChecklistItems = policy => getStoredChecklistProgress(policy).total > 0
-  const isUnfinishedChecklistPolicy = policy => !isEmptyChecklistPolicy(policy) && !isHomeChecklistComplete(policy)
-  const selectedPolicy = checklistPolicies.find(policy => String(policy.id) === String(selectedPolicyId) && isUnfinishedChecklistPolicy(policy))
-  const firstUnfinishedWithItems = checklistPolicies.find(policy => isUnfinishedChecklistPolicy(policy) && hasKnownChecklistItems(policy))
-  const firstUnfinishedPolicy = checklistPolicies.find(isUnfinishedChecklistPolicy)
-  const todayPolicy = selectedPolicy || firstUnfinishedWithItems || firstUnfinishedPolicy || checklistPolicies.find(policy => !isEmptyChecklistPolicy(policy))
+  const getPolicyChecklistItems = policy => checklistItemsByPolicy[String(policy?.id)] || []
+  const isHomeChecklistComplete = policy => getChecklistProgress(policy, getPolicyChecklistItems(policy)).complete
+  const prioritizedChecklistPolicies = checklistPolicies
+    .filter(policy => getPolicyChecklistItems(policy).length > 0 && !isHomeChecklistComplete(policy))
+    .sort((a, b) => {
+      const deadlineOrder = compareDeadlineUrgency(a, b)
+      if (deadlineOrder !== 0) return deadlineOrder
+      const aRemaining = getChecklistProgress(a, getPolicyChecklistItems(a)).remaining
+      const bRemaining = getChecklistProgress(b, getPolicyChecklistItems(b)).remaining
+      return bRemaining - aRemaining
+    })
+  const selectedPolicy = prioritizedChecklistPolicies.find(policy => String(policy.id) === String(selectedPolicyId))
+  const todayPolicy = selectedPolicy || prioritizedChecklistPolicies[0]
+  const todayChecklistItems = getPolicyChecklistItems(todayPolicy)
 
   const handleChecklistComplete = (completedPolicy) => {
     if (!completedPolicy?.id) return
-    const completedMap = { ...homeChecklistCompleted, [String(completedPolicy.id)]: true }
-    setHomeChecklistCompleted(completedMap)
-    localStorage.setItem('home-checklist-completed', JSON.stringify(completedMap))
-    const candidates = checklistPolicies.filter(policy => String(policy.id) !== String(completedPolicy?.id) && !isEmptyChecklistPolicy(policy))
-    const nextPolicy = candidates.find(policy => !isHomeChecklistComplete(policy, completedMap) && hasKnownChecklistItems(policy))
-      || candidates.find(policy => !isHomeChecklistComplete(policy, completedMap))
+    setChecklistRevision(revision => revision + 1)
+    const candidates = checklistPolicies
+      .filter(policy => String(policy.id) !== String(completedPolicy.id))
+      .filter(policy => getPolicyChecklistItems(policy).length > 0 && !isHomeChecklistComplete(policy))
+      .sort((a, b) => {
+        const deadlineOrder = compareDeadlineUrgency(a, b)
+        if (deadlineOrder !== 0) return deadlineOrder
+        const aRemaining = getChecklistProgress(a, getPolicyChecklistItems(a)).remaining
+        const bRemaining = getChecklistProgress(b, getPolicyChecklistItems(b)).remaining
+        return bRemaining - aRemaining
+      })
+    const nextPolicy = candidates[0]
     if (nextPolicy?.id) setSelectedPolicyId(nextPolicy.id)
     else setSelectedPolicyId(null)
   }
 
-  const handleEmptyChecklist = useCallback((policy) => {
-    if (!policy?.id) return
-    setEmptyChecklistPolicyIds(prev => ({ ...prev, [String(policy.id)]: true }))
-    setSelectedPolicyId(prev => String(prev) === String(policy.id) ? null : prev)
-  }, [])
-
   return (
     <div style={{ minHeight: '100vh', background: '#FDFCF8', overflowX: 'hidden' }}>
       <div style={{ padding: '26px 18px 116px', display: 'flex', flexDirection: 'column', gap: 28 }}>
-        <TodayChecklist key={todayPolicy?.id || 'empty-checklist'} policy={todayPolicy} userName={user.name} navigate={navigate} onComplete={handleChecklistComplete} onEmptyChecklist={handleEmptyChecklist} />
+        {checklistsLoaded && (
+          <TodayChecklist key={todayPolicy?.id || 'empty-checklist'} policy={todayPolicy} checklistItems={todayChecklistItems} userName={user.name} navigate={navigate} onComplete={handleChecklistComplete} />
+        )}
         <SummaryCard counts={counts} navigate={navigate} />
         {urgentPolicy && (
           <section>
