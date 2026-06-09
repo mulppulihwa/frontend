@@ -226,7 +226,10 @@ function getStoredChecklistProgress(policy) {
   if (!policy?.id) return { done: 0, total: 0, complete: false }
   const checked = loadStoredChecks(policy)
   const done = Object.values(checked).filter(Boolean).length
-  const total = Number(localStorage.getItem(`home-checklist-total-${policy.id}`)) || Math.min(Number(localStorage.getItem(`checklist-total-${policy.id}`)) || Number(policy.checkTotal) || 0, 3)
+  const total = Number(localStorage.getItem(`checklist-total-${policy.id}`))
+    || Number(localStorage.getItem(`home-checklist-total-${policy.id}`))
+    || Number(policy.checkTotal)
+    || 0
   return { done, total, complete: total > 0 && done >= total }
 }
 
@@ -273,9 +276,8 @@ function TodayChecklist({ policy, userName, navigate, onComplete, onEmptyCheckli
   const [completeAnimation, setCompleteAnimation] = useState(false)
   const completedPolicyIdRef = useRef(null)
   const [scheduleMessage] = useState(() => homeScheduleMessages[Math.floor(Math.random() * homeScheduleMessages.length)])
-  const visibleItems = items.slice(0, 3)
-  const done = visibleItems.filter(item => !!checked[item.id]).length
-  const total = visibleItems.length
+  const done = items.filter(item => !!checked[item.id]).length
+  const total = items.length
   const deadlineText = getDeadlineText(policy?.deadline)
   const dday = getDday(policy?.deadline)
 
@@ -298,7 +300,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete, onEmptyCheckli
         if (nextItems.length > 0) {
           setItems(nextItems)
           localStorage.setItem(`checklist-total-${policy.id}`, nextItems.length)
-          localStorage.setItem(`home-checklist-total-${policy.id}`, Math.min(nextItems.length, 3))
+          localStorage.setItem(`home-checklist-total-${policy.id}`, nextItems.length)
         } else {
           onEmptyChecklist?.(policy)
         }
@@ -401,7 +403,7 @@ function TodayChecklist({ policy, userName, navigate, onComplete, onEmptyCheckli
               <p style={{ fontSize: 13, fontWeight: 800, color: total > 0 && done === total ? '#076818' : '#aaa' }}>{done}/{total}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {visibleItems.map(item => (
+              {items.map(item => (
                 <HomeCheckItem key={item.id} item={item} checked={!!checked[item.id]} onToggle={() => toggleItem(item)} />
               ))}
             </div>
