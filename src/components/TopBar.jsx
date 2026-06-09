@@ -1,7 +1,7 @@
 import { ArrowLeft, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-export default function TopBar({ title, onBack, onClose }) {
+export default function TopBar({ title, onBack, onClose, rightAction }) {
   const navigate = useNavigate()
   return (
     <>
@@ -33,6 +33,16 @@ export default function TopBar({ title, onBack, onClose }) {
           style={{ position: 'absolute', right: 18, background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', borderRadius: 8 }}
         >
           <X size={18} color="#1a1a1a" strokeWidth={2} />
+        </button>
+      )}
+      {!onClose && rightAction && (
+        <button
+          type="button"
+          aria-label={rightAction.label}
+          onClick={rightAction.onClick}
+          style={{ position: 'absolute', right: 18, background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', borderRadius: 8, color: '#1a1a1a' }}
+        >
+          {rightAction.icon}
         </button>
       )}
     </div>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Check } from 'lucide-react'
+import { Check, Home as HomeIcon } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
@@ -140,7 +140,14 @@ export default function Results() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#FDFCF8' }}>
       <div style={{ background: '#FDFCF8' }}>
-        <TopBar title="내 지원금" />
+        <TopBar
+          title="내 지원금"
+          rightAction={{
+            label: '홈으로',
+            onClick: () => navigate('/home', { replace: true }),
+            icon: <HomeIcon size={19} strokeWidth={2.2} />,
+          }}
+        />
       </div>
 
       {/* Indicator + Header */}
@@ -268,7 +275,7 @@ export default function Results() {
         </button>
         <button
           type="button"
-          onClick={() => index === total - 1 ? navigate('/home', { replace: true }) : changeGrant(index + 1, 'next')}
+          onClick={() => index === total - 1 ? navigate('/grant-status') : changeGrant(index + 1, 'next')}
           style={{
             minHeight: 'unset',
             padding: '14px 0',
@@ -284,7 +291,7 @@ export default function Results() {
             transition: 'background 0.2s ease',
           }}
         >
-          {index === total - 1 ? '홈으로' : '다음'}
+          {index === total - 1 ? '완료' : '다음'}
         </button>
       </div>
       )}
