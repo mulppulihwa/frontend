@@ -131,11 +131,10 @@ function SummaryCard({ counts, navigate }) {
           <p style={{ fontSize: 12, fontWeight: 700, color: '#5a7a5e', marginBottom: 8 }}>진단 받은 정책</p>
           <p style={{ fontSize: 42, fontWeight: 800, color: '#1f2433', lineHeight: 1 }}>{total}건</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, calc((100% - 24px) / 4))', justifyContent: 'center', gap: 8 }}>
           <SummaryTile label="완료" value={counts.completed} color="#076818" bar="#e8f3e8" />
           <SummaryTile label="예정" value={counts.planned} color="#FFA100" bar="#fff3e0" />
           <SummaryTile label="관심 없음" value={counts.ignored} color="#d93025" bar="#fff0ef" />
-          <SummaryTile label="미입력" value={counts.unset} color="#8a8a8a" bar="#f0efec" />
         </div>
       </div>
     </section>
