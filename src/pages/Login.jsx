@@ -73,10 +73,10 @@ export default function Login() {
   }
 
   return (
-    <div style={{
+    <div className="login-page" style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh',
+      minHeight: '100dvh',
       background: '#FDFCF8',
       padding: '38px 24px 30px',
       boxSizing: 'border-box',
@@ -95,10 +95,25 @@ export default function Login() {
           animation: spinRock 2.8s ease-in-out infinite;
           transform-origin: center center;
         }
+
+        @media (max-height: 760px) {
+          .login-page {
+            padding-top: 24px !important;
+            padding-bottom: 20px !important;
+          }
+
+          .login-content {
+            gap: 14px !important;
+          }
+
+          .login-character {
+            height: clamp(190px, 29vh, 245px) !important;
+            margin-top: 10px !important;
+          }
+        }
       `}</style>
 
-      <div style={{
-        flex: 1,
+      <div className="login-content" style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -116,7 +131,7 @@ export default function Login() {
           </p>
         </div>
 
-        <div style={{ position: 'relative', width: '100%', maxWidth: 390, height: 'clamp(240px, 36vh, 320px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginTop: 36 }}>
+        <div className="login-character" style={{ position: 'relative', width: '100%', maxWidth: 390, height: 'clamp(220px, 33vh, 300px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginTop: 22 }}>
           <img
             src={farmer}
             alt=""
@@ -124,9 +139,8 @@ export default function Login() {
               position: 'relative',
               zIndex: 4,
               width: 'auto',
-              height: '33vh',
+              height: '100%',
               maxHeight: 300,
-              minHeight: 220,
               objectFit: 'contain',
               filter: 'drop-shadow(0 10px 16px rgba(30, 50, 25, 0.10))',
             }}
@@ -142,7 +156,7 @@ export default function Login() {
         </div>
       </div>
 
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginTop: 18 }}>
         {error && (
           <p role="alert" style={{ fontSize: 13, color: '#d93025', lineHeight: 1.5, textAlign: 'center', marginBottom: 2 }}>
             {error}
