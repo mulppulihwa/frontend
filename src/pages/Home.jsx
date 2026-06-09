@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Check, ChevronRight, Clock3, MapPin, Navigation, User, X } from 'lucide-react'
+import { Bell, Check, ChevronRight, Clock3, MapPin, User, X } from 'lucide-react'
 import { fetchPlaces, fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 import { getPlaceCategoryMeta } from '../lib/placeCategories'
@@ -585,10 +585,6 @@ function PlacesMapPreview({ policy, places, navigate }) {
                 사용처를 지도에서 확인해보세요
               </p>
             )}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 38, marginTop: 12, borderRadius: 999, border: '1.5px solid #076818', color: '#076818', fontSize: 14, fontWeight: 800 }}>
-              <Navigation size={15} strokeWidth={2.4} />
-              지도에서 보기
-            </div>
           </div>
         </div>
       </div>
