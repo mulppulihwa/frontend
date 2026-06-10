@@ -36,15 +36,59 @@ function formatAddedDate(dateLike) {
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일에 추가되었습니다.`
 }
 
+function getChecklistProgress(policyId) {
+  const total = Number(
+    localStorage.getItem(`checklist-total-${policyId}`)
+    || localStorage.getItem(`home-checklist-total-${policyId}`)
+    || 0,
+  )
+  if (!total) return null
+
+  try {
+    const checked = JSON.parse(localStorage.getItem(`checklist-checked-${policyId}`) || '{}')
+    const done = Object.values(checked).filter(Boolean).length
+    return { done: Math.min(done, total), total }
+  } catch {
+    return { done: 0, total }
+  }
+}
+
+function ChecklistProgress({ progress }) {
+  if (!progress) return null
+  const complete = progress.done >= progress.total
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+      <span style={{
+        width: 34,
+        height: 34,
+        borderRadius: '50%',
+        border: complete ? 'none' : '3px solid #FFA100',
+        background: complete ? '#076818' : '#FFFFFF',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxSizing: 'border-box',
+      }}>
+        {complete && <Check size={19} color="#FFFFFF" strokeWidth={2.8} />}
+      </span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: complete ? '#076818' : '#888', whiteSpace: 'nowrap' }}>
+        준비물 {progress.done}/{progress.total}
+      </span>
+    </div>
+  )
+}
+
 function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified }) {
   const days = grant.countdown?.days ?? grant.days ?? 0
   const BellIcon = notified ? BellRing : Bell
+  const checklistProgress = getChecklistProgress(grant.id)
 
   return (
     <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.9)', borderRadius: 28, overflow: 'hidden' }}>
       <div
         onClick={() => navigate('/detail', { state: { grant } })}
-        style={{ padding: '16px 16px 12px', display: 'grid', gridTemplateColumns: '56px minmax(0, 1fr) 34px', alignItems: 'center', gap: 10, cursor: 'pointer' }}
+        style={{ padding: '16px 16px 12px', display: 'grid', gridTemplateColumns: '56px minmax(0, 1fr) 48px', alignItems: 'center', gap: 10, cursor: 'pointer' }}
       >
         <p style={{ fontSize: 15, fontWeight: 800, color: '#d93025', letterSpacing: '-0.2px', textAlign: 'center' }}>
           D-{days}
@@ -56,27 +100,30 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified
             {formatAddedDate(grant.addedAt)}
           </p>
         </div>
-        <button
-          type="button"
-          aria-label={notified ? '알림 설정됨' : '알림 받기'}
-          onClick={e => { e.stopPropagation(); onNotify() }}
-          style={{
-            width: 34,
-            height: 34,
-            borderRadius: '50%',
-            border: `1.5px solid ${notified ? '#FFA100' : '#e8e8e8'}`,
-            background: notified ? '#fff3e0' : '#fff',
-            cursor: 'pointer',
-            color: notified ? '#FFA100' : '#444',
-            flexShrink: 0,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          <BellIcon size={17} strokeWidth={2.3} />
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: checklistProgress ? 10 : 0 }}>
+          <button
+            type="button"
+            aria-label={notified ? '알림 설정됨' : '알림 받기'}
+            onClick={e => { e.stopPropagation(); onNotify() }}
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: '50%',
+              border: `1.5px solid ${notified ? '#FFA100' : '#e8e8e8'}`,
+              background: notified ? '#fff3e0' : '#fff',
+              cursor: 'pointer',
+              color: notified ? '#FFA100' : '#444',
+              flexShrink: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <BellIcon size={17} strokeWidth={2.3} />
+          </button>
+          <ChecklistProgress progress={checklistProgress} />
+        </div>
       </div>
 
       <div style={{ borderTop: '1px solid rgba(218,231,211,0.6)', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
