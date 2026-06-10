@@ -12,7 +12,6 @@ export default function Loading() {
   useEffect(() => {
     let active = true
     let timer
-    const startedAt = Date.now()
 
     fetchProfile()
       .then(profile => {
@@ -26,10 +25,9 @@ export default function Loading() {
       .then(policies => {
         if (!active) return
         setMatchedCount(policies.length)
-        const remainingDelay = Math.max(700, 1800 - (Date.now() - startedAt))
         timer = window.setTimeout(() => {
           navigate('/results', { replace: true, state: { matchedPolicies: policies } })
-        }, remainingDelay)
+        }, 2200)
       })
       .catch(() => {
         if (!active) return

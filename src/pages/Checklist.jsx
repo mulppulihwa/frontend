@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ArrowUpRight, Check } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import { fetchPolicyChecklist, saveCheckedItems } from '../lib/api'
 
@@ -169,41 +169,6 @@ function CheckItem({ label, checked, onToggle }) {
   )
 }
 
-function ChecklistProgress({ done, total }) {
-  const radius = 13
-  const circumference = 2 * Math.PI * radius
-  const progress = total > 0 ? done / total : 0
-  const complete = total > 0 && done >= total
-
-  return (
-    <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
-      {complete ? (
-        <span style={{ width: 46, height: 46, borderRadius: '50%', background: '#076818', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Check size={27} color="#FFFFFF" strokeWidth={2.7} />
-        </span>
-      ) : (
-        <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
-          <circle cx="23" cy="23" r={radius} fill="none" stroke="#e8e8e8" strokeWidth="5" />
-          <circle
-            cx="23"
-            cy="23"
-            r={radius}
-            fill="none"
-            stroke="#FFA100"
-            strokeWidth="5"
-            strokeDasharray={`${progress * circumference} ${circumference}`}
-            strokeLinecap="round"
-            transform="rotate(-90 23 23)"
-          />
-        </svg>
-      )}
-      <span style={{ fontSize: 13, fontWeight: 700, color: complete ? '#076818' : '#888' }}>
-        준비물 {done}/{total}
-      </span>
-    </div>
-  )
-}
-
 function OfficeMap({ officeInfo }) {
   const mapRef = useRef(null)
 
@@ -273,10 +238,6 @@ export default function Checklist() {
     if (!storageKey) return {}
     try { return JSON.parse(localStorage.getItem(storageKey)) || {} } catch { return {} }
   })
-  const checklistItems = checklistSections.flatMap(section => section.items)
-  const totalChecklistItems = checklistItems.length
-  const completedChecklistItems = checklistItems.filter(item => !!checked[item.id]).length
-
   const toggle = async (itemId) => {
     const next = { ...checked, [itemId]: !checked[itemId] }
     setChecked(next)
@@ -363,11 +324,6 @@ export default function Checklist() {
       </p>
 
       <div style={{ padding: '0 18px 124px' }}>
-        {!loading && !parsing && !error && totalChecklistItems > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 8px 14px' }}>
-            <ChecklistProgress done={completedChecklistItems} total={totalChecklistItems} />
-          </div>
-        )}
         {loading && (
           <div style={{
             background: 'none',
@@ -442,6 +398,7 @@ export default function Checklist() {
               ) : (
                 <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #e0e0e0', background: '#fff', flexShrink: 0 }} />
               )}
+              <div style={{ flex: 1, width: 2, background: '#e8e8e8', margin: '4px 0' }} />
             </div>
             {/* Card */}
             <div style={{ paddingBottom: 16 }}>
