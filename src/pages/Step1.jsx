@@ -8,7 +8,7 @@ import Button from '../components/Button'
 import SearchAnimation from '../components/SearchAnimation'
 import { fetchProfile, fetchRegions, updateProfile } from '../lib/api'
 
-const fieldGap = 12
+const fieldGap = 'clamp(8px, 1.5dvh, 12px)'
 
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
 
@@ -145,14 +145,14 @@ const stepCopy = {
 function Header({ page }) {
   const copy = stepCopy[page] || stepCopy[1]
   return (
-    <div style={{ padding: '10px 18px 8px' }}>
+    <div className="diagnosis-header">
       <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', textAlign: 'center', marginBottom: 2, letterSpacing: '-0.3px', lineHeight: 1.5, animation: 'fadeUp 0.5s ease both' }}>
         {copy.title}
       </h2>
       <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.2px', lineHeight: 1.5, wordBreak: 'keep-all', animation: 'fadeUp 0.5s ease 0.15s both' }}>
         {copy.description}
       </p>
-      <SearchAnimation />
+      <SearchAnimation compact />
     </div>
   )
 }
@@ -488,6 +488,38 @@ export default function Step1() {
       : ''
   )
 
+  useEffect(() => {
+    const root = document.getElementById('root')
+    const previous = {
+      htmlOverflow: document.documentElement.style.overflow,
+      htmlHeight: document.documentElement.style.height,
+      bodyOverflow: document.body.style.overflow,
+      bodyHeight: document.body.style.height,
+      rootMinHeight: root?.style.minHeight || '',
+      rootHeight: root?.style.height || '',
+    }
+
+    document.documentElement.style.overflow = 'hidden'
+    document.documentElement.style.height = '100dvh'
+    document.body.style.overflow = 'hidden'
+    document.body.style.height = '100dvh'
+    if (root) {
+      root.style.minHeight = '0'
+      root.style.height = '100dvh'
+    }
+
+    return () => {
+      document.documentElement.style.overflow = previous.htmlOverflow
+      document.documentElement.style.height = previous.htmlHeight
+      document.body.style.overflow = previous.bodyOverflow
+      document.body.style.height = previous.bodyHeight
+      if (root) {
+        root.style.minHeight = previous.rootMinHeight
+        root.style.height = previous.rootHeight
+      }
+    }
+  }, [])
+
   const applySavedForm = (saved) => {
     if (!saved) return
     setBirthDate(saved.birthDate ?? birthDate)
@@ -729,29 +761,18 @@ export default function Step1() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', minHeight: 0, overflow: 'hidden', background: '#FDFCF8' }}>
+    <div className="diagnosis-page">
       <div style={{ background: '#FDFCF8' }}>
         <TopBar title="정보 입력" onBack={goBack} onClose={page === 3 ? () => navigate('/home') : undefined} />
-        <div style={{ padding: '8px 18px 10px' }}>
+        <div className="diagnosis-progress">
           <StepIndicator current={page} total={3} />
         </div>
       </div>
 
-      <div
-        className="step-form-scroll"
-        style={{
-          flex: 1,
-          minHeight: 0,
-          overflowY: 'auto',
-          paddingBottom: 220,
-          scrollPaddingBottom: 220,
-          WebkitOverflowScrolling: 'touch',
-          overscrollBehavior: 'contain',
-        }}
-      >
+      <div className={`diagnosis-content diagnosis-content--step-${page}`}>
         <Header page={page} />
 
-        <div style={{ padding: '20px 18px 0', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+        <div className="diagnosis-fields">
           {profileNotice && (
             <div style={{ marginBottom: 14, background: '#fff8ee', border: '1.5px solid #ffe0a0', borderRadius: 14, padding: '11px 13px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
               <p style={{ fontSize: 13, fontWeight: 700, color: '#b86b00', lineHeight: 1.45, letterSpacing: '-0.1px' }}>
@@ -849,7 +870,7 @@ export default function Step1() {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 'max(12px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: 'min(100%, 430px)', boxSizing: 'border-box', padding: '16px 28px 16px', background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
+      <div className="diagnosis-footer">
         <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete || (page === 3 && !isFormComplete)} variant="pill">
           {submitting ? '저장 중...' : page === 3 ? '내 지원금 찾기' : '다음'}
         </Button>
