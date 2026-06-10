@@ -399,7 +399,6 @@ export default function Checklist() {
               ) : (
                 <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #e0e0e0', background: '#fff', flexShrink: 0 }} />
               )}
-              <div style={{ flex: 1, width: 2, background: '#e8e8e8', margin: '4px 0' }} />
             </div>
             {/* Card */}
             <div style={{ paddingBottom: 16 }}>
