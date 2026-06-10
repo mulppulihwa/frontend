@@ -352,54 +352,75 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
           50% { opacity: 0.85; }
         }
       `}</style>
-      {loading && !policy?.id && (
-        <div
-          aria-label="오늘의 맞춤 일정을 불러오는 중"
-          style={{
-            height: 164,
-            borderRadius: 24,
-            border: '1px solid rgba(218,231,211,0.95)',
-            background: '#f3f7f1',
-            animation: 'homeChecklistLoading 1.2s ease-in-out infinite',
-          }}
-        />
-      )}
-      {policy?.id && (
-        <div
-          style={{
-            background: '#fff',
-            border: `1px solid ${total > 0 && done === total ? 'rgba(7,104,24,0.24)' : 'rgba(218,231,211,0.95)'}`,
-            borderRadius: 24,
-            overflow: 'hidden',
-            transformOrigin: 'center center',
-            animation: completeAnimation ? 'homeChecklistSwap 0.92s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none',
-            transition: 'border-color 0.18s ease, opacity 0.18s ease',
-            willChange: completeAnimation ? 'transform, opacity' : 'auto',
-          }}
-        >
-          <button type="button" onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })} style={{ width: '100%', border: 'none', background: '#e8f3e8', padding: '14px 16px 12px', textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit' }}>
-            <p style={{ fontSize: 16, fontWeight: 800, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all' }}>
-              {policy.title}
-            </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap', marginTop: 4 }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#5a7a5e', lineHeight: 1.25 }}>
-                {deadlineText}
-              </span>
-            </div>
-          </button>
-          <div style={{ padding: '12px 16px 16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <p style={{ fontSize: 14, fontWeight: 800, color: '#c2185b' }}>준비 항목</p>
-              <p style={{ fontSize: 13, fontWeight: 800, color: total > 0 && done === total ? '#076818' : '#aaa' }}>{done}/{total}</p>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {items.map(item => (
-                <HomeCheckItem key={item.id} item={item} checked={!!checked[item.id]} onToggle={() => toggleItem(item)} />
-              ))}
+      <div style={{ minHeight: 230 }} aria-live="polite">
+        {loading && !policy?.id ? (
+          <div
+            aria-label="오늘의 맞춤 일정을 불러오는 중"
+            style={{
+              minHeight: 230,
+              borderRadius: 24,
+              border: '1px solid rgba(218,231,211,0.95)',
+              background: '#f3f7f1',
+              animation: 'homeChecklistLoading 1.2s ease-in-out infinite',
+            }}
+          />
+        ) : policy?.id ? (
+          <div
+            style={{
+              minHeight: 230,
+              background: '#fff',
+              border: `1px solid ${total > 0 && done === total ? 'rgba(7,104,24,0.24)' : 'rgba(218,231,211,0.95)'}`,
+              borderRadius: 24,
+              overflow: 'hidden',
+              transformOrigin: 'center center',
+              animation: completeAnimation ? 'homeChecklistSwap 0.92s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none',
+              transition: 'border-color 0.18s ease, opacity 0.18s ease',
+              willChange: completeAnimation ? 'transform, opacity' : 'auto',
+            }}
+          >
+            <button type="button" onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })} style={{ width: '100%', border: 'none', background: '#e8f3e8', padding: '14px 16px 12px', textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit' }}>
+              <p style={{ fontSize: 16, fontWeight: 800, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all' }}>
+                {policy.title}
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap', marginTop: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#5a7a5e', lineHeight: 1.25 }}>
+                  {deadlineText}
+                </span>
+              </div>
+            </button>
+            <div style={{ padding: '12px 16px 16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <p style={{ fontSize: 14, fontWeight: 800, color: '#c2185b' }}>준비 항목</p>
+                <p style={{ fontSize: 13, fontWeight: 800, color: total > 0 && done === total ? '#076818' : '#aaa' }}>{done}/{total}</p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {items.map(item => (
+                  <HomeCheckItem key={item.id} item={item} checked={!!checked[item.id]} onToggle={() => toggleItem(item)} />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div style={{
+            minHeight: 230,
+            borderRadius: 24,
+            border: '1px solid rgba(218,231,211,0.95)',
+            background: '#FFFFFF',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 24,
+            textAlign: 'center',
+          }}>
+            <span style={{ width: 42, height: 42, borderRadius: '50%', background: '#e8f3e8', color: '#076818', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+              <Check size={22} strokeWidth={2.4} />
+            </span>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433' }}>미완성 체크리스트 정책이 없습니다.</p>
+            <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: '#888' }}>모든 준비 항목을 확인했어요.</p>
+          </div>
+        )}
+      </div>
     </section>
   )
 }
