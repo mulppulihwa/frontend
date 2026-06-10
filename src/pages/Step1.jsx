@@ -62,6 +62,7 @@ function DateSelectField({ label, value, onChange, precision = 'day' }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <label style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{label}</label>
       <input
+        className="diagnosis-date-input"
         type="text"
         inputMode="numeric"
         autoComplete="off"
@@ -520,7 +521,7 @@ export default function Step1() {
     }
   }, [])
 
-  const applySavedForm = (saved) => {
+  const applySavedForm = (saved, { restoreRelocationDates = true } = {}) => {
     if (!saved) return
     setBirthDate(saved.birthDate ?? birthDate)
     setAge(saved.age ?? age)
@@ -529,10 +530,10 @@ export default function Step1() {
     setFarming(saved.farming ?? farming)
     setFarmingDate(saved.farmingDate ?? farmingDate)
     setLocation(saved.location ?? location)
-    setMovedAt(saved.movedAt ?? movedAt)
+    if (restoreRelocationDates) setMovedAt(saved.movedAt ?? movedAt)
     setPreviousResidence(saved.previousResidence ?? previousResidence)
     setPreviousResidenceType(saved.previousResidenceType ?? previousResidenceType)
-    setPreviousSince(saved.previousSince ?? previousSince)
+    if (restoreRelocationDates) setPreviousSince(saved.previousSince ?? previousSince)
     setJob(saved.job ?? job)
     setFarmBusiness(saved.farmBusiness ?? farmBusiness)
     setOutsideIncome(saved.outsideIncome !== undefined ? normalizeOutsideIncome(saved.outsideIncome) : outsideIncome)
@@ -544,7 +545,6 @@ export default function Step1() {
     if (normalized.birthDate) setBirthDate(normalized.birthDate)
     if (normalized.gender) setGender(normalized.gender)
     if (normalized.farming !== null) setFarming(normalized.farming)
-    if (normalized.movedAt) setMovedAt(normalized.movedAt)
     if (normalized.farmBusiness !== '') setFarmBusiness(Boolean(normalized.farmBusiness))
     if (normalized.outsideIncome !== '') setOutsideIncome(normalizeOutsideIncome(normalized.outsideIncome))
     if (normalized.previousResidenceType) setPreviousResidenceType(normalized.previousResidenceType)
@@ -587,7 +587,7 @@ export default function Step1() {
 
     if (submitted) {
       try {
-        applySavedForm(JSON.parse(submitted))
+        applySavedForm(JSON.parse(submitted), { restoreRelocationDates: false })
       } catch {
         localStorage.removeItem(SUBMITTED_PROFILE_KEY)
       }

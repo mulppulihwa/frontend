@@ -75,6 +75,11 @@ input:focus-visible {
   background: #fdfcf8;
 }
 
+.diagnosis-date-input::placeholder {
+  color: #b7b7b7;
+  opacity: 1;
+}
+
 .diagnosis-progress {
   padding: 8px 18px 10px;
 }
