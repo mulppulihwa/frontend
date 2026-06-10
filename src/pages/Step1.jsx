@@ -40,24 +40,37 @@ function positionPostcodeLayer(layer) {
 }
 
 
-function DateSelectField({ label, value, onChange }) {
+function getDateDigits(value) {
+  return String(value || '').replace(/\D/g, '')
+}
+
+function formatDateDigits(value, precision = 'day') {
+  const limit = precision === 'month' ? 6 : 8
+  const digits = getDateDigits(value).slice(0, limit)
+  const groups = precision === 'month'
+    ? [digits.slice(0, 4), digits.slice(4, 6)]
+    : [digits.slice(0, 4), digits.slice(4, 6), digits.slice(6, 8)]
+  return groups.filter(Boolean).join('.')
+}
+
+function DateSelectField({ label, value, onChange, precision = 'day' }) {
   const [focused, setFocused] = useState(false)
-  // Normalise to strict YYYY-MM-DD or empty string for the native date input
-  const parts = (value || '').split('-')
-  const inputValue =
-    parts[0] && parts[1] && parts[2]
-      ? `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`
-      : ''
+  const limit = precision === 'month' ? 6 : 8
+  const inputValue = formatDateDigits(value, precision)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <label style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{label}</label>
       <input
-        type="date"
+        type="text"
+        inputMode="numeric"
+        autoComplete="off"
         value={inputValue}
-        onChange={e => onChange(e.target.value)}
+        onChange={e => onChange(getDateDigits(e.target.value).slice(0, limit))}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
+        placeholder={precision === 'month' ? '2001.01' : '2001.01.01'}
+        aria-label={`${label} ${precision === 'month' ? '여섯 자리' : '여덟 자리'} 숫자 입력`}
         style={{
           width: '100%',
           minHeight: 46,
@@ -71,12 +84,8 @@ function DateSelectField({ label, value, onChange }) {
           background: '#fff',
           fontFamily: 'inherit',
           outline: 'none',
-          letterSpacing: '-0.2px',
+          letterSpacing: '0',
           textAlign: 'left',
-          appearance: 'none',
-          WebkitAppearance: 'none',
-          colorScheme: 'light',
-          cursor: 'pointer',
           boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         }}
@@ -110,7 +119,7 @@ const labelStyle = {
 
 const radioRows = [
   { label: '예, 귀농했어요', value: true },
-  { label: '아니오, 귀촌했어요', value: false },
+  { label: '아니오', value: false },
 ]
 
 const outsideIncomeOptions = [
@@ -379,15 +388,35 @@ function hasValue(value) {
   return value !== null && value !== undefined && String(value).trim() !== ''
 }
 
-function isCompleteDate(value) {
-  const [y, m, d] = (value || '').split('-')
-  return hasValue(y) && hasValue(m) && hasValue(d)
+function isCompleteDate(value, precision = 'day') {
+  const digits = getDateDigits(value)
+  const expectedLength = precision === 'month' ? 6 : 8
+  if (digits.length !== expectedLength) return false
+  const year = Number(digits.slice(0, 4))
+  const month = Number(digits.slice(4, 6))
+  if (year < 1900 || month < 1 || month > 12) return false
+  if (precision === 'month') return true
+  const day = Number(digits.slice(6, 8))
+  const date = new Date(year, month - 1, day)
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
 }
 
 function parseDateStr(str) {
-  const [y, m, d] = (str || '').split('-')
-  if (!y || !m || !d) return null
-  return new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`)
+  const digits = getDateDigits(str)
+  if (digits.length < 6) return null
+  const year = digits.slice(0, 4)
+  const month = digits.slice(4, 6)
+  const day = digits.length >= 8 ? digits.slice(6, 8) : '01'
+  return new Date(`${year}-${month}-${day}`)
+}
+
+function toApiDate(value, precision = 'day') {
+  const digits = getDateDigits(value)
+  if (!isCompleteDate(digits, precision)) return ''
+  const year = digits.slice(0, 4)
+  const month = digits.slice(4, 6)
+  const day = precision === 'month' ? '01' : digits.slice(6, 8)
+  return `${year}-${month}-${day}`
 }
 
 function firstValue(source, keys) {
@@ -584,17 +613,17 @@ export default function Step1() {
       job && !['기타'].includes(job) ? job : null,
     ].filter(Boolean)
     return {
-      birth_date: birthDate,
+      birth_date: toApiDate(birthDate),
       gender: GENDER_API_VALUES[gender] || gender,
       region_code: REGION_CODES[regionName] || '',
       occupation_tags: occupationTags,
-      move_in_date: movedAt,
+      move_in_date: toApiDate(movedAt, 'month'),
       household_type: '독거',
       income_level: '일반',
       non_farm_income: incomeInManwon,
       marital_status: '미혼',
       is_farm_registered: farmBusiness,
-      farm_registered_date: farmBusiness ? movedAt : null,
+      farm_registered_date: farmBusiness ? toApiDate(movedAt, 'month') : null,
       is_disabled: false,
       prev_residence_type: previousResidenceType || '',
     }
@@ -647,10 +676,10 @@ export default function Step1() {
         const prevSinceDate = parseDateStr(previousSince)
         const dateOrderOk = !(movedAtDate && prevSinceDate && movedAtDate < prevSinceDate)
         return hasValue(location)
-          && isCompleteDate(movedAt)
+          && isCompleteDate(movedAt, 'month')
           && hasValue(previousResidence)
           && hasValue(previousResidenceType)
-          && isCompleteDate(previousSince)
+          && isCompleteDate(previousSince, 'month')
           && dateOrderOk
       }
       case 3:
@@ -760,7 +789,7 @@ export default function Step1() {
                   { value: '옥천', label: '옥천' },
                   { value: '옥천 외', label: '옥천 외' },
                 ]} placeholder="지역 선택" />
-                <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} />
+                <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} precision="month" />
                 <AddressSearchField
                   label="이전 거주지는 어디인가요?"
                   value={previousResidence}
@@ -769,7 +798,7 @@ export default function Step1() {
                     setPreviousResidenceType(residenceType)
                   }}
                 />
-                <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} />
+                <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} precision="month" />
                 {dateOrderError && (
                   <div style={{
                     display: 'flex',
