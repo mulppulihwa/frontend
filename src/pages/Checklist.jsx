@@ -516,24 +516,6 @@ export default function Checklist() {
           >
             자세히 보기
           </button>
-          <button
-            type="button"
-            onClick={() => navigate('/map', { state: { policy: grant } })}
-            style={{
-              flex: 1,
-              minHeight: 48,
-              borderRadius: 999,
-              border: '1.5px solid #076818',
-              background: '#FFFFFF',
-              color: '#076818',
-              fontSize: 14,
-              fontWeight: 800,
-              fontFamily: 'inherit',
-              cursor: 'pointer',
-            }}
-          >
-            사용처 보기
-          </button>
         </div>
       )}
     </div>

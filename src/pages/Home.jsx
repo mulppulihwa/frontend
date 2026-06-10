@@ -475,7 +475,6 @@ function ActivePolicyCard({ policy, navigate }) {
       </div>
       <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
         <button type="button" onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })} style={{ flex: 1, minHeight: 46, borderRadius: 999, border: 'none', background: '#076818', color: '#fff', fontSize: 14, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer' }}>준비물 확인 →</button>
-        <button type="button" onClick={() => navigate('/map', { state: { policy } })} style={{ flex: 1, minHeight: 46, borderRadius: 999, border: '1.5px solid #076818', background: '#fff', color: '#076818', fontSize: 14, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer' }}>사용처 보기</button>
       </div>
     </div>
   )
