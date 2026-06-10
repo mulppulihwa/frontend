@@ -564,7 +564,7 @@ function PlacesMapPreview({ policy, places, navigate }) {
   return (
     <section>
       <SectionTitle>
-        우리 마을 곳곳 사용처
+        지역 정착 가이드맵
       </SectionTitle>
       <div
         role="button"

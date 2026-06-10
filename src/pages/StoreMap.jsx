@@ -208,7 +208,7 @@ export default function StoreMap() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: '#f0f0f0' }}>
 
       <div style={{ background: '#FDFCF8' }}>
-        <TopBar title="우리 마을 곳곳 사용처" />
+        <TopBar title="지역 정착 가이드맵" />
       </div>
 
       {/* Map */}
