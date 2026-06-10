@@ -49,7 +49,7 @@ export default function BottomNav() {
               justifyContent: 'center',
               border: 'none',
               borderRadius: '50%',
-              background: active ? '#e8f3e8' : 'transparent',
+              background: 'transparent',
               color: active ? '#076818' : '#9a9a96',
               cursor: 'pointer',
             }}
