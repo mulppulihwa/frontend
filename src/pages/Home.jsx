@@ -275,7 +275,7 @@ function HomeCheckItem({ item, checked, onToggle }) {
   )
 }
 
-function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete }) {
+function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete, loading = false }) {
   const [items, setItems] = useState(checklistItems)
   const [checked, setChecked] = useState({})
   const [completeAnimation, setCompleteAnimation] = useState(false)
@@ -347,7 +347,23 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
           72% { opacity: 1; transform: translateY(-4px) scale(1.01); }
           100% { opacity: 1; transform: translateY(0) scale(1); }
         }
+        @keyframes homeChecklistLoading {
+          0%, 100% { opacity: 0.45; }
+          50% { opacity: 0.85; }
+        }
       `}</style>
+      {loading && !policy?.id && (
+        <div
+          aria-label="오늘의 맞춤 일정을 불러오는 중"
+          style={{
+            height: 164,
+            borderRadius: 24,
+            border: '1px solid rgba(218,231,211,0.95)',
+            background: '#f3f7f1',
+            animation: 'homeChecklistLoading 1.2s ease-in-out infinite',
+          }}
+        />
+      )}
       {policy?.id && (
         <div
           style={{
@@ -582,8 +598,12 @@ export default function Home() {
   const navigate = useNavigate()
   const [policies, setPolicies] = useState([])
   const [selectedPolicyId, setSelectedPolicyId] = useState(null)
-  const [user, setUser] = useState({ name: '', region: '' })
+  const [user, setUser] = useState(() => ({
+    name: getKakaoUserName(),
+    region: readJsonSafe('submittedDiagnosisProfile').location || '',
+  }))
   const [places, setPlaces] = useState([])
+  const [policiesLoaded, setPoliciesLoaded] = useState(false)
   const [, setChecklistRevision] = useState(0)
   const [checklistItemsByPolicy, setChecklistItemsByPolicy] = useState({})
   const [checklistsLoaded, setChecklistsLoaded] = useState(false)
@@ -597,9 +617,13 @@ export default function Home() {
       .catch(() => setUser({ name: getKakaoUserName(), region: readJsonSafe('submittedDiagnosisProfile').location || '' }))
     fetchSavedPolicies()
       .then(savedPolicies => {
-        if (active) setPolicies(savedPolicies)
+        if (!active) return
+        setPolicies(savedPolicies)
+        setPoliciesLoaded(true)
       })
-      .catch(() => {})
+      .catch(() => {
+        if (active) setPoliciesLoaded(true)
+      })
     fetchPlaces()
       .then(nextPlaces => {
         if (active) setPlaces(nextPlaces)
@@ -612,6 +636,12 @@ export default function Home() {
 
   useEffect(() => {
     let active = true
+    if (!policiesLoaded) {
+      setChecklistsLoaded(false)
+      return () => {
+        active = false
+      }
+    }
     if (policies.length === 0) {
       setChecklistItemsByPolicy({})
       setChecklistsLoaded(true)
@@ -646,7 +676,7 @@ export default function Home() {
     return () => {
       active = false
     }
-  }, [policies])
+  }, [policies, policiesLoaded])
 
   const counts = {
     completed: policies.filter(policy => (policy.user_status || policy.status) === '신청완료').length,
@@ -700,9 +730,15 @@ export default function Home() {
   return (
     <div style={{ minHeight: '100vh', background: '#FDFCF8', overflowX: 'hidden' }}>
       <div style={{ padding: '26px 18px 116px', display: 'flex', flexDirection: 'column', gap: 28 }}>
-        {checklistsLoaded && (
-          <TodayChecklist key={todayPolicy?.id || 'empty-checklist'} policy={todayPolicy} checklistItems={todayChecklistItems} userName={user.name} navigate={navigate} onComplete={handleChecklistComplete} />
-        )}
+        <TodayChecklist
+          key={todayPolicy?.id || 'empty-checklist'}
+          policy={todayPolicy}
+          checklistItems={todayChecklistItems}
+          userName={user.name}
+          navigate={navigate}
+          onComplete={handleChecklistComplete}
+          loading={!checklistsLoaded}
+        />
         <SummaryCard counts={counts} navigate={navigate} />
         {urgentPolicy && (
           <section>
