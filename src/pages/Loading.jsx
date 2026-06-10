@@ -8,6 +8,7 @@ export default function Loading() {
   const navigate = useNavigate()
   const [userName, setUserName] = useState(getKakaoUserName)
   const [matchedCount, setMatchedCount] = useState(null)
+  const [isFirstDiagnosis] = useState(() => !localStorage.getItem('lastDiagnosisDate'))
 
   useEffect(() => {
     let active = true
@@ -26,19 +27,27 @@ export default function Loading() {
         if (!active) return
         setMatchedCount(policies.length)
         timer = window.setTimeout(() => {
-          navigate('/results', { replace: true, state: { matchedPolicies: policies } })
+          navigate('/results', {
+            replace: true,
+            state: { matchedPolicies: policies, firstDiagnosis: isFirstDiagnosis },
+          })
         }, 2200)
       })
       .catch(() => {
         if (!active) return
-        timer = window.setTimeout(() => navigate('/results', { replace: true }), 700)
+        timer = window.setTimeout(() => {
+          navigate('/results', {
+            replace: true,
+            state: { firstDiagnosis: isFirstDiagnosis },
+          })
+        }, 700)
       })
 
     return () => {
       active = false
       window.clearTimeout(timer)
     }
-  }, [navigate])
+  }, [isFirstDiagnosis, navigate])
 
   return (
     <div className="loading-wave-page">

@@ -43,6 +43,9 @@ export default function Results() {
   const navigate = useNavigate()
   const location = useLocation()
   const prefetchedPolicies = location.state?.matchedPolicies
+  const [isFirstDiagnosis] = useState(
+    () => location.state?.firstDiagnosis ?? !localStorage.getItem('lastDiagnosisDate'),
+  )
   const [index, setIndex] = useState(0)
   const [pageDirection, setPageDirection] = useState('next')
   const [statuses, setStatuses] = useState({})
@@ -148,11 +151,11 @@ export default function Results() {
       <div style={{ background: '#FDFCF8' }}>
         <TopBar
           title="내 지원금"
-          rightAction={{
+          rightAction={isFirstDiagnosis ? {
             label: '홈으로',
             onClick: () => navigate('/home', { replace: true }),
             icon: <HomeIcon size={19} strokeWidth={2.2} />,
-          }}
+          } : undefined}
         />
       </div>
 
