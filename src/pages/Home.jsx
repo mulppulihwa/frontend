@@ -1,24 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Check, ChevronRight, Clock3, MapPin, User, X } from 'lucide-react'
-import { fetchPlaces, fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
+import { Bell, Check, ChevronRight, Clock3, User } from 'lucide-react'
+import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
-import { getPlaceCategoryMeta } from '../lib/placeCategories'
-import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 
-const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
 const HOME_CHECKLIST_CACHE_KEY = 'home-checklist-items'
-
-function getDday(deadlineStr) {
-  if (!deadlineStr) return '-'
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const deadline = new Date(deadlineStr)
-  if (Number.isNaN(deadline.getTime())) return '-'
-  const diff = Math.ceil((deadline - today) / 86400000)
-  if (diff === 0) return 'D-DAY'
-  return diff > 0 ? `D-${diff}` : `D+${Math.abs(diff)}`
-}
 
 function getDeadlineText(deadlineStr) {
   if (!deadlineStr) return '마감일 확인 필요'
@@ -77,28 +63,6 @@ function firstValue(source, keys) {
     if (value !== undefined && value !== null && value !== '') return value
   }
   return ''
-}
-
-function MiniRing({ done = 0, total = 0 }) {
-  const r = 10
-  const circ = 2 * Math.PI * r
-  const pct = total > 0 ? done / total : 0
-  const complete = total > 0 && done >= total
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-      {complete ? (
-        <span style={{ width: 30, height: 30, borderRadius: '50%', background: '#076818', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Check size={17} color="#fff" strokeWidth={2.8} />
-        </span>
-      ) : (
-        <svg width="30" height="30" viewBox="0 0 30 30">
-          <circle cx="15" cy="15" r={r} fill="none" stroke="#e8e8e8" strokeWidth="3" />
-          <circle cx="15" cy="15" r={r} fill="none" stroke="#FFA100" strokeWidth="3" strokeDasharray={`${pct * circ} ${circ}`} strokeLinecap="round" transform="rotate(-90 15 15)" />
-        </svg>
-      )}
-      <span style={{ fontSize: 10, fontWeight: 600, color: complete ? '#076818' : '#888' }}>준비물 {done}/{total}</span>
-    </div>
-  )
 }
 
 function SectionTitle({ children, action }) {
@@ -451,184 +415,6 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
   )
 }
 
-const statusMeta = {
-  신청완료: { label: '신청 완료', color: '#076818', bg: '#e8f3e8', Icon: Check },
-  신청예정: { label: '신청 예정', color: '#FFA100', bg: '#fff3e0', Icon: Clock3 },
-  관심없음: { label: '관심 없음', color: '#d93025', bg: '#fff0ef', Icon: X },
-}
-
-function ActivePolicyCard({ policy, navigate }) {
-  const status = policy.user_status || policy.status
-  const cfg = statusMeta[status] || { label: '미입력', color: '#8a8a8a', bg: '#f5f3ef', Icon: Clock3 }
-  const Icon = cfg.Icon
-  return (
-    <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 26, padding: '16px 16px 14px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <p style={{ width: 52, fontSize: 13, fontWeight: 800, color: '#d93025', flexShrink: 0 }}>{getDday(policy.deadline)}</p>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 15, fontWeight: 800, color: '#1f2433', marginBottom: 6, wordBreak: 'keep-all' }}>{policy.title}</p>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 999, background: cfg.bg, color: cfg.color, fontSize: 11, fontWeight: 800 }}>
-            <Icon size={11} strokeWidth={2.5} /> {cfg.label}
-          </span>
-        </div>
-        <MiniRing done={policy.checkDone} total={policy.checkTotal} />
-      </div>
-      <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-        <button type="button" onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })} style={{ flex: 1, minHeight: 46, borderRadius: 999, border: 'none', background: '#076818', color: '#fff', fontSize: 14, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer' }}>준비물 확인 →</button>
-      </div>
-    </div>
-  )
-}
-
-function PlacesMapPreview({ policy, places, navigate }) {
-  const mapRef = useRef(null)
-  const markersRef = useRef([])
-  const policyPlaces = policy ? filterPlacesByPolicy(places, policy) : places
-  const relatedPlaces = policyPlaces.length > 0 ? policyPlaces : places
-  const mapPlaces = relatedPlaces.filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng)).slice(0, 5)
-  const featuredPlace = mapPlaces[0] || relatedPlaces[0] || null
-  const featuredMeta = getPlaceCategoryMeta(featuredPlace?.category)
-  const FeaturedIcon = featuredMeta.icon
-  const openMap = () => navigate('/map', { state: policy ? { policy } : undefined })
-
-  useEffect(() => {
-    const KAKAO_KEY = import.meta.env.VITE_KAKAO_MAP_KEY
-    const scriptId = 'kakao-map-sdk'
-    if (!KAKAO_KEY || !mapRef.current) return undefined
-
-    let active = true
-
-    const clearMarkers = () => {
-      markersRef.current.forEach(marker => marker.setMap(null))
-      markersRef.current = []
-    }
-
-    const initMap = () => {
-      if (!active || !mapRef.current || !window.kakao?.maps) return
-      window.kakao.maps.load(() => {
-        if (!active || !mapRef.current) return
-        clearMarkers()
-        const centerPlace = mapPlaces[0]
-        const center = new window.kakao.maps.LatLng(
-          centerPlace?.lat || OKCHEON_CENTER.lat,
-          centerPlace?.lng || OKCHEON_CENTER.lng,
-        )
-        const map = new window.kakao.maps.Map(mapRef.current, { center, level: mapPlaces.length > 1 ? 6 : 4 })
-        map.setDraggable(false)
-        map.setZoomable(false)
-
-        const bounds = new window.kakao.maps.LatLngBounds()
-        mapPlaces.forEach((place, index) => {
-          const position = new window.kakao.maps.LatLng(place.lat, place.lng)
-          bounds.extend(position)
-          const color = ['#076818', '#FFA100', '#c2185b', '#4b7bec', '#2f8f83'][index % 5]
-          const svg = `<svg width="34" height="42" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg">
-            <filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.22"/></filter>
-            <path d="M17 2C10.4 2 5 7.4 5 14c0 9.2 12 25.5 12 25.5S29 23.2 29 14C29 7.4 23.6 2 17 2z" fill="${color}" filter="url(#s)"/>
-            <circle cx="17" cy="14" r="5.5" fill="white"/>
-          </svg>`
-          const markerImage = new window.kakao.maps.MarkerImage(
-            `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
-            new window.kakao.maps.Size(34, 42),
-            { offset: new window.kakao.maps.Point(17, 42) },
-          )
-          markersRef.current.push(new window.kakao.maps.Marker({ position, image: markerImage, map }))
-        })
-        if (mapPlaces.length > 1) map.setBounds(bounds)
-      })
-    }
-
-    if (window.kakao?.maps) {
-      initMap()
-    } else {
-      const existing = document.getElementById(scriptId)
-      if (existing) {
-        existing.addEventListener('load', initMap)
-      } else {
-        const script = document.createElement('script')
-        script.id = scriptId
-        script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_KEY}&autoload=false&libraries=services`
-        script.onload = initMap
-        document.head.appendChild(script)
-      }
-    }
-
-    return () => {
-      active = false
-      clearMarkers()
-      document.getElementById(scriptId)?.removeEventListener('load', initMap)
-    }
-  }, [mapPlaces, policy])
-
-  return (
-    <section>
-      <SectionTitle>
-        지역 정착 가이드맵
-      </SectionTitle>
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={openMap}
-        onKeyDown={event => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault()
-            openMap()
-          }
-        }}
-        style={{
-          width: '100%',
-          border: '1px solid rgba(218,231,211,0.95)',
-          borderRadius: 26,
-          background: '#FFFFFF',
-          padding: 0,
-          overflow: 'hidden',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-          textAlign: 'left',
-        }}
-      >
-        <div style={{ background: '#FFFFFF', overflow: 'hidden' }}>
-          <div style={{ position: 'relative', height: 210, overflow: 'hidden' }}>
-          <div ref={mapRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
-          {mapPlaces.length === 0 && (
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#777', fontSize: 13, fontWeight: 700 }}>
-              사용처 지도를 불러오는 중이에요
-            </div>
-          )}
-            <div style={{ position: 'absolute', left: 14, top: 14, display: 'inline-flex', alignItems: 'center', gap: 7, padding: '8px 13px', borderRadius: 999, background: '#FFFFFF', border: '1.5px solid #076818', color: '#076818', fontSize: 12, fontWeight: 800, boxShadow: '0 4px 14px rgba(31,36,51,0.10)' }}>
-              <FeaturedIcon size={15} strokeWidth={2.3} />
-              {featuredMeta.label || '사용처'}
-            </div>
-          </div>
-          <div style={{ margin: '-18px 12px 14px', position: 'relative', zIndex: 2, borderRadius: 22, background: '#FFFFFF', border: '1.5px solid #e8e8e8', boxShadow: '0 -4px 18px rgba(31,36,51,0.08)', padding: '12px 12px 13px' }}>
-            <div style={{ width: 40, height: 4, borderRadius: 999, background: '#e2e2e2', margin: '0 auto 10px' }} />
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10 }}>
-              <p style={{ fontSize: 13, fontWeight: 800, color: '#888' }}>
-                {relatedPlaces.length || places.length}개 장소
-              </p>
-            </div>
-            {featuredPlace ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, padding: '12px 10px', borderRadius: 18, border: '1.5px solid #ededed', background: '#FFFFFF' }}>
-                <span style={{ width: 42, height: 42, borderRadius: 14, background: featuredMeta.bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <FeaturedIcon size={21} color={featuredMeta.color} strokeWidth={2.4} />
-                </span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 15, fontWeight: 600, color: '#1f2433', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{featuredPlace.name}</p>
-                  <p style={{ marginTop: 4, fontSize: 12, fontWeight: 400, color: '#777', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{featuredPlace.address || '주소 확인 필요'}</p>
-                </div>
-              </div>
-            ) : (
-              <p style={{ fontSize: 13, fontWeight: 700, color: '#777', textAlign: 'center', padding: '12px 0' }}>
-                사용처를 지도에서 확인해보세요
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
 function normalizeUser(profile) {
   const profileData = profile?.profile || profile?.user_profile || profile?.userProfile || profile || {}
   const submitted = readJsonSafe('submittedDiagnosisProfile')
@@ -648,7 +434,6 @@ export default function Home() {
     name: getKakaoUserName(),
     region: readJsonSafe('submittedDiagnosisProfile').location || '',
   }))
-  const [places, setPlaces] = useState([])
   const [policiesLoaded, setPoliciesLoaded] = useState(false)
   const [, setChecklistRevision] = useState(0)
   const [checklistItemsByPolicy, setChecklistItemsByPolicy] = useState(readChecklistCache)
@@ -670,11 +455,6 @@ export default function Home() {
       .catch(() => {
         if (active) setPoliciesLoaded(true)
       })
-    fetchPlaces()
-      .then(nextPlaces => {
-        if (active) setPlaces(nextPlaces)
-      })
-      .catch(() => {})
     return () => {
       active = false
     }
@@ -747,7 +527,6 @@ export default function Home() {
     const status = policy.user_status || policy.status
     return status === '신청완료' || status === '신청예정'
   })
-  const urgentPolicy = [...activePolicies].sort(compareDeadlineUrgency)[0]
   const activePolicyIds = new Set(activePolicies.map(policy => String(policy.id)))
   const checklistPolicies = [
     ...activePolicies,
@@ -799,13 +578,6 @@ export default function Home() {
           loading={!checklistsLoaded}
         />
         <SummaryCard counts={counts} navigate={navigate} />
-        {urgentPolicy && (
-          <section>
-            <SectionTitle>신청 진행 중</SectionTitle>
-            <ActivePolicyCard policy={urgentPolicy} navigate={navigate} />
-          </section>
-        )}
-        <PlacesMapPreview policy={urgentPolicy} places={places} navigate={navigate} />
       </div>
     </div>
   )
