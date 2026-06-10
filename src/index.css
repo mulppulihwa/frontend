@@ -104,8 +104,8 @@ input:focus-visible {
   position: absolute;
   top: 21%;
   left: 50%;
-  width: 190px;
-  height: 112px;
+  width: 220px;
+  height: 142px;
   transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
@@ -125,7 +125,7 @@ input:focus-visible {
 
 .diagnosis-visual .support-search-animation--compact .analysis-visual {
   flex-shrink: 0;
-  transform: scale(0.58);
+  transform: scale(0.78);
   transform-origin: center;
 }
 
@@ -171,11 +171,12 @@ input:focus-visible {
 
   .diagnosis-visual {
     top: 18%;
-    height: 72px;
+    width: 190px;
+    height: 104px;
   }
 
   .diagnosis-visual .support-search-animation--compact .analysis-visual {
-    transform: scale(0.43);
+    transform: scale(0.58);
     transform-origin: center;
   }
 
