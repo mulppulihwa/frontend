@@ -83,13 +83,20 @@ function MiniRing({ done = 0, total = 0 }) {
   const r = 10
   const circ = 2 * Math.PI * r
   const pct = total > 0 ? done / total : 0
+  const complete = total > 0 && done >= total
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-      <svg width="30" height="30" viewBox="0 0 30 30">
-        <circle cx="15" cy="15" r={r} fill="none" stroke="#e8e8e8" strokeWidth="3" />
-        <circle cx="15" cy="15" r={r} fill="none" stroke="#FFA100" strokeWidth="3" strokeDasharray={`${pct * circ} ${circ}`} strokeLinecap="round" transform="rotate(-90 15 15)" />
-      </svg>
-      <span style={{ fontSize: 10, fontWeight: 600, color: '#888' }}>준비물 {done}/{total}</span>
+      {complete ? (
+        <span style={{ width: 30, height: 30, borderRadius: '50%', background: '#076818', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Check size={17} color="#fff" strokeWidth={2.8} />
+        </span>
+      ) : (
+        <svg width="30" height="30" viewBox="0 0 30 30">
+          <circle cx="15" cy="15" r={r} fill="none" stroke="#e8e8e8" strokeWidth="3" />
+          <circle cx="15" cy="15" r={r} fill="none" stroke="#FFA100" strokeWidth="3" strokeDasharray={`${pct * circ} ${circ}`} strokeLinecap="round" transform="rotate(-90 15 15)" />
+        </svg>
+      )}
+      <span style={{ fontSize: 10, fontWeight: 600, color: complete ? '#076818' : '#888' }}>준비물 {done}/{total}</span>
     </div>
   )
 }
