@@ -7,6 +7,7 @@ import { getPlaceCategoryMeta } from '../lib/placeCategories'
 import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
+const HOME_CHECKLIST_CACHE_KEY = 'home-checklist-items'
 
 function getDday(deadlineStr) {
   if (!deadlineStr) return '-'
@@ -60,6 +61,14 @@ function readJsonSafe(key) {
   } catch {
     return {}
   }
+}
+
+function readChecklistCache() {
+  const cached = readJsonSafe(HOME_CHECKLIST_CACHE_KEY)
+  if (!cached || typeof cached !== 'object' || Array.isArray(cached)) return {}
+  return Object.fromEntries(
+    Object.entries(cached).filter(([, items]) => Array.isArray(items)),
+  )
 }
 
 function firstValue(source, keys) {
@@ -361,9 +370,19 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
               borderRadius: 24,
               border: '1px solid rgba(218,231,211,0.95)',
               background: '#f3f7f1',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              padding: 24,
               animation: 'homeChecklistLoading 1.2s ease-in-out infinite',
             }}
-          />
+          >
+            <Clock3 size={28} color="#5a7a5e" strokeWidth={2} />
+            <p style={{ marginTop: 12, fontSize: 14, fontWeight: 700, color: '#5a7a5e' }}>맞춤 체크리스트를 불러오고 있어요.</p>
+            <p style={{ marginTop: 5, fontSize: 12, fontWeight: 500, color: '#888' }}>잠시만 기다려 주세요.</p>
+          </div>
         ) : policy?.id ? (
           <div
             style={{
@@ -626,7 +645,7 @@ export default function Home() {
   const [places, setPlaces] = useState([])
   const [policiesLoaded, setPoliciesLoaded] = useState(false)
   const [, setChecklistRevision] = useState(0)
-  const [checklistItemsByPolicy, setChecklistItemsByPolicy] = useState({})
+  const [checklistItemsByPolicy, setChecklistItemsByPolicy] = useState(readChecklistCache)
   const [checklistsLoaded, setChecklistsLoaded] = useState(false)
 
   useEffect(() => {
@@ -673,7 +692,13 @@ export default function Home() {
 
     setChecklistsLoaded(false)
     localStorage.removeItem('home-checklist-completed')
-    Promise.all(policies.map(async policy => {
+    const activePolicyIds = new Set(policies.map(policy => String(policy.id)))
+    const cachedItems = Object.fromEntries(
+      Object.entries(readChecklistCache()).filter(([policyId]) => activePolicyIds.has(policyId)),
+    )
+    setChecklistItemsByPolicy(cachedItems)
+
+    const requests = policies.map(async policy => {
       try {
         const data = await fetchPolicyChecklist(policy.id)
         const items = normalizeChecklistItems(data)
@@ -684,13 +709,20 @@ export default function Home() {
         }
         localStorage.setItem(`checklist-total-${policy.id}`, items.length)
         localStorage.setItem(`home-checklist-total-${policy.id}`, items.length)
-        return [String(policy.id), items]
+        if (active) {
+          setChecklistItemsByPolicy(current => {
+            const next = { ...current, [String(policy.id)]: items }
+            localStorage.setItem(HOME_CHECKLIST_CACHE_KEY, JSON.stringify(next))
+            return next
+          })
+        }
       } catch {
-        return [String(policy.id), []]
+        // Preserve the last successful checklist instead of flashing an empty card.
       }
-    })).then(entries => {
+    })
+
+    Promise.allSettled(requests).then(() => {
       if (!active) return
-      setChecklistItemsByPolicy(Object.fromEntries(entries))
       setChecklistsLoaded(true)
     })
 
