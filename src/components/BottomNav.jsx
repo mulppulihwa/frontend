@@ -26,7 +26,8 @@ export default function BottomNav() {
         gridTemplateColumns: 'repeat(2, 1fr)',
         alignItems: 'center',
         background: '#FFFFFF',
-        borderTop: '1px solid #ecece8',
+        borderRadius: '28px 28px 0 0',
+        boxShadow: '0 -6px 24px rgba(31, 36, 51, 0.07)',
         zIndex: 120,
       }}
     >
