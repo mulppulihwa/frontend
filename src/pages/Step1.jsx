@@ -544,6 +544,7 @@ export default function Step1() {
     if (normalized.birthDate) setBirthDate(normalized.birthDate)
     if (normalized.gender) setGender(normalized.gender)
     if (normalized.farming !== null) setFarming(normalized.farming)
+    if (normalized.movedAt) setMovedAt(normalized.movedAt)
     if (normalized.farmBusiness !== '') setFarmBusiness(Boolean(normalized.farmBusiness))
     if (normalized.outsideIncome !== '') setOutsideIncome(normalizeOutsideIncome(normalized.outsideIncome))
     if (normalized.previousResidenceType) setPreviousResidenceType(normalized.previousResidenceType)
@@ -586,7 +587,7 @@ export default function Step1() {
 
     if (submitted) {
       try {
-        applySavedForm(JSON.parse(submitted), { restoreRelocationDates: false })
+        applySavedForm(JSON.parse(submitted))
       } catch {
         localStorage.removeItem(SUBMITTED_PROFILE_KEY)
       }
