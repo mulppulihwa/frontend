@@ -53,7 +53,7 @@ function formatDateDigits(value, precision = 'day') {
   return groups.filter(Boolean).join('.')
 }
 
-function DateSelectField({ label, value, onChange, precision = 'day' }) {
+function DateSelectField({ label, value, onChange, precision = 'day', onValidate }) {
   const [focused, setFocused] = useState(false)
   const limit = precision === 'month' ? 6 : 8
   const inputValue = formatDateDigits(value, precision)
@@ -69,7 +69,10 @@ function DateSelectField({ label, value, onChange, precision = 'day' }) {
         value={inputValue}
         onChange={e => onChange(getDateDigits(e.target.value).slice(0, limit))}
         onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        onBlur={() => {
+          setFocused(false)
+          onValidate?.(value)
+        }}
         placeholder={precision === 'month' ? '2001.01' : '2001.01.01'}
         aria-label={`${label} ${precision === 'month' ? '여섯 자리' : '여덟 자리'} 숫자 입력`}
         style={{
@@ -91,6 +94,41 @@ function DateSelectField({ label, value, onChange, precision = 'day' }) {
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         }}
       />
+    </div>
+  )
+}
+
+function WarningToast({ message }) {
+  if (!message) return null
+  return (
+    <div style={{
+      position: 'fixed',
+      bottom: 'max(96px, calc(env(safe-area-inset-bottom) + 82px))',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: 'max-content',
+      maxWidth: 'calc(min(100%, 430px) - 36px)',
+      zIndex: 250,
+      pointerEvents: 'none',
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        padding: '12px 18px',
+        borderRadius: 50,
+        background: '#1a1a1a',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+        animation: 'fadeInUp 0.22s ease',
+      }}>
+        <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#FFA100', color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 14, fontWeight: 800 }}>
+          !
+        </span>
+        <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', lineHeight: 1.4, letterSpacing: '-0.2px', wordBreak: 'keep-all' }}>
+          {message}
+        </p>
+      </div>
+      <style>{`@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
     </div>
   )
 }
@@ -482,6 +520,8 @@ export default function Step1() {
   const [regionOptions, setRegionOptions] = useState(REGION_LOADING_OPTIONS)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [dateWarning, setDateWarning] = useState('')
+  const dateWarningTimer = useRef(null)
   const [profileNotice, setProfileNotice] = useState(
     locationState?.profileIncompleteReason === 'match-profile-incomplete'
       ? locationState?.profileIncompleteMessage || ''
@@ -519,6 +559,32 @@ export default function Step1() {
       }
     }
   }, [])
+
+  useEffect(() => () => window.clearTimeout(dateWarningTimer.current), [])
+
+  const showDateWarning = (message) => {
+    setDateWarning(message)
+    window.clearTimeout(dateWarningTimer.current)
+    dateWarningTimer.current = window.setTimeout(() => setDateWarning(''), 2400)
+  }
+
+  const validateRelocationDate = (field, value) => {
+    if (!hasValue(value)) return
+    if (!isCompleteDate(value, 'month')) {
+      showDateWarning(`${field}를 YYYY.MM 형식으로 입력해 주세요.`)
+      return
+    }
+
+    const nextMovedAt = field === '옥천군 이사 날짜' ? value : movedAt
+    const nextPreviousSince = field === '이전 거주 시작일' ? value : previousSince
+    if (
+      isCompleteDate(nextMovedAt, 'month')
+      && isCompleteDate(nextPreviousSince, 'month')
+      && parseDateStr(nextMovedAt) < parseDateStr(nextPreviousSince)
+    ) {
+      showDateWarning('옥천군 이사 날짜는 이전 거주 시작일보다 빠를 수 없어요.')
+    }
+  }
 
   const applySavedForm = (saved, { restoreRelocationDates = true } = {}) => {
     if (!saved) return
@@ -804,16 +870,19 @@ export default function Step1() {
           })()}
 
           {page === 2 && (() => {
-            const movedAtDate = parseDateStr(movedAt)
-            const prevSinceDate = parseDateStr(previousSince)
-            const dateOrderError = movedAtDate && prevSinceDate && movedAtDate < prevSinceDate
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
                 <SelectField label="현재 어디 사세요?" value={location} onChange={setLocation} options={[
                   { value: '옥천', label: '옥천' },
                   { value: '옥천 외', label: '옥천 외' },
                 ]} placeholder="지역 선택" />
-                <DateSelectField label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?" value={movedAt} onChange={setMovedAt} precision="month" />
+                <DateSelectField
+                  label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?"
+                  value={movedAt}
+                  onChange={setMovedAt}
+                  precision="month"
+                  onValidate={value => validateRelocationDate('옥천군 이사 날짜', value)}
+                />
                 <AddressSearchField
                   label="이전 거주지는 어디인가요?"
                   value={previousResidence}
@@ -822,23 +891,13 @@ export default function Step1() {
                     setPreviousResidenceType(residenceType)
                   }}
                 />
-                <DateSelectField label="이전 거주지에서 언제부터 거주하셨나요?" value={previousSince} onChange={setPreviousSince} precision="month" />
-                {dateOrderError && (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: 8,
-                    background: '#fff5f5',
-                    border: '1.5px solid #f5c6c6',
-                    borderRadius: 12,
-                    padding: '10px 14px',
-                  }}>
-                    <span style={{ fontSize: 15, lineHeight: 1, marginTop: 1 }}>⚠️</span>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025', lineHeight: 1.5, letterSpacing: '-0.1px' }}>
-                      옥천군 이사 날짜가 이전 거주지 거주 시작일보다 빠를 수 없어요. 날짜를 다시 확인해 주세요.
-                    </p>
-                  </div>
-                )}
+                <DateSelectField
+                  label="이전 거주지에서 언제부터 거주하셨나요?"
+                  value={previousSince}
+                  onChange={setPreviousSince}
+                  precision="month"
+                  onValidate={value => validateRelocationDate('이전 거주 시작일', value)}
+                />
               </div>
             )
           })()}
@@ -878,6 +937,8 @@ export default function Step1() {
           {submitting ? '저장 중...' : page === 3 ? '내 지원금 찾기' : '다음'}
         </Button>
       </div>
+
+      <WarningToast message={dateWarning} />
 
       {showResumeModal && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 28px' }}>
