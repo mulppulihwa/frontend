@@ -19,7 +19,6 @@ function haversine(lat1, lng1, lat2, lng2) {
 
 const COLLAPSED_H = 160
 const EXPANDED_H = 440
-const FULLSCREEN_H = () => window.innerHeight - 80
 
 export default function StoreMap() {
   const navigate = useNavigate()
@@ -28,6 +27,7 @@ export default function StoreMap() {
   const mapInstanceRef = useRef(null)
   const markersRef = useRef([])
   const mapAreaRef = useRef(null)
+  const [mapAreaHeight, setMapAreaHeight] = useState(0)
   const [activeCategory, setActiveCategory] = useState('')
   const [sheetH, setSheetH] = useState(COLLAPSED_H)
   const [selectedStore, setSelectedStore] = useState(null)
@@ -38,6 +38,8 @@ export default function StoreMap() {
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
   const relatedPolicy = state?.policy || null
+  const sheetMaxHeight = mapAreaHeight || Math.max(COLLAPSED_H, window.innerHeight - 144)
+  const expandedHeight = Math.min(EXPANDED_H, sheetMaxHeight)
 
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
@@ -62,8 +64,8 @@ export default function StoreMap() {
     }
   }, [relatedPolicy])
 
-  const fullscreen = sheetH > EXPANDED_H + 50
-  const expanded = sheetH > (COLLAPSED_H + EXPANDED_H) / 2
+  const fullscreen = sheetH >= sheetMaxHeight - 8
+  const expanded = sheetH > (COLLAPSED_H + expandedHeight) / 2
 
   const onDragStart = (e) => {
     const y = e.touches ? e.touches[0].clientY : e.clientY
@@ -74,23 +76,42 @@ export default function StoreMap() {
     if (!dragRef.current.dragging) return
     const y = e.touches ? e.touches[0].clientY : e.clientY
     const delta = dragRef.current.startY - y
-    const next = Math.min(FULLSCREEN_H(), Math.max(COLLAPSED_H, dragRef.current.startH + delta))
+    const next = Math.min(sheetMaxHeight, Math.max(COLLAPSED_H, dragRef.current.startH + delta))
     setSheetH(next)
   }
 
   const onDragEnd = () => {
     if (!dragRef.current.dragging) return
     dragRef.current.dragging = false
-    if (fullscreen) setSheetH(FULLSCREEN_H())
-    else if (expanded) setSheetH(EXPANDED_H)
+    if (fullscreen) setSheetH(sheetMaxHeight)
+    else if (expanded) setSheetH(expandedHeight)
     else setSheetH(COLLAPSED_H)
   }
 
   const cycleSheet = () => {
     if (fullscreen) setSheetH(COLLAPSED_H)
-    else if (expanded) setSheetH(FULLSCREEN_H())
-    else setSheetH(EXPANDED_H)
+    else if (expanded) setSheetH(sheetMaxHeight)
+    else setSheetH(expandedHeight)
   }
+
+  useEffect(() => {
+    const updateMapAreaHeight = () => {
+      const nextHeight = Math.floor(mapAreaRef.current?.getBoundingClientRect().height || 0)
+      if (!nextHeight) return
+      setMapAreaHeight(nextHeight)
+      setSheetH(current => Math.min(current, nextHeight))
+    }
+
+    updateMapAreaHeight()
+    const observer = new ResizeObserver(updateMapAreaHeight)
+    if (mapAreaRef.current) observer.observe(mapAreaRef.current)
+    window.addEventListener('resize', updateMapAreaHeight)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', updateMapAreaHeight)
+    }
+  }, [])
 
   useEffect(() => {
     const KAKAO_KEY = import.meta.env.VITE_KAKAO_MAP_KEY
@@ -109,7 +130,7 @@ export default function StoreMap() {
         drawMarkers(category)
         if (state?.store) {
           setSelectedStore(state.store)
-          setSheetH(EXPANDED_H)
+          setSheetH(expandedHeight)
         }
       })
     }
@@ -147,7 +168,7 @@ export default function StoreMap() {
       const marker = new window.kakao.maps.Marker({ position, image: markerImage, map })
       window.kakao.maps.event.addListener(marker, 'click', () => {
         setSelectedStore(store)
-        setSheetH(EXPANDED_H)
+        setSheetH(expandedHeight)
         map.panTo(position)
       })
       markersRef.current.push(marker)
