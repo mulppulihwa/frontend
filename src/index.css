@@ -90,6 +90,7 @@ input:focus-visible {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .diagnosis-header {
@@ -100,8 +101,12 @@ input:focus-visible {
 }
 
 .diagnosis-visual {
-  flex: 1;
-  min-height: 82px;
+  position: absolute;
+  top: 21%;
+  left: 50%;
+  width: 190px;
+  height: 100px;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,11 +129,12 @@ input:focus-visible {
 }
 
 .diagnosis-fields {
-  flex: none;
+  flex: 1;
+  min-height: 0;
   padding: clamp(10px, 1.6dvh, 16px) 18px 4px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   position: relative;
   z-index: 2;
   background: #fdfcf8;
@@ -163,7 +169,8 @@ input:focus-visible {
   }
 
   .diagnosis-visual {
-    min-height: 62px;
+    top: 18%;
+    height: 72px;
   }
 
   .diagnosis-visual .support-search-animation--compact .analysis-visual {
@@ -173,6 +180,7 @@ input:focus-visible {
 
   .diagnosis-fields {
     padding-top: 7px;
+    justify-content: flex-start;
   }
 
   .diagnosis-footer {
