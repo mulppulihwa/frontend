@@ -106,12 +106,14 @@ input:focus-visible {
   position: relative;
   contain: paint;
   isolation: isolate;
+  align-items: center;
+  justify-content: center;
 }
 
 .diagnosis-header .support-search-animation--compact .analysis-visual {
   flex-shrink: 0;
   transform: scale(0.58);
-  transform-origin: top center;
+  transform-origin: center;
 }
 
 .diagnosis-fields {
@@ -161,6 +163,7 @@ input:focus-visible {
 
   .diagnosis-header .support-search-animation--compact .analysis-visual {
     transform: scale(0.43);
+    transform-origin: center;
   }
 
   .diagnosis-fields {
