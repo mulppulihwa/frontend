@@ -120,7 +120,7 @@ input:focus-visible {
   padding: clamp(10px, 1.6dvh, 16px) 18px 4px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   position: relative;
   z-index: 2;
   background: #fdfcf8;
@@ -165,6 +165,7 @@ input:focus-visible {
 
   .diagnosis-fields {
     padding-top: 7px;
+    justify-content: flex-start;
   }
 
   .diagnosis-footer {
