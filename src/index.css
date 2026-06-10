@@ -105,15 +105,16 @@ input:focus-visible {
   top: 21%;
   left: 50%;
   width: 190px;
-  height: 100px;
+  height: 112px;
   transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  position: relative;
   contain: paint;
   isolation: isolate;
+  z-index: 3;
+  pointer-events: none;
 }
 
 .diagnosis-visual .support-search-animation--compact {
