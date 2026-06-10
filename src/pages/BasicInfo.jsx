@@ -213,7 +213,19 @@ export default function BasicInfo() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: '#FDFCF8', overflow: 'hidden' }}>
       <TopBar title="프로필 정보" onBack={() => navigate('/home')} />
 
-      <div className="step-form-scroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px 18px 40px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div
+        className="step-form-scroll"
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          padding: '24px 18px calc(118px + env(safe-area-inset-bottom))',
+          scrollPaddingBottom: 'calc(118px + env(safe-area-inset-bottom))',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 18,
+        }}
+      >
         {loading ? (
           <p style={{ fontSize: 14, color: '#888', textAlign: 'center', marginTop: 40 }}>정보를 불러오는 중...</p>
         ) : (

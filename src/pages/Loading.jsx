@@ -4,6 +4,13 @@ import TopBar from '../components/TopBar'
 import { fetchMatchedPolicies, fetchProfile } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
+const ANALYSIS_MIN_DURATION = 900
+const RESULT_MIN_DURATION = 2600
+
+function wait(ms) {
+  return new Promise(resolve => window.setTimeout(resolve, ms))
+}
+
 export default function Loading() {
   const navigate = useNavigate()
   const [userName, setUserName] = useState(getKakaoUserName)
@@ -12,7 +19,7 @@ export default function Loading() {
 
   useEffect(() => {
     let active = true
-    let timer
+    const startedAt = Date.now()
 
     fetchProfile()
       .then(profile => {
@@ -22,30 +29,37 @@ export default function Loading() {
       })
       .catch(() => {})
 
-    fetchMatchedPolicies()
-      .then(policies => {
+    async function loadMatchedPolicies() {
+      try {
+        const policies = await fetchMatchedPolicies()
+        const remainingAnalysisTime = Math.max(0, ANALYSIS_MIN_DURATION - (Date.now() - startedAt))
+        if (remainingAnalysisTime > 0) await wait(remainingAnalysisTime)
         if (!active) return
+
         setMatchedCount(policies.length)
-        timer = window.setTimeout(() => {
+        await wait(RESULT_MIN_DURATION)
+        if (active) {
           navigate('/results', {
             replace: true,
             state: { matchedPolicies: policies, firstDiagnosis: isFirstDiagnosis },
           })
-        }, 2200)
-      })
-      .catch(() => {
+        }
+      } catch {
+        const remainingAnalysisTime = Math.max(0, ANALYSIS_MIN_DURATION - (Date.now() - startedAt))
+        if (remainingAnalysisTime > 0) await wait(remainingAnalysisTime)
         if (!active) return
-        timer = window.setTimeout(() => {
-          navigate('/results', {
-            replace: true,
-            state: { firstDiagnosis: isFirstDiagnosis },
-          })
-        }, 700)
-      })
+
+        navigate('/results', {
+          replace: true,
+          state: { firstDiagnosis: isFirstDiagnosis },
+        })
+      }
+    }
+
+    loadMatchedPolicies()
 
     return () => {
       active = false
-      window.clearTimeout(timer)
     }
   }, [isFirstDiagnosis, navigate])
 
@@ -67,7 +81,10 @@ export default function Loading() {
       }}>
         <div className="loading-spinner" aria-label="지원금 분석 중" />
 
-        <div style={{ textAlign: 'center', marginTop: 28 }}>
+        <div
+          key={matchedCount === null ? 'analyzing' : 'matched'}
+          style={{ textAlign: 'center', marginTop: 28, animation: 'fadeUp 0.35s ease both' }}
+        >
           <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', lineHeight: 1.45 }}>
             {matchedCount === null
               ? '받을 수 있는 지원금을'
