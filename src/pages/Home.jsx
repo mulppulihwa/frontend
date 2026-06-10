@@ -442,7 +442,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
             <span style={{ width: 42, height: 42, borderRadius: '50%', background: '#e8f3e8', color: '#076818', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
               <Check size={22} strokeWidth={2.4} />
             </span>
-            <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433' }}>미완성 체크리스트 정책이 없습니다.</p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433' }}>미완성 체크리스트가 없습니다.</p>
             <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: '#888' }}>모든 준비 항목을 확인했어요.</p>
           </div>
         )}
