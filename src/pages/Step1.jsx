@@ -5,7 +5,6 @@ import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import SelectField from '../components/SelectField'
 import Button from '../components/Button'
-import SearchAnimation from '../components/SearchAnimation'
 import { fetchProfile, fetchRegions, updateProfile } from '../lib/api'
 
 const fieldGap = 'clamp(8px, 1.5dvh, 12px)'
@@ -837,9 +836,6 @@ export default function Step1() {
 
       <div className={`diagnosis-content diagnosis-content--step-${page}`}>
         <Header page={page} />
-        <div className="diagnosis-visual">
-          <SearchAnimation compact />
-        </div>
 
         <div className="diagnosis-fields">
           {profileNotice && (

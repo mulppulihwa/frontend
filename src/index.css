@@ -100,35 +100,6 @@ input:focus-visible {
   z-index: 1;
 }
 
-.diagnosis-visual {
-  position: absolute;
-  top: 21%;
-  left: 50%;
-  width: 220px;
-  height: 142px;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  contain: paint;
-  isolation: isolate;
-  z-index: 3;
-  pointer-events: none;
-}
-
-.diagnosis-visual .support-search-animation--compact {
-  margin: 0;
-  align-items: center;
-  justify-content: center;
-}
-
-.diagnosis-visual .support-search-animation--compact .analysis-visual {
-  flex-shrink: 0;
-  transform: scale(0.78);
-  transform-origin: center;
-}
-
 .diagnosis-fields {
   flex: 1;
   min-height: 0;
@@ -169,17 +140,6 @@ input:focus-visible {
     line-height: 1.35 !important;
   }
 
-  .diagnosis-visual {
-    top: 18%;
-    width: 190px;
-    height: 104px;
-  }
-
-  .diagnosis-visual .support-search-animation--compact .analysis-visual {
-    transform: scale(0.58);
-    transform-origin: center;
-  }
-
   .diagnosis-fields {
     padding-top: 7px;
     justify-content: flex-start;
@@ -188,12 +148,6 @@ input:focus-visible {
   .diagnosis-footer {
     padding-top: 5px;
     padding-bottom: max(18px, env(safe-area-inset-bottom));
-  }
-}
-
-@media (max-height: 650px) {
-  .diagnosis-visual {
-    display: none;
   }
 }
 
