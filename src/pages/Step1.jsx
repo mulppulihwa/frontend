@@ -153,7 +153,6 @@ function Header({ page }) {
       <p style={{ fontSize: 14, fontWeight: 400, color: '#1a1a1a', textAlign: 'center', marginBottom: 0, letterSpacing: '-0.2px', lineHeight: 1.5, wordBreak: 'keep-all', animation: 'fadeUp 0.5s ease 0.15s both' }}>
         {copy.description}
       </p>
-      <SearchAnimation compact />
     </div>
   )
 }
@@ -771,6 +770,9 @@ export default function Step1() {
 
       <div className={`diagnosis-content diagnosis-content--step-${page}`}>
         <Header page={page} />
+        <div className="diagnosis-visual">
+          <SearchAnimation compact />
+        </div>
 
         <div className="diagnosis-fields">
           {profileNotice && (
