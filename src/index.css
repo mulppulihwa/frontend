@@ -94,32 +94,41 @@ input:focus-visible {
 
 .diagnosis-header {
   flex-shrink: 0;
-  padding: 8px 18px 4px;
+  padding: 8px 18px 0;
+  position: relative;
+  z-index: 1;
 }
 
 .diagnosis-header .support-search-animation--compact {
-  height: 92px;
+  height: 82px;
   margin-top: 6px;
   overflow: hidden;
+  position: relative;
+  contain: paint;
+  isolation: isolate;
 }
 
 .diagnosis-header .support-search-animation--compact .analysis-visual {
-  transform: scale(0.66);
+  flex-shrink: 0;
+  transform: scale(0.58);
   transform-origin: top center;
 }
 
 .diagnosis-fields {
   flex: 1;
   min-height: 0;
-  padding: clamp(8px, 1.5dvh, 16px) 18px 4px;
+  padding: clamp(10px, 1.6dvh, 16px) 18px 4px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  position: relative;
+  z-index: 2;
+  background: #fdfcf8;
 }
 
 .diagnosis-footer {
   flex-shrink: 0;
-  padding: 10px 28px max(12px, env(safe-area-inset-bottom));
+  padding: 8px 28px max(24px, env(safe-area-inset-bottom));
   background: #fdfcf8;
   z-index: 50;
 }
@@ -146,21 +155,21 @@ input:focus-visible {
   }
 
   .diagnosis-header .support-search-animation--compact {
-    height: 68px;
+    height: 62px;
     margin-top: 3px;
   }
 
   .diagnosis-header .support-search-animation--compact .analysis-visual {
-    transform: scale(0.48);
+    transform: scale(0.43);
   }
 
   .diagnosis-fields {
-    padding-top: 5px;
+    padding-top: 7px;
   }
 
   .diagnosis-footer {
-    padding-top: 7px;
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    padding-top: 5px;
+    padding-bottom: max(18px, env(safe-area-inset-bottom));
   }
 }
 
