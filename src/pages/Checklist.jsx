@@ -323,7 +323,7 @@ export default function Checklist() {
         주민센터 방문 전 놓친 것이 있나 확인해보세요
       </p>
 
-      <div style={{ padding: '0 18px 124px' }}>
+      <div style={{ padding: '0 18px 194px' }}>
         {loading && (
           <div style={{
             background: 'none',
@@ -487,7 +487,7 @@ export default function Checklist() {
         <div style={{
           position: 'fixed',
           left: '50%',
-          bottom: 0,
+          bottom: 'calc(70px + env(safe-area-inset-bottom))',
           transform: 'translateX(-50%)',
           width: '100%',
           maxWidth: 430,

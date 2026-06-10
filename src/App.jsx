@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom'
 import Login from './pages/Login'
 import Step1 from './pages/Step1'
 import Step2 from './pages/Step2'
@@ -15,9 +15,19 @@ import StoreSearch from './pages/StoreSearch'
 import BasicInfo from './pages/BasicInfo'
 import AddressSearchTest from './pages/AddressSearchTest'
 import { getAccessToken } from './lib/api'
+import BottomNav from './components/BottomNav'
 
 function RequireAuth({ children }) {
   return getAccessToken() ? children : <Navigate to="/" replace />
+}
+
+function AppWithNav() {
+  return (
+    <RequireAuth>
+      <Outlet />
+      <BottomNav />
+    </RequireAuth>
+  )
 }
 
 function Layout() {
@@ -28,15 +38,17 @@ function Layout() {
       <Route path="/step2" element={<RequireAuth><Step2 /></RequireAuth>} />
       <Route path="/loading" element={<RequireAuth><Loading /></RequireAuth>} />
       <Route path="/results" element={<RequireAuth><Results /></RequireAuth>} />
-      <Route path="/detail" element={<RequireAuth><Detail /></RequireAuth>} />
-      <Route path="/map" element={<RequireAuth><StoreMap /></RequireAuth>} />
-      <Route path="/store-detail" element={<RequireAuth><StoreDetail /></RequireAuth>} />
-      <Route path="/grant-status" element={<RequireAuth><GrantStatus /></RequireAuth>} />
-      <Route path="/home" element={<RequireAuth><Home /></RequireAuth>} />
-      <Route path="/alarm" element={<RequireAuth><Alarm /></RequireAuth>} />
-      <Route path="/checklist" element={<RequireAuth><Checklist /></RequireAuth>} />
-      <Route path="/store-search" element={<RequireAuth><StoreSearch /></RequireAuth>} />
-      <Route path="/basic-info" element={<RequireAuth><BasicInfo /></RequireAuth>} />
+      <Route element={<AppWithNav />}>
+        <Route path="/detail" element={<Detail />} />
+        <Route path="/map" element={<StoreMap />} />
+        <Route path="/store-detail" element={<StoreDetail />} />
+        <Route path="/grant-status" element={<GrantStatus />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/alarm" element={<Alarm />} />
+        <Route path="/checklist" element={<Checklist />} />
+        <Route path="/store-search" element={<StoreSearch />} />
+        <Route path="/basic-info" element={<BasicInfo />} />
+      </Route>
       <Route path="/dev/address-search-test" element={<AddressSearchTest />} />
     </Routes>
   )
