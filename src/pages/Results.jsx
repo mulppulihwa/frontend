@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Check, Home as HomeIcon } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
@@ -41,6 +41,8 @@ function Toast({ visible }) {
 
 export default function Results() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const prefetchedPolicies = location.state?.matchedPolicies
   const [index, setIndex] = useState(0)
   const [pageDirection, setPageDirection] = useState('next')
   const [statuses, setStatuses] = useState({})
@@ -72,7 +74,11 @@ export default function Results() {
         }
       })
       .catch(() => {})
-    fetchMatchedPolicies()
+    const matchedPoliciesRequest = Array.isArray(prefetchedPolicies)
+      ? Promise.resolve(prefetchedPolicies)
+      : fetchMatchedPolicies()
+
+    matchedPoliciesRequest
       .then(async policies => {
         if (!active) return
         localStorage.setItem('lastDiagnosisDate', new Date().toISOString())
@@ -113,7 +119,7 @@ export default function Results() {
     return () => {
       active = false
     }
-  }, [])
+  }, [prefetchedPolicies])
 
   const handleStatusChange = async (val) => {
     if (!grant) return
@@ -157,10 +163,7 @@ export default function Results() {
         </div>
         <div style={{ textAlign: 'center', lineHeight: 1.45 }}>
           <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease both' }}>
-            {userName || '회원'}님이 받을 수 있는 지원금
-          </p>
-          <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease 0.18s both' }}>
-            <span style={{ color: '#076818' }}>총 {total}개</span> 찾았어요
+            관심있는 정책이라면, 현재 상태를 알려주세요.
           </p>
         </div>
         <div style={{ textAlign: 'center', marginTop: 10 }}>

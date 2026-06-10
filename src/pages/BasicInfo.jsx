@@ -43,6 +43,16 @@ function formatBoolean(value) {
   return ''
 }
 
+function formatDateValue(value, precision = 'day') {
+  const digits = String(value || '').replace(/\D/g, '')
+  if (precision === 'month') {
+    if (digits.length < 6) return value || ''
+    return `${digits.slice(0, 4)}-${digits.slice(4, 6)}`
+  }
+  if (digits.length < 8) return value || ''
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`
+}
+
 function formatLastDiagnosis() {
   const raw = localStorage.getItem('lastDiagnosisDate')
   if (!raw) return ''
@@ -240,7 +250,7 @@ export default function BasicInfo() {
                 <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>기본 정보</p>
               </div>
               <ReadOnlyRow label="이름" value={name} />
-              <ReadOnlyRow label="생년월일" value={birthDate} />
+              <ReadOnlyRow label="생년월일" value={formatDateValue(birthDate)} />
               <ReadOnlyRow label="국적" value={nationality} />
               {error && (
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#d93025' }}>{error}</p>
@@ -252,9 +262,9 @@ export default function BasicInfo() {
                 <p style={{ fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>진단 정보</p>
               </div>
               <ReadOnlyRow label="현재 거주지" value={diagnosisInfo.location || diagnosisInfo.region} />
-              <ReadOnlyRow label="옥천 이사 날짜" value={diagnosisInfo.movedAt} />
+              <ReadOnlyRow label="옥천 이사 날짜" value={formatDateValue(diagnosisInfo.movedAt, 'month')} />
               <ReadOnlyRow label="이전 거주지" value={diagnosisInfo.previousResidence} />
-              <ReadOnlyRow label="이전 거주 시작일" value={diagnosisInfo.previousSince} />
+              <ReadOnlyRow label="이전 거주 시작일" value={formatDateValue(diagnosisInfo.previousSince, 'month')} />
               <ReadOnlyRow label="현재 직업" value={diagnosisInfo.job} />
               <ReadOnlyRow label="농사 여부" value={formatBoolean(diagnosisInfo.farming)} />
               <ReadOnlyRow label="농업경영체" value={formatBoolean(diagnosisInfo.farmBusiness)} />

@@ -1,13 +1,45 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopBar from '../components/TopBar'
+import { fetchMatchedPolicies, fetchProfile } from '../lib/api'
+import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
 export default function Loading() {
   const navigate = useNavigate()
+  const [userName, setUserName] = useState(getKakaoUserName)
+  const [matchedCount, setMatchedCount] = useState(null)
 
   useEffect(() => {
-    const timer = setTimeout(() => navigate('/results'), 3300)
-    return () => clearTimeout(timer)
+    let active = true
+    let timer
+    const startedAt = Date.now()
+
+    fetchProfile()
+      .then(profile => {
+        if (!active) return
+        const name = findDisplayName(profile)
+        if (name) setUserName(name)
+      })
+      .catch(() => {})
+
+    fetchMatchedPolicies()
+      .then(policies => {
+        if (!active) return
+        setMatchedCount(policies.length)
+        const remainingDelay = Math.max(700, 1800 - (Date.now() - startedAt))
+        timer = window.setTimeout(() => {
+          navigate('/results', { replace: true, state: { matchedPolicies: policies } })
+        }, remainingDelay)
+      })
+      .catch(() => {
+        if (!active) return
+        timer = window.setTimeout(() => navigate('/results', { replace: true }), 700)
+      })
+
+    return () => {
+      active = false
+      window.clearTimeout(timer)
+    }
   }, [navigate])
 
   return (
@@ -30,13 +62,15 @@ export default function Loading() {
 
         <div style={{ textAlign: 'center', marginTop: 28 }}>
           <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', lineHeight: 1.45 }}>
-            받을 수 있는 지원금을
+            {matchedCount === null
+              ? '받을 수 있는 지원금을'
+              : `${userName || '회원'}님이 받을 수 있는 지원금`}
           </p>
           <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', lineHeight: 1.45 }}>
-            찾고 있어요
+            {matchedCount === null ? '찾고 있어요' : `총 ${matchedCount}개 찾았어요`}
           </p>
           <p style={{ fontSize: 14, fontWeight: 400, color: '#666', marginTop: 10, letterSpacing: '-0.1px' }}>
-            입력하신 조건을 기준으로 분석 중
+            {matchedCount === null ? '입력하신 조건을 기준으로 분석 중' : '관심 있는 정책의 현재 상태를 알려주세요'}
           </p>
         </div>
       </div>
