@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Bell, Check, ChevronRight, Clock3, User } from 'lucide-react'
 import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
+import HomeTutorial from '../components/HomeTutorial'
 
 const HOME_CHECKLIST_CACHE_KEY = 'home-checklist-items'
 
@@ -99,7 +100,7 @@ function SummaryTile({ label, value, color, bar }) {
 function SummaryCard({ counts, navigate }) {
   const total = counts.completed + counts.planned + counts.ignored + counts.unset
   return (
-    <section>
+    <section data-tutorial="summary">
       <SectionTitle action={<button type="button" onClick={() => navigate('/grant-status')} style={{ display: 'flex', alignItems: 'center', gap: 2, border: 'none', background: '#fff', borderRadius: 999, padding: '8px 10px 8px 13px', color: '#888', fontSize: 12, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer' }}>전체 보기 <ChevronRight size={14} /></button>}>
         진단 받은 정책
       </SectionTitle>
@@ -306,7 +307,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
   }
 
   return (
-    <section>
+    <section data-tutorial="schedule">
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1f2433', letterSpacing: '-0.3px', lineHeight: 1.35 }}>{userName || '00'}님의 오늘의 맞춤 일정</h1>
@@ -430,7 +431,7 @@ function normalizeUser(profile) {
   }
 }
 
-export default function Home() {
+export default function Home({ tutorial = false }) {
   const navigate = useNavigate()
   const [policies, setPolicies] = useState([])
   const [selectedPolicyId, setSelectedPolicyId] = useState(null)
@@ -583,6 +584,7 @@ export default function Home() {
         />
         <SummaryCard counts={counts} navigate={navigate} />
       </div>
+      {tutorial && <HomeTutorial onFinish={() => navigate('/home', { replace: true })} />}
     </div>
   )
 }

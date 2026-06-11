@@ -13,6 +13,7 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="주요 메뉴"
+      data-tutorial="navigation"
       style={{
         position: 'fixed',
         bottom: 0,

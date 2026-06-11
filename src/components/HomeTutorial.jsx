@@ -1,0 +1,224 @@
+import { useCallback, useEffect, useState } from 'react'
+import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react'
+import okcheonCharacter from '../assets/okcheon-character.png'
+
+const steps = [
+  {
+    selector: '[data-tutorial="schedule"]',
+    eyebrow: '오늘의 맞춤 일정',
+    title: '마감이 가까운 준비물부터 확인해요',
+    description: '체크하면 다음 준비물이 이어서 나타나요. 정책 이름을 누르면 전체 체크리스트도 볼 수 있어요.',
+  },
+  {
+    selector: '[data-tutorial="summary"]',
+    eyebrow: '진단 받은 정책',
+    title: '정책별 진행 상태를 한눈에 봐요',
+    description: '신청 완료, 신청 예정, 관심 없음으로 나눈 현황을 확인하고 전체 정책 목록으로 이동할 수 있어요.',
+  },
+  {
+    selector: '[data-tutorial="navigation"]',
+    eyebrow: '빠른 이동',
+    title: '홈과 지역 지도를 간편하게 오가요',
+    description: '홈에서는 맞춤 정책을 관리하고, 지도에서는 주변 행정기관과 생활 정보를 확인할 수 있어요.',
+  },
+]
+
+function getTargetRect(selector) {
+  const target = document.querySelector(selector)
+  if (!target) return null
+  const rect = target.getBoundingClientRect()
+  const margin = 8
+  const top = Math.max(margin, rect.top - margin)
+  const bottom = Math.min(window.innerHeight - margin, rect.bottom + margin)
+  return {
+    top,
+    left: Math.max(margin, rect.left - margin),
+    width: Math.min(window.innerWidth - margin * 2, rect.width + margin * 2),
+    height: Math.max(0, bottom - top),
+    bottom,
+  }
+}
+
+export default function HomeTutorial({ onFinish }) {
+  const [stepIndex, setStepIndex] = useState(0)
+  const [targetRect, setTargetRect] = useState(null)
+  const step = steps[stepIndex]
+  const isLast = stepIndex === steps.length - 1
+
+  const updateTarget = useCallback(() => {
+    setTargetRect(getTargetRect(step.selector))
+  }, [step.selector])
+
+  useEffect(() => {
+    const target = document.querySelector(step.selector)
+    if (!target) return undefined
+
+    if (stepIndex < steps.length - 1) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+
+    const firstUpdate = window.setTimeout(updateTarget, 80)
+    const settledUpdate = window.setTimeout(updateTarget, 520)
+    window.addEventListener('resize', updateTarget)
+    window.addEventListener('scroll', updateTarget, { passive: true })
+
+    return () => {
+      window.clearTimeout(firstUpdate)
+      window.clearTimeout(settledUpdate)
+      window.removeEventListener('resize', updateTarget)
+      window.removeEventListener('scroll', updateTarget)
+    }
+  }, [step, stepIndex, updateTarget])
+
+  const finish = () => onFinish?.()
+  const panelAtTop = targetRect && targetRect.top > window.innerHeight * 0.52
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 500, pointerEvents: 'none' }} aria-live="polite">
+      {targetRect && (
+        <div
+          style={{
+            position: 'fixed',
+            top: targetRect.top,
+            left: targetRect.left,
+            width: targetRect.width,
+            height: targetRect.height,
+            borderRadius: 28,
+            border: '2px solid rgba(7,104,24,0.68)',
+            boxShadow: '0 0 0 9999px rgba(20,24,20,0.56), 0 10px 36px rgba(7,104,24,0.18)',
+            transition: 'top 0.35s ease, left 0.35s ease, width 0.35s ease, height 0.35s ease',
+          }}
+        />
+      )}
+
+      <div
+        role="dialog"
+        aria-label={`${step.eyebrow} 사용 안내`}
+        style={{
+          position: 'fixed',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          top: panelAtTop ? 18 : 'auto',
+          bottom: panelAtTop ? 'auto' : 'calc(84px + env(safe-area-inset-bottom))',
+          width: 'calc(100% - 32px)',
+          maxWidth: 398,
+          boxSizing: 'border-box',
+          background: '#FFFFFF',
+          border: '1.5px solid #cfe1c8',
+          borderRadius: 22,
+          boxShadow: '0 16px 44px rgba(22,35,24,0.2)',
+          padding: '18px 18px 16px',
+          pointerEvents: 'auto',
+        }}
+      >
+        <button
+          type="button"
+          aria-label="안내 닫기"
+          onClick={finish}
+          style={{
+            position: 'absolute',
+            top: 12,
+            right: 12,
+            width: 30,
+            height: 30,
+            border: 'none',
+            borderRadius: '50%',
+            background: '#f4f6f2',
+            color: '#6f776d',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+        >
+          <X size={16} strokeWidth={2.2} />
+        </button>
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingRight: 28 }}>
+          <div style={{ width: 54, height: 54, flexShrink: 0, overflow: 'hidden', borderRadius: 16, background: '#eef6eb' }}>
+            <img
+              src={okcheonCharacter}
+              alt=""
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 18%' }}
+            />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: '#076818' }}>{step.eyebrow}</p>
+            <h2 style={{ margin: '4px 0 0', fontSize: 17, fontWeight: 750, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all' }}>
+              {step.title}
+            </h2>
+          </div>
+        </div>
+
+        <p style={{ margin: '12px 0 0', fontSize: 13, fontWeight: 400, color: '#5f625d', lineHeight: 1.55, wordBreak: 'keep-all' }}>
+          {step.description}
+        </p>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {steps.map((item, index) => (
+              <span
+                key={item.eyebrow}
+                style={{
+                  width: index === stepIndex ? 20 : 6,
+                  height: 6,
+                  borderRadius: 999,
+                  background: index === stepIndex ? '#076818' : '#dfe7dc',
+                  transition: 'width 0.2s ease, background 0.2s ease',
+                }}
+              />
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {stepIndex > 0 && (
+              <button
+                type="button"
+                aria-label="이전 안내"
+                onClick={() => setStepIndex(index => index - 1)}
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: '50%',
+                  border: '1.5px solid #cfe1c8',
+                  background: '#FFFFFF',
+                  color: '#076818',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <ArrowLeft size={17} strokeWidth={2.3} />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={isLast ? finish : () => setStepIndex(index => index + 1)}
+              style={{
+                minWidth: isLast ? 92 : 74,
+                height: 38,
+                padding: '0 15px',
+                borderRadius: 999,
+                border: 'none',
+                background: '#076818',
+                color: '#FFFFFF',
+                fontFamily: 'inherit',
+                fontSize: 13,
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 5,
+                cursor: 'pointer',
+              }}
+            >
+              {isLast ? '둘러보기 완료' : '다음'}
+              {isLast ? <Check size={15} strokeWidth={2.5} /> : <ArrowRight size={15} strokeWidth={2.4} />}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
