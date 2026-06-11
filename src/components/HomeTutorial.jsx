@@ -39,8 +39,8 @@ function createSteps(userName) {
       selector: null,
       keepPosition: true,
       eyebrow: '안내 완료',
-      title: '자, 그럼 이제',
-      description: '옥천옥을 사용하러 가볼까요?',
+      title: '자, 그럼 이제 옥천옥을 사용하러 가볼까요?',
+      description: '',
     },
   ]
 }
