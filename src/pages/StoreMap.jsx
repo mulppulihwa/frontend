@@ -20,6 +20,25 @@ function haversine(lat1, lng1, lat2, lng2) {
 const COLLAPSED_H = 160
 const EXPANDED_H = 440
 const CUSTOM_PLACES_KEY = 'okcheon-custom-places'
+const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
+const USER_PLACE_CATEGORIES = ['부동산', '동호회', '맛집']
+
+function loadPostcodeScript() {
+  if (window.kakao?.Postcode) return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[src="${POSTCODE_SCRIPT_SRC}"]`)
+    if (existing) {
+      existing.addEventListener('load', resolve, { once: true })
+      existing.addEventListener('error', () => reject(new Error('주소 검색을 불러오지 못했습니다.')), { once: true })
+      return
+    }
+    const script = document.createElement('script')
+    script.src = POSTCODE_SCRIPT_SRC
+    script.onload = resolve
+    script.onerror = () => reject(new Error('주소 검색을 불러오지 못했습니다.'))
+    document.head.appendChild(script)
+  })
+}
 
 function readCustomPlaces() {
   try {
@@ -37,6 +56,7 @@ export default function StoreMap() {
   const mapInstanceRef = useRef(null)
   const markersRef = useRef([])
   const mapAreaRef = useRef(null)
+  const postcodeLayerRef = useRef(null)
   const [mapAreaHeight, setMapAreaHeight] = useState(0)
   const [activeCategory, setActiveCategory] = useState('')
   const [sheetH, setSheetH] = useState(COLLAPSED_H)
@@ -48,7 +68,7 @@ export default function StoreMap() {
   const [addPlaceOpen, setAddPlaceOpen] = useState(false)
   const [addPlaceLoading, setAddPlaceLoading] = useState(false)
   const [addPlaceError, setAddPlaceError] = useState('')
-  const [newPlace, setNewPlace] = useState({ name: '', category: '', address: '' })
+  const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '' })
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
   const relatedPolicy = state?.policy || null
@@ -60,6 +80,10 @@ export default function StoreMap() {
       pos => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => {}
     )
+  }, [])
+
+  useEffect(() => {
+    loadPostcodeScript().catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -244,10 +268,40 @@ export default function StoreMap() {
     setAddPlaceError('')
     setNewPlace({
       name: '',
-      category: activeCategory || categories[0]?.id || '동네 정보',
+      category: '부동산',
       address: '',
+      phone: '',
     })
     setAddPlaceOpen(true)
+  }
+
+  const closePostcode = () => {
+    if (postcodeLayerRef.current) postcodeLayerRef.current.style.display = 'none'
+  }
+
+  const openPostcode = async () => {
+    setAddPlaceError('')
+    try {
+      await loadPostcodeScript()
+    } catch (error) {
+      setAddPlaceError(error.message)
+      return
+    }
+    const layer = postcodeLayerRef.current
+    if (!layer || !window.kakao?.Postcode) return
+
+    new window.kakao.Postcode({
+      oncomplete(data) {
+        const address = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress
+        setNewPlace(current => ({ ...current, address }))
+        closePostcode()
+      },
+      width: '100%',
+      height: '100%',
+      maxSuggestItems: 5,
+    }).embed(layer)
+
+    layer.style.display = 'block'
   }
 
   const resolvePlacePosition = () => new Promise(resolve => {
@@ -295,7 +349,7 @@ export default function StoreMap() {
       name: newPlace.name.trim(),
       category: newPlace.category || '동네 정보',
       address: position.address || newPlace.address.trim(),
-      phone: position.phone || '',
+      phone: newPlace.phone.trim() || position.phone || '',
       hours: '사용자가 추가한 장소',
       lat: position.lat,
       lng: position.lng,
@@ -574,6 +628,7 @@ export default function StoreMap() {
               width: 'min(100%, 390px)',
               maxHeight: 'calc(100dvh - 40px)',
               overflowY: 'auto',
+              position: 'relative',
               boxSizing: 'border-box',
               background: '#FFFFFF',
               borderRadius: 24,
@@ -591,33 +646,69 @@ export default function StoreMap() {
               </button>
             </div>
 
-            {[
-              { key: 'name', label: '장소 이름', placeholder: '예: 옥천 귀농인 모임방' },
-              { key: 'address', label: '주소', placeholder: '예: 충북 옥천군 옥천읍 중앙로 1' },
-            ].map(field => (
-              <label key={field.key} style={{ display: 'block', marginBottom: 14 }}>
-                <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>{field.label}</span>
-                <input
-                  value={newPlace[field.key]}
-                  onChange={event => setNewPlace(current => ({ ...current, [field.key]: event.target.value }))}
-                  placeholder={field.placeholder}
-                  style={{ width: '100%', height: 48, boxSizing: 'border-box', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '0 14px', fontFamily: 'inherit', fontSize: 14, outline: 'none' }}
-                />
-              </label>
-            ))}
-
-            <label style={{ display: 'block', marginBottom: 8 }}>
-              <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>분류</span>
-              <select
-                value={newPlace.category}
-                onChange={event => setNewPlace(current => ({ ...current, category: event.target.value }))}
-                style={{ width: '100%', height: 48, boxSizing: 'border-box', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '0 14px', background: '#FFFFFF', fontFamily: 'inherit', fontSize: 14, color: '#333' }}
-              >
-                {[...new Set([...categories.map(category => category.id), '동네 정보'])].map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
+            <label style={{ display: 'block', marginBottom: 14 }}>
+              <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>장소 이름</span>
+              <input
+                value={newPlace.name}
+                onChange={event => setNewPlace(current => ({ ...current, name: event.target.value }))}
+                placeholder="예: 옥천 귀농인 모임방"
+                style={{ width: '100%', height: 48, boxSizing: 'border-box', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '0 14px', fontFamily: 'inherit', fontSize: 14, outline: 'none' }}
+              />
             </label>
+
+            <div style={{ display: 'block', marginBottom: 14 }}>
+              <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>주소</span>
+              <button
+                type="button"
+                onClick={openPostcode}
+                style={{ width: '100%', minHeight: 48, boxSizing: 'border-box', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '0 14px', background: '#FFFFFF', fontFamily: 'inherit', fontSize: 14, color: newPlace.address ? '#333' : '#999', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, textAlign: 'left', cursor: 'pointer' }}
+              >
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {newPlace.address || '카카오 주소 검색'}
+                </span>
+                <MapPin size={18} color="#076818" strokeWidth={2.3} style={{ flexShrink: 0 }} />
+              </button>
+            </div>
+
+            <label style={{ display: 'block', marginBottom: 14 }}>
+              <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>전화번호</span>
+              <input
+                type="tel"
+                inputMode="tel"
+                value={newPlace.phone}
+                onChange={event => setNewPlace(current => ({ ...current, phone: event.target.value }))}
+                placeholder="예: 043-730-0000"
+                style={{ width: '100%', height: 48, boxSizing: 'border-box', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '0 14px', fontFamily: 'inherit', fontSize: 14, outline: 'none' }}
+              />
+            </label>
+
+            <div style={{ marginBottom: 8 }}>
+              <span style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 650, color: '#333' }}>분류</span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                {USER_PLACE_CATEGORIES.map(category => {
+                  const selected = newPlace.category === category
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      onClick={() => setNewPlace(current => ({ ...current, category }))}
+                      style={{ minHeight: 40, borderRadius: 999, border: `1.5px solid ${selected ? '#076818' : '#dfe4dc'}`, background: selected ? '#e8f3e8' : '#FFFFFF', color: selected ? '#076818' : '#666', fontFamily: 'inherit', fontSize: 13, fontWeight: selected ? 700 : 550, cursor: 'pointer' }}
+                    >
+                      {category}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div
+              ref={postcodeLayerRef}
+              style={{ display: 'none', position: 'absolute', inset: 16, overflow: 'hidden', zIndex: 5, background: '#FFFFFF', border: '2px solid #076818', borderRadius: 18, boxShadow: '0 12px 30px rgba(22,35,24,0.22)' }}
+            >
+              <button type="button" aria-label="주소 검색 닫기" onClick={closePostcode} style={{ position: 'absolute', right: 8, top: 8, zIndex: 6, width: 34, height: 34, borderRadius: '50%', border: 'none', background: '#FFFFFF', boxShadow: '0 2px 10px rgba(0,0,0,0.14)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                <X size={18} color="#555" />
+              </button>
+            </div>
 
             {addPlaceError && <p style={{ margin: '8px 0 0', fontSize: 12, color: '#d93025' }}>{addPlaceError}</p>}
 
