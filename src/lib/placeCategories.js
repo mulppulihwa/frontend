@@ -17,7 +17,7 @@ function getIcon(category = '') {
   if (category.includes('지원금') || category.includes('화폐')) return Wallet
   if (category.includes('농협')) return Landmark
   if (category.includes('행정')) return Building2
-  if (category.includes('음식점')) return UtensilsCrossed
+  if (category.includes('음식점') || category.includes('맛집')) return UtensilsCrossed
   if (category.includes('약국')) return Pill
   if (category.includes('건축')) return Hammer
   if (category.includes('의류')) return Shirt
