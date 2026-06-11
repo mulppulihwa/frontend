@@ -555,18 +555,30 @@ export default function StoreMap() {
       {addPlaceOpen && (
         <div
           onClick={() => !addPlaceLoading && setAddPlaceOpen(false)}
-          style={{ position: 'fixed', inset: 0, zIndex: 320, background: 'rgba(20,24,20,0.5)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 320,
+            background: 'rgba(20,24,20,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+            boxSizing: 'border-box',
+          }}
         >
           <form
             onSubmit={handleAddPlace}
             onClick={event => event.stopPropagation()}
             style={{
-              width: 'min(100%, 430px)',
+              width: 'min(100%, 390px)',
+              maxHeight: 'calc(100dvh - 40px)',
+              overflowY: 'auto',
               boxSizing: 'border-box',
               background: '#FFFFFF',
-              borderRadius: '24px 24px 0 0',
-              padding: '18px 20px calc(24px + env(safe-area-inset-bottom))',
-              boxShadow: '0 -12px 34px rgba(22,35,24,0.18)',
+              borderRadius: 24,
+              padding: '22px 20px 24px',
+              boxShadow: '0 18px 50px rgba(22,35,24,0.24)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
