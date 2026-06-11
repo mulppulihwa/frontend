@@ -91,7 +91,6 @@ export default function HomeTutorial({ onFinish }) {
 
   const finish = () => onFinish?.()
   const isIntro = !step.selector
-  const panelAtTop = targetRect && targetRect.top > window.innerHeight * 0.52
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 500, pointerEvents: 'none' }} aria-live="polite">
@@ -120,9 +119,8 @@ export default function HomeTutorial({ onFinish }) {
         style={{
           position: 'fixed',
           left: '50%',
-          transform: isIntro ? 'translate(-50%, -50%)' : 'translateX(-50%)',
-          top: isIntro ? '50%' : panelAtTop ? 18 : 'auto',
-          bottom: isIntro ? 'auto' : panelAtTop ? 'auto' : 'calc(84px + env(safe-area-inset-bottom))',
+          transform: 'translateX(-50%)',
+          bottom: 'calc(84px + env(safe-area-inset-bottom))',
           width: 'calc(100% - 32px)',
           maxWidth: 398,
           boxSizing: 'border-box',
