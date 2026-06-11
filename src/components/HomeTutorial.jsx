@@ -4,6 +4,18 @@ import okcheonCharacter from '../assets/okcheon-character.png'
 
 const steps = [
   {
+    selector: null,
+    eyebrow: '옥천옥 홈',
+    title: '안녕하세요.',
+    description: '여기는 옥천옥의 홈화면이에요.',
+  },
+  {
+    selector: null,
+    eyebrow: '홈화면 안내',
+    title: '여러분이 홈화면을 쉽게 사용할 수 있도록',
+    description: '차근차근 설명해 드릴게요!',
+  },
+  {
     selector: '[data-tutorial="schedule"]',
     eyebrow: '오늘의 맞춤 일정',
     title: '마감이 가까운 준비물부터 확인해요',
@@ -24,6 +36,7 @@ const steps = [
 ]
 
 function getTargetRect(selector) {
+  if (!selector) return null
   const target = document.querySelector(selector)
   if (!target) return null
   const rect = target.getBoundingClientRect()
@@ -50,6 +63,12 @@ export default function HomeTutorial({ onFinish }) {
   }, [step.selector])
 
   useEffect(() => {
+    if (!step.selector) {
+      setTargetRect(null)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return undefined
+    }
+
     const target = document.querySelector(step.selector)
     if (!target) return undefined
 
@@ -71,10 +90,14 @@ export default function HomeTutorial({ onFinish }) {
   }, [step, stepIndex, updateTarget])
 
   const finish = () => onFinish?.()
+  const isIntro = !step.selector
   const panelAtTop = targetRect && targetRect.top > window.innerHeight * 0.52
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 500, pointerEvents: 'none' }} aria-live="polite">
+      {isIntro && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(20,24,20,0.56)' }} />
+      )}
       {targetRect && (
         <div
           style={{
@@ -97,9 +120,9 @@ export default function HomeTutorial({ onFinish }) {
         style={{
           position: 'fixed',
           left: '50%',
-          transform: 'translateX(-50%)',
-          top: panelAtTop ? 18 : 'auto',
-          bottom: panelAtTop ? 'auto' : 'calc(84px + env(safe-area-inset-bottom))',
+          transform: isIntro ? 'translate(-50%, -50%)' : 'translateX(-50%)',
+          top: isIntro ? '50%' : panelAtTop ? 18 : 'auto',
+          bottom: isIntro ? 'auto' : panelAtTop ? 'auto' : 'calc(84px + env(safe-area-inset-bottom))',
           width: 'calc(100% - 32px)',
           maxWidth: 398,
           boxSizing: 'border-box',
@@ -107,7 +130,7 @@ export default function HomeTutorial({ onFinish }) {
           border: '1.5px solid #cfe1c8',
           borderRadius: 22,
           boxShadow: '0 16px 44px rgba(22,35,24,0.2)',
-          padding: '18px 18px 16px',
+          padding: isIntro ? '22px 20px 18px' : '18px 18px 16px',
           pointerEvents: 'auto',
         }}
       >
@@ -134,8 +157,8 @@ export default function HomeTutorial({ onFinish }) {
           <X size={16} strokeWidth={2.2} />
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingRight: 28 }}>
-          <div style={{ width: 54, height: 54, flexShrink: 0, overflow: 'hidden', borderRadius: 16, background: '#eef6eb' }}>
+        <div style={{ display: 'flex', alignItems: isIntro ? 'center' : 'flex-start', gap: 12, paddingRight: 28 }}>
+          <div style={{ width: isIntro ? 66 : 54, height: isIntro ? 66 : 54, flexShrink: 0, overflow: 'hidden', borderRadius: 16, background: '#eef6eb' }}>
             <img
               src={okcheonCharacter}
               alt=""
@@ -158,7 +181,7 @@ export default function HomeTutorial({ onFinish }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {steps.map((item, index) => (
               <span
-                key={item.eyebrow}
+                key={item.title}
                 style={{
                   width: index === stepIndex ? 20 : 6,
                   height: 6,
