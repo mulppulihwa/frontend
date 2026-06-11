@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock } from 'lucide-react'
+import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock, Plus } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import { fetchPlaces } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
@@ -19,6 +19,16 @@ function haversine(lat1, lng1, lat2, lng2) {
 
 const COLLAPSED_H = 160
 const EXPANDED_H = 440
+const CUSTOM_PLACES_KEY = 'okcheon-custom-places'
+
+function readCustomPlaces() {
+  try {
+    const places = JSON.parse(localStorage.getItem(CUSTOM_PLACES_KEY) || '[]')
+    return Array.isArray(places) ? places : []
+  } catch {
+    return []
+  }
+}
 
 export default function StoreMap() {
   const navigate = useNavigate()
@@ -35,6 +45,10 @@ export default function StoreMap() {
   const [query, setQuery] = useState('')
   const [detailPopup, setDetailPopup] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
+  const [addPlaceOpen, setAddPlaceOpen] = useState(false)
+  const [addPlaceLoading, setAddPlaceLoading] = useState(false)
+  const [addPlaceError, setAddPlaceError] = useState('')
+  const [newPlace, setNewPlace] = useState({ name: '', category: '', address: '' })
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
   const relatedPolicy = state?.policy || null
@@ -53,7 +67,7 @@ export default function StoreMap() {
     fetchPlaces()
       .then(places => {
         if (!active) return
-        const relatedPlaces = filterPlacesByPolicy(places, relatedPolicy)
+        const relatedPlaces = filterPlacesByPolicy([...places, ...readCustomPlaces()], relatedPolicy)
         setStores(relatedPlaces)
         const nextCategory = state?.store?.category || relatedPlaces[0]?.category || ''
         if (nextCategory) setActiveCategory(nextCategory)
@@ -225,6 +239,83 @@ export default function StoreMap() {
     }
   }
 
+  const openAddPlace = (event) => {
+    event.stopPropagation()
+    setAddPlaceError('')
+    setNewPlace({
+      name: '',
+      category: activeCategory || categories[0]?.id || '동네 정보',
+      address: '',
+    })
+    setAddPlaceOpen(true)
+  }
+
+  const resolvePlacePosition = () => new Promise(resolve => {
+    const fallbackCenter = mapInstanceRef.current?.getCenter()
+    const fallback = {
+      lat: fallbackCenter?.getLat?.() || OKCHEON_CENTER.lat,
+      lng: fallbackCenter?.getLng?.() || OKCHEON_CENTER.lng,
+      address: newPlace.address,
+    }
+    if (!window.kakao?.maps?.services || (!newPlace.name && !newPlace.address)) {
+      resolve(fallback)
+      return
+    }
+
+    const placesService = new window.kakao.maps.services.Places()
+    placesService.keywordSearch(
+      [newPlace.name, newPlace.address].filter(Boolean).join(' '),
+      (data, status) => {
+        if (status !== window.kakao.maps.services.Status.OK || !data.length) {
+          resolve(fallback)
+          return
+        }
+        resolve({
+          lat: Number(data[0].y),
+          lng: Number(data[0].x),
+          address: data[0].road_address_name || data[0].address_name || newPlace.address,
+          phone: data[0].phone || '',
+        })
+      },
+    )
+  })
+
+  const handleAddPlace = async (event) => {
+    event.preventDefault()
+    if (!newPlace.name.trim() || !newPlace.address.trim()) {
+      setAddPlaceError('장소 이름과 주소를 입력해 주세요.')
+      return
+    }
+
+    setAddPlaceLoading(true)
+    setAddPlaceError('')
+    const position = await resolvePlacePosition()
+    const customPlace = {
+      id: `custom-${Date.now()}`,
+      name: newPlace.name.trim(),
+      category: newPlace.category || '동네 정보',
+      address: position.address || newPlace.address.trim(),
+      phone: position.phone || '',
+      hours: '사용자가 추가한 장소',
+      lat: position.lat,
+      lng: position.lng,
+      rating: 0,
+      reviews: 0,
+      userAdded: true,
+    }
+    const savedPlaces = [...readCustomPlaces(), customPlace]
+    localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(savedPlaces))
+    setStores(current => [...current, customPlace])
+    setActiveCategory(customPlace.category)
+    setSelectedStore(customPlace)
+    setSheetH(expandedHeight)
+    setAddPlaceLoading(false)
+    setAddPlaceOpen(false)
+    window.setTimeout(() => {
+      mapInstanceRef.current?.panTo(new window.kakao.maps.LatLng(customPlace.lat, customPlace.lng))
+    }, 80)
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100dvh - 70px - env(safe-area-inset-bottom))', overflow: 'hidden', background: '#f0f0f0' }}>
 
@@ -337,14 +428,36 @@ export default function StoreMap() {
             <span style={{ fontSize: 14, fontWeight: 600, color: '#888' }}>
               {filteredStores.length}개 장소
             </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#aaa' }}>
-                {fullscreen ? '접기' : expanded ? '전체 보기' : '목록 보기'}
-              </span>
-              {fullscreen
-                ? <ChevronDown size={16} color="#aaa" strokeWidth={2.5} />
-                : <ChevronUp size={16} color="#aaa" strokeWidth={2.5} />
-              }
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#aaa' }}>
+                  {fullscreen ? '접기' : expanded ? '전체 보기' : '목록 보기'}
+                </span>
+                {fullscreen
+                  ? <ChevronDown size={16} color="#aaa" strokeWidth={2.5} />
+                  : <ChevronUp size={16} color="#aaa" strokeWidth={2.5} />
+                }
+              </div>
+              <button
+                type="button"
+                aria-label="장소 추가"
+                onClick={openAddPlace}
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: '50%',
+                  border: 'none',
+                  background: '#076818',
+                  color: '#FFFFFF',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 5px 14px rgba(7,104,24,0.2)',
+                }}
+              >
+                <Plus size={19} strokeWidth={2.5} />
+              </button>
             </div>
           </div>
 
@@ -438,6 +551,74 @@ export default function StoreMap() {
           </div>
         </div>
       </div>
+
+      {addPlaceOpen && (
+        <div
+          onClick={() => !addPlaceLoading && setAddPlaceOpen(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 320, background: 'rgba(20,24,20,0.5)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+        >
+          <form
+            onSubmit={handleAddPlace}
+            onClick={event => event.stopPropagation()}
+            style={{
+              width: 'min(100%, 430px)',
+              boxSizing: 'border-box',
+              background: '#FFFFFF',
+              borderRadius: '24px 24px 0 0',
+              padding: '18px 20px calc(24px + env(safe-area-inset-bottom))',
+              boxShadow: '0 -12px 34px rgba(22,35,24,0.18)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: 19, fontWeight: 750, color: '#1f2433' }}>내 장소 추가</h2>
+                <p style={{ margin: '5px 0 0', fontSize: 12, color: '#888' }}>옥천에서 함께 나누고 싶은 장소를 알려주세요.</p>
+              </div>
+              <button type="button" aria-label="닫기" onClick={() => setAddPlaceOpen(false)} disabled={addPlaceLoading} style={{ width: 34, height: 34, border: 'none', borderRadius: '50%', background: '#f4f5f2', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                <X size={18} color="#6f776d" />
+              </button>
+            </div>
+
+            {[
+              { key: 'name', label: '장소 이름', placeholder: '예: 옥천 귀농인 모임방' },
+              { key: 'address', label: '주소', placeholder: '예: 충북 옥천군 옥천읍 중앙로 1' },
+            ].map(field => (
+              <label key={field.key} style={{ display: 'block', marginBottom: 14 }}>
+                <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>{field.label}</span>
+                <input
+                  value={newPlace[field.key]}
+                  onChange={event => setNewPlace(current => ({ ...current, [field.key]: event.target.value }))}
+                  placeholder={field.placeholder}
+                  style={{ width: '100%', height: 48, boxSizing: 'border-box', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '0 14px', fontFamily: 'inherit', fontSize: 14, outline: 'none' }}
+                />
+              </label>
+            ))}
+
+            <label style={{ display: 'block', marginBottom: 8 }}>
+              <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>분류</span>
+              <select
+                value={newPlace.category}
+                onChange={event => setNewPlace(current => ({ ...current, category: event.target.value }))}
+                style={{ width: '100%', height: 48, boxSizing: 'border-box', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '0 14px', background: '#FFFFFF', fontFamily: 'inherit', fontSize: 14, color: '#333' }}
+              >
+                {[...new Set([...categories.map(category => category.id), '동네 정보'])].map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </label>
+
+            {addPlaceError && <p style={{ margin: '8px 0 0', fontSize: 12, color: '#d93025' }}>{addPlaceError}</p>}
+
+            <button
+              type="submit"
+              disabled={addPlaceLoading}
+              style={{ width: '54%', minWidth: 180, minHeight: 48, margin: '18px auto 0', border: 'none', borderRadius: 999, background: '#076818', color: '#FFFFFF', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: addPlaceLoading ? 'wait' : 'pointer', opacity: addPlaceLoading ? 0.65 : 1 }}
+            >
+              {addPlaceLoading ? '장소를 찾는 중...' : '장소 추가'}
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Detail popup */}
       {detailPopup && (
