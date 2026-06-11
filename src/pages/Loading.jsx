@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopBar from '../components/TopBar'
+import LoadingProgress from '../components/LoadingProgress'
+import useLoadingProgress from '../hooks/useLoadingProgress'
 import { fetchMatchedPolicies, fetchProfile } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
@@ -15,7 +17,9 @@ export default function Loading() {
   const navigate = useNavigate()
   const [userName, setUserName] = useState(getKakaoUserName)
   const [matchedCount, setMatchedCount] = useState(null)
+  const [analysisComplete, setAnalysisComplete] = useState(false)
   const [isFirstDiagnosis] = useState(() => !localStorage.getItem('lastDiagnosisDate'))
+  const analysisProgress = useLoadingProgress(!analysisComplete, 500)
 
   useEffect(() => {
     let active = true
@@ -37,6 +41,7 @@ export default function Loading() {
         if (!active) return
 
         setMatchedCount(policies.length)
+        setAnalysisComplete(true)
         await wait(RESULT_MIN_DURATION)
         if (active) {
           navigate('/results', {
@@ -49,6 +54,9 @@ export default function Loading() {
         if (remainingAnalysisTime > 0) await wait(remainingAnalysisTime)
         if (!active) return
 
+        setAnalysisComplete(true)
+        await wait(500)
+        if (!active) return
         navigate('/results', {
           replace: true,
           state: { firstDiagnosis: isFirstDiagnosis },
@@ -79,11 +87,17 @@ export default function Loading() {
         position: 'relative',
         zIndex: 2,
       }}>
-        <div className="loading-spinner" aria-label="지원금 분석 중" />
+        {analysisProgress.visible && (
+          <LoadingProgress
+            progress={analysisProgress.progress}
+            label="맞춤 지원금을 분석하고 있어요"
+            detail="입력하신 조건과 정책 정보를 확인 중이에요"
+          />
+        )}
 
         <div
           key={matchedCount === null ? 'analyzing' : 'matched'}
-          style={{ textAlign: 'center', marginTop: 28, animation: 'fadeUp 0.35s ease both' }}
+          style={{ textAlign: 'center', marginTop: analysisProgress.visible ? 28 : 0, animation: 'fadeUp 0.35s ease both' }}
         >
           <p style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', lineHeight: 1.45 }}>
             {matchedCount === null

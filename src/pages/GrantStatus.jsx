@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowUpDown, Bell, BellRing, Check, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
+import LoadingProgress from '../components/LoadingProgress'
+import useLoadingProgress from '../hooks/useLoadingProgress'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import okcheonCharacter from '../assets/okcheon-character.png'
 import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
@@ -225,6 +227,7 @@ export default function GrantStatus() {
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('마감순')
   const [loading, setLoading] = useState(true)
+  const statusProgress = useLoadingProgress(loading)
   const [error, setError] = useState('')
   const [userName, setUserName] = useState(getKakaoUserName)
   const toastTimer = useRef(null)
@@ -397,32 +400,24 @@ export default function GrantStatus() {
           </button>
         </div>
 
-        {loading && (
+        {statusProgress.visible && (
           <div style={{
             background: 'none',
             border: 'none',
             padding: '48px 20px',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+            display: 'flex', justifyContent: 'center',
           }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: '50%',
-              border: '3px solid rgba(218,231,211,0.9)', borderTopColor: '#076818',
-              animation: 'spin 0.8s linear infinite',
-            }} />
-            <p style={{ fontSize: 14, fontWeight: 600, color: '#1f2433', letterSpacing: '-0.2px' }}>
-              지원 현황을 불러오는 중이에요
-            </p>
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            <LoadingProgress progress={statusProgress.progress} label="지원 현황을 불러오는 중이에요" />
           </div>
         )}
 
-        {error && (
+        {!statusProgress.visible && error && (
           <div style={{ textAlign: 'center', padding: '12px 16px', color: '#d93025', fontSize: 14, border: '1.5px solid #f1d0cd', borderRadius: 16, background: '#fff' }}>
             {error}
           </div>
         )}
 
-        {!loading && isAll ? (
+        {!statusProgress.visible && isAll ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {filtered.map(g => (
               <GrantCard
@@ -436,7 +431,7 @@ export default function GrantStatus() {
               />
             ))}
           </div>
-        ) : !loading ? (
+        ) : !statusProgress.visible ? (
           <>
             {['신청예정', '신청완료', '관심없음'].map(status =>
               grouped[status]?.length ? (
@@ -473,7 +468,7 @@ export default function GrantStatus() {
           </>
         ) : null}
 
-        {!loading && filtered.length === 0 && (
+        {!statusProgress.visible && filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px 0', color: '#bbb', fontSize: 14 }}>
             해당하는 지원금이 없어요
           </div>

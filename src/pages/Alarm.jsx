@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopBar from '../components/TopBar'
+import LoadingProgress from '../components/LoadingProgress'
+import useLoadingProgress from '../hooks/useLoadingProgress'
 import { fetchSavedPolicies } from '../lib/api'
 
 const notificationFilters = [
@@ -87,6 +89,7 @@ export default function Alarm() {
   const [policies, setPolicies] = useState([])
   const [activeFilter, setActiveFilter] = useState('all')
   const [loading, setLoading] = useState(true)
+  const alarmProgress = useLoadingProgress(loading)
 
   useEffect(() => {
     let active = true
@@ -113,7 +116,7 @@ export default function Alarm() {
       <TopBar title="알림 받기" onBack={() => navigate('/home')} />
 
       <div style={{ padding: '18px 18px 80px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {!loading && policies.length > 0 && (
+        {!alarmProgress.visible && policies.length > 0 && (
           <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, marginBottom: 2 }}>
             {notificationFilters.map(filter => {
               const selected = activeFilter === filter.key
@@ -145,25 +148,23 @@ export default function Alarm() {
           </div>
         )}
 
-        {loading && (
-          <div style={{ padding: '48px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 36, height: 36, borderRadius: '50%', border: '3px solid rgba(218,231,211,0.9)', borderTopColor: '#076818', animation: 'spin 0.8s linear infinite' }} />
-            <p style={{ fontSize: 14, fontWeight: 600, color: '#1f2433' }}>알림을 불러오는 중이에요</p>
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        {alarmProgress.visible && (
+          <div style={{ padding: '48px 20px', display: 'flex', justifyContent: 'center' }}>
+            <LoadingProgress progress={alarmProgress.progress} label="알림을 불러오는 중이에요" />
           </div>
         )}
 
-        {!loading && visiblePolicies.length > 0 && visiblePolicies.map(policy => (
+        {!alarmProgress.visible && visiblePolicies.length > 0 && visiblePolicies.map(policy => (
           <NotificationCard key={policy.id} policy={policy} />
         ))}
 
-        {!loading && policies.length > 0 && visiblePolicies.length === 0 && (
+        {!alarmProgress.visible && policies.length > 0 && visiblePolicies.length === 0 && (
           <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(218,231,211,0.95)', borderRadius: 28, padding: '28px 20px', textAlign: 'center' }}>
             <p style={{ fontSize: 15, fontWeight: 700, color: '#666' }}>이 조건에 해당하는 알림이 없어요.</p>
           </div>
         )}
 
-        {!loading && policies.length === 0 && (
+        {!alarmProgress.visible && policies.length === 0 && (
           <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(218,231,211,0.95)', borderRadius: 28, padding: '28px 20px', textAlign: 'center' }}>
             <p style={{ fontSize: 15, fontWeight: 700, color: '#666' }}>아직 받을 알림이 없어요.</p>
           </div>

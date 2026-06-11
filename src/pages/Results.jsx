@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Check, Home as HomeIcon } from 'lucide-react'
 import TopBar from '../components/TopBar'
+import LoadingProgress from '../components/LoadingProgress'
+import useLoadingProgress from '../hooks/useLoadingProgress'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import GrantResultCard from '../components/GrantResultCard'
@@ -51,6 +53,7 @@ export default function Results() {
   const [statuses, setStatuses] = useState({})
   const [grants, setGrants] = useState([])
   const [loading, setLoading] = useState(true)
+  const resultProgress = useLoadingProgress(loading)
   const [loadError, setLoadError] = useState('')
   const [statusError, setStatusError] = useState('')
   const [userName, setUserName] = useState(getKakaoUserName)
@@ -184,26 +187,18 @@ export default function Results() {
       </div>
 
       <div style={{ padding: '0 18px 152px', flex: 1, overflowX: 'hidden' }}>
-        {loading && (
+        {resultProgress.visible && (
           <div style={{
             background: 'none',
             border: 'none',
             padding: '48px 20px',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+            display: 'flex', justifyContent: 'center',
           }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: '50%',
-              border: '3px solid rgba(218,231,211,0.9)', borderTopColor: '#076818',
-              animation: 'spin 0.8s linear infinite',
-            }} />
-            <p style={{ fontSize: 14, fontWeight: 600, color: '#1f2433', letterSpacing: '-0.2px' }}>
-              맞춤 지원금을 불러오는 중이에요
-            </p>
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            <LoadingProgress progress={resultProgress.progress} label="맞춤 지원금을 불러오는 중이에요" />
           </div>
         )}
 
-        {!loading && loadError && (
+        {!resultProgress.visible && loadError && (
           <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45 }}>
               {loadError}
@@ -211,7 +206,7 @@ export default function Results() {
           </div>
         )}
 
-        {!loading && !loadError && total === 0 && (
+        {!resultProgress.visible && !loadError && total === 0 && (
           <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center' }}>
               조건에 맞는 지원금이 없어요.
@@ -219,7 +214,7 @@ export default function Results() {
           </div>
         )}
 
-        {!loading && !loadError && grant && (
+        {!resultProgress.visible && !loadError && grant && (
         <div
           key={index}
           style={{
@@ -257,7 +252,7 @@ export default function Results() {
         )}
       </div>
 
-      {!loading && !loadError && grant && (
+      {!resultProgress.visible && !loadError && grant && (
       <div style={{ position: 'fixed', bottom: 'max(12px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: 'min(100%, 430px)', boxSizing: 'border-box', padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
         <button
           type="button"

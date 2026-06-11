@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Check, ChevronRight, Clock3, User } from 'lucide-react'
+import { Bell, Check, ChevronRight, User } from 'lucide-react'
 import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 import HomeTutorial from '../components/HomeTutorial'
+import LoadingProgress from '../components/LoadingProgress'
+import useLoadingProgress from '../hooks/useLoadingProgress'
 
 const HOME_CHECKLIST_CACHE_KEY = 'home-checklist-items'
 
@@ -256,7 +258,7 @@ function HomeCheckItem({ item, checked, onToggle }) {
   )
 }
 
-function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete, loading = false }) {
+function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete, loadingProgress }) {
   const [items, setItems] = useState(checklistItems)
   const [checked, setChecked] = useState({})
   const [completeAnimation, setCompleteAnimation] = useState(false)
@@ -338,7 +340,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
         }
       `}</style>
       <div style={{ minHeight: 230 }} aria-live="polite">
-        {loading && !policy?.id ? (
+        {loadingProgress.visible && !policy?.id ? (
           <div
             aria-label="오늘의 맞춤 일정을 불러오는 중"
             style={{
@@ -352,12 +354,13 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
               justifyContent: 'center',
               textAlign: 'center',
               padding: 24,
-              animation: 'homeChecklistLoading 1.2s ease-in-out infinite',
             }}
           >
-            <Clock3 size={28} color="#5a7a5e" strokeWidth={2} />
-            <p style={{ marginTop: 12, fontSize: 14, fontWeight: 700, color: '#5a7a5e' }}>맞춤 체크리스트를 불러오고 있어요.</p>
-            <p style={{ marginTop: 5, fontSize: 12, fontWeight: 500, color: '#888' }}>잠시만 기다려 주세요.</p>
+            <LoadingProgress
+              progress={loadingProgress.progress}
+              label="맞춤 체크리스트를 불러오고 있어요"
+              detail="저장된 정책과 준비 항목을 확인 중이에요"
+            />
           </div>
         ) : policy?.id ? (
           <div
@@ -443,6 +446,7 @@ export default function Home({ tutorial = false }) {
   const [, setChecklistRevision] = useState(0)
   const [checklistItemsByPolicy, setChecklistItemsByPolicy] = useState(readChecklistCache)
   const [checklistsLoaded, setChecklistsLoaded] = useState(false)
+  const homeChecklistProgress = useLoadingProgress(!checklistsLoaded)
 
   useEffect(() => {
     let active = true
@@ -580,7 +584,7 @@ export default function Home({ tutorial = false }) {
           userName={user.name}
           navigate={navigate}
           onComplete={handleChecklistComplete}
-          loading={!checklistsLoaded}
+          loadingProgress={homeChecklistProgress}
         />
         <SummaryCard counts={counts} navigate={navigate} />
       </div>

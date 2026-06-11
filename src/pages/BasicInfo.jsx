@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CircleHelp } from 'lucide-react'
 import TopBar from '../components/TopBar'
+import LoadingProgress from '../components/LoadingProgress'
+import useLoadingProgress from '../hooks/useLoadingProgress'
 import { deleteMyProfile, fetchProfile } from '../lib/api'
 import { findDisplayName, getKakaoUserName, logout } from '../lib/auth'
 
@@ -156,6 +158,7 @@ export default function BasicInfo() {
   const [nationality, setNationality] = useState('')
   const [diagnosisInfo, setDiagnosisInfo] = useState({})
   const [loading, setLoading] = useState(true)
+  const profileProgress = useLoadingProgress(loading)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
   const [confirmAction, setConfirmAction] = useState(null)
@@ -235,8 +238,10 @@ export default function BasicInfo() {
           gap: 18,
         }}
       >
-        {loading ? (
-          <p style={{ fontSize: 14, color: '#888', textAlign: 'center', marginTop: 40 }}>정보를 불러오는 중...</p>
+        {profileProgress.visible ? (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
+            <LoadingProgress progress={profileProgress.progress} label="정보를 불러오는 중이에요" />
+          </div>
         ) : (
           <>
             <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

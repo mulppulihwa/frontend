@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
+import LoadingProgress from '../components/LoadingProgress'
+import useLoadingProgress from '../hooks/useLoadingProgress'
 import { fetchPolicyChecklist, saveCheckedItems } from '../lib/api'
 
 const accentColor = '#c2185b'
@@ -227,6 +229,7 @@ export default function Checklist() {
   const [officeInfo, setOfficeInfo] = useState(null)
   const [loading, setLoading] = useState(Boolean(policyId))
   const [parsing, setParsing] = useState(false)
+  const checklistProgress = useLoadingProgress(loading || parsing)
   const [error, setError] = useState('')
   const storageKey = policyId ? `checklist-checked-${policyId}` : null
   const [checked, setChecked] = useState(() => {
@@ -324,58 +327,31 @@ export default function Checklist() {
       </p>
 
       <div style={{ padding: '0 18px 194px' }}>
-        {loading && (
+        {checklistProgress.visible && (
           <div style={{
             background: 'none',
             border: 'none',
             padding: '48px 20px',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+            display: 'flex', justifyContent: 'center',
           }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: '50%',
-              border: '3px solid rgba(218,231,211,0.9)', borderTopColor: '#076818',
-              animation: 'spin 0.8s linear infinite',
-            }} />
-            <p style={{ fontSize: 14, fontWeight: 600, color: '#1f2433', letterSpacing: '-0.2px' }}>
-              체크리스트를 불러오는 중이에요
-            </p>
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            <LoadingProgress
+              progress={checklistProgress.progress}
+              label={parsing ? '준비물을 정리하는 중이에요' : '체크리스트를 불러오는 중이에요'}
+            />
           </div>
         )}
-        {parsing && !error && (
-          <div style={{
-            background: 'transparent',
-            border: 'none',
-            borderRadius: 28,
-            padding: '40px 20px',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
-          }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: '50%',
-              border: '3px solid rgba(218,231,211,0.9)', borderTopColor: '#076818',
-              animation: 'spin 0.8s linear infinite',
-            }} />
-            <p style={{ fontSize: 14, fontWeight: 600, color: '#1f2433', letterSpacing: '-0.2px' }}>
-              준비물을 불러오는 중이에요
-            </p>
-            <p style={{ fontSize: 12, color: '#5a7a5e', letterSpacing: '-0.1px' }}>
-              잠시만 기다려 주세요
-            </p>
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          </div>
-        )}
-        {!loading && !parsing && error && (
+        {!checklistProgress.visible && error && (
           <p style={{ fontSize: 13, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45, padding: '14px 0 20px' }}>
             {error}
           </p>
         )}
-        {!loading && !parsing && !error && checklistSections.length === 0 && !officeInfo && (
+        {!checklistProgress.visible && !error && checklistSections.length === 0 && !officeInfo && (
           <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center', lineHeight: 1.5, padding: '24px 0' }}>
             등록된 체크리스트 정보가 없습니다.
           </p>
         )}
         {/* Section steps */}
-        {!loading && !parsing && checklistSections.map((section) => {
+        {!checklistProgress.visible && checklistSections.map((section) => {
           const done = section.items.filter(item => !!checked[item.id]).length
           const total = section.items.length
           const complete = done === total
@@ -434,7 +410,7 @@ export default function Checklist() {
         })}
 
         {/* Office step */}
-        {!loading && !parsing && officeInfo && (
+        {!checklistProgress.visible && officeInfo && (
         <div style={{ display: 'grid', gridTemplateColumns: '32px 1fr', gap: '0 14px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #e0e0e0', background: '#fff', flexShrink: 0 }} />
