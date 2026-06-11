@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { CircleHelp } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import { deleteMyProfile, fetchProfile } from '../lib/api'
 import { findDisplayName, getKakaoUserName, logout } from '../lib/auth'
@@ -211,7 +212,15 @@ export default function BasicInfo() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: '#FDFCF8', overflow: 'hidden' }}>
-      <TopBar title="프로필 정보" onBack={() => navigate('/home')} />
+      <TopBar
+        title="프로필 정보"
+        onBack={() => navigate('/home')}
+        rightAction={{
+          label: '도움말',
+          onClick: () => navigate('/tutorial'),
+          icon: <CircleHelp size={19} strokeWidth={2.2} />,
+        }}
+      />
 
       <div
         className="step-form-scroll"
