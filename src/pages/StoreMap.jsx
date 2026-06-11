@@ -401,7 +401,8 @@ export default function StoreMap() {
                     <button
                       onClick={e => { e.stopPropagation(); openDetail(store) }}
                       style={{
-                        width: '100%',
+                        width: '34%',
+                        minWidth: 128,
                         minHeight: 46,
                         display: 'flex',
                         alignItems: 'center',
