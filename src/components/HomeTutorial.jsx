@@ -8,14 +8,14 @@ function createSteps(userName) {
     {
       selector: null,
       eyebrow: '옥천옥 홈',
-      title: '안녕하세요.',
-      description: '여기는 옥천옥의 홈화면이에요.',
+      title: '안녕하세요. 여기는 옥천옥의 홈화면이에요.',
+      description: '',
     },
     {
       selector: null,
       eyebrow: '홈화면 안내',
-      title: '여러분이 홈화면을 쉽게 사용할 수 있도록',
-      description: '차근차근 설명해 드릴게요!',
+      title: '여러분이 홈화면을 쉽게 사용할 수 있도록 차근차근 설명해 드릴게요!',
+      description: '',
     },
     {
       selector: '[data-tutorial="schedule"]',
@@ -26,14 +26,14 @@ function createSteps(userName) {
     {
       selector: '[data-tutorial="summary"]',
       eyebrow: '진단 받은 정책',
-      title: `${displayName}님이 진단 받은 정책 내용을`,
-      description: '전부 확인하실 수 있어요.',
+      title: `${displayName}님이 진단 받은 정책 내용을 전부 확인하실 수 있어요.`,
+      description: '',
     },
     {
       selector: '[data-tutorial="map-navigation"]',
       eyebrow: '지역 정착 가이드맵',
-      title: '행정복지센터부터 동호회 장소까지',
-      description: '성공적인 옥천 정착을 돕는 지도예요.',
+      title: '행정복지센터부터 동호회 장소까지 성공적인 옥천 정착을 돕는 지도예요.',
+      description: '',
     },
     {
       selector: null,
