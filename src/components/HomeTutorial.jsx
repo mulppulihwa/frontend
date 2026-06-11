@@ -1,39 +1,49 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react'
 import okcheonCharacter from '../assets/okcheon-character.png'
 
-const steps = [
-  {
-    selector: null,
-    eyebrow: '옥천옥 홈',
-    title: '안녕하세요.',
-    description: '여기는 옥천옥의 홈화면이에요.',
-  },
-  {
-    selector: null,
-    eyebrow: '홈화면 안내',
-    title: '여러분이 홈화면을 쉽게 사용할 수 있도록',
-    description: '차근차근 설명해 드릴게요!',
-  },
-  {
-    selector: '[data-tutorial="schedule"]',
-    eyebrow: '오늘의 맞춤 일정',
-    title: '마감이 가까운 준비물부터 확인해요',
-    description: '체크하면 다음 준비물이 이어서 나타나요. 정책 이름을 누르면 전체 체크리스트도 볼 수 있어요.',
-  },
-  {
-    selector: '[data-tutorial="summary"]',
-    eyebrow: '진단 받은 정책',
-    title: '정책별 진행 상태를 한눈에 봐요',
-    description: '신청 완료, 신청 예정, 관심 없음으로 나눈 현황을 확인하고 전체 정책 목록으로 이동할 수 있어요.',
-  },
-  {
-    selector: '[data-tutorial="navigation"]',
-    eyebrow: '빠른 이동',
-    title: '홈과 지역 지도를 간편하게 오가요',
-    description: '홈에서는 맞춤 정책을 관리하고, 지도에서는 주변 행정기관과 생활 정보를 확인할 수 있어요.',
-  },
-]
+function createSteps(userName) {
+  const displayName = userName || '사용자'
+  return [
+    {
+      selector: null,
+      eyebrow: '옥천옥 홈',
+      title: '안녕하세요.',
+      description: '여기는 옥천옥의 홈화면이에요.',
+    },
+    {
+      selector: null,
+      eyebrow: '홈화면 안내',
+      title: '여러분이 홈화면을 쉽게 사용할 수 있도록',
+      description: '차근차근 설명해 드릴게요!',
+    },
+    {
+      selector: '[data-tutorial="schedule"]',
+      eyebrow: '오늘의 맞춤 일정',
+      title: '가장 마감이 임박한 정책의',
+      description: '준비 항목들을 띄워드려요.',
+    },
+    {
+      selector: '[data-tutorial="summary"]',
+      eyebrow: '진단 받은 정책',
+      title: `${displayName}님이 진단 받은 정책 내용을`,
+      description: '전부 확인하실 수 있어요.',
+    },
+    {
+      selector: '[data-tutorial="map-navigation"]',
+      eyebrow: '지역 정착 가이드맵',
+      title: '행정복지센터부터 동호회 장소까지',
+      description: '성공적인 옥천 정착을 돕는 지도예요.',
+    },
+    {
+      selector: null,
+      keepPosition: true,
+      eyebrow: '안내 완료',
+      title: '자, 그럼 이제',
+      description: '옥천옥을 사용하러 가볼까요?',
+    },
+  ]
+}
 
 function getTargetRect(selector) {
   if (!selector) return null
@@ -52,9 +62,10 @@ function getTargetRect(selector) {
   }
 }
 
-export default function HomeTutorial({ onFinish }) {
+export default function HomeTutorial({ onFinish, userName }) {
   const [stepIndex, setStepIndex] = useState(0)
   const [targetRect, setTargetRect] = useState(null)
+  const steps = useMemo(() => createSteps(userName), [userName])
   const step = steps[stepIndex]
   const isLast = stepIndex === steps.length - 1
 
@@ -65,7 +76,7 @@ export default function HomeTutorial({ onFinish }) {
   useEffect(() => {
     if (!step.selector) {
       setTargetRect(null)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      if (!step.keepPosition) window.scrollTo({ top: 0, behavior: 'smooth' })
       return undefined
     }
 
@@ -234,7 +245,7 @@ export default function HomeTutorial({ onFinish }) {
                 cursor: 'pointer',
               }}
             >
-              {isLast ? '둘러보기 완료' : '다음'}
+              {isLast ? '옥천옥 시작하기' : '다음'}
               {isLast ? <Check size={15} strokeWidth={2.5} /> : <ArrowRight size={15} strokeWidth={2.4} />}
             </button>
           </div>

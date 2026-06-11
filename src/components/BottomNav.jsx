@@ -38,6 +38,7 @@ export default function BottomNav() {
           <button
             key={path}
             type="button"
+            data-tutorial={path === '/map' ? 'map-navigation' : undefined}
             aria-label={label}
             aria-current={active ? 'page' : undefined}
             onClick={() => navigate(path)}

@@ -584,7 +584,7 @@ export default function Home({ tutorial = false }) {
         />
         <SummaryCard counts={counts} navigate={navigate} />
       </div>
-      {tutorial && <HomeTutorial onFinish={() => navigate('/home', { replace: true })} />}
+      {tutorial && <HomeTutorial userName={user.name} onFinish={() => navigate('/home', { replace: true })} />}
     </div>
   )
 }
