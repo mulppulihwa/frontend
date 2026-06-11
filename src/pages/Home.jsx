@@ -263,6 +263,10 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
   const [scheduleMessage] = useState(() => homeScheduleMessages[Math.floor(Math.random() * homeScheduleMessages.length)])
   const done = items.filter(item => !!checked[item.id]).length
   const total = items.length
+  const visibleItems = [
+    ...items.filter(item => !checked[item.id]),
+    ...items.filter(item => !!checked[item.id]),
+  ].slice(0, 3)
   const deadlineText = getDeadlineText(policy?.deadline)
 
   useEffect(() => {
@@ -384,7 +388,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
                 <p style={{ fontSize: 13, fontWeight: 800, color: total > 0 && done === total ? '#076818' : '#aaa' }}>{done}/{total}</p>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {items.map(item => (
+                {visibleItems.map(item => (
                   <HomeCheckItem key={item.id} item={item} checked={!!checked[item.id]} onToggle={() => toggleItem(item)} />
                 ))}
               </div>
