@@ -671,7 +671,7 @@ export default function StoreMap() {
             </label>
 
             <div style={{ marginBottom: 8 }}>
-              <span style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 650, color: '#333' }}>분류</span>
+              <span style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 650, color: '#333' }}>카테고리</span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                 {USER_PLACE_CATEGORIES.map(category => {
                   const selected = newPlace.category === category
