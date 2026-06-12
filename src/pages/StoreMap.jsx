@@ -445,10 +445,17 @@ export default function StoreMap() {
         {/* Bottom sheet */}
         <div
           style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10,
-            height: sheetH,
+            position: fullscreen ? 'fixed' : 'absolute',
+            top: fullscreen ? 0 : 'auto',
+            bottom: 0,
+            left: fullscreen ? '50%' : 0,
+            right: fullscreen ? 'auto' : 0,
+            zIndex: fullscreen ? 250 : 10,
+            width: fullscreen ? 'min(100%, 430px)' : 'auto',
+            height: fullscreen ? '100dvh' : sheetH,
+            transform: fullscreen ? 'translateX(-50%)' : 'none',
             background: '#fff',
-            borderRadius: '24px 24px 0 0',
+            borderRadius: fullscreen ? 0 : '24px 24px 0 0',
             boxShadow: '0 -2px 20px rgba(0,0,0,0.10)',
             transition: dragRef.current.dragging ? 'none' : 'height 0.35s cubic-bezier(0.22, 1, 0.36, 1)',
             display: 'flex', flexDirection: 'column',
