@@ -122,15 +122,13 @@ export default function StoreMap() {
   const onDragEnd = () => {
     if (!dragRef.current.dragging) return
     dragRef.current.dragging = false
-    if (fullscreen) setSheetH(sheetMaxHeight)
-    else if (expanded) setSheetH(expandedHeight)
+    if (expanded) setSheetH(sheetMaxHeight)
     else setSheetH(COLLAPSED_H)
   }
 
   const cycleSheet = () => {
     if (fullscreen) setSheetH(COLLAPSED_H)
-    else if (expanded) setSheetH(sheetMaxHeight)
-    else setSheetH(expandedHeight)
+    else setSheetH(sheetMaxHeight)
   }
 
   useEffect(() => {
@@ -484,7 +482,7 @@ export default function StoreMap() {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#aaa' }}>
-                  {fullscreen ? '접기' : expanded ? '전체 보기' : '목록 보기'}
+                  {fullscreen ? '접기' : '전체 보기'}
                 </span>
                 {fullscreen
                   ? <ChevronDown size={16} color="#aaa" strokeWidth={2.5} />
