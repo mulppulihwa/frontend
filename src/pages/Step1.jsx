@@ -16,6 +16,11 @@ function classifyResidenceType(bname1) {
   return /(읍|면)$/.test(bname1 || '') ? '읍면' : '동'
 }
 
+function inferResidenceType(address) {
+  if (!hasValue(address)) return ''
+  return /(?:^|\s)\S*(?:읍|면)(?=\s|$)/.test(String(address).trim()) ? '읍면' : '동'
+}
+
 function loadPostcodeScript() {
   if (window.kakao?.Postcode) return Promise.resolve()
   return new Promise((resolve, reject) => {
@@ -547,6 +552,7 @@ export default function Step1() {
   const [submitError, setSubmitError] = useState('')
   const [dateWarning, setDateWarning] = useState('')
   const dateWarningTimer = useRef(null)
+  const resolvedPreviousResidenceType = previousResidenceType || inferResidenceType(previousResidence)
   const [profileNotice, setProfileNotice] = useState(
     locationState?.profileIncompleteReason === 'match-profile-incomplete'
       ? locationState?.profileIncompleteMessage || ''
@@ -700,7 +706,9 @@ export default function Step1() {
   const saveProgress = (currentPage) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       page: currentPage, birthDate, age, gender, nationality, farming,
-      farmingDate, location, movedAt, previousResidence, previousResidenceType, previousSince,
+      farmingDate, location, movedAt, previousResidence,
+      previousResidenceType: resolvedPreviousResidenceType,
+      previousSince,
       job, farmBusiness, outsideIncome, region,
     }))
   }
@@ -748,7 +756,7 @@ export default function Step1() {
       is_farm_registered: farmBusiness,
       farm_registered_date: farmBusiness ? toApiDate(movedAt, 'month') : null,
       is_disabled: false,
-      prev_residence_type: previousResidenceType || '',
+      prev_residence_type: resolvedPreviousResidenceType,
     }
   }
 
@@ -799,7 +807,7 @@ export default function Step1() {
         return hasValue(location)
           && isCompleteDate(movedAt, 'month')
           && hasValue(previousResidence)
-          && hasValue(previousResidenceType)
+          && hasValue(resolvedPreviousResidenceType)
           && isCompleteDate(previousSince, 'month')
           && !relocationDateError
       }
@@ -818,7 +826,7 @@ export default function Step1() {
     return hasValue(location)
       && isCompleteDate(movedAt, 'month')
       && hasValue(previousResidence)
-      && hasValue(previousResidenceType)
+      && hasValue(resolvedPreviousResidenceType)
       && isCompleteDate(previousSince, 'month')
   }
 
@@ -851,7 +859,9 @@ export default function Step1() {
         localStorage.removeItem(STORAGE_KEY)
         localStorage.setItem(SUBMITTED_PROFILE_KEY, JSON.stringify({
           birthDate, age, gender, nationality, farming,
-          farmingDate, location, movedAt, previousResidence, previousResidenceType, previousSince,
+          farmingDate, location, movedAt, previousResidence,
+          previousResidenceType: resolvedPreviousResidenceType,
+          previousSince,
           job, farmBusiness, outsideIncome, region,
         }))
         navigate('/loading')
