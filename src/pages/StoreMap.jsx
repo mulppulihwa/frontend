@@ -592,24 +592,24 @@ export default function StoreMap() {
                         {store.name}
                       </p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: '#FFA100' }}>★ {store.rating}</span>
-                        <span style={{ fontSize: 11, color: '#888' }}>({store.reviews})</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#d98200' }}>★ {store.rating}</span>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>({store.reviews})</span>
                         {userPos && (
                           <>
-                            <span style={{ fontSize: 11, color: '#bbb' }}>·</span>
-                            <span style={{ fontSize: 12, color: '#666' }}>{haversine(userPos.lat, userPos.lng, store.lat, store.lng)}</span>
+                            <span style={{ fontSize: 12, color: '#777' }}>·</span>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: '#444' }}>{haversine(userPos.lat, userPos.lng, store.lat, store.lng)}</span>
                           </>
                         )}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
-                        <MapPin size={13} color="#999" strokeWidth={2} />
-                        <span style={{ fontSize: 12, color: '#666', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <MapPin size={14} color="#555" strokeWidth={2.2} />
+                        <span style={{ fontSize: 13, fontWeight: 550, color: '#444', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.address}
                         </span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Clock size={13} color="#999" strokeWidth={2} />
-                        <span style={{ fontSize: 12, color: '#666', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <Clock size={14} color="#555" strokeWidth={2.2} />
+                        <span style={{ fontSize: 13, fontWeight: 550, color: '#444', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.hours}
                         </span>
                       </div>
