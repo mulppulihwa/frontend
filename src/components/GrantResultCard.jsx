@@ -7,6 +7,12 @@ export default function GrantResultCard({
 }) {
   const reasons = grant.reasons ?? []
   const countdown = grant.countdown ?? { days: 0, hours: 0, minutes: 0 }
+  const countdownDays = Number(countdown.days)
+  const countdownColor = !grant.deadline || !Number.isFinite(countdownDays)
+    ? '#777'
+    : countdownDays <= 20
+      ? '#d93025'
+      : '#076818'
 
   return (
     <div style={{
@@ -80,8 +86,8 @@ export default function GrantResultCard({
           <p style={{ fontSize: 13, fontWeight: 500, color: '#555', letterSpacing: '-0.2px' }}>{grant.period}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 8 }}>
-          <Clock size={13} color="#076818" strokeWidth={2} />
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#1f2433', letterSpacing: '-0.1px' }}>마감까지</p>
+          <Clock size={13} color={countdownColor} strokeWidth={2} />
+          <p style={{ fontSize: 13, fontWeight: 600, color: countdownColor, letterSpacing: '-0.1px' }}>마감까지</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr auto', alignItems: 'center', columnGap: 5 }}>
           {[[countdown.days, '일'], [countdown.hours, '시간'], [countdown.minutes, '분']].map(([val, unit]) => (
@@ -93,11 +99,11 @@ export default function GrantResultCard({
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-                <span style={{ fontSize: 18, fontWeight: 700, color: '#1f2433', letterSpacing: '-0.5px', lineHeight: 1 }}>
+                <span style={{ fontSize: 18, fontWeight: 700, color: countdownColor, letterSpacing: '-0.5px', lineHeight: 1 }}>
                   {Number(val)}
                 </span>
               </div>
-              <span style={{ fontSize: 13, fontWeight: 500, color: '#5a7a5e', letterSpacing: '-0.2px', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: countdownColor, letterSpacing: '-0.2px', whiteSpace: 'nowrap' }}>
                 {unit}
               </span>
             </Fragment>
