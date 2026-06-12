@@ -520,7 +520,14 @@ export default function StoreMap() {
           </div>
 
           {/* Store list */}
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '0 16px 24px', scrollPaddingBottom: 24 }}>
+          <div style={{
+            flex: 1,
+            minHeight: 0,
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            padding: '0 16px 104px',
+            scrollPaddingBottom: 104,
+          }}>
             {filteredStores.length === 0 && (
               <div style={{ textAlign: 'center', padding: '24px 0', color: '#bbb', fontSize: 14 }}>
                 검색 결과가 없어요
