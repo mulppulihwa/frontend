@@ -35,9 +35,6 @@ export default function Results() {
   const navigate = useNavigate()
   const location = useLocation()
   const prefetchedPolicies = location.state?.matchedPolicies
-  const [isFirstDiagnosis] = useState(
-    () => location.state?.firstDiagnosis ?? !localStorage.getItem('lastDiagnosisDate'),
-  )
   const [index, setIndex] = useState(0)
   const [pageDirection, setPageDirection] = useState('next')
   const [statuses, setStatuses] = useState({})
@@ -133,11 +130,11 @@ export default function Results() {
       <div style={{ background: '#FDFCF8' }}>
         <TopBar
           title="내 지원금"
-          rightAction={isFirstDiagnosis ? {
+          rightAction={{
             label: '홈으로',
             onClick: () => navigate('/home', { replace: true }),
             icon: <HomeIcon size={19} strokeWidth={2.2} />,
-          } : undefined}
+          }}
         />
       </div>
 
@@ -167,7 +164,7 @@ export default function Results() {
         </div>
       </div>
 
-      <div style={{ padding: '0 18px 152px', flex: 1, overflowX: 'hidden' }}>
+      <div style={{ padding: '0 18px 222px', flex: 1, overflowX: 'hidden' }}>
         {!loading && loadError && (
           <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45 }}>
@@ -222,7 +219,7 @@ export default function Results() {
       </div>
 
       {!loading && !loadError && grant && (
-      <div style={{ position: 'fixed', bottom: 'max(12px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: 'min(100%, 430px)', boxSizing: 'border-box', padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
+      <div style={{ position: 'fixed', bottom: 'calc(70px + env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: 'min(100%, 430px)', boxSizing: 'border-box', padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
         <button
           className="app-action-button"
           type="button"

@@ -37,8 +37,8 @@ function Layout() {
       <Route path="/step1" element={<RequireAuth><Step1 /></RequireAuth>} />
       <Route path="/step2" element={<RequireAuth><Step2 /></RequireAuth>} />
       <Route path="/loading" element={<RequireAuth><Loading /></RequireAuth>} />
-      <Route path="/results" element={<RequireAuth><Results /></RequireAuth>} />
       <Route element={<AppWithNav />}>
+        <Route path="/results" element={<Results />} />
         <Route path="/detail" element={<Detail />} />
         <Route path="/map" element={<StoreMap />} />
         <Route path="/store-detail" element={<StoreDetail />} />
