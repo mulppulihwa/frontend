@@ -446,13 +446,13 @@ export default function StoreMap() {
         <div
           style={{
             position: fullscreen ? 'fixed' : 'absolute',
-            top: fullscreen ? 0 : 'auto',
+            top: fullscreen ? 74 : 'auto',
             bottom: 0,
             left: fullscreen ? '50%' : 0,
             right: fullscreen ? 'auto' : 0,
             zIndex: fullscreen ? 250 : 10,
             width: fullscreen ? 'min(100%, 430px)' : 'auto',
-            height: fullscreen ? '100dvh' : sheetH,
+            height: fullscreen ? 'calc(100dvh - 74px)' : sheetH,
             transform: fullscreen ? 'translateX(-50%)' : 'none',
             background: '#fff',
             borderRadius: fullscreen ? 0 : '24px 24px 0 0',
