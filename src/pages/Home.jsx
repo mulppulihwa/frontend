@@ -75,48 +75,140 @@ function SectionTitle({ children, action }) {
   )
 }
 
-function SummaryTile({ label, value, color, bar }) {
+function MiniRing({ done = 0, total = 0 }) {
+  const radius = 10
+  const circumference = 2 * Math.PI * radius
+  const progress = total > 0 ? done / total : 0
+  const complete = total > 0 && done >= total
+
   return (
-    <div style={{
-      minWidth: 0,
-      minHeight: 86,
-      borderRadius: 18,
-      background: '#FFFFFF',
-      border: '1px solid rgba(218,231,211,0.95)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '10px 4px',
-      boxSizing: 'border-box',
-    }}>
-      <span style={{ width: 28, height: 5, borderRadius: 999, background: bar, marginBottom: 10 }} />
-      <strong style={{ fontSize: 24, fontWeight: 800, lineHeight: 1, color }}>{value}</strong>
-      <span style={{ marginTop: 8, fontSize: 11, fontWeight: 700, color: '#777', whiteSpace: 'nowrap' }}>{label}</span>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+      {complete ? (
+        <span style={{ width: 30, height: 30, borderRadius: '50%', background: '#076818', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Check size={17} color="#fff" strokeWidth={2.8} />
+        </span>
+      ) : (
+        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+          <circle cx="15" cy="15" r={radius} fill="none" stroke="#e8e8e8" strokeWidth="3" />
+          <circle
+            cx="15"
+            cy="15"
+            r={radius}
+            fill="none"
+            stroke="#FFA100"
+            strokeWidth="3"
+            strokeDasharray={`${progress * circumference} ${circumference}`}
+            strokeLinecap="round"
+            transform="rotate(-90 15 15)"
+          />
+        </svg>
+      )}
+      <span style={{ fontSize: 10, fontWeight: 600, color: complete ? '#076818' : '#888', whiteSpace: 'nowrap' }}>
+        준비물 {done}/{total}
+      </span>
     </div>
   )
 }
 
-function SummaryCard({ counts, navigate }) {
-  const total = counts.completed + counts.planned + counts.ignored + counts.unset
+const diagnosedStatusMeta = {
+  신청완료: { label: '신청 완료', color: '#076818', background: '#e8f3e8', Icon: Check },
+  신청예정: { label: '신청 예정', color: '#FFA100', background: '#fff3e0', Icon: Clock3 },
+  관심없음: { label: '관심 없음', color: '#d93025', background: '#fff0ef', Icon: Check },
+}
+
+function getDday(deadline) {
+  const days = getDeadlineDays(deadline)
+  if (!Number.isFinite(days)) return '-'
+  if (days === 0) return 'D-0'
+  return days > 0 ? `D-${days}` : `D+${Math.abs(days)}`
+}
+
+function DiagnosedPolicyCard({ policy, checklistItems, navigate }) {
+  const status = policy.user_status || policy.status
+  const statusMeta = diagnosedStatusMeta[status] || {
+    label: '상태 미입력',
+    color: '#888',
+    background: '#f5f3ef',
+    Icon: Clock3,
+  }
+  const StatusIcon = statusMeta.Icon
+  const progress = getChecklistProgress(policy, checklistItems)
+  const showPlaces = status === '신청완료'
+
+  return (
+    <article style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 24, padding: '16px 14px 14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <p style={{ width: 54, flexShrink: 0, fontSize: 14, fontWeight: 800, color: '#d93025', textAlign: 'center' }}>
+          {getDday(policy.deadline)}
+        </p>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 15, fontWeight: 750, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all' }}>
+            {policy.title}
+          </p>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 6, padding: '4px 8px', borderRadius: 999, background: statusMeta.background, color: statusMeta.color, fontSize: 11, fontWeight: 700 }}>
+            <StatusIcon size={11} strokeWidth={2.5} />
+            {statusMeta.label}
+          </span>
+        </div>
+        <MiniRing done={progress.done} total={progress.total} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: showPlaces ? '1fr 1fr' : '1fr', gap: 8, marginTop: 14 }}>
+        <button
+          type="button"
+          onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })}
+          style={{ minHeight: 46, border: 'none', borderRadius: 999, background: '#076818', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
+        >
+          준비물 확인 →
+        </button>
+        {showPlaces && (
+          <button
+            type="button"
+            onClick={() => navigate('/map', { state: { policy } })}
+            style={{ minHeight: 46, border: '1.5px solid #076818', borderRadius: 999, background: '#fff', color: '#076818', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
+          >
+            사용처 보기
+          </button>
+        )}
+      </div>
+    </article>
+  )
+}
+
+function DiagnosedPolicies({ policies, checklistItemsByPolicy, navigate }) {
+  const visiblePolicies = [...policies]
+    .sort((a, b) => {
+      const aStatus = a.user_status || a.status
+      const bStatus = b.user_status || b.status
+      const statusOrder = { 신청완료: 0, 신청예정: 1, 관심없음: 2 }
+      const statusDifference = (statusOrder[aStatus] ?? 3) - (statusOrder[bStatus] ?? 3)
+      return statusDifference || compareDeadlineUrgency(a, b)
+    })
+    .slice(0, 2)
+
   return (
     <section data-tutorial="summary">
       <SectionTitle action={<button type="button" onClick={() => navigate('/grant-status')} style={{ display: 'flex', alignItems: 'center', gap: 2, border: 'none', background: '#fff', borderRadius: 999, padding: '8px 10px 8px 13px', color: '#888', fontSize: 12, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer' }}>전체 보기 <ChevronRight size={14} /></button>}>
-        진단 받은 정책
+        <span>
+          진단 받은 정책
+          <small style={{ display: 'block', marginTop: 2, fontSize: 12, fontWeight: 500, color: '#333', letterSpacing: 0 }}>
+            내 조건에 맞춰 쏙쏙 골라낸 옥천의 혜택들이 대기 중이에요
+          </small>
+        </span>
       </SectionTitle>
-      <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 30, padding: 18 }}>
-        <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 24, background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)', padding: '20px 18px 22px', marginBottom: 12 }}>
-          <div style={{ position: 'absolute', right: 22, bottom: 24, display: 'flex', alignItems: 'flex-end', gap: 7, opacity: 0.32 }}>
-            {[32, 46, 40, 56, 72].map((height, index) => <span key={height} style={{ width: 9, height, borderRadius: 999, background: index === 4 ? '#FFA100' : '#076818', display: 'block' }} />)}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {visiblePolicies.map(policy => (
+          <DiagnosedPolicyCard
+            key={policy.id}
+            policy={policy}
+            checklistItems={checklistItemsByPolicy[String(policy.id)] || []}
+            navigate={navigate}
+          />
+        ))}
+        {visiblePolicies.length === 0 && (
+          <div style={{ minHeight: 116, display: 'grid', placeItems: 'center', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 24, background: '#fff', color: '#888', fontSize: 13, fontWeight: 600 }}>
+            아직 진단 받은 정책이 없어요.
           </div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#5a7a5e', marginBottom: 8 }}>진단 받은 정책</p>
-          <p style={{ fontSize: 42, fontWeight: 800, color: '#1f2433', lineHeight: 1 }}>{total}건</p>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, calc((100% - 24px) / 4))', justifyContent: 'center', gap: 8 }}>
-          <SummaryTile label="완료" value={counts.completed} color="#076818" bar="#e8f3e8" />
-          <SummaryTile label="예정" value={counts.planned} color="#FFA100" bar="#fff3e0" />
-          <SummaryTile label="관심 없음" value={counts.ignored} color="#d93025" bar="#fff0ef" />
-        </div>
+        )}
       </div>
     </section>
   )
@@ -522,12 +614,6 @@ export default function Home({ tutorial = false }) {
     }
   }, [policies, policiesLoaded])
 
-  const counts = {
-    completed: policies.filter(policy => (policy.user_status || policy.status) === '신청완료').length,
-    planned: policies.filter(policy => (policy.user_status || policy.status) === '신청예정').length,
-    ignored: policies.filter(policy => (policy.user_status || policy.status) === '관심없음').length,
-    unset: policies.filter(policy => !(policy.user_status || policy.status)).length,
-  }
   const activePolicies = policies.filter(policy => {
     const status = policy.user_status || policy.status
     return status === '신청완료' || status === '신청예정'
@@ -582,7 +668,7 @@ export default function Home({ tutorial = false }) {
           onComplete={handleChecklistComplete}
           loading={!checklistsLoaded}
         />
-        <SummaryCard counts={counts} navigate={navigate} />
+        <DiagnosedPolicies policies={policies} checklistItemsByPolicy={checklistItemsByPolicy} navigate={navigate} />
       </div>
       {tutorial && <HomeTutorial userName={user.name} onFinish={() => navigate('/home', { replace: true })} />}
     </div>
