@@ -3,10 +3,8 @@ import { Clock, Banknote, ArrowUpRight, CalendarDays } from 'lucide-react'
 
 export default function GrantResultCard({
   grant,
-  statusConfig,
   onViewDetail,
 }) {
-  const statusCfg = statusConfig?.[grant.status]
   const reasons = grant.reasons ?? []
   const countdown = grant.countdown ?? { days: 0, hours: 0, minutes: 0 }
 
@@ -17,30 +15,38 @@ export default function GrantResultCard({
       borderRadius: 28,
       padding: '20px 20px 14px',
     }}>
-      {/* Title + status */}
+      {/* Title + detail action */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 14 }}>
         <div style={{ flex: 1 }}>
           <p style={{ fontSize: 20, fontWeight: 800, color: '#1f2433', letterSpacing: '-0.4px', lineHeight: 1.3, wordBreak: 'keep-all' }}>{grant.title}</p>
           <p style={{ fontSize: 13, fontWeight: 400, color: '#5a7a5e', marginTop: 5, letterSpacing: '-0.1px' }}>{grant.agency}</p>
         </div>
-        {statusCfg && (
-          <span style={{
+        <button
+          type="button"
+          onClick={onViewDetail}
+          style={{
             display: 'inline-flex',
             alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4,
             minHeight: 34,
-            fontSize: 13,
-            fontWeight: 600,
+            border: 'none',
             borderRadius: 999,
             padding: '0 14px',
-            color: statusCfg.color,
-            background: 'rgba(255,255,255,0.7)',
+            background: 'rgba(255,255,255,0.8)',
+            color: '#076818',
+            fontFamily: 'inherit',
+            fontSize: 13,
+            fontWeight: 600,
             letterSpacing: '-0.2px',
             whiteSpace: 'nowrap',
             flexShrink: 0,
-          }}>
-            {statusCfg.label}
-          </span>
-        )}
+            cursor: 'pointer',
+          }}
+        >
+          자세히 보기
+          <ArrowUpRight size={14} strokeWidth={2.2} />
+        </button>
       </div>
 
       {/* Amount */}
@@ -100,31 +106,6 @@ export default function GrantResultCard({
           ))}
         </div>
       </div>
-
-      <button
-        type="button"
-        onClick={onViewDetail}
-        style={{
-          marginTop: 10,
-          width: '100%',
-          minHeight: 36,
-          border: 'none',
-          background: 'transparent',
-          color: '#076818',
-          fontFamily: 'inherit',
-          fontSize: 14,
-          fontWeight: 600,
-          letterSpacing: '-0.1px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          gap: 4,
-          padding: 0,
-        }}
-      >
-        자세히 보기 <ArrowUpRight size={16} strokeWidth={2.2} />
-      </button>
     </div>
   )
 }

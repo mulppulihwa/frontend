@@ -10,13 +10,6 @@ import GrantResultCard from '../components/GrantResultCard'
 import { cachePolicyStatus, fetchMatchedPolicies, fetchProfile, fetchSavedPolicies, readPolicyStatusCache, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
-const statusConfig = {
-  신청기간: { label: '신청 기간', color: '#076818', bg: '#e6f4ec' },
-  마감임박: { label: '마감 임박', color: '#d93025', bg: '#fff0ef' },
-  신청예정: { label: '신청 예정', color: '#1a5a8a', bg: '#e8f2fb' },
-  마감:    { label: '마감',     color: '#777',    bg: '#f5f5f5' },
-}
-
 function Toast({ visible }) {
   if (!visible) return null
   return (
@@ -230,7 +223,6 @@ export default function Results() {
 
         <GrantResultCard
           grant={grant}
-          statusConfig={statusConfig}
           onViewDetail={() => navigate('/detail', { state: { grant } })}
         />
 
