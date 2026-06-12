@@ -813,12 +813,29 @@ export default function Step1() {
     }
   }
 
+  const isPageFilled = (pageNumber) => {
+    if (pageNumber !== 2) return isPageComplete(pageNumber)
+    return hasValue(location)
+      && isCompleteDate(movedAt, 'month')
+      && hasValue(previousResidence)
+      && hasValue(previousResidenceType)
+      && isCompleteDate(previousSince, 'month')
+  }
+
   const firstIncompletePage = [1, 2, 3].find(pageNumber => !isPageComplete(pageNumber)) || null
-  const isCurrentPageComplete = isPageComplete(page)
+  const isCurrentPageFilled = isPageFilled(page)
   const isFormComplete = firstIncompletePage === null
 
   const goNext = async () => {
-    if (!isCurrentPageComplete) return
+    if (!isCurrentPageFilled) return
+
+    if (page === 2) {
+      const relocationDateError = getRelocationDateError(location, movedAt, previousSince)
+      if (relocationDateError) {
+        showDateWarning(relocationDateError)
+        return
+      }
+    }
 
     if (page === 3) {
       if (!isFormComplete) {
@@ -962,7 +979,7 @@ export default function Step1() {
       </div>
 
       <div className="diagnosis-footer">
-        <Button onClick={goNext} disabled={submitting || !isCurrentPageComplete || (page === 3 && !isFormComplete)} variant="pill">
+        <Button onClick={goNext} disabled={submitting || !isCurrentPageFilled || (page === 3 && !isFormComplete)} variant="pill">
           {submitting ? '저장 중...' : page === 3 ? '내 지원금 찾기' : '다음'}
         </Button>
       </div>
