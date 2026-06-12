@@ -2,13 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Check, Home as HomeIcon } from 'lucide-react'
 import TopBar from '../components/TopBar'
-import LoadingProgress from '../components/LoadingProgress'
-import useLoadingProgress from '../hooks/useLoadingProgress'
 import StepIndicator from '../components/StepIndicator'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import GrantResultCard from '../components/GrantResultCard'
-import { cachePolicyStatus, fetchMatchedPolicies, fetchProfile, fetchSavedPolicies, readPolicyStatusCache, savePolicy, updateSavedPolicyStatus } from '../lib/api'
-import { findDisplayName, getKakaoUserName } from '../lib/auth'
+import { cachePolicyStatus, fetchMatchedPolicies, fetchSavedPolicies, readPolicyStatusCache, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 
 function Toast({ visible }) {
   if (!visible) return null
@@ -46,10 +43,8 @@ export default function Results() {
   const [statuses, setStatuses] = useState({})
   const [grants, setGrants] = useState([])
   const [loading, setLoading] = useState(true)
-  const resultProgress = useLoadingProgress(loading)
   const [loadError, setLoadError] = useState('')
   const [statusError, setStatusError] = useState('')
-  const [userName, setUserName] = useState(getKakaoUserName)
   const [toastVisible, setToastVisible] = useState(false)
   const toastTimer = useRef(null)
   const grant = grants[index]
@@ -63,16 +58,6 @@ export default function Results() {
 
   useEffect(() => {
     let active = true
-    fetchProfile()
-      .then(profile => {
-        if (!active) return
-        const name = findDisplayName(profile)
-        if (name) {
-          setUserName(name)
-          if (!getKakaoUserName()) localStorage.setItem('kakaoUserName', name)
-        }
-      })
-      .catch(() => {})
     const matchedPoliciesRequest = Array.isArray(prefetchedPolicies)
       ? Promise.resolve(prefetchedPolicies)
       : fetchMatchedPolicies()
@@ -81,6 +66,8 @@ export default function Results() {
       .then(async policies => {
         if (!active) return
         localStorage.setItem('lastDiagnosisDate', new Date().toISOString())
+        setGrants(policies)
+        setLoading(false)
         policies.forEach(p => savePolicy(p.id).catch(() => null))
         const statusCache = readPolicyStatusCache()
         let savedStatuses = {}
@@ -94,7 +81,6 @@ export default function Results() {
           [policy.id]: savedStatuses[String(policy.id)] || statusCache[String(policy.id)] || null,
         }), {})
         setStatuses(initialStatuses)
-        setGrants(policies)
       })
       .catch(err => {
         if (!active) return
@@ -118,7 +104,7 @@ export default function Results() {
     return () => {
       active = false
     }
-  }, [prefetchedPolicies])
+  }, [navigate, prefetchedPolicies])
 
   const handleStatusChange = async (val) => {
     if (!grant) return
@@ -180,18 +166,7 @@ export default function Results() {
       </div>
 
       <div style={{ padding: '0 18px 152px', flex: 1, overflowX: 'hidden' }}>
-        {resultProgress.visible && (
-          <div style={{
-            background: 'none',
-            border: 'none',
-            padding: '48px 20px',
-            display: 'flex', justifyContent: 'center',
-          }}>
-            <LoadingProgress progress={resultProgress.progress} label="맞춤 지원금을 불러오는 중이에요" />
-          </div>
-        )}
-
-        {!resultProgress.visible && loadError && (
+        {!loading && loadError && (
           <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45 }}>
               {loadError}
@@ -199,7 +174,7 @@ export default function Results() {
           </div>
         )}
 
-        {!resultProgress.visible && !loadError && total === 0 && (
+        {!loading && !loadError && total === 0 && (
           <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center' }}>
               조건에 맞는 지원금이 없어요.
@@ -207,7 +182,7 @@ export default function Results() {
           </div>
         )}
 
-        {!resultProgress.visible && !loadError && grant && (
+        {!loading && !loadError && grant && (
         <div
           key={index}
           style={{
@@ -244,7 +219,7 @@ export default function Results() {
         )}
       </div>
 
-      {!resultProgress.visible && !loadError && grant && (
+      {!loading && !loadError && grant && (
       <div style={{ position: 'fixed', bottom: 'max(12px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: 'min(100%, 430px)', boxSizing: 'border-box', padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
         <button
           className="app-action-button"

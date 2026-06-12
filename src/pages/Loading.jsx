@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
-import { fetchMatchedPolicies } from '../lib/api'
+import { fetchMatchedPolicies, fetchProfile } from '../lib/api'
+import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
 const ANALYSIS_MIN_DURATION = 900
 const RESULT_MIN_DURATION = 2600
@@ -14,6 +15,8 @@ function wait(ms) {
 
 export default function Loading() {
   const navigate = useNavigate()
+  const [userName, setUserName] = useState(getKakaoUserName)
+  const [matchedCount, setMatchedCount] = useState(null)
   const [analysisComplete, setAnalysisComplete] = useState(false)
   const [isFirstDiagnosis] = useState(() => !localStorage.getItem('lastDiagnosisDate'))
   const analysisProgress = useLoadingProgress(!analysisComplete, RESULT_MIN_DURATION + 500)
@@ -22,6 +25,14 @@ export default function Loading() {
     let active = true
     const startedAt = Date.now()
 
+    fetchProfile()
+      .then(profile => {
+        if (!active) return
+        const name = findDisplayName(profile)
+        if (name) setUserName(name)
+      })
+      .catch(() => {})
+
     async function loadMatchedPolicies() {
       try {
         const policies = await fetchMatchedPolicies()
@@ -29,6 +40,7 @@ export default function Loading() {
         if (remainingAnalysisTime > 0) await wait(remainingAnalysisTime)
         if (!active) return
 
+        setMatchedCount(policies.length)
         setAnalysisComplete(true)
         await wait(RESULT_MIN_DURATION)
         if (active) {
@@ -79,6 +91,9 @@ export default function Loading() {
           <LoadingProgress
             progress={analysisProgress.progress}
             label="분석 중..."
+            detail={matchedCount === null
+              ? undefined
+              : `${userName || '회원'}님이 받을 수 있는 지원금 총 ${matchedCount}개 찾았어요`}
           />
         )}
       </div>
