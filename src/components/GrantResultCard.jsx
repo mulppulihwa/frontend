@@ -77,7 +77,7 @@ export default function GrantResultCard({
       )}
 
       {/* Dates + countdown */}
-      <div style={{ background: '#FFFFFF', borderRadius: 14, padding: '12px 14px' }}>
+      <div style={{ padding: '12px 0 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <CalendarDays size={14} color="#076818" strokeWidth={2.2} />
