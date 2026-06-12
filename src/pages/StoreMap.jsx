@@ -446,11 +446,11 @@ export default function StoreMap() {
         <div
           style={{
             position: 'fixed',
-            bottom: fullscreen ? 0 : 'calc(70px + env(safe-area-inset-bottom))',
+            bottom: 'calc(70px + env(safe-area-inset-bottom))',
             left: '50%',
-            zIndex: 250,
+            zIndex: 110,
             width: 'min(100%, 430px)',
-            height: fullscreen ? 'calc(100dvh - 74px)' : sheetH,
+            height: sheetH,
             transform: 'translateX(-50%)',
             background: '#fff',
             borderRadius: fullscreen ? 0 : '24px 24px 0 0',
@@ -520,7 +520,7 @@ export default function StoreMap() {
           </div>
 
           {/* Store list */}
-	          <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 118px', scrollPaddingBottom: 118 }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '0 16px 24px', scrollPaddingBottom: 24 }}>
             {filteredStores.length === 0 && (
               <div style={{ textAlign: 'center', padding: '24px 0', color: '#bbb', fontSize: 14 }}>
                 검색 결과가 없어요
