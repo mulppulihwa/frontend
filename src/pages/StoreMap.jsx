@@ -618,12 +618,9 @@ export default function StoreMap() {
 
                   <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 14px' }}>
                     <button
-                      className="app-action-button"
+                      className="app-action-button app-content-action-button"
                       onClick={e => { e.stopPropagation(); openDetail(store) }}
                       style={{
-                        width: '34%',
-                        minWidth: 128,
-                        minHeight: 46,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

@@ -1,11 +1,10 @@
 export default function PreparationButton({ onClick }) {
   return (
     <button
-      className="app-action-button"
+      className="app-action-button app-content-action-button"
       type="button"
       onClick={onClick}
       style={{
-        width: 'min(100%, 160px)',
         padding: '0 14px',
         border: 'none',
         borderRadius: 999,

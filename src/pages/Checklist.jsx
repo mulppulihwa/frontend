@@ -471,16 +471,15 @@ export default function Checklist() {
           boxSizing: 'border-box',
           background: 'linear-gradient(180deg, rgba(253,252,248,0) 0%, #FDFCF8 22%, #FDFCF8 100%)',
           display: 'flex',
+          justifyContent: 'center',
           gap: 8,
           zIndex: 80,
         }}>
           <button
-            className="app-action-button"
+            className="app-action-button app-content-action-button"
             type="button"
             onClick={() => navigate('/detail', { state: { grant } })}
             style={{
-              flex: 1,
-              minHeight: 48,
               borderRadius: 999,
               border: '1.5px solid #076818',
               background: '#FFFFFF',
