@@ -92,7 +92,7 @@ export default function AddressSearchTest() {
 
       {scriptError && <p style={{ color: '#d93025', fontSize: 13 }}>{scriptError}</p>}
 
-      <button type="button" onClick={openPostcode} style={{ alignSelf: 'flex-start', padding: '10px 18px', borderRadius: 999, border: 'none', background: '#076818', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
+      <button className="app-action-button" type="button" onClick={openPostcode} style={{ alignSelf: 'flex-start', padding: '10px 18px', borderRadius: 999, border: 'none', background: '#076818', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
         우편번호 찾기
       </button>
 

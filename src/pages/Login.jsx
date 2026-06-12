@@ -163,6 +163,7 @@ export default function Login() {
           </p>
         )}
         <button
+          className="app-action-button"
           onClick={handleKakaoLogin}
           disabled={isLoggingIn}
           style={{

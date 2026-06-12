@@ -182,6 +182,7 @@ function NotificationSetModal({ visible, mode, onClose }) {
           {isUnset ? '이제 이 정책의 마감 알림을 보내드리지 않을게요.' : '신청 마감일을 잊지 않도록 맞춤 알림을 보내드릴게요!'}
         </p>
         <button
+          className="app-action-button"
           type="button"
           onClick={onClose}
           style={{

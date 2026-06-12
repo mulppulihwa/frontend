@@ -447,6 +447,32 @@ function parseDateStr(str) {
   return new Date(`${year}-${month}-${day}`)
 }
 
+function getCurrentMonthDate() {
+  const today = new Date()
+  return new Date(today.getFullYear(), today.getMonth(), 1)
+}
+
+function getRelocationDateError(location, movedAt, previousSince) {
+  const movedAtDate = isCompleteDate(movedAt, 'month') ? parseDateStr(movedAt) : null
+  const previousSinceDate = isCompleteDate(previousSince, 'month') ? parseDateStr(previousSince) : null
+
+  if (movedAtDate && previousSinceDate && movedAtDate < previousSinceDate) {
+    return location === '옥천 외'
+      ? '옥천 이사 예정일은 현재 거주 시작일보다 빠를 수 없어요.'
+      : '옥천군 이사 날짜는 이전 거주 시작일보다 빠를 수 없어요.'
+  }
+
+  if (movedAtDate && location === '옥천' && movedAtDate > getCurrentMonthDate()) {
+    return '현재 옥천에 거주 중이라면 미래의 이사 날짜를 입력할 수 없어요.'
+  }
+
+  if (movedAtDate && location === '옥천 외' && movedAtDate < getCurrentMonthDate()) {
+    return '현재 옥천 외에 거주 중이라면 이번 달 이후의 이사 예정일을 입력해 주세요.'
+  }
+
+  return ''
+}
+
 function toApiDate(value, precision = 'day') {
   const digits = getDateDigits(value)
   if (!isCompleteDate(digits, precision)) return ''
@@ -567,22 +593,22 @@ export default function Step1() {
     dateWarningTimer.current = window.setTimeout(() => setDateWarning(''), 2400)
   }
 
-  const validateRelocationDate = (field, value) => {
+  const validateRelocationDate = (field, value, nextLocation = location) => {
     if (!hasValue(value)) return
     if (!isCompleteDate(value, 'month')) {
-      showDateWarning(`${field}를 YYYY.MM 형식으로 입력해 주세요.`)
+      const message = field === '옥천군 이사 날짜'
+        ? '옥천군 이사 날짜를 YYYY.MM 형식으로 입력해 주세요.'
+        : nextLocation === '옥천 외'
+          ? '현재 거주 시작일을 YYYY.MM 형식으로 입력해 주세요.'
+          : '이전 거주 시작일을 YYYY.MM 형식으로 입력해 주세요.'
+      showDateWarning(message)
       return
     }
 
     const nextMovedAt = field === '옥천군 이사 날짜' ? value : movedAt
     const nextPreviousSince = field === '이전 거주 시작일' ? value : previousSince
-    if (
-      isCompleteDate(nextMovedAt, 'month')
-      && isCompleteDate(nextPreviousSince, 'month')
-      && parseDateStr(nextMovedAt) < parseDateStr(nextPreviousSince)
-    ) {
-      showDateWarning('옥천군 이사 날짜는 이전 거주 시작일보다 빠를 수 없어요.')
-    }
+    const error = getRelocationDateError(nextLocation, nextMovedAt, nextPreviousSince)
+    if (error) showDateWarning(error)
   }
 
   const applySavedForm = (saved, { restoreRelocationDates = true } = {}) => {
@@ -769,15 +795,13 @@ export default function Step1() {
           && hasValue(gender)
           && hasValue(nationality)
       case 2: {
-        const movedAtDate = parseDateStr(movedAt)
-        const prevSinceDate = parseDateStr(previousSince)
-        const dateOrderOk = !(movedAtDate && prevSinceDate && movedAtDate < prevSinceDate)
+        const relocationDateError = getRelocationDateError(location, movedAt, previousSince)
         return hasValue(location)
           && isCompleteDate(movedAt, 'month')
           && hasValue(previousResidence)
           && hasValue(previousResidenceType)
           && isCompleteDate(previousSince, 'month')
-          && dateOrderOk
+          && !relocationDateError
       }
       case 3:
         return hasValue(job)
@@ -866,21 +890,30 @@ export default function Step1() {
           })()}
 
           {page === 2 && (() => {
+            const hasMoved = location === '옥천'
+            const isMovePlanned = location === '옥천 외'
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: fieldGap }}>
-                <SelectField label="현재 어디 사세요?" value={location} onChange={setLocation} options={[
+                <SelectField label="현재 어디 사세요?" value={location} onChange={value => {
+                  setLocation(value)
+                  if (isCompleteDate(movedAt, 'month')) validateRelocationDate('옥천군 이사 날짜', movedAt, value)
+                }} options={[
                   { value: '옥천', label: '옥천' },
                   { value: '옥천 외', label: '옥천 외' },
                 ]} placeholder="지역 선택" />
                 <DateSelectField
-                  label="옥천군으로 언제 이사 오셨나요?/오실 예정인가요?"
+                  label={hasMoved
+                    ? '옥천군으로 언제 이사 오셨나요?'
+                    : isMovePlanned
+                      ? '옥천군으로 언제 이사 오실 예정인가요?'
+                      : '옥천군으로 언제 이사 오셨나요?/오실 예정인가요?'}
                   value={movedAt}
                   onChange={setMovedAt}
                   precision="month"
                   onValidate={value => validateRelocationDate('옥천군 이사 날짜', value)}
                 />
                 <AddressSearchField
-                  label="이전 거주지는 어디인가요?"
+                  label={isMovePlanned ? '현재 거주지는 어디인가요?' : '이전 거주지는 어디인가요?'}
                   value={previousResidence}
                   onSelect={({ address, residenceType }) => {
                     setPreviousResidence(address)
@@ -888,7 +921,7 @@ export default function Step1() {
                   }}
                 />
                 <DateSelectField
-                  label="이전 거주지에서 언제부터 거주하셨나요?"
+                  label={isMovePlanned ? '현재 거주지에서 언제부터 거주하셨나요?' : '이전 거주지에서 언제부터 거주하셨나요?'}
                   value={previousSince}
                   onChange={setPreviousSince}
                   precision="month"
@@ -942,12 +975,14 @@ export default function Step1() {
             <p style={{ fontSize: 18, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', textAlign: 'center', lineHeight: 1.5 }}>이전에 작성 중이던<br />진단 내역이 있습니다</p>
             <p style={{ fontSize: 14, color: '#888', marginBottom: 12, textAlign: 'center', letterSpacing: '-0.1px' }}>이어서 하시겠습니까?</p>
             <button
+              className="app-action-button"
               onClick={handleResume}
               style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: '#076818', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px' }}
             >
               이어서 하기
             </button>
             <button
+              className="app-action-button"
               onClick={handleRestart}
               style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: '1.5px solid #e8e8e8', background: '#fff', color: '#555', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px' }}
             >

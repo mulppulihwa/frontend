@@ -255,6 +255,7 @@ export default function Results() {
       {!resultProgress.visible && !loadError && grant && (
       <div style={{ position: 'fixed', bottom: 'max(12px, env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: 'min(100%, 430px)', boxSizing: 'border-box', padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
         <button
+          className="app-action-button"
           type="button"
           onClick={() => changeGrant(Math.max(0, index - 1), 'prev')}
           disabled={index === 0}
@@ -275,6 +276,7 @@ export default function Results() {
           뒤로 가기
         </button>
         <button
+          className="app-action-button"
           type="button"
           onClick={() => index === total - 1 ? navigate('/grant-status') : changeGrant(index + 1, 'next')}
           style={{

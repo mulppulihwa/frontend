@@ -606,6 +606,7 @@ export default function StoreMap() {
 
                   <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 14px' }}>
                     <button
+                      className="app-action-button"
                       onClick={e => { e.stopPropagation(); openDetail(store) }}
                       style={{
                         width: '34%',
@@ -741,6 +742,7 @@ export default function StoreMap() {
             {addPlaceError && <p style={{ margin: '8px 0 0', fontSize: 12, color: '#d93025' }}>{addPlaceError}</p>}
 
             <button
+              className="app-action-button"
               type="submit"
               disabled={addPlaceLoading}
               style={{ width: '54%', minWidth: 180, minHeight: 48, margin: '18px auto 0', border: 'none', borderRadius: 999, background: '#076818', color: '#FFFFFF', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: addPlaceLoading ? 'wait' : 'pointer', opacity: addPlaceLoading ? 0.65 : 1 }}
@@ -792,6 +794,7 @@ export default function StoreMap() {
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9 }}>
               <button
+                className="app-action-button"
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 style={{ minHeight: 44, borderRadius: 999, border: '1.5px solid #dfe4dc', background: '#FFFFFF', color: '#555', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
@@ -799,6 +802,7 @@ export default function StoreMap() {
                 취소
               </button>
               <button
+                className="app-action-button"
                 type="button"
                 onClick={handleDeletePlace}
                 style={{ minHeight: 44, borderRadius: 999, border: 'none', background: '#d93025', color: '#FFFFFF', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
@@ -846,6 +850,7 @@ export default function StoreMap() {
 
             <div style={{ display: 'flex', gap: 10 }}>
               <button
+                className="app-action-button"
                 onClick={() => {
                   setDetailPopup(null)
                   navigate('/store-detail', { state: { store: detailPopup } })
@@ -855,6 +860,7 @@ export default function StoreMap() {
                 지도에서 보기
               </button>
               <a
+                className="app-action-button"
                 href={`tel:${detailPopup.kakaoResult?.phone || detailPopup.phone}`}
                 style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#076818', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#fff', fontFamily: 'inherit' }}
               >

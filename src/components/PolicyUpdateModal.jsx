@@ -1,3 +1,4 @@
+import { Search } from 'lucide-react'
 import okcheonCharacter from '../assets/okcheon-character.png'
 
 export default function PolicyUpdateModal({ visible, onClose, onHideToday, navigate }) {
@@ -40,6 +41,7 @@ export default function PolicyUpdateModal({ visible, onClose, onHideToday, navig
           내 조건으로 새로 받을 수 있는 지원금이 있는지 지금 바로 확인해 보세요!
         </p>
         <button
+          className="app-action-button"
           type="button"
           onClick={() => navigate('/step1')}
           style={{
@@ -55,8 +57,13 @@ export default function PolicyUpdateModal({ visible, onClose, onHideToday, navig
             fontFamily: 'inherit',
             cursor: 'pointer',
             letterSpacing: '-0.5px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 9,
           }}
         >
+          <Search size={20} strokeWidth={2.4} />
           나의 맞춤 지원금 다시 찾기
         </button>
         <button

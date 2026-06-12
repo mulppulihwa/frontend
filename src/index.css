@@ -21,6 +21,13 @@ input:focus-visible {
   outline-offset: 2px;
 }
 
+.app-action-button {
+  height: 46px !important;
+  min-height: 46px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .detail-scroll-page {
   scrollbar-width: thin;
   scrollbar-color: #d9d6cf transparent;

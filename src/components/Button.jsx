@@ -44,6 +44,7 @@ const styles = {
 export default function Button({ children, variant = 'primary', onClick, disabled, style }) {
   return (
     <button
+      className="app-action-button"
       onClick={onClick}
       disabled={disabled}
       style={{

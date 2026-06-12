@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CircleHelp } from 'lucide-react'
+import { CircleHelp, Search } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
@@ -106,6 +106,7 @@ function ConfirmModal({ action, deleting, onCancel, onConfirm }) {
         </p>
         <div style={{ display: 'flex', gap: 8, marginTop: 24 }}>
           <button
+            className="app-action-button"
             type="button"
             onClick={onCancel}
             disabled={deleting}
@@ -126,6 +127,7 @@ function ConfirmModal({ action, deleting, onCancel, onConfirm }) {
             취소
           </button>
           <button
+            className="app-action-button"
             type="button"
             onClick={onConfirm}
             disabled={deleting}
@@ -251,6 +253,7 @@ export default function BasicInfo() {
                 </p>
               )}
               <button
+                className="app-action-button"
                 type="button"
                 onClick={() => navigate('/step1')}
                 style={{
@@ -265,8 +268,13 @@ export default function BasicInfo() {
                   fontWeight: 700,
                   fontFamily: 'inherit',
                   cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
                 }}
               >
+                <Search size={17} strokeWidth={2.4} />
                 나의 맞춤 지원금 다시 찾기
               </button>
             </section>
@@ -297,6 +305,7 @@ export default function BasicInfo() {
             </section>
 
             <button
+              className="app-action-button"
               type="button"
               onClick={() => setConfirmAction('logout')}
               style={{
@@ -317,6 +326,7 @@ export default function BasicInfo() {
             </button>
 
             <button
+              className="app-action-button"
               type="button"
               onClick={() => setConfirmAction('delete')}
               disabled={deleting}

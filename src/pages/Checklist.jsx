@@ -475,6 +475,7 @@ export default function Checklist() {
           zIndex: 80,
         }}>
           <button
+            className="app-action-button"
             type="button"
             onClick={() => navigate('/detail', { state: { grant } })}
             style={{

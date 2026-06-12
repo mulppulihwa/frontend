@@ -1,12 +1,13 @@
 export default function PreparationButton({ onClick }) {
   return (
     <button
+      className="app-action-button"
       type="button"
       onClick={onClick}
       style={{
         width: 'min(100%, 160px)',
-        minHeight: 40,
-        padding: '8px 14px',
+        minHeight: 46,
+        padding: '0 14px',
         border: 'none',
         borderRadius: 999,
         background: '#076818',
