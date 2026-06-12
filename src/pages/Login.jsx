@@ -167,10 +167,10 @@ export default function Login() {
           onClick={handleKakaoLogin}
           disabled={isLoggingIn}
           style={{
-            width: '100%',
-            maxWidth: 350,
-            minHeight: 58,
-            padding: '16px 20px',
+            width: 'min(72%, 280px)',
+            minWidth: 240,
+            minHeight: 48,
+            padding: '10px 18px',
             borderRadius: 999,
             border: 'none',
             background: '#FEE500',
