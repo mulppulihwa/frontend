@@ -133,7 +133,6 @@ function DiagnosedPolicyCard({ policy, checklistItems, navigate }) {
   }
   const StatusIcon = statusMeta.Icon
   const progress = getChecklistProgress(policy, checklistItems)
-  const showPlaces = status === '신청완료'
 
   return (
     <article style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 24, padding: '16px 14px 14px' }}>
@@ -152,23 +151,14 @@ function DiagnosedPolicyCard({ policy, checklistItems, navigate }) {
         </div>
         <MiniRing done={progress.done} total={progress.total} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: showPlaces ? '1fr 1fr' : '1fr', gap: 8, marginTop: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 14 }}>
         <button
           type="button"
           onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })}
-          style={{ minHeight: 46, border: 'none', borderRadius: 999, background: '#076818', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
+          style={{ width: '42%', minWidth: 150, minHeight: 46, border: 'none', borderRadius: 999, background: '#076818', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
         >
           준비물 확인 →
         </button>
-        {showPlaces && (
-          <button
-            type="button"
-            onClick={() => navigate('/map', { state: { policy } })}
-            style={{ minHeight: 46, border: '1.5px solid #076818', borderRadius: 999, background: '#fff', color: '#076818', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
-          >
-            사용처 보기
-          </button>
-        )}
       </div>
     </article>
   )
