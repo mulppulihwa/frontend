@@ -148,7 +148,9 @@ export default function Results() {
         </div>
         <div style={{ textAlign: 'center', lineHeight: 1.45 }}>
           <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease both' }}>
-            관심있는 정책이라면, 현재 상태를 알려주세요.
+            관심있는 정책이라면,
+            <br />
+            현재 상태를 알려주세요.
           </p>
         </div>
         <div style={{ textAlign: 'center', marginTop: 10 }}>
