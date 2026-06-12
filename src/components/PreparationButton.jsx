@@ -6,7 +6,6 @@ export default function PreparationButton({ onClick }) {
       onClick={onClick}
       style={{
         width: 'min(100%, 160px)',
-        minHeight: 46,
         padding: '0 14px',
         border: 'none',
         borderRadius: 999,

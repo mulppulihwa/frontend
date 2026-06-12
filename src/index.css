@@ -22,10 +22,11 @@ input:focus-visible {
 }
 
 .app-action-button {
-  height: 46px !important;
-  min-height: 46px !important;
+  height: 42px !important;
+  min-height: 42px !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
+  line-height: 1 !important;
 }
 
 .detail-scroll-page {
