@@ -94,6 +94,7 @@ export default function Loading() {
             detail={matchedCount === null
               ? undefined
               : `${userName || '회원'}님이 받을 수 있는 지원금 총 ${matchedCount}개 찾았어요`}
+            emphasizeDetail
           />
         )}
       </div>
