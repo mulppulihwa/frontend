@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock, Plus } from 'lucide-react'
+import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock, Plus, Trash2 } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import { fetchPlaces } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
@@ -68,6 +68,7 @@ export default function StoreMap() {
   const [addPlaceOpen, setAddPlaceOpen] = useState(false)
   const [addPlaceLoading, setAddPlaceLoading] = useState(false)
   const [addPlaceError, setAddPlaceError] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState(null)
   const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '' })
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
@@ -370,6 +371,16 @@ export default function StoreMap() {
     }, 80)
   }
 
+  const handleDeletePlace = () => {
+    if (!deleteTarget?.id) return
+    const nextCustomPlaces = readCustomPlaces().filter(place => place.id !== deleteTarget.id)
+    localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(nextCustomPlaces))
+    setStores(current => current.filter(place => place.id !== deleteTarget.id))
+    if (selectedStore?.id === deleteTarget.id) setSelectedStore(null)
+    if (detailPopup?.id === deleteTarget.id) setDetailPopup(null)
+    setDeleteTarget(null)
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100dvh - 70px - env(safe-area-inset-bottom))', overflow: 'hidden', background: '#f0f0f0' }}>
 
@@ -519,6 +530,7 @@ export default function StoreMap() {
                   key={i}
                   onClick={() => handleStoreClick(store)}
                   style={{
+                    position: 'relative',
                     borderRadius: 18, marginBottom: 10,
                     background: '#fff',
                     border: `1.5px solid ${isSelected ? activeCat.color : '#ebebeb'}`,
@@ -526,6 +538,34 @@ export default function StoreMap() {
                     transition: 'border-color 0.18s ease',
                   }}
                 >
+                  {store.userAdded && (
+                    <button
+                      type="button"
+                      aria-label={`${store.name} 삭제`}
+                      onClick={event => {
+                        event.stopPropagation()
+                        setDeleteTarget(store)
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: 10,
+                        right: 10,
+                        zIndex: 2,
+                        width: 34,
+                        height: 34,
+                        border: '1px solid #f2c7c4',
+                        borderRadius: '50%',
+                        background: '#fff7f6',
+                        color: '#d93025',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Trash2 size={17} strokeWidth={2.2} />
+                    </button>
+                  )}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 14px 12px' }}>
                     <div style={{
                       width: 46, height: 46, borderRadius: 14, flexShrink: 0,
@@ -535,7 +575,7 @@ export default function StoreMap() {
                     }}>
                       <CatIcon size={22} color={activeCat.color} strokeWidth={2} />
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ flex: 1, minWidth: 0, paddingRight: store.userAdded ? 36 : 0 }}>
                       <p style={{ fontSize: 15, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {store.name}
                       </p>
@@ -708,6 +748,65 @@ export default function StoreMap() {
               {addPlaceLoading ? '장소를 찾는 중...' : '장소 추가'}
             </button>
           </form>
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div
+          onClick={() => setDeleteTarget(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 340,
+            background: 'rgba(20,24,20,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 24,
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-place-title"
+            onClick={event => event.stopPropagation()}
+            style={{
+              width: 'min(100%, 330px)',
+              boxSizing: 'border-box',
+              borderRadius: 24,
+              border: '1.5px solid #cfe2c8',
+              background: '#FFFFFF',
+              padding: '24px 22px 20px',
+              textAlign: 'center',
+              boxShadow: '0 18px 50px rgba(22,35,24,0.22)',
+            }}
+          >
+            <span style={{ width: 48, height: 48, margin: '0 auto 14px', borderRadius: '50%', background: '#fff0ef', color: '#d93025', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Trash2 size={22} strokeWidth={2.2} />
+            </span>
+            <h2 id="delete-place-title" style={{ margin: 0, fontSize: 18, fontWeight: 750, color: '#1f2433' }}>
+              장소를 삭제하시겠어요?
+            </h2>
+            <p style={{ margin: '9px 0 20px', fontSize: 13, lineHeight: 1.5, color: '#777', wordBreak: 'keep-all' }}>
+              직접 추가한 ‘{deleteTarget.name}’ 장소 정보가 삭제됩니다.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9 }}>
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                style={{ minHeight: 44, borderRadius: 999, border: '1.5px solid #dfe4dc', background: '#FFFFFF', color: '#555', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleDeletePlace}
+                style={{ minHeight: 44, borderRadius: 999, border: 'none', background: '#d93025', color: '#FFFFFF', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+              >
+                삭제
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
