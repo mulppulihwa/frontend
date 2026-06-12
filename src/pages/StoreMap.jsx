@@ -536,16 +536,11 @@ export default function StoreMap() {
                   onClick={() => handleStoreClick(store)}
                   style={{
                     position: 'relative',
-                    borderRadius: 22,
-                    marginBottom: 12,
-                    background: isSelected ? '#F7FBF6' : '#FFFFFF',
-                    border: `1.5px solid ${isSelected ? activeCat.color : '#E7EDE4'}`,
-                    boxShadow: isSelected
-                      ? '0 8px 22px rgba(7,104,24,0.12)'
-                      : '0 4px 14px rgba(25,40,25,0.06)',
-                    cursor: 'pointer',
-                    overflow: 'hidden',
-                    transition: 'all 0.18s ease',
+                    borderRadius: 18, marginBottom: 10,
+                    background: '#fff',
+                    border: `1.5px solid ${isSelected ? activeCat.color : '#ebebeb'}`,
+                    cursor: 'pointer', overflow: 'hidden',
+                    transition: 'border-color 0.18s ease',
                   }}
                 >
                   {store.userAdded && (
@@ -558,166 +553,84 @@ export default function StoreMap() {
                       }}
                       style={{
                         position: 'absolute',
-                        top: 12,
-                        right: 12,
+                        top: 10,
+                        right: 10,
                         zIndex: 2,
-                        width: 32,
-                        height: 32,
-                        border: '1px solid #F4C8C5',
+                        width: 34,
+                        height: 34,
+                        border: '1px solid #f2c7c4',
                         borderRadius: '50%',
-                        background: '#FFF7F6',
-                        color: '#D93025',
+                        background: '#fff7f6',
+                        color: '#d93025',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
                       }}
                     >
-                      <Trash2 size={16} strokeWidth={2.2} />
+                      <Trash2 size={17} strokeWidth={2.2} />
                     </button>
                   )}
-
-                  <div style={{ padding: '16px 16px 14px' }}>
-                    {/* Main info */}
-                    <div style={{ display: 'flex', gap: 13 }}>
-                      <div
-                        style={{
-                          width: 44,
-                          height: 44,
-                          borderRadius: 14,
-                          flexShrink: 0,
-                          background: `${activeCat.color}12`,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <CatIcon size={22} color={activeCat.color} strokeWidth={2.2} />
-                      </div>
-
-                      <div style={{ flex: 1, minWidth: 0, paddingRight: store.userAdded ? 34 : 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 5 }}>
-                          <p
-                            style={{
-                              fontSize: 16,
-                              fontWeight: 750,
-                              color: '#1A1A1A',
-                              letterSpacing: '-0.35px',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              margin: 0,
-                            }}
-                          >
-                            {store.name}
-                          </p>
-
-                          {store.userAdded && (
-                            <span
-                              style={{
-                                flexShrink: 0,
-                                fontSize: 10,
-                                fontWeight: 700,
-                                color: '#076818',
-                                background: '#E8F3E8',
-                                borderRadius: 999,
-                                padding: '3px 7px',
-                              }}
-                            >
-                              직접 추가
-                            </span>
-                          )}
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                          <span style={{ fontSize: 12, fontWeight: 750, color: '#FFA100' }}>
-                            ★ {store.rating || 0}
-                          </span>
-                          <span style={{ fontSize: 11, color: '#999' }}>
-                            리뷰 {store.reviews || 0}
-                          </span>
-
-                          {userPos && (
-                            <>
-                              <span style={{ fontSize: 11, color: '#C8C8C8' }}>·</span>
-                              <span style={{ fontSize: 12, fontWeight: 650, color: activeCat.color }}>
-                                {haversine(userPos.lat, userPos.lng, store.lat, store.lng)}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 14px 12px' }}>
+                    <div style={{
+                      width: 46, height: 46, borderRadius: 14, flexShrink: 0,
+                      background: 'none',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'background 0.18s',
+                    }}>
+                      <CatIcon size={22} color={activeCat.color} strokeWidth={2} />
                     </div>
-
-                    {/* Detail information */}
-                    <div
-                      style={{
-                        marginTop: 12,
-                        padding: '12px 13px',
-                        borderRadius: 16,
-                        background: '#FAFAF8',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 8,
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7 }}>
-                        <MapPin size={14} color="#8A9288" strokeWidth={2.1} style={{ marginTop: 2, flexShrink: 0 }} />
-                        <span
-                          style={{
-                            fontSize: 12.5,
-                            color: '#555',
-                            lineHeight: 1.45,
-                            letterSpacing: '-0.15px',
-                            wordBreak: 'keep-all',
-                          }}
-                        >
+                    <div style={{ flex: 1, minWidth: 0, paddingRight: store.userAdded ? 36 : 0 }}>
+                      <p style={{ fontSize: 15, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {store.name}
+                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#FFA100' }}>★ {store.rating}</span>
+                        <span style={{ fontSize: 11, color: '#888' }}>({store.reviews})</span>
+                        {userPos && (
+                          <>
+                            <span style={{ fontSize: 11, color: '#bbb' }}>·</span>
+                            <span style={{ fontSize: 12, color: '#666' }}>{haversine(userPos.lat, userPos.lng, store.lat, store.lng)}</span>
+                          </>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
+                        <MapPin size={13} color="#999" strokeWidth={2} />
+                        <span style={{ fontSize: 12, color: '#666', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.address}
                         </span>
                       </div>
-
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7 }}>
-                        <Clock size={14} color="#8A9288" strokeWidth={2.1} style={{ marginTop: 2, flexShrink: 0 }} />
-                        <span
-                          style={{
-                            fontSize: 12.5,
-                            color: '#555',
-                            lineHeight: 1.45,
-                            letterSpacing: '-0.15px',
-                            wordBreak: 'keep-all',
-                          }}
-                        >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Clock size={13} color="#999" strokeWidth={2} />
+                        <span style={{ fontSize: 12, color: '#666', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.hours}
                         </span>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Action button */}
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 14px' }}>
                     <button
                       className="app-action-button"
-                      onClick={e => {
-                        e.stopPropagation()
-                        openDetail(store)
-                      }}
+                      onClick={e => { e.stopPropagation(); openDetail(store) }}
                       style={{
-                        width: '100%',
-                        minHeight: 44,
-                        marginTop: 13,
+                        width: '34%',
+                        minWidth: 128,
+                        minHeight: 46,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: 7,
+                        padding: '11px 18px',
                         background: '#FFFFFF',
-                        border: `1.5px solid ${activeCat.color}`,
+                        border: '1.5px solid #076818',
                         borderRadius: 999,
                         cursor: 'pointer',
                         fontFamily: 'inherit',
                       }}
                     >
-                      <Navigation size={15} color={activeCat.color} strokeWidth={2.5} />
-                      <span style={{ fontSize: 14, fontWeight: 750, color: activeCat.color }}>
-                        자세히 보기
-                      </span>
+                      <Navigation size={16} color="#076818" strokeWidth={2.5} />
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#076818' }}>자세히 보기</span>
                     </button>
                   </div>
                 </div>
