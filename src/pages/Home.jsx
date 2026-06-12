@@ -4,6 +4,7 @@ import { Bell, Check, ChevronRight, Clock3, User } from 'lucide-react'
 import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 import HomeTutorial from '../components/HomeTutorial'
+import PreparationButton from '../components/PreparationButton'
 
 const HOME_CHECKLIST_CACHE_KEY = 'home-checklist-items'
 
@@ -152,13 +153,9 @@ function DiagnosedPolicyCard({ policy, checklistItems, navigate }) {
         <MiniRing done={progress.done} total={progress.total} />
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 14 }}>
-        <button
-          type="button"
+        <PreparationButton
           onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })}
-          style={{ width: '42%', minWidth: 150, minHeight: 46, border: 'none', borderRadius: 999, background: '#076818', color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
-        >
-          준비물 확인 →
-        </button>
+        />
       </div>
     </article>
   )

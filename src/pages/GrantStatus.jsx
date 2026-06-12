@@ -5,6 +5,7 @@ import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
 import StatusCheckboxes from '../components/StatusCheckboxes'
+import PreparationButton from '../components/PreparationButton'
 import okcheonCharacter from '../assets/okcheon-character.png'
 import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
@@ -84,18 +85,9 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified
       <div style={{ borderTop: '1px solid rgba(218,231,211,0.6)', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         <StatusCheckboxes value={status} onChange={onStatusChange} />
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <button
+          <PreparationButton
             onClick={e => { e.stopPropagation(); navigate(`/checklist?policyId=${encodeURIComponent(grant.id)}`, { state: { grant } }) }}
-            style={{
-              width: '34%', minWidth: 128, padding: '11px 8px', borderRadius: 999,
-              border: 'none', background: '#076818',
-              color: '#fff', fontSize: 14, fontWeight: 700,
-              cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '-0.2px',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            준비물 확인 →
-          </button>
+          />
         </div>
       </div>
     </div>
