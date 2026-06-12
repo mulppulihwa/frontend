@@ -452,7 +452,7 @@ export default function StoreMap() {
             width: 'min(100%, 430px)',
             height: fullscreen ? 'calc(100dvh - 74px)' : sheetH,
             transform: 'translateX(-50%)',
-            background: 'linear-gradient(155deg, #eef7e9 0%, #f7f8df 52%, #fff3c9 100%)',
+            background: '#fff',
             borderRadius: fullscreen ? 0 : '24px 24px 0 0',
             boxShadow: '0 -2px 20px rgba(0,0,0,0.10)',
             transition: dragRef.current.dragging
