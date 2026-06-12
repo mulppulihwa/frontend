@@ -1,4 +1,3 @@
-import { Fragment } from 'react'
 import { Clock, Banknote, ArrowUpRight, CalendarDays } from 'lucide-react'
 
 export default function GrantResultCard({
@@ -85,29 +84,23 @@ export default function GrantResultCard({
           </div>
           <p style={{ fontSize: 13, fontWeight: 500, color: '#555', letterSpacing: '-0.2px' }}>{grant.period}</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 8 }}>
-          <Clock size={13} color={countdownColor} strokeWidth={2} />
-          <p style={{ fontSize: 13, fontWeight: 600, color: countdownColor, letterSpacing: '-0.1px' }}>마감까지</p>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr auto', alignItems: 'center', columnGap: 5 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+            <Clock size={13} color={countdownColor} strokeWidth={2} />
+            <p style={{ fontSize: 13, fontWeight: 600, color: countdownColor, letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}>마감까지</p>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'flex-end', gap: 4, minWidth: 0 }}>
           {[[countdown.days, '일'], [countdown.hours, '시간'], [countdown.minutes, '분']].map(([val, unit]) => (
-            <Fragment key={unit}>
-              <div style={{
-                minHeight: 44,
-                background: 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <span style={{ fontSize: 18, fontWeight: 700, color: countdownColor, letterSpacing: '-0.5px', lineHeight: 1 }}>
-                  {Number(val)}
-                </span>
-              </div>
+            <span key={unit} style={{ display: 'inline-flex', alignItems: 'baseline', gap: 2, whiteSpace: 'nowrap' }}>
+              <strong style={{ fontSize: 18, fontWeight: 700, color: countdownColor, letterSpacing: '-0.5px', lineHeight: 1 }}>
+                {Number(val)}
+              </strong>
               <span style={{ fontSize: 13, fontWeight: 500, color: countdownColor, letterSpacing: '-0.2px', whiteSpace: 'nowrap' }}>
                 {unit}
               </span>
-            </Fragment>
+            </span>
           ))}
+          </div>
         </div>
       </div>
     </div>
