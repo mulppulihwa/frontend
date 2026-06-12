@@ -375,18 +375,6 @@ export default function StoreMap() {
 
       <div style={{ background: '#FDFCF8' }}>
         <TopBar title="지역 정착 가이드맵" />
-        <p style={{
-          margin: 0,
-          padding: '0 20px 12px',
-          color: '#777',
-          fontSize: 12,
-          fontWeight: 400,
-          lineHeight: 1.5,
-          textAlign: 'center',
-          wordBreak: 'keep-all',
-        }}>
-          행정기관 위치부터 이웃들이 직접 인증한 '진짜 동네 정보'까지!
-        </p>
       </div>
 
       {/* Map */}
