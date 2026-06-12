@@ -807,7 +807,6 @@ export default function Step1() {
         return hasValue(location)
           && isCompleteDate(movedAt, 'month')
           && hasValue(previousResidence)
-          && hasValue(resolvedPreviousResidenceType)
           && isCompleteDate(previousSince, 'month')
           && !relocationDateError
       }
@@ -826,7 +825,6 @@ export default function Step1() {
     return hasValue(location)
       && isCompleteDate(movedAt, 'month')
       && hasValue(previousResidence)
-      && hasValue(resolvedPreviousResidenceType)
       && isCompleteDate(previousSince, 'month')
   }
 
