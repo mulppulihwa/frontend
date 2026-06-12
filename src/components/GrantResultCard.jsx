@@ -88,9 +88,7 @@ export default function GrantResultCard({
             <Fragment key={unit}>
               <div style={{
                 minHeight: 44,
-                borderRadius: 12,
-                background: '#fff',
-                border: '1px solid rgba(218,231,211,0.9)',
+                background: 'transparent',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
