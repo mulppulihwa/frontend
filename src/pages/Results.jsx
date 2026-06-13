@@ -164,7 +164,7 @@ export default function Results() {
         </div>
       </div>
 
-      <div style={{ padding: '0 18px 222px', flex: 1, overflowX: 'hidden' }}>
+      <div style={{ width: '80%', maxWidth: 344, margin: '0 auto', padding: '0 0 222px', flex: 1, overflowX: 'hidden' }}>
         {!loading && loadError && (
           <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45 }}>
@@ -219,7 +219,7 @@ export default function Results() {
       </div>
 
       {!loading && !loadError && grant && (
-      <div style={{ position: 'fixed', bottom: 'calc(70px + env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: 'min(100%, 430px)', boxSizing: 'border-box', padding: '12px 28px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
+      <div style={{ position: 'fixed', bottom: 'calc(70px + env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: '80%', maxWidth: 344, boxSizing: 'border-box', padding: '12px 0 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
         <button
           className="app-action-button"
           type="button"
