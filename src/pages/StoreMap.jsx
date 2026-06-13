@@ -784,6 +784,42 @@ export default function StoreMap() {
             </label>
 
             <label style={{ display: 'block', marginBottom: 14 }}>
+              <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>카테고리</span>
+              <div style={{ position: 'relative' }}>
+                <select
+                  value={newPlace.category}
+                  onChange={event => setNewPlace(current => ({ ...current, category: event.target.value }))}
+                  style={{
+                    width: '100%',
+                    height: 48,
+                    boxSizing: 'border-box',
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                    borderRadius: 14,
+                    border: '1.5px solid #e4e6e2',
+                    padding: '0 42px 0 14px',
+                    background: '#FFFFFF',
+                    color: '#333',
+                    fontFamily: 'inherit',
+                    fontSize: 14,
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {USER_PLACE_CATEGORIES.map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={18}
+                  color="#076818"
+                  strokeWidth={2.3}
+                  style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
+                />
+              </div>
+            </label>
+
+            <label style={{ display: 'block', marginBottom: 8 }}>
               <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>메모 <span style={{ color: '#888', fontWeight: 500 }}>(선택)</span></span>
               <textarea
                 value={newPlace.memo}
@@ -793,25 +829,6 @@ export default function StoreMap() {
                 style={{ width: '100%', minHeight: 72, boxSizing: 'border-box', resize: 'vertical', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '12px 14px', fontFamily: 'inherit', fontSize: 14, lineHeight: 1.5, outline: 'none' }}
               />
             </label>
-
-            <div style={{ marginBottom: 8 }}>
-              <span style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 650, color: '#333' }}>카테고리</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-                {USER_PLACE_CATEGORIES.map(category => {
-                  const selected = newPlace.category === category
-                  return (
-                    <button
-                      key={category}
-                      type="button"
-                      onClick={() => setNewPlace(current => ({ ...current, category }))}
-                      style={{ minHeight: 40, borderRadius: 999, border: `1.5px solid ${selected ? '#076818' : '#dfe4dc'}`, background: selected ? '#e8f3e8' : '#FFFFFF', color: selected ? '#076818' : '#666', fontFamily: 'inherit', fontSize: 13, fontWeight: selected ? 700 : 550, cursor: 'pointer' }}
-                    >
-                      {category}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
 
             <div
               ref={postcodeLayerRef}
