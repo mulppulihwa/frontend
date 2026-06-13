@@ -1,4 +1,3 @@
-import { Fragment } from 'react'
 import { Clock, Banknote, ArrowUpRight, CalendarDays } from 'lucide-react'
 
 export default function GrantResultCard({
@@ -84,29 +83,30 @@ export default function GrantResultCard({
           </div>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#444' }}>{grant.period}</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 8 }}>
-          <Clock size={13} color={countdownColor} strokeWidth={2} />
-          <p style={{ fontSize: 14, fontWeight: 700, color: countdownColor }}>마감까지</p>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr auto', alignItems: 'center', columnGap: 5 }}>
-          {[[countdown.days, '일'], [countdown.hours, '시간'], [countdown.minutes, '분']].map(([val, unit]) => (
-            <Fragment key={unit}>
-              <div style={{
-                minHeight: 44,
-                background: 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <span style={{ fontSize: 18, fontWeight: 700, color: countdownColor, letterSpacing: '-0.5px', lineHeight: 1 }}>
-                  {Number(val)}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 10,
+          color: countdownColor,
+          fontSize: 14,
+          fontWeight: 700,
+          lineHeight: 1,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+            <Clock size={13} color={countdownColor} strokeWidth={2} />
+            <span>마감까지</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5, minWidth: 0 }}>
+            {[[countdown.days, '일'], [countdown.hours, '시간'], [countdown.minutes, '분']].map(([val, unit]) => (
+              <span key={unit} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap' }}>
+                <span>{Number(val)}</span>
+                <span style={{ fontWeight: 600 }}>
+                  {unit}
                 </span>
-              </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: countdownColor, whiteSpace: 'nowrap' }}>
-                {unit}
               </span>
-            </Fragment>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
