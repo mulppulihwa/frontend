@@ -71,7 +71,7 @@ export default function StoreMap() {
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [editingPlaceId, setEditingPlaceId] = useState(null)
   const [hoveredPlaceId, setHoveredPlaceId] = useState(null)
-  const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '', memo: '' })
+  const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '', hours: '', memo: '' })
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
   const relatedPolicy = state?.policy || null
@@ -273,6 +273,7 @@ export default function StoreMap() {
       category: '부동산',
       address: '',
       phone: '',
+      hours: '',
       memo: '',
     })
     setAddPlaceOpen(true)
@@ -287,6 +288,7 @@ export default function StoreMap() {
       category: store.category || '부동산',
       address: store.address || '',
       phone: store.phone || '',
+      hours: store.hours === '사용자가 추가한 장소' ? '' : store.hours || '',
       memo: store.memo || '',
     })
     setAddPlaceOpen(true)
@@ -377,8 +379,8 @@ export default function StoreMap() {
       category: newPlace.category || '동네 정보',
       address: position.address || newPlace.address.trim(),
       phone: newPlace.phone.trim() || position.phone || '',
+      hours: newPlace.hours.trim() || '운영시간 확인 필요',
       memo: newPlace.memo.trim(),
-      hours: '사용자가 추가한 장소',
       lat: position.lat,
       lng: position.lng,
       rating: 0,
@@ -582,7 +584,7 @@ export default function StoreMap() {
                   style={{
                     position: 'relative',
                     borderRadius: 18, marginBottom: 10,
-                    background: isHovered ? '#f4faf2' : '#fff',
+                    background: '#fff',
                     border: `1.5px solid ${isSelected || isHovered ? '#076818' : '#ebebeb'}`,
                     cursor: 'pointer', overflow: 'hidden',
                     transition: 'border-color 0.18s ease, background-color 0.18s ease',
@@ -759,6 +761,16 @@ export default function StoreMap() {
                 value={newPlace.phone}
                 onChange={event => setNewPlace(current => ({ ...current, phone: event.target.value }))}
                 placeholder="예: 043-730-0000"
+                style={{ width: '100%', height: 48, boxSizing: 'border-box', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '0 14px', fontFamily: 'inherit', fontSize: 14, outline: 'none' }}
+              />
+            </label>
+
+            <label style={{ display: 'block', marginBottom: 14 }}>
+              <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>운영 시간 <span style={{ color: '#888', fontWeight: 500 }}>(선택)</span></span>
+              <input
+                value={newPlace.hours}
+                onChange={event => setNewPlace(current => ({ ...current, hours: event.target.value }))}
+                placeholder="예: 평일 09:00 - 18:00"
                 style={{ width: '100%', height: 48, boxSizing: 'border-box', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '0 14px', fontFamily: 'inherit', fontSize: 14, outline: 'none' }}
               />
             </label>
