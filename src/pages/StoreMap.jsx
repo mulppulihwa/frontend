@@ -627,16 +627,16 @@ export default function StoreMap() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: 7,
-                        padding: '11px 18px',
-                        background: '#FFFFFF',
-                        border: '1.5px solid #076818',
+                        padding: '0 14px',
+                        background: '#076818',
+                        border: 'none',
                         borderRadius: 999,
                         cursor: 'pointer',
                         fontFamily: 'inherit',
                       }}
                     >
-                      <Navigation size={16} color="#076818" strokeWidth={2.5} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: '#076818' }}>자세히 보기</span>
+                      <Navigation size={16} color="#FFFFFF" strokeWidth={2.5} />
+                      <span style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF' }}>자세히 보기</span>
                     </button>
                   </div>
                 </div>
