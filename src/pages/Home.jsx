@@ -120,7 +120,7 @@ const diagnosedStatusMeta = {
 function getDday(deadline) {
   const days = getDeadlineDays(deadline)
   if (!Number.isFinite(days)) return '-'
-  if (days === 0) return 'D-0'
+  if (days === 0) return '-'
   return days > 0 ? `D-${days}` : `D+${Math.abs(days)}`
 }
 

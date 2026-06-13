@@ -27,7 +27,7 @@ function getDeadlineDays(deadlineStr) {
 function getDday(deadlineStr) {
   const days = getDeadlineDays(deadlineStr)
   if (!Number.isFinite(days)) return '-'
-  if (days === 0) return 'D-0'
+  if (days === 0) return '-'
   return days > 0 ? `D-${days}` : `D+${Math.abs(days)}`
 }
 

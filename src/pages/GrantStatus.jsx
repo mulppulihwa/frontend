@@ -42,6 +42,7 @@ function formatAddedDate(dateLike) {
 
 function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified }) {
   const days = grant.countdown?.days ?? grant.days ?? 0
+  const dDayLabel = Number(days) === 0 ? '-' : `D-${days}`
   const BellIcon = notified ? BellRing : Bell
 
   return (
@@ -51,7 +52,7 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified
         style={{ padding: '16px 16px 12px', display: 'grid', gridTemplateColumns: '56px minmax(0, 1fr) 34px', alignItems: 'center', gap: 10, cursor: 'pointer' }}
       >
         <p style={{ fontSize: 15, fontWeight: 800, color: '#d93025', letterSpacing: '-0.2px', textAlign: 'center' }}>
-          D-{days}
+          {dDayLabel}
         </p>
         <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
           <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{grant.title}</p>
