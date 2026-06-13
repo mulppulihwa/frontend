@@ -728,7 +728,9 @@ export default function StoreMap() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
                 <h2 style={{ margin: 0, fontSize: 19, fontWeight: 750, color: '#1f2433' }}>{editingPlaceId ? '내 장소 수정' : '내 장소 추가'}</h2>
-                <p style={{ margin: '5px 0 0', fontSize: 12, color: '#888' }}>{editingPlaceId ? '등록한 장소 정보를 수정해 주세요.' : '옥천에서 함께 나누고 싶은 장소를 알려주세요.'}</p>
+                {editingPlaceId && (
+                  <p style={{ margin: '5px 0 0', fontSize: 12, color: '#888' }}>등록한 장소 정보를 수정해 주세요.</p>
+                )}
               </div>
               <button type="button" aria-label="닫기" onClick={closePlaceForm} disabled={addPlaceLoading} style={{ width: 34, height: 34, border: 'none', borderRadius: '50%', background: '#f4f5f2', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                 <X size={18} color="#6f776d" />
