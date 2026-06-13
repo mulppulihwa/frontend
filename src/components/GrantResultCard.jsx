@@ -19,12 +19,17 @@ export default function GrantResultCard({
       border: '1px solid rgba(218,231,211,0.9)',
       borderRadius: 28,
       padding: '20px 20px 14px',
+      height: 330,
+      boxSizing: 'border-box',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
     }}>
       {/* Title + detail action */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 14 }}>
-        <div style={{ flex: 1 }}>
-          <p style={{ fontSize: 18, fontWeight: 750, color: '#1f2433', letterSpacing: '-0.2px', lineHeight: 1.4, wordBreak: 'keep-all' }}>{grant.title}</p>
-          <p style={{ fontSize: 14, fontWeight: 500, color: '#4f7054', marginTop: 5, lineHeight: 1.45 }}>{grant.agency}</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 12, minHeight: 70 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 18, fontWeight: 750, color: '#1f2433', letterSpacing: '-0.2px', lineHeight: 1.35, wordBreak: 'keep-all', display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden' }}>{grant.title}</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#4f7054', marginTop: 5, lineHeight: 1.4, display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden' }}>{grant.agency}</p>
         </div>
         <button
           type="button"
@@ -54,14 +59,14 @@ export default function GrantResultCard({
       </div>
 
       {/* Amount */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, minHeight: 42, marginBottom: 10 }}>
         <Banknote size={16} color="#076818" strokeWidth={2.2} />
-        <p style={{ fontSize: 15, fontWeight: 700, color: '#076818', lineHeight: 1.45 }}>{grant.subtitle}</p>
+        <p style={{ fontSize: 15, fontWeight: 700, color: '#076818', lineHeight: 1.4, display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden' }}>{grant.subtitle}</p>
       </div>
 
       {/* Match reason */}
       {reasons.length > 0 && (
-        <div style={{ background: '#FFFFFF', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
+        <div className="no-scrollbar" style={{ background: '#FFFFFF', borderRadius: 14, padding: '10px 14px', marginBottom: 10, minHeight: 72, overflowY: 'auto', boxSizing: 'border-box' }}>
           <p style={{ fontSize: 14, fontWeight: 700, color: '#4f7054', marginBottom: 7 }}>해당 이유</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {reasons.map((reason) => (
@@ -75,7 +80,7 @@ export default function GrantResultCard({
       )}
 
       {/* Dates + countdown */}
-      <div style={{ padding: '12px 0 0' }}>
+      <div style={{ marginTop: 'auto', padding: '8px 0 0', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <CalendarDays size={14} color="#076818" strokeWidth={2.2} />

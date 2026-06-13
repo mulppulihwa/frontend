@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { MapPin, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
@@ -311,69 +312,72 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
         <p style={{ fontSize: 12, fontWeight: 600, color: '#d93025', margin: 0 }}>{scriptError}</p>
       )}
 
-      <div
-        onClick={closeLayer}
-        style={{
-          display: postcodeOpen ? 'flex' : 'none',
-          position: 'fixed',
-          inset: 0,
-          zIndex: 500,
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 20,
-          boxSizing: 'border-box',
-          background: 'rgba(24, 31, 24, 0.38)',
-          backdropFilter: 'blur(2px)',
-          WebkitBackdropFilter: 'blur(2px)',
-        }}
-      >
+      {createPortal(
         <div
-          onClick={event => event.stopPropagation()}
+          onClick={closeLayer}
           style={{
-            position: 'relative',
-            width: 'min(100%, 360px)',
-            height: 'min(68dvh, 470px)',
-            overflow: 'hidden',
-            borderRadius: 24,
-            background: 'rgba(255,255,255,0.97)',
-            boxShadow: '0 20px 56px rgba(20, 28, 20, 0.24)',
+            display: postcodeOpen ? 'flex' : 'none',
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1000,
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+            boxSizing: 'border-box',
+            background: 'rgba(24, 31, 24, 0.46)',
+            backdropFilter: 'blur(3px)',
+            WebkitBackdropFilter: 'blur(3px)',
           }}
         >
           <div
-            ref={layerRef}
+            onClick={event => event.stopPropagation()}
             style={{
-              width: '100%',
-              height: '100%',
+              position: 'relative',
+              width: 'min(100%, 360px)',
+              height: 'min(68dvh, 470px)',
               overflow: 'hidden',
-              WebkitOverflowScrolling: 'touch',
-              background: 'transparent',
-            }}
-          />
-          <button
-            type="button"
-            aria-label="주소 검색 닫기"
-            onClick={closeLayer}
-            style={{
-              position: 'absolute',
-              top: 10,
-              right: 10,
-              zIndex: 2,
-              width: 36,
-              height: 36,
-              border: 'none',
-              borderRadius: '50%',
-              background: 'rgba(245,246,243,0.92)',
-              color: '#626960',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
+              borderRadius: 24,
+              background: 'rgba(255,255,255,0.97)',
+              boxShadow: '0 20px 56px rgba(20, 28, 20, 0.24)',
             }}
           >
-            <X size={19} strokeWidth={2.3} />
-          </button>
-        </div>
-      </div>
+            <div
+              ref={layerRef}
+              style={{
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden',
+                WebkitOverflowScrolling: 'touch',
+                background: 'transparent',
+              }}
+            />
+            <button
+              type="button"
+              aria-label="주소 검색 닫기"
+              onClick={closeLayer}
+              style={{
+                position: 'absolute',
+                top: 10,
+                right: 10,
+                zIndex: 2,
+                width: 36,
+                height: 36,
+                border: 'none',
+                borderRadius: '50%',
+                background: 'rgba(245,246,243,0.92)',
+                color: '#626960',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <X size={19} strokeWidth={2.3} />
+            </button>
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   )
 }
