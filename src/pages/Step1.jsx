@@ -324,9 +324,9 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
             justifyContent: 'center',
             padding: 20,
             boxSizing: 'border-box',
-            background: 'rgba(253,252,248,0.72)',
-            backdropFilter: 'blur(2px)',
-            WebkitBackdropFilter: 'blur(2px)',
+            background: 'rgba(24, 31, 24, 0.46)',
+            backdropFilter: 'blur(3px)',
+            WebkitBackdropFilter: 'blur(3px)',
           }}
         >
           <div
@@ -336,48 +336,21 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
               width: 'min(100%, 360px)',
               height: 'min(68dvh, 470px)',
               overflow: 'hidden',
-              borderRadius: 26,
-              border: '1.5px solid #dbead5',
-              background: '#FFFFFF',
-              boxShadow: '0 20px 56px rgba(20, 28, 20, 0.18)',
-              display: 'flex',
-              flexDirection: 'column',
-              padding: '10px 10px 14px',
-              boxSizing: 'border-box',
+              borderRadius: 24,
+              background: 'rgba(255,255,255,0.97)',
+              boxShadow: '0 20px 56px rgba(20, 28, 20, 0.24)',
             }}
           >
             <div
               ref={layerRef}
               style={{
                 width: '100%',
-                flex: 1,
-                minHeight: 0,
+                height: '100%',
                 overflow: 'hidden',
                 WebkitOverflowScrolling: 'touch',
                 background: 'transparent',
-                borderRadius: 18,
               }}
             />
-            <button
-              className="app-action-button"
-              type="button"
-              onClick={closeLayer}
-              style={{
-                width: 'calc(100% - 24px)',
-                minHeight: 48,
-                margin: '12px auto 0',
-                border: 'none',
-                borderRadius: 999,
-                background: '#076818',
-                color: '#FFFFFF',
-                fontSize: 16,
-                fontWeight: 800,
-                fontFamily: 'inherit',
-                cursor: 'pointer',
-              }}
-            >
-              닫기
-            </button>
           </div>
         </div>,
         document.body,

@@ -157,19 +157,19 @@ function NotificationSetModal({ visible, mode, onClose }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 36,
-        background: 'rgba(253,252,248,0.72)',
+        padding: 28,
+        background: 'rgba(0,0,0,0.32)',
       }}
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%',
-          maxWidth: 286,
-          borderRadius: 26,
+          maxWidth: 318,
+          borderRadius: 24,
           border: '1.5px solid #dbead5',
           background: '#FFFFFF',
-          padding: '24px 22px 22px',
+          padding: '28px 22px 20px',
           textAlign: 'center',
           boxSizing: 'border-box',
           animation: 'modalPop 0.2s ease',
@@ -188,13 +188,13 @@ function NotificationSetModal({ visible, mode, onClose }) {
           onClick={onClose}
           style={{
             width: '100%',
-            minHeight: 48,
-            marginTop: 30,
+            minHeight: 46,
+            marginTop: 24,
             border: 'none',
             borderRadius: 999,
             background: '#076818',
             color: '#FFFFFF',
-            fontSize: 20,
+            fontSize: 14,
             fontWeight: 800,
             fontFamily: 'inherit',
             cursor: 'pointer',
