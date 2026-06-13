@@ -24,8 +24,8 @@ export default function GrantResultCard({
       {/* Title + detail action */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 14 }}>
         <div style={{ flex: 1 }}>
-          <p style={{ fontSize: 20, fontWeight: 800, color: '#1f2433', letterSpacing: '-0.4px', lineHeight: 1.3, wordBreak: 'keep-all' }}>{grant.title}</p>
-          <p style={{ fontSize: 13, fontWeight: 400, color: '#5a7a5e', marginTop: 5, letterSpacing: '-0.1px' }}>{grant.agency}</p>
+          <p style={{ fontSize: 18, fontWeight: 750, color: '#1f2433', letterSpacing: '-0.2px', lineHeight: 1.4, wordBreak: 'keep-all' }}>{grant.title}</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#4f7054', marginTop: 5, lineHeight: 1.45 }}>{grant.agency}</p>
         </div>
         <button
           type="button"
@@ -42,9 +42,8 @@ export default function GrantResultCard({
             background: 'rgba(255,255,255,0.8)',
             color: '#076818',
             fontFamily: 'inherit',
-            fontSize: 13,
-            fontWeight: 600,
-            letterSpacing: '-0.2px',
+            fontSize: 14,
+            fontWeight: 700,
             whiteSpace: 'nowrap',
             flexShrink: 0,
             cursor: 'pointer',
@@ -58,18 +57,18 @@ export default function GrantResultCard({
       {/* Amount */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         <Banknote size={16} color="#076818" strokeWidth={2.2} />
-        <p style={{ fontSize: 14, fontWeight: 600, color: '#076818', letterSpacing: '-0.2px' }}>{grant.subtitle}</p>
+        <p style={{ fontSize: 15, fontWeight: 700, color: '#076818', lineHeight: 1.45 }}>{grant.subtitle}</p>
       </div>
 
       {/* Match reason */}
       {reasons.length > 0 && (
         <div style={{ background: '#FFFFFF', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, color: '#5a7a5e', letterSpacing: '-0.1px', marginBottom: 6 }}>해당 이유</p>
+          <p style={{ fontSize: 14, fontWeight: 700, color: '#4f7054', marginBottom: 7 }}>해당 이유</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {reasons.map((reason) => (
               <div key={reason} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                 <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#076818', flexShrink: 0 }} />
-                <p style={{ fontSize: 13, fontWeight: 500, color: '#1f2433', letterSpacing: '-0.1px' }}>{reason}</p>
+                <p style={{ fontSize: 14, fontWeight: 500, color: '#1f2433', lineHeight: 1.45 }}>{reason}</p>
               </div>
             ))}
           </div>
@@ -81,13 +80,13 @@ export default function GrantResultCard({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <CalendarDays size={14} color="#076818" strokeWidth={2.2} />
-            <p style={{ fontSize: 13, fontWeight: 500, color: '#1f2433', letterSpacing: '-0.1px' }}>신청 기간</p>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#1f2433' }}>신청 기간</p>
           </div>
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#555', letterSpacing: '-0.2px' }}>{grant.period}</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#444' }}>{grant.period}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 8 }}>
           <Clock size={13} color={countdownColor} strokeWidth={2} />
-          <p style={{ fontSize: 13, fontWeight: 600, color: countdownColor, letterSpacing: '-0.1px' }}>마감까지</p>
+          <p style={{ fontSize: 14, fontWeight: 700, color: countdownColor }}>마감까지</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr auto', alignItems: 'center', columnGap: 5 }}>
           {[[countdown.days, '일'], [countdown.hours, '시간'], [countdown.minutes, '분']].map(([val, unit]) => (
@@ -103,7 +102,7 @@ export default function GrantResultCard({
                   {Number(val)}
                 </span>
               </div>
-              <span style={{ fontSize: 13, fontWeight: 500, color: countdownColor, letterSpacing: '-0.2px', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: countdownColor, whiteSpace: 'nowrap' }}>
                 {unit}
               </span>
             </Fragment>
