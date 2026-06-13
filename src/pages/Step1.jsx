@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { MapPin, X } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import SelectField from '../components/SelectField'
@@ -324,9 +324,9 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
             justifyContent: 'center',
             padding: 20,
             boxSizing: 'border-box',
-            background: 'rgba(24, 31, 24, 0.46)',
-            backdropFilter: 'blur(3px)',
-            WebkitBackdropFilter: 'blur(3px)',
+            background: 'rgba(253,252,248,0.72)',
+            backdropFilter: 'blur(2px)',
+            WebkitBackdropFilter: 'blur(2px)',
           }}
         >
           <div
@@ -336,43 +336,47 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
               width: 'min(100%, 360px)',
               height: 'min(68dvh, 470px)',
               overflow: 'hidden',
-              borderRadius: 24,
-              background: 'rgba(255,255,255,0.97)',
-              boxShadow: '0 20px 56px rgba(20, 28, 20, 0.24)',
+              borderRadius: 26,
+              border: '1.5px solid #dbead5',
+              background: '#FFFFFF',
+              boxShadow: '0 20px 56px rgba(20, 28, 20, 0.18)',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '10px 10px 14px',
+              boxSizing: 'border-box',
             }}
           >
             <div
               ref={layerRef}
               style={{
                 width: '100%',
-                height: '100%',
+                flex: 1,
+                minHeight: 0,
                 overflow: 'hidden',
                 WebkitOverflowScrolling: 'touch',
                 background: 'transparent',
+                borderRadius: 18,
               }}
             />
             <button
+              className="app-action-button"
               type="button"
-              aria-label="주소 검색 닫기"
               onClick={closeLayer}
               style={{
-                position: 'absolute',
-                top: 10,
-                right: 10,
-                zIndex: 2,
-                width: 36,
-                height: 36,
+                width: 'calc(100% - 24px)',
+                minHeight: 48,
+                margin: '12px auto 0',
                 border: 'none',
-                borderRadius: '50%',
-                background: 'rgba(245,246,243,0.92)',
-                color: '#626960',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                borderRadius: 999,
+                background: '#076818',
+                color: '#FFFFFF',
+                fontSize: 16,
+                fontWeight: 800,
+                fontFamily: 'inherit',
                 cursor: 'pointer',
               }}
             >
-              <X size={19} strokeWidth={2.3} />
+              닫기
             </button>
           </div>
         </div>,
