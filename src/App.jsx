@@ -34,10 +34,10 @@ function Layout() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route path="/step1" element={<RequireAuth><Step1 /></RequireAuth>} />
-      <Route path="/step2" element={<RequireAuth><Step2 /></RequireAuth>} />
-      <Route path="/loading" element={<RequireAuth><Loading /></RequireAuth>} />
       <Route element={<AppWithNav />}>
+        <Route path="/step1" element={<Step1 />} />
+        <Route path="/step2" element={<Step2 />} />
+        <Route path="/loading" element={<Loading />} />
         <Route path="/results" element={<Results />} />
         <Route path="/detail" element={<Detail />} />
         <Route path="/map" element={<StoreMap />} />

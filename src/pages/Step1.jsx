@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { MapPin } from 'lucide-react'
+import { MapPin, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import SelectField from '../components/SelectField'
@@ -31,18 +31,6 @@ function loadPostcodeScript() {
     document.head.appendChild(script)
   })
 }
-
-function positionPostcodeLayer(layer) {
-  const width = 300
-  const height = 400
-  const borderWidth = 5
-  layer.style.width = `${width}px`
-  layer.style.height = `${height}px`
-  layer.style.border = `${borderWidth}px solid #076818`
-  layer.style.left = `${((window.innerWidth || document.documentElement.clientWidth) - width) / 2 - borderWidth}px`
-  layer.style.top = `${((window.innerHeight || document.documentElement.clientHeight) - height) / 2 - borderWidth}px`
-}
-
 
 function getDateDigits(value) {
   return String(value || '').replace(/\D/g, '')
@@ -252,6 +240,7 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
   const layerRef = useRef(null)
   const [focused, setFocused] = useState(false)
   const [scriptError, setScriptError] = useState('')
+  const [postcodeOpen, setPostcodeOpen] = useState(false)
 
   useEffect(() => {
     loadPostcodeScript().catch(err => setScriptError(err.message))
@@ -259,6 +248,7 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
 
   const closeLayer = () => {
     if (layerRef.current) layerRef.current.style.display = 'none'
+    setPostcodeOpen(false)
   }
 
   const openPostcode = () => {
@@ -277,7 +267,7 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
     }).embed(layer)
 
     layer.style.display = 'block'
-    positionPostcodeLayer(layer)
+    setPostcodeOpen(true)
   }
 
   return (
@@ -321,25 +311,68 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
         <p style={{ fontSize: 12, fontWeight: 600, color: '#d93025', margin: 0 }}>{scriptError}</p>
       )}
 
-      {/* iOS에서는 position:fixed 버그가 있음, 적용하는 사이트에 맞게 position:absolute 등을 이용하여 top,left값 조정 필요 */}
       <div
-        ref={layerRef}
+        onClick={closeLayer}
         style={{
-          display: 'none',
+          display: postcodeOpen ? 'flex' : 'none',
           position: 'fixed',
-          overflow: 'hidden',
+          inset: 0,
           zIndex: 500,
-          WebkitOverflowScrolling: 'touch',
-          background: '#fff',
-          borderRadius: 8,
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 20,
+          boxSizing: 'border-box',
+          background: 'rgba(24, 31, 24, 0.38)',
+          backdropFilter: 'blur(2px)',
+          WebkitBackdropFilter: 'blur(2px)',
         }}
       >
-        <img
-          src="//t1.kakaocdn.net/postcode/resource/images/close.png"
-          onClick={closeLayer}
-          alt="닫기 버튼"
-          style={{ cursor: 'pointer', position: 'absolute', right: -3, top: -3, zIndex: 1 }}
-        />
+        <div
+          onClick={event => event.stopPropagation()}
+          style={{
+            position: 'relative',
+            width: 'min(100%, 360px)',
+            height: 'min(68dvh, 470px)',
+            overflow: 'hidden',
+            borderRadius: 24,
+            background: 'rgba(255,255,255,0.97)',
+            boxShadow: '0 20px 56px rgba(20, 28, 20, 0.24)',
+          }}
+        >
+          <div
+            ref={layerRef}
+            style={{
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+              WebkitOverflowScrolling: 'touch',
+              background: 'transparent',
+            }}
+          />
+          <button
+            type="button"
+            aria-label="주소 검색 닫기"
+            onClick={closeLayer}
+            style={{
+              position: 'absolute',
+              top: 10,
+              right: 10,
+              zIndex: 2,
+              width: 36,
+              height: 36,
+              border: 'none',
+              borderRadius: '50%',
+              background: 'rgba(245,246,243,0.92)',
+              color: '#626960',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <X size={19} strokeWidth={2.3} />
+          </button>
+        </div>
       </div>
     </div>
   )
