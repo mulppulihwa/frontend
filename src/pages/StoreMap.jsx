@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock, Plus, Trash2, MessageSquareText } from 'lucide-react'
+import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock, Plus, Trash2, MessageSquareText, Pencil } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import { fetchPlaces } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
@@ -69,6 +69,8 @@ export default function StoreMap() {
   const [addPlaceLoading, setAddPlaceLoading] = useState(false)
   const [addPlaceError, setAddPlaceError] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [editingPlaceId, setEditingPlaceId] = useState(null)
+  const [hoveredPlaceId, setHoveredPlaceId] = useState(null)
   const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '', memo: '' })
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
@@ -265,6 +267,7 @@ export default function StoreMap() {
   const openAddPlace = (event) => {
     event.stopPropagation()
     setAddPlaceError('')
+    setEditingPlaceId(null)
     setNewPlace({
       name: '',
       category: '부동산',
@@ -273,6 +276,26 @@ export default function StoreMap() {
       memo: '',
     })
     setAddPlaceOpen(true)
+  }
+
+  const openEditPlace = (event, store) => {
+    event.stopPropagation()
+    setAddPlaceError('')
+    setEditingPlaceId(store.id)
+    setNewPlace({
+      name: store.name || '',
+      category: store.category || '부동산',
+      address: store.address || '',
+      phone: store.phone || '',
+      memo: store.memo || '',
+    })
+    setAddPlaceOpen(true)
+  }
+
+  const closePlaceForm = () => {
+    if (addPlaceLoading) return
+    setAddPlaceOpen(false)
+    setEditingPlaceId(null)
   }
 
   const closePostcode = () => {
@@ -344,8 +367,12 @@ export default function StoreMap() {
     setAddPlaceLoading(true)
     setAddPlaceError('')
     const position = await resolvePlacePosition()
+    const existingPlace = editingPlaceId
+      ? readCustomPlaces().find(place => place.id === editingPlaceId)
+      : null
     const customPlace = {
-      id: `custom-${Date.now()}`,
+      ...existingPlace,
+      id: editingPlaceId || `custom-${Date.now()}`,
       name: newPlace.name.trim(),
       category: newPlace.category || '동네 정보',
       address: position.address || newPlace.address.trim(),
@@ -358,14 +385,19 @@ export default function StoreMap() {
       reviews: 0,
       userAdded: true,
     }
-    const savedPlaces = [...readCustomPlaces(), customPlace]
+    const savedPlaces = editingPlaceId
+      ? readCustomPlaces().map(place => place.id === editingPlaceId ? customPlace : place)
+      : [...readCustomPlaces(), customPlace]
     localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(savedPlaces))
-    setStores(current => [...current, customPlace])
+    setStores(current => editingPlaceId
+      ? current.map(place => place.id === editingPlaceId ? customPlace : place)
+      : [...current, customPlace])
     setActiveCategory(customPlace.category)
     setSelectedStore(customPlace)
     setSheetH(expandedHeight)
     setAddPlaceLoading(false)
     setAddPlaceOpen(false)
+    setEditingPlaceId(null)
     window.setTimeout(() => {
       mapInstanceRef.current?.panTo(new window.kakao.maps.LatLng(customPlace.lat, customPlace.lng))
     }, 80)
@@ -538,47 +570,56 @@ export default function StoreMap() {
             {filteredStores.map((store) => {
               const i = stores.indexOf(store)
               const isSelected = selectedStore?.name === store.name
+              const storeKey = store.id || `${store.name}-${i}`
+              const isHovered = hoveredPlaceId === storeKey
               const CatIcon = activeCat.icon
               return (
                 <div
-                  key={i}
+                  key={storeKey}
                   onClick={() => handleStoreClick(store)}
+                  onMouseEnter={() => setHoveredPlaceId(storeKey)}
+                  onMouseLeave={() => setHoveredPlaceId(null)}
                   style={{
                     position: 'relative',
                     borderRadius: 18, marginBottom: 10,
-                    background: '#fff',
-                    border: `1.5px solid ${isSelected ? activeCat.color : '#ebebeb'}`,
+                    background: isHovered ? '#f4faf2' : '#fff',
+                    border: `1.5px solid ${isSelected || isHovered ? '#076818' : '#ebebeb'}`,
                     cursor: 'pointer', overflow: 'hidden',
-                    transition: 'border-color 0.18s ease',
+                    transition: 'border-color 0.18s ease, background-color 0.18s ease',
                   }}
                 >
                   {store.userAdded && (
-                    <button
-                      type="button"
-                      aria-label={`${store.name} 삭제`}
-                      onClick={event => {
-                        event.stopPropagation()
-                        setDeleteTarget(store)
-                      }}
+                    <div
                       style={{
                         position: 'absolute',
                         top: 10,
                         right: 10,
                         zIndex: 2,
-                        width: 34,
-                        height: 34,
-                        border: '1px solid #f2c7c4',
-                        borderRadius: '50%',
-                        background: '#fff7f6',
-                        color: '#d93025',
-                        display: 'inline-flex',
+                        display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
+                        gap: 8,
                       }}
                     >
-                      <Trash2 size={17} strokeWidth={2.2} />
-                    </button>
+                      <button
+                        type="button"
+                        aria-label={`${store.name} 수정`}
+                        onClick={event => openEditPlace(event, store)}
+                        style={{ padding: 3, border: 'none', background: 'transparent', color: '#076818', display: 'inline-flex', cursor: 'pointer' }}
+                      >
+                        <Pencil size={18} strokeWidth={2.2} />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`${store.name} 삭제`}
+                        onClick={event => {
+                          event.stopPropagation()
+                          setDeleteTarget(store)
+                        }}
+                        style={{ padding: 3, border: 'none', background: 'transparent', color: '#d93025', display: 'inline-flex', cursor: 'pointer' }}
+                      >
+                        <Trash2 size={18} strokeWidth={2.2} />
+                      </button>
+                    </div>
                   )}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 14px 12px' }}>
                     <div style={{
@@ -648,7 +689,7 @@ export default function StoreMap() {
 
       {addPlaceOpen && (
         <div
-          onClick={() => !addPlaceLoading && setAddPlaceOpen(false)}
+          onClick={closePlaceForm}
           style={{
             position: 'fixed',
             inset: 0,
@@ -678,10 +719,10 @@ export default function StoreMap() {
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
-                <h2 style={{ margin: 0, fontSize: 19, fontWeight: 750, color: '#1f2433' }}>내 장소 추가</h2>
-                <p style={{ margin: '5px 0 0', fontSize: 12, color: '#888' }}>옥천에서 함께 나누고 싶은 장소를 알려주세요.</p>
+                <h2 style={{ margin: 0, fontSize: 19, fontWeight: 750, color: '#1f2433' }}>{editingPlaceId ? '내 장소 수정' : '내 장소 추가'}</h2>
+                <p style={{ margin: '5px 0 0', fontSize: 12, color: '#888' }}>{editingPlaceId ? '등록한 장소 정보를 수정해 주세요.' : '옥천에서 함께 나누고 싶은 장소를 알려주세요.'}</p>
               </div>
-              <button type="button" aria-label="닫기" onClick={() => setAddPlaceOpen(false)} disabled={addPlaceLoading} style={{ width: 34, height: 34, border: 'none', borderRadius: '50%', background: '#f4f5f2', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <button type="button" aria-label="닫기" onClick={closePlaceForm} disabled={addPlaceLoading} style={{ width: 34, height: 34, border: 'none', borderRadius: '50%', background: '#f4f5f2', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                 <X size={18} color="#6f776d" />
               </button>
             </div>
@@ -769,7 +810,7 @@ export default function StoreMap() {
               disabled={addPlaceLoading}
               style={{ width: '54%', minWidth: 180, minHeight: 48, margin: '18px auto 0', border: 'none', borderRadius: 999, background: '#076818', color: '#FFFFFF', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: addPlaceLoading ? 'wait' : 'pointer', opacity: addPlaceLoading ? 0.65 : 1 }}
             >
-              {addPlaceLoading ? '장소를 찾는 중...' : '장소 추가'}
+              {addPlaceLoading ? '장소를 찾는 중...' : editingPlaceId ? '수정 완료' : '장소 추가'}
             </button>
           </form>
         </div>
