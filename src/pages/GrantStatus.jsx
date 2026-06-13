@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowUpDown, Bell, BellRing, Check, Search, X } from 'lucide-react'
+import { ArrowUpDown, Bell, BellRing, Check, ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
@@ -24,6 +24,7 @@ const statusConfig = {
 }
 
 const NOTIFICATION_STATUS_KEY = 'policyNotificationStatus'
+const POLICIES_PER_PAGE = 10
 
 function readNotificationStatus() {
   try {
@@ -219,6 +220,7 @@ export default function GrantStatus() {
   const [notificationStatus, setNotificationStatus] = useState(() => readNotificationStatus())
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('마감순')
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const statusProgress = useLoadingProgress(loading)
   const [error, setError] = useState('')
@@ -308,7 +310,13 @@ export default function GrantStatus() {
       : grants.filter(g => g.status === activeFilter)
   ).filter(g => g.title.includes(query) || g.subtitle.includes(query))
    .sort(sortFn)
-  const grouped = !isAll && filtered.reduce((acc, g) => {
+  const totalPages = Math.max(1, Math.ceil(filtered.length / POLICIES_PER_PAGE))
+  const currentPage = Math.min(page, totalPages)
+  const paginatedGrants = filtered.slice(
+    (currentPage - 1) * POLICIES_PER_PAGE,
+    currentPage * POLICIES_PER_PAGE,
+  )
+  const grouped = !isAll && paginatedGrants.reduce((acc, g) => {
     const key = g.status || '미입력'
     if (!acc[key]) acc[key] = []
     acc[key].push(g)
@@ -335,12 +343,15 @@ export default function GrantStatus() {
           <Search size={16} color="#bbb" strokeWidth={2.2} />
           <input
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={e => {
+              setQuery(e.target.value)
+              setPage(1)
+            }}
             placeholder="지원금 검색"
             style={{ flex: 1, border: 'none', background: 'none', outline: 'none', fontSize: 14, color: '#1a1a1a', fontFamily: 'inherit', letterSpacing: '-0.1px' }}
           />
           {query.length > 0 && (
-            <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
+            <button onClick={() => { setQuery(''); setPage(1) }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
               <X size={15} color="#bbb" strokeWidth={2.5} />
             </button>
           )}
@@ -357,7 +368,10 @@ export default function GrantStatus() {
             return (
               <button
                 key={f.key}
-                onClick={() => setActiveFilter(f.key)}
+                onClick={() => {
+                  setActiveFilter(f.key)
+                  setPage(1)
+                }}
                 style={{
                   padding: '8px 16px', borderRadius: 999,
                   border: `1.5px solid ${active ? '#076818' : '#e8e8e8'}`,
@@ -380,7 +394,10 @@ export default function GrantStatus() {
         {/* Sort toggle */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: -14 }}>
           <button
-            onClick={() => setSort(s => s === '마감순' ? '가나다순' : '마감순')}
+            onClick={() => {
+              setSort(s => s === '마감순' ? '가나다순' : '마감순')
+              setPage(1)
+            }}
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
               background: 'none', border: 'none', cursor: 'pointer',
@@ -412,7 +429,7 @@ export default function GrantStatus() {
 
         {!statusProgress.visible && isAll ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {filtered.map(g => (
+            {paginatedGrants.map(g => (
               <GrantCard
                 key={g.id}
                 grant={g}
@@ -465,6 +482,65 @@ export default function GrantStatus() {
           <div style={{ textAlign: 'center', padding: '40px 0', color: '#bbb', fontSize: 14 }}>
             해당하는 지원금이 없어요
           </div>
+        )}
+
+        {!statusProgress.visible && filtered.length > 0 && totalPages > 1 && (
+          <nav
+            aria-label="지원 정책 페이지"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, padding: '8px 0 2px' }}
+          >
+            <button
+              className="app-action-button"
+              type="button"
+              aria-label="이전 페이지"
+              disabled={currentPage === 1}
+              onClick={() => {
+                setPage(current => Math.max(1, current - 1))
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+              style={{
+                width: 42,
+                border: '1.5px solid #dfe4dc',
+                borderRadius: '50%',
+                background: '#FFFFFF',
+                color: '#076818',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: currentPage === 1 ? 'default' : 'pointer',
+                opacity: currentPage === 1 ? 0.4 : 1,
+              }}
+            >
+              <ChevronLeft size={19} strokeWidth={2.4} />
+            </button>
+            <span style={{ minWidth: 58, textAlign: 'center', fontSize: 14, fontWeight: 700, color: '#333' }}>
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              className="app-action-button"
+              type="button"
+              aria-label="다음 페이지"
+              disabled={currentPage === totalPages}
+              onClick={() => {
+                setPage(current => Math.min(totalPages, current + 1))
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+              style={{
+                width: 42,
+                border: 'none',
+                borderRadius: '50%',
+                background: '#076818',
+                color: '#FFFFFF',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: currentPage === totalPages ? 'default' : 'pointer',
+                opacity: currentPage === totalPages ? 0.4 : 1,
+              }}
+            >
+              <ChevronRight size={19} strokeWidth={2.4} />
+            </button>
+          </nav>
         )}
 
       </div>
