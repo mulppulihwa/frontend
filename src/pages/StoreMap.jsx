@@ -49,6 +49,12 @@ function readCustomPlaces() {
   }
 }
 
+function getKakaoMapUrl(place) {
+  if (place?.kakaoResult?.placeUrl) return place.kakaoResult.placeUrl
+  const query = [place?.name, place?.address].filter(Boolean).join(' ')
+  return `https://map.kakao.com/?q=${encodeURIComponent(query)}`
+}
+
 export default function StoreMap() {
   const navigate = useNavigate()
   const { state } = useLocation()
@@ -925,16 +931,15 @@ export default function StoreMap() {
             )}
 
             <div style={{ display: 'flex', gap: 10 }}>
-              <button
+              <a
                 className="app-action-button"
-                onClick={() => {
-                  setDetailPopup(null)
-                  navigate('/store-detail', { state: { store: detailPopup } })
-                }}
-                style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#f5f5f5', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600, color: '#555', fontFamily: 'inherit', cursor: 'pointer' }}
+                href={getKakaoMapUrl(detailPopup)}
+                target="_blank"
+                rel="noreferrer"
+                style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#f5f5f5', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#555', fontFamily: 'inherit', cursor: 'pointer' }}
               >
                 지도에서 보기
-              </button>
+              </a>
               <a
                 className="app-action-button"
                 href={`tel:${detailPopup.kakaoResult?.phone || detailPopup.phone}`}
