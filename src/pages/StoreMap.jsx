@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock, Plus, Trash2, MessageSquareText, Pencil } from 'lucide-react'
 import TopBar from '../components/TopBar'
+import SelectField from '../components/SelectField'
 import { fetchPlaces } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
 import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
@@ -783,41 +784,14 @@ export default function StoreMap() {
               />
             </label>
 
-            <label style={{ display: 'block', marginBottom: 14 }}>
-              <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>카테고리</span>
-              <div style={{ position: 'relative' }}>
-                <select
-                  value={newPlace.category}
-                  onChange={event => setNewPlace(current => ({ ...current, category: event.target.value }))}
-                  style={{
-                    width: '100%',
-                    height: 48,
-                    boxSizing: 'border-box',
-                    appearance: 'none',
-                    WebkitAppearance: 'none',
-                    borderRadius: 14,
-                    border: '1.5px solid #e4e6e2',
-                    padding: '0 42px 0 14px',
-                    background: '#FFFFFF',
-                    color: '#333',
-                    fontFamily: 'inherit',
-                    fontSize: 14,
-                    outline: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {USER_PLACE_CATEGORIES.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={18}
-                  color="#076818"
-                  strokeWidth={2.3}
-                  style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
-                />
-              </div>
-            </label>
+            <div style={{ marginBottom: 14 }}>
+              <SelectField
+                label="카테고리"
+                value={newPlace.category}
+                onChange={category => setNewPlace(current => ({ ...current, category }))}
+                options={USER_PLACE_CATEGORIES.map(category => ({ value: category, label: category }))}
+              />
+            </div>
 
             <label style={{ display: 'block', marginBottom: 8 }}>
               <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>메모 <span style={{ color: '#888', fontWeight: 500 }}>(선택)</span></span>
