@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock, Plus, Trash2 } from 'lucide-react'
+import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock, Plus, Trash2, MessageSquareText } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import { fetchPlaces } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
@@ -69,7 +69,7 @@ export default function StoreMap() {
   const [addPlaceLoading, setAddPlaceLoading] = useState(false)
   const [addPlaceError, setAddPlaceError] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
-  const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '' })
+  const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '', memo: '' })
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
   const relatedPolicy = state?.policy || null
@@ -270,6 +270,7 @@ export default function StoreMap() {
       category: '부동산',
       address: '',
       phone: '',
+      memo: '',
     })
     setAddPlaceOpen(true)
   }
@@ -349,6 +350,7 @@ export default function StoreMap() {
       category: newPlace.category || '동네 정보',
       address: position.address || newPlace.address.trim(),
       phone: newPlace.phone.trim() || position.phone || '',
+      memo: newPlace.memo.trim(),
       hours: '사용자가 추가한 장소',
       lat: position.lat,
       lng: position.lng,
@@ -720,6 +722,17 @@ export default function StoreMap() {
               />
             </label>
 
+            <label style={{ display: 'block', marginBottom: 14 }}>
+              <span style={{ display: 'block', marginBottom: 7, fontSize: 13, fontWeight: 650, color: '#333' }}>메모 <span style={{ color: '#888', fontWeight: 500 }}>(선택)</span></span>
+              <textarea
+                value={newPlace.memo}
+                onChange={event => setNewPlace(current => ({ ...current, memo: event.target.value }))}
+                placeholder="이 장소에 대한 정보를 간단히 적어주세요."
+                rows={3}
+                style={{ width: '100%', minHeight: 72, boxSizing: 'border-box', resize: 'vertical', borderRadius: 14, border: '1.5px solid #e4e6e2', padding: '12px 14px', fontFamily: 'inherit', fontSize: 14, lineHeight: 1.5, outline: 'none' }}
+              />
+            </label>
+
             <div style={{ marginBottom: 8 }}>
               <span style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 650, color: '#333' }}>카테고리</span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
@@ -847,6 +860,7 @@ export default function StoreMap() {
                 {[
                   { Icon: MapPin, value: detailPopup.kakaoResult?.address || detailPopup.address },
                   { Icon: Phone, value: detailPopup.kakaoResult?.phone || detailPopup.phone },
+                  { Icon: MessageSquareText, value: detailPopup.memo },
                   { Icon: Clock, value: detailPopup.hours },
                 ].filter(({ value }) => value).map(({ Icon, value }) => (
                   <div key={value} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
