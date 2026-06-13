@@ -432,8 +432,11 @@ function hasValue(value) {
 
 function isCompleteDate(value, precision = 'day') {
   const digits = getDateDigits(value)
-  const expectedLength = precision === 'month' ? 6 : 8
-  if (digits.length !== expectedLength) return false
+  if (precision === 'month') {
+    if (digits.length !== 6 && digits.length !== 8) return false
+  } else if (digits.length !== 8) {
+    return false
+  }
   const year = Number(digits.slice(0, 4))
   const month = Number(digits.slice(4, 6))
   if (year < 1900 || month < 1 || month > 12) return false
