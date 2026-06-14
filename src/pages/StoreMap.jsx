@@ -18,7 +18,7 @@ function haversine(lat1, lng1, lat2, lng2) {
   return d < 1000 ? `${Math.round(d)}m` : `${(d/1000).toFixed(1)}km`
 }
 
-const COLLAPSED_H = 160
+const COLLAPSED_H = 320
 const EXPANDED_H = 440
 const CUSTOM_PLACES_KEY = 'okcheon-custom-places'
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
