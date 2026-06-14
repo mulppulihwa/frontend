@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowUpDown, Bell, BellRing, Check, ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, Bell, BellRing, Check, ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
@@ -53,7 +53,7 @@ function comparePolicyTitles(a, b) {
   return String(a.title || '').localeCompare(String(b.title || ''), 'ko')
 }
 
-function compareByDeadline(a, b) {
+function compareByDeadline(a, b, reversed = false) {
   const aDeadline = getDeadlineTimestamp(a)
   const bDeadline = getDeadlineTimestamp(b)
 
@@ -65,14 +65,29 @@ function compareByDeadline(a, b) {
   const bExpired = bDeadline < PAGE_LOADED_AT
 
   if (aExpired !== bExpired) return aExpired ? 1 : -1
-  if (aDeadline !== bDeadline) return aExpired ? bDeadline - aDeadline : aDeadline - bDeadline
+  if (aDeadline !== bDeadline) {
+    const deadlineOrder = aExpired ? bDeadline - aDeadline : aDeadline - bDeadline
+    return reversed ? -deadlineOrder : deadlineOrder
+  }
   return comparePolicyTitles(a, b)
 }
 
-function compareByRecentlyAdded(a, b) {
-  const aAdded = getDateTimestamp(a.addedAt) ?? 0
-  const bAdded = getDateTimestamp(b.addedAt) ?? 0
-  return bAdded - aAdded || comparePolicyTitles(a, b)
+function compareByRecentlyAdded(a, b, reversed = false) {
+  const aAdded = getDateTimestamp(a.addedAt)
+  const bAdded = getDateTimestamp(b.addedAt)
+
+  if (aAdded === null && bAdded === null) return comparePolicyTitles(a, b)
+  if (aAdded === null) return 1
+  if (bAdded === null) return -1
+
+  const addedOrder = bAdded - aAdded
+  return (reversed ? -addedOrder : addedOrder) || comparePolicyTitles(a, b)
+}
+
+function getSortDirectionLabel(sort, reversed) {
+  if (sort === 'deadline') return reversed ? '마감 여유순' : '마감 빠른순'
+  if (sort === 'recent') return reversed ? '오래된순' : '최신순'
+  return reversed ? '역순' : '가나다순'
 }
 
 function readNotificationStatus() {
@@ -271,6 +286,7 @@ export default function GrantStatus() {
   const [notificationStatus, setNotificationStatus] = useState(() => readNotificationStatus())
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('deadline')
+  const [sortReversed, setSortReversed] = useState(false)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const statusProgress = useLoadingProgress(loading)
@@ -352,10 +368,12 @@ export default function GrantStatus() {
   const grants = grantsData.map(g => ({ ...g, status: statuses[g.id] }))
   const isAll = activeFilter === '전체'
   const sortFn = sort === 'deadline'
-    ? compareByDeadline
+    ? (a, b) => compareByDeadline(a, b, sortReversed)
     : sort === 'recent'
-      ? compareByRecentlyAdded
-      : comparePolicyTitles
+      ? (a, b) => compareByRecentlyAdded(a, b, sortReversed)
+      : (a, b) => (sortReversed ? -1 : 1) * comparePolicyTitles(a, b)
+  const sortDirectionLabel = getSortDirectionLabel(sort, sortReversed)
+  const directionPointsUp = sort === 'recent' ? sortReversed : !sortReversed
   const filtered = (isAll
     ? grants
     : activeFilter === '미입력'
@@ -476,6 +494,7 @@ export default function GrantStatus() {
                   aria-pressed={selected}
                   onClick={() => {
                     setSort(option.key)
+                    setSortReversed(false)
                     setPage(1)
                   }}
                   style={{
@@ -500,6 +519,36 @@ export default function GrantStatus() {
               )
             })}
           </div>
+          <button
+            type="button"
+            aria-label={`정렬 방향 변경, 현재 ${sortDirectionLabel}`}
+            onClick={() => {
+              setSortReversed(value => !value)
+              setPage(1)
+            }}
+            style={{
+              minWidth: 92,
+              minHeight: 44,
+              padding: '0 10px',
+              border: '1px solid #d9e3d5',
+              borderRadius: 12,
+              background: '#fff',
+              color: '#076818',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 5,
+              fontFamily: 'inherit',
+              fontSize: 12.5,
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            {directionPointsUp ? <ArrowUp size={14} strokeWidth={2.4} /> : <ArrowDown size={14} strokeWidth={2.4} />}
+            {sortDirectionLabel}
+          </button>
         </div>
 
         {statusProgress.visible && (
