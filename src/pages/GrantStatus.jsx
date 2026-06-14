@@ -466,55 +466,39 @@ export default function GrantStatus() {
         <div
           aria-label="정렬 방식"
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0, 1fr) 42px',
+            display: 'flex',
             alignItems: 'center',
+            justifyContent: 'flex-end',
             gap: 6,
-            padding: 4,
-            borderRadius: 14,
-            background: '#f1f2ee',
             marginBottom: -12,
           }}
         >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-            gap: 2,
-          }}>
-            {sortOptions.map(option => {
-              const selected = sort === option.key
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() => {
-                    setSort(option.key)
-                    setSortReversed(false)
-                    setPage(1)
-                  }}
-                  style={{
-                    minWidth: 0,
-                    minHeight: 36,
-                    padding: '0 3px',
-                    border: selected ? '1px solid #cfe0ca' : '1px solid transparent',
-                    borderRadius: 10,
-                    background: selected ? '#fff' : 'transparent',
-                    boxShadow: selected ? '0 1px 4px rgba(31, 65, 31, 0.08)' : 'none',
-                    color: selected ? '#076818' : '#555',
-                    fontFamily: 'inherit',
-                    fontSize: 12.5,
-                    fontWeight: selected ? 750 : 550,
-                    whiteSpace: 'nowrap',
-                    cursor: selected ? 'default' : 'pointer',
-                    transition: 'background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease',
-                  }}
-                >
-                  {option.label}
-                </button>
-              )
-            })}
-          </div>
+          <select
+            aria-label="정렬 기준"
+            value={sort}
+            onChange={event => {
+              setSort(event.target.value)
+              setSortReversed(false)
+              setPage(1)
+            }}
+            style={{
+              width: 112,
+              height: 36,
+              padding: '0 28px 0 11px',
+              border: '1px solid #dfe4dc',
+              borderRadius: 10,
+              background: '#fff',
+              color: '#333',
+              fontFamily: 'inherit',
+              fontSize: 12.5,
+              fontWeight: 650,
+              cursor: 'pointer',
+            }}
+          >
+            {sortOptions.map(option => (
+              <option key={option.key} value={option.key}>{option.label}</option>
+            ))}
+          </select>
           <button
             type="button"
             aria-label={`정렬 방향 변경, 현재 ${sortDirectionLabel}`}
@@ -524,12 +508,12 @@ export default function GrantStatus() {
             }}
             title={sortDirectionLabel}
             style={{
-              width: 38,
+              width: 36,
               height: 36,
               padding: 0,
-              border: 'none',
+              border: '1px solid #dfe4dc',
               borderRadius: 10,
-              background: '#076818',
+              background: '#fff',
               color: '#076818',
               display: 'inline-flex',
               alignItems: 'center',
@@ -540,8 +524,8 @@ export default function GrantStatus() {
             }}
           >
             {directionPointsUp
-              ? <ArrowUp size={17} color="#fff" strokeWidth={2.5} />
-              : <ArrowDown size={17} color="#fff" strokeWidth={2.5} />}
+              ? <ArrowUp size={16} color="#076818" strokeWidth={2.4} />
+              : <ArrowDown size={16} color="#076818" strokeWidth={2.4} />}
           </button>
         </div>
 
