@@ -152,7 +152,7 @@ function DiagnosedPolicyCard({ policy, checklistItems, navigate }) {
         </div>
         <MiniRing done={progress.done} total={progress.total} />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 14 }}>
+      <div style={{ display: 'flex', width: '100%', marginTop: 14 }}>
         <PreparationButton
           onClick={() => navigate(`/checklist?policyId=${encodeURIComponent(policy.id)}`, { state: { grant: policy } })}
         />

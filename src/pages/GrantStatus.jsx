@@ -86,7 +86,7 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified
 
       <div style={{ borderTop: '1px solid rgba(218,231,211,0.6)', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         <StatusCheckboxes value={status} onChange={onStatusChange} />
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', width: '100%' }}>
           <PreparationButton
             onClick={e => { e.stopPropagation(); navigate(`/checklist?policyId=${encodeURIComponent(grant.id)}`, { state: { grant } }) }}
           />
