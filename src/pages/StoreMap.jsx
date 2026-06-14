@@ -592,9 +592,15 @@ export default function StoreMap() {
                     position: 'relative',
                     borderRadius: 18, marginBottom: 10,
                     background: '#fff',
-                    border: `1.5px solid ${isSelected || isHovered ? '#076818' : '#ebebeb'}`,
+                    border: `1px solid ${isSelected ? 'rgba(7,104,24,0.55)' : 'transparent'}`,
+                    boxShadow: isSelected
+                      ? '0 7px 20px rgba(7,104,24,0.12)'
+                      : isHovered
+                        ? '0 8px 22px rgba(31,45,35,0.11)'
+                        : '0 3px 14px rgba(31,45,35,0.07)',
                     cursor: 'pointer', overflow: 'hidden',
-                    transition: 'border-color 0.18s ease, background-color 0.18s ease',
+                    transition: 'border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease',
+                    transform: isHovered ? 'translateY(-1px)' : 'translateY(0)',
                   }}
                 >
                   {store.userAdded && (
