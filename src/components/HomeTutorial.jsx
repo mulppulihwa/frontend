@@ -31,7 +31,7 @@ function createSteps(userName) {
     },
     {
       selector: '[data-tutorial="map-navigation"]',
-      eyebrow: '지역 정착 가이드맵',
+      eyebrow: '우리 마을 정착 지도',
       title: '행정복지센터부터 동호회 장소까지 성공적인 옥천 정착을 돕는 지도예요.',
       description: '',
     },

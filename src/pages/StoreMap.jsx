@@ -426,7 +426,7 @@ export default function StoreMap() {
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100dvh - 70px - env(safe-area-inset-bottom))', overflow: 'hidden', background: '#f0f0f0' }}>
 
       <div style={{ background: '#FDFCF8' }}>
-        <TopBar title="지역 정착 가이드맵" />
+        <TopBar title="우리 마을 정착 지도" />
       </div>
 
       {/* Map */}
