@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowDown, ArrowUp, ArrowUpDown, Bell, BellRing, Check, ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
+import { ArrowDown, ArrowUp, Bell, BellRing, Check, ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
@@ -466,24 +466,20 @@ export default function GrantStatus() {
         <div
           aria-label="정렬 방식"
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            marginBottom: -12,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0, color: '#555' }}>
-            <ArrowUpDown size={15} strokeWidth={2.2} />
-            <span style={{ fontSize: 13, fontWeight: 700 }}>정렬</span>
-          </div>
-          <div style={{
-            flex: 1,
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-            gap: 4,
+            gridTemplateColumns: 'minmax(0, 1fr) 42px',
+            alignItems: 'center',
+            gap: 6,
             padding: 4,
             borderRadius: 14,
             background: '#f1f2ee',
+            marginBottom: -12,
+          }}
+        >
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+            gap: 2,
           }}>
             {sortOptions.map(option => {
               const selected = sort === option.key
@@ -500,7 +496,7 @@ export default function GrantStatus() {
                   style={{
                     minWidth: 0,
                     minHeight: 36,
-                    padding: '0 5px',
+                    padding: '0 3px',
                     border: selected ? '1px solid #cfe0ca' : '1px solid transparent',
                     borderRadius: 10,
                     background: selected ? '#fff' : 'transparent',
@@ -526,28 +522,26 @@ export default function GrantStatus() {
               setSortReversed(value => !value)
               setPage(1)
             }}
+            title={sortDirectionLabel}
             style={{
-              minWidth: 92,
-              minHeight: 44,
-              padding: '0 10px',
-              border: '1px solid #d9e3d5',
-              borderRadius: 12,
-              background: '#fff',
+              width: 38,
+              height: 36,
+              padding: 0,
+              border: 'none',
+              borderRadius: 10,
+              background: '#076818',
               color: '#076818',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 5,
               fontFamily: 'inherit',
-              fontSize: 12.5,
-              fontWeight: 700,
-              whiteSpace: 'nowrap',
               cursor: 'pointer',
-              flexShrink: 0,
+              justifySelf: 'center',
             }}
           >
-            {directionPointsUp ? <ArrowUp size={14} strokeWidth={2.4} /> : <ArrowDown size={14} strokeWidth={2.4} />}
-            {sortDirectionLabel}
+            {directionPointsUp
+              ? <ArrowUp size={17} color="#fff" strokeWidth={2.5} />
+              : <ArrowDown size={17} color="#fff" strokeWidth={2.5} />}
           </button>
         </div>
 
