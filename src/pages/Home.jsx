@@ -302,7 +302,22 @@ function HomeCheckItem({ item, checked, onToggle }) {
     <button
       type="button"
       onClick={onToggle}
-      style={{ display: 'flex', alignItems: 'flex-start', gap: 10, border: 'none', background: 'transparent', padding: 0, textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit' }}
+      aria-pressed={checked}
+      style={{
+        width: '100%',
+        minHeight: 32,
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 10,
+        border: 'none',
+        borderRadius: 8,
+        background: 'transparent',
+        padding: '3px 2px',
+        textAlign: 'left',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        WebkitTapHighlightColor: 'transparent',
+      }}
     >
       <span style={{
         width: 22,
@@ -333,38 +348,51 @@ function HomeCheckItem({ item, checked, onToggle }) {
 function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete, loading = false }) {
   const [items, setItems] = useState(checklistItems)
   const [checked, setChecked] = useState({})
+  const checkedRef = useRef({})
   const [completeAnimation, setCompleteAnimation] = useState(false)
   const completedPolicyIdRef = useRef(null)
+  const itemReorderTimerRef = useRef(null)
   const [scheduleMessage] = useState(() => homeScheduleMessages[Math.floor(Math.random() * homeScheduleMessages.length)])
   const done = items.filter(item => !!checked[item.id]).length
   const total = items.length
-  const visibleItems = [
-    ...items.filter(item => !checked[item.id]),
-    ...items.filter(item => !!checked[item.id]),
-  ].slice(0, 3)
+  const visibleItems = items.slice(0, 3)
   const deadlineText = getDeadlineText(policy?.deadline)
 
   useEffect(() => {
+    window.clearTimeout(itemReorderTimerRef.current)
     completedPolicyIdRef.current = null
     setItems(checklistItems)
-    setChecked(loadStoredChecks(policy))
+    const storedChecks = loadStoredChecks(policy)
+    checkedRef.current = storedChecks
+    setChecked(storedChecks)
   }, [checklistItems, policy])
+
+  useEffect(() => () => window.clearTimeout(itemReorderTimerRef.current), [])
 
   useEffect(() => {
     if (!policy?.id || total === 0 || done !== total || completedPolicyIdRef.current === policy.id) return undefined
     completedPolicyIdRef.current = policy.id
-    setCompleteAnimation(true)
-    const animationTimer = window.setTimeout(() => setCompleteAnimation(false), 920)
-    const swapTimer = window.setTimeout(() => onComplete?.(policy), 360)
+    const animationStartTimer = window.setTimeout(() => setCompleteAnimation(true), 300)
+    const animationTimer = window.setTimeout(() => setCompleteAnimation(false), 1220)
+    const swapTimer = window.setTimeout(() => onComplete?.(policy), 660)
     return () => {
+      window.clearTimeout(animationStartTimer)
       window.clearTimeout(animationTimer)
       window.clearTimeout(swapTimer)
     }
   }, [done, onComplete, policy, total])
 
   const toggleItem = async (item) => {
-    const next = { ...checked, [item.id]: !checked[item.id] }
+    const next = { ...checkedRef.current, [item.id]: !checkedRef.current[item.id] }
+    checkedRef.current = next
     setChecked(next)
+    window.clearTimeout(itemReorderTimerRef.current)
+    itemReorderTimerRef.current = window.setTimeout(() => {
+      setItems(currentItems => [
+        ...currentItems.filter(currentItem => !next[currentItem.id]),
+        ...currentItems.filter(currentItem => !!next[currentItem.id]),
+      ])
+    }, 280)
     if (policy?.id) localStorage.setItem(`checklist-checked-${policy.id}`, JSON.stringify(next))
     if (policy?.id) localStorage.setItem(`home-checklist-total-${policy.id}`, total)
 
