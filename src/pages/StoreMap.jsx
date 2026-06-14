@@ -216,6 +216,7 @@ export default function StoreMap() {
         setSelectedStore(store)
         setSheetH(expandedHeight)
         map.panTo(position)
+        openDetail(store)
       })
       markersRef.current.push(marker)
     })
@@ -247,7 +248,7 @@ export default function StoreMap() {
 
   const activeCat = categories.find(c => c.id === activeCategory) || getPlaceCategoryMeta(activeCategory)
 
-  const openDetail = (store) => {
+  function openDetail(store) {
     setDetailPopup({ ...store, kakaoResult: null })
     setDetailLoading(true)
     if (window.kakao?.maps?.services) {
