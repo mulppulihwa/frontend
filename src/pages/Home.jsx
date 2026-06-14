@@ -163,13 +163,8 @@ function DiagnosedPolicyCard({ policy, checklistItems, navigate }) {
 
 function DiagnosedPolicies({ policies, checklistItemsByPolicy, navigate }) {
   const visiblePolicies = [...policies]
-    .sort((a, b) => {
-      const aStatus = a.user_status || a.status
-      const bStatus = b.user_status || b.status
-      const statusOrder = { 신청완료: 0, 신청예정: 1, 관심없음: 2 }
-      const statusDifference = (statusOrder[aStatus] ?? 3) - (statusOrder[bStatus] ?? 3)
-      return statusDifference || compareDeadlineUrgency(a, b)
-    })
+    .filter(policy => (policy.user_status || policy.status) === '신청예정')
+    .sort(compareDeadlineUrgency)
     .slice(0, 2)
 
   return (
@@ -193,7 +188,7 @@ function DiagnosedPolicies({ policies, checklistItemsByPolicy, navigate }) {
         ))}
         {visiblePolicies.length === 0 && (
           <div style={{ minHeight: 116, display: 'grid', placeItems: 'center', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 24, background: '#fff', color: '#888', fontSize: 13, fontWeight: 600 }}>
-            아직 진단 받은 정책이 없어요.
+            신청 예정인 정책이 없어요.
           </div>
         )}
       </div>
