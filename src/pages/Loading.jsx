@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
 import { fetchMatchedPolicies, fetchProfile } from '../lib/api'
@@ -73,10 +72,6 @@ export default function Loading() {
 
   return (
     <div className="loading-wave-page">
-      <div style={{ position: 'relative', zIndex: 2 }}>
-        <TopBar title="정보 입력" />
-      </div>
-
       <div style={{
         flex: 1,
         display: 'flex',
@@ -95,6 +90,7 @@ export default function Loading() {
               ? undefined
               : `${userName || '회원'}님이 받을 수 있는 지원금 총 ${matchedCount}개 찾았어요`}
             emphasizeDetail
+            fullPage
           />
         )}
       </div>
