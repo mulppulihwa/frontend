@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ChevronUp, ChevronDown, MapPin, Phone, Navigation, Search, X, Clock, Plus, Trash2, MessageSquareText, Pencil } from 'lucide-react'
+import { ChevronUp, ChevronDown, MapPin, Phone, Search, X, Clock, Plus, Trash2, MessageSquareText, Pencil } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import SelectField from '../components/SelectField'
 import { fetchPlaces } from '../lib/api'
@@ -676,7 +676,6 @@ export default function StoreMap() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: 7,
                         padding: '0 14px',
                         background: '#076818',
                         border: 'none',
@@ -685,7 +684,6 @@ export default function StoreMap() {
                         fontFamily: 'inherit',
                       }}
                     >
-                      <Navigation size={16} color="#FFFFFF" strokeWidth={2.5} />
                       <span style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF' }}>자세히 보기</span>
                     </button>
                   </div>
