@@ -25,6 +25,55 @@ const statusConfig = {
 
 const NOTIFICATION_STATUS_KEY = 'policyNotificationStatus'
 const POLICIES_PER_PAGE = 10
+const PAGE_LOADED_AT = Date.now()
+const PAGE_LOADED_DAY_START = new Date(PAGE_LOADED_AT)
+PAGE_LOADED_DAY_START.setHours(0, 0, 0, 0)
+const sortOptions = [
+  { key: 'deadline', label: '마감 임박' },
+  { key: 'recent', label: '최근 추가' },
+  { key: 'name', label: '이름순' },
+]
+
+function getDateTimestamp(dateLike) {
+  if (!dateLike) return null
+  const timestamp = new Date(dateLike).getTime()
+  return Number.isNaN(timestamp) ? null : timestamp
+}
+
+function getDeadlineTimestamp(grant) {
+  const deadlineTimestamp = getDateTimestamp(grant.deadline)
+  if (deadlineTimestamp !== null) return deadlineTimestamp
+
+  const countdownDays = Number(grant.countdown?.days ?? grant.days)
+  if (!Number.isFinite(countdownDays) || countdownDays <= 0) return null
+  return PAGE_LOADED_DAY_START.getTime() + countdownDays * 86400000
+}
+
+function comparePolicyTitles(a, b) {
+  return String(a.title || '').localeCompare(String(b.title || ''), 'ko')
+}
+
+function compareByDeadline(a, b) {
+  const aDeadline = getDeadlineTimestamp(a)
+  const bDeadline = getDeadlineTimestamp(b)
+
+  if (aDeadline === null && bDeadline === null) return comparePolicyTitles(a, b)
+  if (aDeadline === null) return 1
+  if (bDeadline === null) return -1
+
+  const aExpired = aDeadline < PAGE_LOADED_AT
+  const bExpired = bDeadline < PAGE_LOADED_AT
+
+  if (aExpired !== bExpired) return aExpired ? 1 : -1
+  if (aDeadline !== bDeadline) return aExpired ? bDeadline - aDeadline : aDeadline - bDeadline
+  return comparePolicyTitles(a, b)
+}
+
+function compareByRecentlyAdded(a, b) {
+  const aAdded = getDateTimestamp(a.addedAt) ?? 0
+  const bAdded = getDateTimestamp(b.addedAt) ?? 0
+  return bAdded - aAdded || comparePolicyTitles(a, b)
+}
 
 function readNotificationStatus() {
   try {
@@ -41,8 +90,9 @@ function formatAddedDate(dateLike) {
 }
 
 function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified }) {
-  const days = grant.countdown?.days ?? grant.days ?? 0
-  const dDayLabel = Number(days) === 0 ? '-' : `D-${days}`
+  const deadlineTimestamp = getDeadlineTimestamp(grant)
+  const days = deadlineTimestamp === null ? null : Math.ceil((deadlineTimestamp - PAGE_LOADED_AT) / 86400000)
+  const dDayLabel = days && days > 0 ? `D-${days}` : '-'
   const BellIcon = notified ? BellRing : Bell
 
   return (
@@ -220,7 +270,7 @@ export default function GrantStatus() {
   const [notificationModalMode, setNotificationModalMode] = useState('set')
   const [notificationStatus, setNotificationStatus] = useState(() => readNotificationStatus())
   const [query, setQuery] = useState('')
-  const [sort, setSort] = useState('마감순')
+  const [sort, setSort] = useState('deadline')
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const statusProgress = useLoadingProgress(loading)
@@ -301,9 +351,11 @@ export default function GrantStatus() {
 
   const grants = grantsData.map(g => ({ ...g, status: statuses[g.id] }))
   const isAll = activeFilter === '전체'
-  const sortFn = sort === '마감순'
-    ? (a, b) => a.days - b.days
-    : (a, b) => a.title.localeCompare(b.title, 'ko')
+  const sortFn = sort === 'deadline'
+    ? compareByDeadline
+    : sort === 'recent'
+      ? compareByRecentlyAdded
+      : comparePolicyTitles
   const filtered = (isAll
     ? grants
     : activeFilter === '미입력'
@@ -392,23 +444,62 @@ export default function GrantStatus() {
           })}
         </div>
 
-        {/* Sort toggle */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: -14 }}>
-          <button
-            onClick={() => {
-              setSort(s => s === '마감순' ? '가나다순' : '마감순')
-              setPage(1)
-            }}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              background: 'none', border: 'none', cursor: 'pointer',
-              fontFamily: 'inherit', fontSize: 13, fontWeight: 500, color: '#888',
-              padding: 0,
-            }}
-          >
-            <ArrowUpDown size={13} color="#aaa" strokeWidth={2.2} />
-            {sort}
-          </button>
+        {/* Sort selector */}
+        <div
+          aria-label="정렬 방식"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            marginBottom: -12,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0, color: '#555' }}>
+            <ArrowUpDown size={15} strokeWidth={2.2} />
+            <span style={{ fontSize: 13, fontWeight: 700 }}>정렬</span>
+          </div>
+          <div style={{
+            flex: 1,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+            gap: 4,
+            padding: 4,
+            borderRadius: 14,
+            background: '#f1f2ee',
+          }}>
+            {sortOptions.map(option => {
+              const selected = sort === option.key
+              return (
+                <button
+                  key={option.key}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => {
+                    setSort(option.key)
+                    setPage(1)
+                  }}
+                  style={{
+                    minWidth: 0,
+                    minHeight: 36,
+                    padding: '0 5px',
+                    border: selected ? '1px solid #cfe0ca' : '1px solid transparent',
+                    borderRadius: 10,
+                    background: selected ? '#fff' : 'transparent',
+                    boxShadow: selected ? '0 1px 4px rgba(31, 65, 31, 0.08)' : 'none',
+                    color: selected ? '#076818' : '#555',
+                    fontFamily: 'inherit',
+                    fontSize: 12.5,
+                    fontWeight: selected ? 750 : 550,
+                    whiteSpace: 'nowrap',
+                    cursor: selected ? 'default' : 'pointer',
+                    transition: 'background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease',
+                  }}
+                >
+                  {option.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {statusProgress.visible && (
