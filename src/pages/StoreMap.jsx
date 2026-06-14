@@ -630,38 +630,49 @@ export default function StoreMap() {
                       </button>
                     </div>
                   )}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 14px 12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '16px 14px 12px' }}>
                     <div style={{
                       width: 46, height: 46, borderRadius: 14, flexShrink: 0,
                       background: 'none',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      marginTop: 2,
                       transition: 'background 0.18s',
                     }}>
-                      <CatIcon size={22} color={activeCat.color} strokeWidth={2} />
+                      <CatIcon size={24} color={activeCat.color} strokeWidth={2.2} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0, paddingRight: store.userAdded ? 36 : 0 }}>
-                      <p style={{ fontSize: 15, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.3px', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <p style={{
+                        fontSize: 16,
+                        lineHeight: 1.35,
+                        fontWeight: 750,
+                        color: '#20242f',
+                        letterSpacing: '-0.2px',
+                        margin: '0 0 6px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}>
                         {store.name}
                       </p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#d98200' }}>★ {store.rating}</span>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>({store.reviews})</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 7, minHeight: 19 }}>
+                        <span style={{ fontSize: 13.5, lineHeight: 1, fontWeight: 750, color: '#d98200' }}>★ {store.rating}</span>
+                        <span style={{ fontSize: 12.5, lineHeight: 1, fontWeight: 550, color: '#555' }}>({store.reviews})</span>
                         {userPos && (
                           <>
                             <span style={{ fontSize: 12, color: '#777' }}>·</span>
-                            <span style={{ fontSize: 13, fontWeight: 600, color: '#444' }}>{haversine(userPos.lat, userPos.lng, store.lat, store.lng)}</span>
+                            <span style={{ fontSize: 13, lineHeight: 1, fontWeight: 650, color: '#3f3f3f' }}>{haversine(userPos.lat, userPos.lng, store.lat, store.lng)}</span>
                           </>
                         )}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
-                        <MapPin size={14} color="#555" strokeWidth={2.2} />
-                        <span style={{ fontSize: 13, fontWeight: 550, color: '#444', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '17px minmax(0, 1fr)', alignItems: 'center', columnGap: 6, marginBottom: 4 }}>
+                        <MapPin size={15} color="#555" strokeWidth={2.1} />
+                        <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 500, color: '#444', letterSpacing: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.address}
                         </span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Clock size={14} color="#555" strokeWidth={2.2} />
-                        <span style={{ fontSize: 13, fontWeight: 550, color: '#444', letterSpacing: '-0.1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '17px minmax(0, 1fr)', alignItems: 'center', columnGap: 6 }}>
+                        <Clock size={15} color="#555" strokeWidth={2.1} />
+                        <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 500, color: '#444', letterSpacing: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.hours}
                         </span>
                       </div>
