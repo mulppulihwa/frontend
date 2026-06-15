@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { ChevronUp, ChevronDown, MapPin, Phone, Search, X, Clock, Plus, Trash2, MessageSquareText, Pencil } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import SelectField from '../components/SelectField'
-import { fetchPlaces } from '../lib/api'
+import { createPlace, deletePlace, fetchPlaces, updatePlace } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
 import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 
@@ -20,9 +20,18 @@ function haversine(lat1, lng1, lat2, lng2) {
 
 const COLLAPSED_H = 320
 const EXPANDED_H = 440
-const CUSTOM_PLACES_KEY = 'okcheon-custom-places'
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
 const USER_PLACE_CATEGORIES = ['부동산', '동호회', '맛집']
+const API_PLACE_CATEGORY = {
+  부동산: '건축자재',
+  동호회: '생활',
+  맛집: '음식점',
+}
+const EDITABLE_PLACE_CATEGORY = {
+  건축자재: '부동산',
+  생활: '동호회',
+  음식점: '맛집',
+}
 
 function loadPostcodeScript() {
   if (window.kakao?.Postcode) return Promise.resolve()
@@ -39,15 +48,6 @@ function loadPostcodeScript() {
     script.onerror = () => reject(new Error('주소 검색을 불러오지 못했습니다.'))
     document.head.appendChild(script)
   })
-}
-
-function readCustomPlaces() {
-  try {
-    const places = JSON.parse(localStorage.getItem(CUSTOM_PLACES_KEY) || '[]')
-    return Array.isArray(places) ? places : []
-  } catch {
-    return []
-  }
 }
 
 function getKakaoMapUrl(place) {
@@ -76,6 +76,7 @@ export default function StoreMap() {
   const [addPlaceLoading, setAddPlaceLoading] = useState(false)
   const [addPlaceError, setAddPlaceError] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [deletePlaceLoading, setDeletePlaceLoading] = useState(false)
   const [editingPlaceId, setEditingPlaceId] = useState(null)
   const [hoveredPlaceId, setHoveredPlaceId] = useState(null)
   const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '', hours: '', memo: '' })
@@ -101,7 +102,7 @@ export default function StoreMap() {
     fetchPlaces()
       .then(places => {
         if (!active) return
-        const relatedPlaces = filterPlacesByPolicy([...places, ...readCustomPlaces()], relatedPolicy)
+        const relatedPlaces = filterPlacesByPolicy(places, relatedPolicy)
         setStores(relatedPlaces)
         const nextCategory = state?.store?.category || relatedPlaces[0]?.category || ''
         if (nextCategory) setActiveCategory(nextCategory)
@@ -293,7 +294,7 @@ export default function StoreMap() {
     setEditingPlaceId(store.id)
     setNewPlace({
       name: store.name || '',
-      category: store.category || '부동산',
+      category: EDITABLE_PLACE_CATEGORY[store.category] || store.category || '부동산',
       address: store.address || '',
       phone: store.phone || '',
       hours: store.hours === '사용자가 추가한 장소' ? '' : store.hours || '',
@@ -338,30 +339,23 @@ export default function StoreMap() {
   }
 
   const resolvePlacePosition = () => new Promise(resolve => {
-    const fallbackCenter = mapInstanceRef.current?.getCenter()
-    const fallback = {
-      lat: fallbackCenter?.getLat?.() || OKCHEON_CENTER.lat,
-      lng: fallbackCenter?.getLng?.() || OKCHEON_CENTER.lng,
-      address: newPlace.address,
-    }
-    if (!window.kakao?.maps?.services || (!newPlace.name && !newPlace.address)) {
-      resolve(fallback)
+    if (!window.kakao?.maps?.services || !newPlace.address) {
+      resolve(null)
       return
     }
 
-    const placesService = new window.kakao.maps.services.Places()
-    placesService.keywordSearch(
-      [newPlace.name, newPlace.address].filter(Boolean).join(' '),
+    const geocoder = new window.kakao.maps.services.Geocoder()
+    geocoder.addressSearch(
+      newPlace.address,
       (data, status) => {
         if (status !== window.kakao.maps.services.Status.OK || !data.length) {
-          resolve(fallback)
+          resolve(null)
           return
         }
         resolve({
           lat: Number(data[0].y),
           lng: Number(data[0].x),
-          address: data[0].road_address_name || data[0].address_name || newPlace.address,
-          phone: data[0].phone || '',
+          address: data[0].road_address?.address_name || data[0].address_name || newPlace.address,
         })
       },
     )
@@ -376,51 +370,60 @@ export default function StoreMap() {
 
     setAddPlaceLoading(true)
     setAddPlaceError('')
-    const position = await resolvePlacePosition()
-    const existingPlace = editingPlaceId
-      ? readCustomPlaces().find(place => place.id === editingPlaceId)
-      : null
-    const customPlace = {
-      ...existingPlace,
-      id: editingPlaceId || `custom-${Date.now()}`,
-      name: newPlace.name.trim(),
-      category: newPlace.category || '동네 정보',
-      address: position.address || newPlace.address.trim(),
-      phone: newPlace.phone.trim() || position.phone || '',
-      hours: newPlace.hours.trim() || '운영시간 확인 필요',
-      memo: newPlace.memo.trim(),
-      lat: position.lat,
-      lng: position.lng,
-      rating: 0,
-      reviews: 0,
-      userAdded: true,
+    try {
+      const position = await resolvePlacePosition()
+      if (!position) {
+        setAddPlaceError('주소의 위치를 찾지 못했어요. 주소를 다시 확인해 주세요.')
+        return
+      }
+
+      const payload = {
+        name: newPlace.name.trim(),
+        category: API_PLACE_CATEGORY[newPlace.category] || newPlace.category,
+        address: position.address || newPlace.address.trim(),
+        phone: newPlace.phone.trim(),
+        business_hours: newPlace.hours.trim(),
+        local_memo: newPlace.memo.trim(),
+        lat: position.lat,
+        lng: position.lng,
+      }
+      const savedPlace = editingPlaceId
+        ? await updatePlace(editingPlaceId, payload)
+        : await createPlace(payload)
+
+      setStores(current => editingPlaceId
+        ? current.map(place => String(place.id) === String(editingPlaceId) ? savedPlace : place)
+        : [...current, savedPlace])
+      setActiveCategory(savedPlace.category)
+      setSelectedStore(savedPlace)
+      setSheetH(expandedHeight)
+      setAddPlaceOpen(false)
+      setEditingPlaceId(null)
+      window.setTimeout(() => {
+        mapInstanceRef.current?.panTo(new window.kakao.maps.LatLng(savedPlace.lat, savedPlace.lng))
+      }, 80)
+    } catch (error) {
+      setAddPlaceError(error.message || '장소 정보를 저장하지 못했습니다.')
+    } finally {
+      setAddPlaceLoading(false)
     }
-    const savedPlaces = editingPlaceId
-      ? readCustomPlaces().map(place => place.id === editingPlaceId ? customPlace : place)
-      : [...readCustomPlaces(), customPlace]
-    localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(savedPlaces))
-    setStores(current => editingPlaceId
-      ? current.map(place => place.id === editingPlaceId ? customPlace : place)
-      : [...current, customPlace])
-    setActiveCategory(customPlace.category)
-    setSelectedStore(customPlace)
-    setSheetH(expandedHeight)
-    setAddPlaceLoading(false)
-    setAddPlaceOpen(false)
-    setEditingPlaceId(null)
-    window.setTimeout(() => {
-      mapInstanceRef.current?.panTo(new window.kakao.maps.LatLng(customPlace.lat, customPlace.lng))
-    }, 80)
   }
 
-  const handleDeletePlace = () => {
-    if (!deleteTarget?.id) return
-    const nextCustomPlaces = readCustomPlaces().filter(place => place.id !== deleteTarget.id)
-    localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(nextCustomPlaces))
-    setStores(current => current.filter(place => place.id !== deleteTarget.id))
-    if (selectedStore?.id === deleteTarget.id) setSelectedStore(null)
-    if (detailPopup?.id === deleteTarget.id) setDetailPopup(null)
-    setDeleteTarget(null)
+  const handleDeletePlace = async () => {
+    if (!deleteTarget?.id || deletePlaceLoading) return
+    setDeletePlaceLoading(true)
+    try {
+      await deletePlace(deleteTarget.id)
+      setStores(current => current.filter(place => String(place.id) !== String(deleteTarget.id)))
+      if (String(selectedStore?.id) === String(deleteTarget.id)) setSelectedStore(null)
+      if (String(detailPopup?.id) === String(deleteTarget.id)) setDetailPopup(null)
+      setDeleteTarget(null)
+    } catch (error) {
+      setAddPlaceError(error.message || '장소를 삭제하지 못했습니다.')
+      setDeleteTarget(null)
+    } finally {
+      setDeletePlaceLoading(false)
+    }
   }
 
   return (
@@ -887,6 +890,7 @@ export default function StoreMap() {
                 className="app-action-button"
                 type="button"
                 onClick={() => setDeleteTarget(null)}
+                disabled={deletePlaceLoading}
                 style={{ minHeight: 44, borderRadius: 999, border: '1.5px solid #dfe4dc', background: '#FFFFFF', color: '#555', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
               >
                 취소
@@ -895,9 +899,10 @@ export default function StoreMap() {
                 className="app-action-button"
                 type="button"
                 onClick={handleDeletePlace}
-                style={{ minHeight: 44, borderRadius: 999, border: 'none', background: '#d93025', color: '#FFFFFF', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+                disabled={deletePlaceLoading}
+                style={{ minHeight: 44, borderRadius: 999, border: 'none', background: '#d93025', color: '#FFFFFF', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: deletePlaceLoading ? 'wait' : 'pointer', opacity: deletePlaceLoading ? 0.65 : 1 }}
               >
-                삭제
+                {deletePlaceLoading ? '삭제 중...' : '삭제'}
               </button>
             </div>
           </div>

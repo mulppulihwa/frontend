@@ -205,12 +205,15 @@ export function normalizePlace(place, index = 0) {
     name: place.name || place.title || `사용처 ${index + 1}`,
     address: place.address || place.road_address || place.road_address_name || '',
     phone: place.phone || place.tel || '',
-    hours: place.hours || place.opening_hours || '운영시간 확인 필요',
+    hours: place.hours || place.business_hours || place.opening_hours || '운영시간 확인 필요',
+    memo: place.memo || place.local_memo || '',
     lat: Number(place.lat ?? place.latitude ?? place.y),
     lng: Number(place.lng ?? place.longitude ?? place.x),
     rating: place.rating ?? 4.0,
     reviews: place.reviews ?? 0,
     category,
+    userAdded: place.userAdded ?? place.is_owner ?? false,
+    isOwner: place.is_owner ?? place.userAdded ?? false,
   }
 }
 
@@ -244,6 +247,30 @@ export async function fetchRegions() {
 export async function fetchPlaces() {
   const data = await request('/api/places/')
   return toArray(data).map(normalizePlace).filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng))
+}
+
+export async function createPlace(place) {
+  const data = await request('/api/places/', {
+    method: 'POST',
+    body: JSON.stringify(place),
+  })
+  return normalizePlace(data)
+}
+
+export async function updatePlace(placeId, place) {
+  if (!placeId) throw new Error('수정할 장소 ID가 없습니다.')
+  const data = await request(`/api/places/${placeId}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(place),
+  })
+  return normalizePlace(data)
+}
+
+export async function deletePlace(placeId) {
+  if (!placeId) throw new Error('삭제할 장소 ID가 없습니다.')
+  return request(`/api/places/${placeId}/`, {
+    method: 'DELETE',
+  })
 }
 
 export async function fetchProfile() {
