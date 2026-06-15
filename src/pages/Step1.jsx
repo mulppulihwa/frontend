@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { MapPin } from 'lucide-react'
+import { Check, MapPin } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import StepIndicator from '../components/StepIndicator'
 import SelectField from '../components/SelectField'
@@ -385,36 +385,35 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
                 padding: '0 14px',
                 border: `1.5px solid ${active ? '#076818' : '#e4e6e2'}`,
                 borderRadius: 14,
-                background: active ? '#f1f7f1' : '#fff',
+                background: active ? '#f3f8f2' : '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 8,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 fontSize: 14,
-                fontWeight: active ? 650 : 400,
+                fontWeight: active ? 600 : 400,
                 color: active ? '#076818' : '#333',
                 letterSpacing: '-0.2px',
                 textAlign: 'center',
-                boxShadow: active ? '0 2px 8px rgba(7,104,24,0.08)' : 'none',
+                boxShadow: active ? '0 2px 8px rgba(7,104,24,0.06)' : 'none',
+                position: 'relative',
                 transition: 'border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, color 0.18s ease',
               }}
             >
-              <span
-                aria-hidden="true"
-                style={{
-                  width: 16,
-                  height: 16,
-                  flexShrink: 0,
-                  borderRadius: '50%',
-                  border: `1.5px solid ${active ? '#076818' : '#cfd3ce'}`,
-                  background: active ? '#076818' : '#fff',
-                  boxShadow: active ? 'inset 0 0 0 4px #f1f7f1' : 'none',
-                  transition: 'border-color 0.18s ease, background 0.18s ease',
-                }}
-              />
               {opt.label}
+              {active && (
+                <Check
+                  aria-hidden="true"
+                  size={16}
+                  strokeWidth={2.5}
+                  style={{
+                    position: 'absolute',
+                    right: 14,
+                    color: '#076818',
+                  }}
+                />
+              )}
             </button>
           )
         })}
