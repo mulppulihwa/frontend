@@ -1,26 +1,47 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Check, Banknote, ClipboardCheck, Calendar, Phone, MousePointerClick, ArrowUpRight, GraduationCap, FileText } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
+import { fetchPolicyDetail } from '../lib/api'
 
 const sections = [
   { title: '지원 내용', icon: Banknote, items: ['농업 창업 비용 최대 300만원 지원'], type: 'bullet' },
   { title: '신청 자격', icon: ClipboardCheck, items: ['귀농 3년 이내', '만 18세 이상', '옥천군 거주'], type: 'check' },
   { title: '신청 기간', icon: Calendar, items: ['2026.04.01 ~ 06.30'], type: 'bullet' },
   { title: '담당 기관', icon: Phone, items: [{ text: '옥천군 농업기술센터', phone: '043-730-XXXX' }], type: 'contact' },
-  { title: '신청 요건', icon: GraduationCap, items: ['귀농교육 100시간 이상 이수'], type: 'requirement', link: { label: '교육이수 페이지 바로가기', href: 'https://agriedu.net/' } },
+  { title: '신청 요건', icon: GraduationCap, items: ['귀농교육 100시간 이상 이수'], type: 'requirement' },
   { title: '신청 서류', icon: FileText, items: ['주민등록등본', '귀농교육 이수서', '소득분의 증명서'], type: 'bullet' },
   { title: '신청 방법', icon: MousePointerClick, items: ['인터넷, 방문, FAX, 우편, 무인발급기'], type: 'bullet' },
 ]
 
+function getPolicySourceLink(grant) {
+  const source = String(grant?.source || '').trim()
+  const href = grant?.source_url || grant?.sourceUrl || ''
+  const searchable = `${source} ${href}`.toLowerCase()
+
+  let label = source
+  if (searchable.includes('greendaero') || searchable.includes('그린대로') || source === '귀농센터') {
+    label = '그린대로 > 종합정보'
+  } else if (searchable.includes('data.go.kr') || searchable.includes('공공데이터') || source === '복지로') {
+    label = '공공데이터포털'
+  } else if (searchable.includes('옥천') || searchable.includes('oc.go.kr') || source === '수동입력') {
+    label = '옥천군청'
+  }
+
+  if (!label) return null
+  return { label, href }
+}
+
 function buildSections(grant) {
   if (!grant) return sections
+  const sourceLink = getPolicySourceLink(grant)
   return [
     { title: '지원 내용', icon: Banknote, items: [grant.summary || grant.subtitle || '지원 내용을 확인해 주세요'], type: 'bullet' },
     { title: '신청 자격', icon: ClipboardCheck, items: grant.reasons?.length ? grant.reasons : ['신청 자격을 확인해 주세요'], type: 'check' },
     { title: '신청 기간', icon: Calendar, items: [grant.period || '신청 기간 확인'], type: 'bullet' },
     { title: '담당 기관', icon: Phone, items: [{ text: grant.agency || '담당 기관 확인', phone: grant.phone || (grant.agency?.match(/\(([0-9-]+)\)/)?.[1]) || null }], type: 'contact' },
-    { title: '신청 요건', icon: GraduationCap, items: ['세부 요건은 담당 기관 공고를 확인해 주세요'], type: 'requirement', link: { label: '교육이수 페이지 바로가기', href: 'https://agriedu.net/' } },
+    { title: '신청 요건', icon: GraduationCap, items: ['세부 요건은 정보 출처에서 확인해 주세요'], type: 'requirement', link: sourceLink },
     { title: '신청 서류', icon: FileText, items: ['주민등록등본', '귀농교육 이수서', '소득분위 증명서'], type: 'bullet' },
     { title: '신청 방법', icon: MousePointerClick, items: ['방문 또는 담당 기관 안내에 따라 신청'], type: 'bullet' },
   ]
@@ -28,9 +49,32 @@ function buildSections(grant) {
 
 export default function Detail() {
   const { state } = useLocation()
-  const navigate = useNavigate()
-  const grant = state?.grant
-  const detailSections = buildSections(grant)
+  const initialGrant = state?.grant
+  const [grant, setGrant] = useState(initialGrant)
+
+  useEffect(() => {
+    if (!initialGrant?.id) return
+
+    let cancelled = false
+    fetchPolicyDetail(initialGrant.id)
+      .then(detail => {
+        if (cancelled) return
+        setGrant({
+          ...initialGrant,
+          ...detail,
+          reasons: initialGrant.reasons?.length ? initialGrant.reasons : detail.reasons,
+        })
+      })
+      .catch(error => {
+        console.warn('[Detail] 정책 상세 정보를 불러오지 못했습니다.', error)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [initialGrant])
+
+  const detailSections = useMemo(() => buildSections(grant), [grant])
 
   return (
     <div
@@ -117,17 +161,25 @@ export default function Detail() {
                   </div>
                 ))}
                 {section.link && (
-                  <a
-                    href={section.link.href}
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
-                      fontSize: 14, fontWeight: 500, color: '#076818', textDecoration: 'none',
-                      marginTop: 2,
-                    }}
-                  >
-                    {section.link.label}
-                    <ArrowUpRight size={15} color="#076818" strokeWidth={2.2} />
-                  </a>
+                  section.link.href ? (
+                    <a
+                      href={section.link.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
+                        fontSize: 14, fontWeight: 500, color: '#076818', textDecoration: 'none',
+                        marginTop: 2,
+                      }}
+                    >
+                      {section.link.label}
+                      <ArrowUpRight size={15} color="#076818" strokeWidth={2.2} />
+                    </a>
+                  ) : (
+                    <span style={{ fontSize: 14, fontWeight: 500, color: '#076818', marginTop: 2 }}>
+                      {section.link.label}
+                    </span>
+                  )
                 )}
               </div>
             )}
