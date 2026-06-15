@@ -18,6 +18,11 @@ function haversine(lat1, lng1, lat2, lng2) {
   return d < 1000 ? `${Math.round(d)}m` : `${(d/1000).toFixed(1)}km`
 }
 
+function toApiCoordinate(value) {
+  const coordinate = Number(value)
+  return Number.isFinite(coordinate) ? coordinate.toFixed(7) : null
+}
+
 const COLLAPSED_H = 320
 const EXPANDED_H = 440
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
@@ -384,8 +389,8 @@ export default function StoreMap() {
         phone: newPlace.phone.trim(),
         business_hours: newPlace.hours.trim(),
         local_memo: newPlace.memo.trim(),
-        lat: position.lat,
-        lng: position.lng,
+        lat: toApiCoordinate(position.lat),
+        lng: toApiCoordinate(position.lng),
       }
       const savedPlace = editingPlaceId
         ? await updatePlace(editingPlaceId, payload)
