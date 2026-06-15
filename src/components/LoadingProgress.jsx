@@ -92,7 +92,7 @@ export default function LoadingProgress({ progress, label, detail, emphasizeDeta
           fontSize: fullPage ? 20 : 13,
           fontWeight: fullPage ? 800 : 750,
           color: fullPage ? '#000' : value === 100 ? '#076818' : '#5f625d',
-          textAlign: 'right',
+          textAlign: fullPage ? 'center' : 'right',
         }}>
           {value}%
         </strong>
