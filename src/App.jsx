@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Outlet, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Navigate, Outlet, Routes, Route, useLocation } from 'react-router-dom'
 import Login from './pages/Login'
 import Step1 from './pages/Step1'
 import Step2 from './pages/Step2'
@@ -22,10 +22,13 @@ function RequireAuth({ children }) {
 }
 
 function AppWithNav() {
+  const { pathname } = useLocation()
+  const hideBottomNav = ['/step1', '/step2', '/loading', '/results'].includes(pathname)
+
   return (
     <RequireAuth>
       <Outlet />
-      <BottomNav />
+      {!hideBottomNav && <BottomNav />}
     </RequireAuth>
   )
 }
