@@ -366,18 +366,17 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
       <label style={labelStyle}>{label}</label>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+        gap: 4,
+        padding: 4,
+        borderRadius: 16,
+        background: '#f3f4f1',
+        border: '1px solid #e7e9e4',
+      }}>
         {options.map(opt => {
           const active = value === opt.value
-          const tone = opt.value ? {
-            bg: '#f0f7f0',
-            border: '#076818',
-            color: '#076818',
-          } : {
-            bg: '#fff4e5',
-            border: '#FFA100',
-            color: '#FFA100',
-          }
           return (
             <button
               key={String(opt.value)}
@@ -388,21 +387,22 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
                 height: 48,
                 minHeight: 48,
                 padding: '0 14px',
-                border: `1.5px solid ${active ? tone.border : '#e4e6e2'}`,
-                borderRadius: 14,
-                background: active ? tone.bg : '#fff',
+                border: 'none',
+                borderRadius: 12,
+                background: active ? '#076818' : 'transparent',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 fontSize: 14,
-                fontWeight: 400,
-                color: active ? tone.color : '#1a1a1a',
+                fontWeight: active ? 650 : 500,
+                color: active ? '#fff' : '#555',
                 letterSpacing: '-0.2px',
                 textAlign: 'center',
-                boxShadow: 'none',
-                transition: 'border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease, color 0.15s ease',
+                boxShadow: active ? '0 3px 10px rgba(7,104,24,0.18)' : 'none',
+                transition: 'background 0.18s ease, box-shadow 0.18s ease, color 0.18s ease, transform 0.18s ease',
+                transform: active ? 'translateY(-1px)' : 'none',
               }}
             >
               {opt.label}
