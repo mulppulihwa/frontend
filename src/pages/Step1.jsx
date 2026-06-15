@@ -369,11 +369,7 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-        gap: 4,
-        padding: 4,
-        borderRadius: 16,
-        background: '#f3f4f1',
-        border: '1px solid #e7e9e4',
+        gap: 8,
       }}>
         {options.map(opt => {
           const active = value === opt.value
@@ -387,24 +383,37 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
                 height: 48,
                 minHeight: 48,
                 padding: '0 14px',
-                border: 'none',
-                borderRadius: 12,
-                background: active ? '#076818' : 'transparent',
+                border: `1.5px solid ${active ? '#076818' : '#e4e6e2'}`,
+                borderRadius: 14,
+                background: active ? '#f1f7f1' : '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                gap: 8,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 fontSize: 14,
-                fontWeight: active ? 650 : 500,
-                color: active ? '#fff' : '#555',
+                fontWeight: active ? 650 : 400,
+                color: active ? '#076818' : '#333',
                 letterSpacing: '-0.2px',
                 textAlign: 'center',
-                boxShadow: active ? '0 3px 10px rgba(7,104,24,0.18)' : 'none',
-                transition: 'background 0.18s ease, box-shadow 0.18s ease, color 0.18s ease, transform 0.18s ease',
-                transform: active ? 'translateY(-1px)' : 'none',
+                boxShadow: active ? '0 2px 8px rgba(7,104,24,0.08)' : 'none',
+                transition: 'border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, color 0.18s ease',
               }}
             >
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 16,
+                  height: 16,
+                  flexShrink: 0,
+                  borderRadius: '50%',
+                  border: `1.5px solid ${active ? '#076818' : '#cfd3ce'}`,
+                  background: active ? '#076818' : '#fff',
+                  boxShadow: active ? 'inset 0 0 0 4px #f1f7f1' : 'none',
+                  transition: 'border-color 0.18s ease, background 0.18s ease',
+                }}
+              />
               {opt.label}
             </button>
           )
