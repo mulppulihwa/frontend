@@ -126,7 +126,7 @@ export default function Results() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#FDFCF8' }}>
+    <div className="results-page">
       <div style={{ background: '#FDFCF8' }}>
         <TopBar
           title="내 지원금"
@@ -138,19 +138,20 @@ export default function Results() {
         />
       </div>
 
+      <div className="results-content">
       {/* Indicator + Header */}
-      <div style={{ padding: '12px 18px 10px' }}>
-        <div style={{ marginBottom: 12 }}>
+      <div className="results-header">
+        <div className="results-progress">
           <StepIndicator current={index + 1} total={total} />
         </div>
         <div style={{ textAlign: 'center', lineHeight: 1.45 }}>
-          <p style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px', animation: 'fadeUp 0.5s ease both' }}>
+          <p className="results-heading">
             관심있는 정책이라면,
             <br />
             현재 상태를 알려주세요.
           </p>
         </div>
-        <div style={{ textAlign: 'center', marginTop: 10 }}>
+        <div className="results-completion">
           {(() => {
             const unchecked = total - Object.values(statuses).filter(v => v !== null).length
             return unchecked > 0
@@ -164,7 +165,7 @@ export default function Results() {
         </div>
       </div>
 
-      <div style={{ width: '80%', maxWidth: 344, margin: '0 auto', padding: '0 0 222px', flex: 1, overflowX: 'hidden' }}>
+      <div className="results-stage">
         {!loading && loadError && (
           <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45 }}>
@@ -184,15 +185,8 @@ export default function Results() {
         {!loading && !loadError && grant && (
         <div
           key={index}
-          style={{
-            minHeight: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12,
-            justifyContent: 'center',
-            animation: `${pageDirection === 'next' ? 'cardSlideFromRight' : 'cardSlideFromLeft'} 0.34s cubic-bezier(0.22, 1, 0.36, 1) both`,
-            willChange: 'transform, opacity',
-          }}
+          className="results-card-stack"
+          style={{ animation: `${pageDirection === 'next' ? 'cardSlideFromRight' : 'cardSlideFromLeft'} 0.34s cubic-bezier(0.22, 1, 0.36, 1) both` }}
         >
 
         <GrantResultCard
@@ -201,7 +195,7 @@ export default function Results() {
         />
 
         {/* Status card */}
-        <div style={{ background: '#fff', borderRadius: 22, border: '1.5px solid #e8e8e8', padding: '10px 14px' }}>
+        <div className="results-status-card">
           <p style={{ fontSize: 13, fontWeight: 500, color: '#1a1a1a', marginBottom: 8, letterSpacing: '-0.1px' }}>지원현황을 체크해주세요</p>
           <StatusCheckboxes
             value={statuses[grant.id] ?? null}
@@ -219,7 +213,7 @@ export default function Results() {
       </div>
 
       {!loading && !loadError && grant && (
-      <div style={{ position: 'fixed', bottom: 'calc(70px + env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)', width: '80%', maxWidth: 344, boxSizing: 'border-box', padding: '12px 0 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#FDFCF8', boxShadow: '0 -18px 28px rgba(253,252,248,0.92)', zIndex: 50 }}>
+      <div className="results-actions">
         <button
           className="app-action-button"
           type="button"
@@ -264,6 +258,7 @@ export default function Results() {
         </button>
       </div>
       )}
+      </div>
 
       <Toast visible={toastVisible} />
     </div>

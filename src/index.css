@@ -37,6 +37,143 @@ input:focus-visible {
   margin-right: auto;
 }
 
+.results-page {
+  height: calc(100dvh - 70px - env(safe-area-inset-bottom));
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #fdfcf8;
+}
+
+.results-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 12px;
+}
+
+.results-header {
+  flex-shrink: 0;
+  padding: 8px 18px 8px;
+}
+
+.results-progress {
+  margin-bottom: 8px;
+}
+
+.results-heading {
+  color: #1a1a1a;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  animation: fadeUp 0.5s ease both;
+}
+
+.results-completion {
+  margin-top: 7px;
+  text-align: center;
+}
+
+.results-stage {
+  width: 80%;
+  max-width: 344px;
+  flex: 1;
+  min-height: 0;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.results-card-stack {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(260px, 330px) 82px;
+  align-content: space-between;
+  gap: 10px;
+  will-change: transform, opacity;
+}
+
+.results-status-card {
+  height: 82px;
+  overflow: hidden;
+  padding: 10px 14px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 22px;
+  background: #fff;
+}
+
+.results-actions {
+  width: 80%;
+  max-width: 344px;
+  flex-shrink: 0;
+  margin: 10px auto 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-height: 740px) {
+  .results-header {
+    padding-top: 4px;
+    padding-bottom: 5px;
+  }
+
+  .results-progress {
+    margin-bottom: 4px;
+  }
+
+  .results-heading {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .results-completion {
+    margin-top: 5px;
+  }
+
+  .results-card-stack {
+    grid-template-rows: minmax(270px, 1fr) 76px;
+    gap: 8px;
+  }
+
+  .grant-result-card {
+    padding: 14px 16px 10px !important;
+  }
+
+  .grant-result-card__header {
+    min-height: 60px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .grant-result-card__amount {
+    min-height: 34px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .grant-result-card__reason {
+    height: 64px !important;
+    margin-bottom: 6px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .grant-result-card__dates {
+    padding-top: 4px !important;
+  }
+
+  .results-status-card {
+    height: 76px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .results-actions {
+    margin-top: 7px;
+  }
+}
+
 .detail-scroll-page {
   scrollbar-width: thin;
   scrollbar-color: #d9d6cf transparent;
