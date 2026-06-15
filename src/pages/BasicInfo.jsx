@@ -46,6 +46,12 @@ function formatBoolean(value) {
   return ''
 }
 
+function formatResidenceType(value) {
+  if (value === true || value === '농촌' || value === '읍면') return '농촌'
+  if (value === false || value === '도시' || value === '동') return '도시'
+  return ''
+}
+
 function formatDateValue(value, precision = 'day') {
   const digits = String(value || '').replace(/\D/g, '')
   if (precision === 'month') {
@@ -179,6 +185,12 @@ export default function BasicInfo() {
         const resolvedName = localProfile.name || findDisplayName(data) || findDisplayName(p) || getKakaoUserName()
         if (resolvedName) setName(resolvedName)
         if (p.birth_date || p.birthDate) setBirthDate(p.birth_date || p.birthDate)
+        if (p.prev_residence_is_rural !== undefined && p.prev_residence_is_rural !== null) {
+          setDiagnosisInfo(current => ({
+            ...current,
+            previousResidenceIsRural: p.prev_residence_is_rural,
+          }))
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -297,7 +309,13 @@ export default function BasicInfo() {
               </div>
               <ReadOnlyRow label="현재 거주지" value={diagnosisInfo.location || diagnosisInfo.region} />
               <ReadOnlyRow label="옥천 이사 날짜" value={formatDateValue(diagnosisInfo.movedAt, 'month')} />
-              <ReadOnlyRow label="이전 거주지" value={diagnosisInfo.previousResidence} />
+              <ReadOnlyRow
+                label="이전 거주지 유형"
+                value={formatResidenceType(
+                  diagnosisInfo.previousResidenceIsRural
+                    ?? diagnosisInfo.previousResidenceType
+                )}
+              />
               <ReadOnlyRow label="이전 거주 시작일" value={formatDateValue(diagnosisInfo.previousSince, 'month')} />
               <ReadOnlyRow label="현재 직업" value={diagnosisInfo.job} />
               <ReadOnlyRow label="농사 여부" value={formatBoolean(diagnosisInfo.farming)} />

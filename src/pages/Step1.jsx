@@ -17,9 +17,14 @@ function classifyResidenceType(bname1) {
   return /(읍|면)$/.test(bname1 || '') ? '읍면' : '동'
 }
 
-function inferResidenceType(address) {
-  if (!hasValue(address)) return ''
-  return /(?:^|\s)\S*(?:읍|면)(?=\s|$)/.test(String(address).trim()) ? '읍면' : '동'
+function normalizePreviousResidenceIsRural(value, address = '') {
+  if (value === true || value === false) return value
+  if (value === '농촌' || value === '읍면') return true
+  if (value === '도시' || value === '동') return false
+  if (hasValue(address)) {
+    return /(?:^|\s)\S*(?:읍|면)(?=\s|$)/.test(String(address).trim())
+  }
+  return null
 }
 
 function loadPostcodeScript() {
@@ -552,7 +557,9 @@ function normalizeProfileResponse(profile) {
     farmBusiness: firstValue(profileData, ['is_farm_registered', 'farmBusiness']),
     outsideIncome: firstValue(profileData, ['non_farm_income', 'outsideIncome']),
     regionCode: firstValue(profileData, ['region_code', 'regionCode']),
-    previousResidenceType: firstValue(profileData, ['prev_residence_type', 'previousResidenceType']),
+    previousResidenceIsRural: normalizePreviousResidenceIsRural(
+      firstValue(profileData, ['prev_residence_is_rural', 'previousResidenceIsRural', 'prev_residence_type', 'previousResidenceType'])
+    ),
   }
 }
 
@@ -568,8 +575,7 @@ export default function Step1() {
   const [farmingDate, setFarmingDate] = useState('')
   const [location, setLocation] = useState('')
   const [movedAt, setMovedAt] = useState('')
-  const [previousResidence, setPreviousResidence] = useState('')
-  const [previousResidenceType, setPreviousResidenceType] = useState('')
+  const [previousResidenceIsRural, setPreviousResidenceIsRural] = useState(null)
   const [previousSince, setPreviousSince] = useState('')
   const [job, setJob] = useState('')
   const [farmBusiness, setFarmBusiness] = useState(null)
@@ -581,7 +587,6 @@ export default function Step1() {
   const [submitError, setSubmitError] = useState('')
   const [dateWarning, setDateWarning] = useState('')
   const dateWarningTimer = useRef(null)
-  const resolvedPreviousResidenceType = previousResidenceType || inferResidenceType(previousResidence)
   const [profileNotice, setProfileNotice] = useState(
     locationState?.profileIncompleteReason === 'match-profile-incomplete'
       ? locationState?.profileIncompleteMessage || ''
@@ -656,8 +661,13 @@ export default function Step1() {
     setFarmingDate(saved.farmingDate ?? farmingDate)
     setLocation(saved.location ?? location)
     if (restoreRelocationDates) setMovedAt(saved.movedAt ?? movedAt)
-    setPreviousResidence(saved.previousResidence ?? previousResidence)
-    setPreviousResidenceType(saved.previousResidenceType ?? previousResidenceType)
+    const savedPreviousResidenceIsRural = normalizePreviousResidenceIsRural(
+      saved.previousResidenceIsRural ?? saved.previousResidenceType,
+      saved.previousResidence
+    )
+    if (savedPreviousResidenceIsRural !== null) {
+      setPreviousResidenceIsRural(savedPreviousResidenceIsRural)
+    }
     if (restoreRelocationDates) setPreviousSince(saved.previousSince ?? previousSince)
     setJob(saved.job ?? job)
     setFarmBusiness(saved.farmBusiness ?? farmBusiness)
@@ -673,7 +683,9 @@ export default function Step1() {
     if (normalized.movedAt) setMovedAt(normalized.movedAt)
     if (normalized.farmBusiness !== '') setFarmBusiness(Boolean(normalized.farmBusiness))
     if (normalized.outsideIncome !== '') setOutsideIncome(normalizeOutsideIncome(normalized.outsideIncome))
-    if (normalized.previousResidenceType) setPreviousResidenceType(normalized.previousResidenceType)
+    if (normalized.previousResidenceIsRural !== null) {
+      setPreviousResidenceIsRural(normalized.previousResidenceIsRural)
+    }
 
     const regionName = regions.find(({ code }) => String(code) === String(normalized.regionCode))?.name
     if (regionName) {
@@ -735,8 +747,7 @@ export default function Step1() {
   const saveProgress = (currentPage) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       page: currentPage, birthDate, age, gender, nationality, farming,
-      farmingDate, location, movedAt, previousResidence,
-      previousResidenceType: resolvedPreviousResidenceType,
+      farmingDate, location, movedAt, previousResidenceIsRural,
       previousSince,
       job, farmBusiness, outsideIncome, region,
     }))
@@ -785,7 +796,7 @@ export default function Step1() {
       is_farm_registered: farmBusiness,
       farm_registered_date: farmBusiness ? toApiDate(movedAt, 'month') : null,
       is_disabled: false,
-      prev_residence_type: resolvedPreviousResidenceType,
+      prev_residence_is_rural: previousResidenceIsRural,
     }
   }
 
@@ -799,7 +810,7 @@ export default function Step1() {
       income_level: payload.income_level,
       is_farm_registered: payload.is_farm_registered,
       move_in_date: payload.move_in_date,
-      prev_residence_type: payload.prev_residence_type,
+      prev_residence_is_rural: payload.prev_residence_is_rural,
     }
     const minimalPayload = {
       birth_date: payload.birth_date,
@@ -807,7 +818,7 @@ export default function Step1() {
       region_code: payload.region_code,
       occupation_tags: payload.occupation_tags,
       income_level: payload.income_level,
-      prev_residence_type: payload.prev_residence_type,
+      prev_residence_is_rural: payload.prev_residence_is_rural,
     }
     const payloads = [payload, fallbackPayload, minimalPayload]
     let lastError = null
@@ -835,7 +846,7 @@ export default function Step1() {
         const relocationDateError = getRelocationDateError(location, movedAt, previousSince)
         return hasValue(location)
           && isCompleteDate(movedAt, 'month')
-          && hasValue(previousResidence)
+          && previousResidenceIsRural !== null
           && isCompleteDate(previousSince, 'month')
           && !relocationDateError
       }
@@ -853,7 +864,7 @@ export default function Step1() {
     if (pageNumber !== 2) return isPageComplete(pageNumber)
     return hasValue(location)
       && isCompleteDate(movedAt, 'month')
-      && hasValue(previousResidence)
+      && previousResidenceIsRural !== null
       && isCompleteDate(previousSince, 'month')
   }
 
@@ -886,8 +897,7 @@ export default function Step1() {
         localStorage.removeItem(STORAGE_KEY)
         localStorage.setItem(SUBMITTED_PROFILE_KEY, JSON.stringify({
           birthDate, age, gender, nationality, farming,
-          farmingDate, location, movedAt, previousResidence,
-          previousResidenceType: resolvedPreviousResidenceType,
+          farmingDate, location, movedAt, previousResidenceIsRural,
           previousSince,
           job, farmBusiness, outsideIncome, region,
         }))
@@ -966,13 +976,15 @@ export default function Step1() {
                   precision="month"
                   onValidate={value => validateRelocationDate('옥천군 이사 날짜', value)}
                 />
-                <AddressSearchField
-                  label={isMovePlanned ? '현재 거주지는 어디인가요?' : '이전 거주지는 어디인가요?'}
-                  value={previousResidence}
-                  onSelect={({ address, residenceType }) => {
-                    setPreviousResidence(address)
-                    setPreviousResidenceType(residenceType)
-                  }}
+                <SelectField
+                  label="이전 거주지는 어디에 더 가까웠나요?"
+                  value={previousResidenceIsRural}
+                  onChange={setPreviousResidenceIsRural}
+                  options={[
+                    { value: false, label: '도시' },
+                    { value: true, label: '농촌' },
+                  ]}
+                  placeholder="이전 거주지 유형 선택"
                 />
                 <DateSelectField
                   label={isMovePlanned ? '현재 거주지에서 언제부터 거주하셨나요?' : '이전 거주지에서 언제부터 거주하셨나요?'}
