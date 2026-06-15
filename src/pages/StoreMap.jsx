@@ -4,7 +4,7 @@ import { ChevronUp, ChevronDown, MapPin, Phone, Search, X, Clock, Plus, Trash2, 
 import TopBar from '../components/TopBar'
 import SelectField from '../components/SelectField'
 import { createPlace, deletePlace, fetchPlaces, updatePlace } from '../lib/api'
-import { getPlaceCategories, getPlaceCategoryMeta } from '../lib/placeCategories'
+import { getPlaceCategories, getPlaceCategoryMeta, PLACE_CATEGORIES } from '../lib/placeCategories'
 import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
@@ -26,13 +26,16 @@ function toApiCoordinate(value) {
 const COLLAPSED_H = 320
 const EXPANDED_H = 440
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
-const USER_PLACE_CATEGORIES = ['부동산', '동호회', '맛집']
+const USER_PLACE_CATEGORIES = PLACE_CATEGORIES.map(category => category.id)
 const API_PLACE_CATEGORY = {
+  행정: '행정',
   부동산: '건축자재',
   동호회: '생활',
   맛집: '음식점',
+  생활: '생활',
 }
 const EDITABLE_PLACE_CATEGORY = {
+  행정: '행정',
   건축자재: '부동산',
   생활: '동호회',
   음식점: '맛집',
@@ -299,7 +302,10 @@ export default function StoreMap() {
     setEditingPlaceId(store.id)
     setNewPlace({
       name: store.name || '',
-      category: EDITABLE_PLACE_CATEGORY[store.category] || store.category || '부동산',
+      category: EDITABLE_PLACE_CATEGORY[store.sourceCategory]
+        || EDITABLE_PLACE_CATEGORY[store.category]
+        || store.category
+        || '부동산',
       address: store.address || '',
       phone: store.phone || '',
       hours: store.hours === '사용자가 추가한 장소' ? '' : store.hours || '',

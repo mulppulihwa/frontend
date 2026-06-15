@@ -1,3 +1,5 @@
+import { normalizePlaceCategory } from './placeCategories'
+
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
 const SAVED_POLICY_CACHE_KEY = 'savedPolicyCache'
@@ -198,7 +200,8 @@ export function normalizePolicy(policy, index = 0) {
 }
 
 export function normalizePlace(place, index = 0) {
-  const category = place.category || place.type || place.benefit_type || ''
+  const sourceCategory = place.category || place.type || place.benefit_type || ''
+  const category = normalizePlaceCategory(sourceCategory)
   return {
     ...place,
     id: place.id ?? index + 1,
@@ -212,6 +215,7 @@ export function normalizePlace(place, index = 0) {
     rating: place.rating ?? 4.0,
     reviews: place.reviews ?? 0,
     category,
+    sourceCategory,
     userAdded: place.userAdded ?? place.is_owner ?? false,
     isOwner: place.is_owner ?? place.userAdded ?? false,
   }
