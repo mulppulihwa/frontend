@@ -52,8 +52,8 @@ function DateSelectField({ label, value, onChange, precision = 'day', onValidate
   const inputValue = formatDateDigits(value, precision)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <label style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>{label}</label>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+      <label style={labelStyle}>{label}</label>
       <input
         className="diagnosis-date-input"
         type="text"
@@ -70,12 +70,13 @@ function DateSelectField({ label, value, onChange, precision = 'day', onValidate
         aria-label={`${label} ${precision === 'month' ? '여섯 자리' : '여덟 자리'} 숫자 입력`}
         style={{
           width: '100%',
-          minHeight: 46,
-          padding: '13px 16px',
+          height: 48,
+          minHeight: 48,
+          padding: '0 14px',
           boxSizing: 'border-box',
-          border: `1.5px solid ${focused ? '#076818' : '#e8e8e8'}`,
+          border: `1.5px solid ${focused ? '#076818' : '#e4e6e2'}`,
           borderRadius: 14,
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: 400,
           color: inputValue ? '#1a1a1a' : '#aaa',
           background: '#fff',
@@ -83,7 +84,7 @@ function DateSelectField({ label, value, onChange, precision = 'day', onValidate
           outline: 'none',
           letterSpacing: '0',
           textAlign: 'left',
-          boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
+          boxShadow: focused ? '0 0 0 2px rgba(7,104,24,0.08)' : 'none',
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         }}
       />
@@ -129,11 +130,13 @@ function WarningToast({ message }) {
 
 const textInputStyle = {
   width: '100%',
-  padding: '9px 12px',
+  height: 48,
+  minHeight: 48,
+  padding: '0 14px',
   boxSizing: 'border-box',
-  border: '1.5px solid #e8e8e8',
-  borderRadius: 12,
-  fontSize: 15,
+  border: '1.5px solid #e4e6e2',
+  borderRadius: 14,
+  fontSize: 14,
   fontWeight: 400,
   color: '#1a1a1a',
   background: '#fff',
@@ -144,8 +147,8 @@ const textInputStyle = {
 
 const labelStyle = {
   fontSize: 13,
-  fontWeight: 400,
-  color: '#1a1a1a',
+  fontWeight: 650,
+  color: '#333',
   letterSpacing: '-0.1px',
 }
 
@@ -194,7 +197,7 @@ function TextField({ label, value, onChange, placeholder, type = 'text', min, ma
   const isDate = type === 'date'
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
       <label style={labelStyle}>{label}</label>
       <div style={{ position: 'relative' }}>
         <input
@@ -209,10 +212,9 @@ function TextField({ label, value, onChange, placeholder, type = 'text', min, ma
           onBlur={() => setFocused(false)}
           style={{
             ...textInputStyle,
-            minHeight: 46,
-            paddingRight: suffix ? 40 : 12,
-            borderColor: focused ? '#076818' : '#e8e8e8',
-            boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
+            paddingRight: suffix ? 40 : 14,
+            borderColor: focused ? '#076818' : '#e4e6e2',
+            boxShadow: focused ? '0 0 0 2px rgba(7,104,24,0.08)' : 'none',
             transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
             colorScheme: 'light',
             cursor: isDate ? 'pointer' : 'text',
@@ -272,7 +274,7 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
       <label style={labelStyle}>{label}</label>
       <button
         type="button"
@@ -281,11 +283,12 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
         onBlur={() => setFocused(false)}
         style={{
           width: '100%',
-          minHeight: 46,
-          padding: '9px 12px',
-          border: `1.5px solid ${focused ? '#076818' : '#e8e8e8'}`,
-          borderRadius: 12,
-          fontSize: 15,
+          height: 48,
+          minHeight: 48,
+          padding: '0 14px',
+          border: `1.5px solid ${focused ? '#076818' : '#e4e6e2'}`,
+          borderRadius: 14,
+          fontSize: 14,
           color: '#1a1a1a',
           background: '#fff',
           fontFamily: 'inherit',
@@ -300,7 +303,7 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
           textAlign: 'left',
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
           boxSizing: 'border-box',
-          boxShadow: focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
+          boxShadow: focused ? '0 0 0 2px rgba(7,104,24,0.08)' : 'none',
         }}
       >
         <span style={{ color: value ? '#1a1a1a' : '#aaa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -361,9 +364,9 @@ function AddressSearchField({ label, value, onSelect, placeholder = '주소 검�
 
 function RadioGroup({ label, value, onChange, options = radioRows }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
       <label style={labelStyle}>{label}</label>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
         {options.map(opt => {
           const active = value === opt.value
           const tone = opt.value ? {
@@ -382,10 +385,11 @@ function RadioGroup({ label, value, onChange, options = radioRows }) {
               onClick={() => onChange(opt.value)}
               aria-pressed={active}
               style={{
-                minHeight: 46,
-                padding: '0 12px',
-                border: `1.5px solid ${active ? tone.border : '#e8e8e8'}`,
-                borderRadius: 12,
+                height: 48,
+                minHeight: 48,
+                padding: '0 14px',
+                border: `1.5px solid ${active ? tone.border : '#e4e6e2'}`,
+                borderRadius: 14,
                 background: active ? tone.bg : '#fff',
                 display: 'flex',
                 alignItems: 'center',

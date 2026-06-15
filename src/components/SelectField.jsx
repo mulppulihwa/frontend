@@ -15,9 +15,9 @@ export default function SelectField({ label, value, options, onChange, required,
   const selected = options.find(o => o.value === value)
 
   return (
-    <div ref={ref} style={{ display: 'flex', flexDirection: 'column', gap: 6, position: 'relative' }}>
+    <div ref={ref} style={{ display: 'flex', flexDirection: 'column', gap: 7, position: 'relative' }}>
       {label && (
-        <label style={{ fontSize: 13, fontWeight: 400, color: '#1a1a1a', letterSpacing: '-0.1px' }}>
+        <label style={{ fontSize: 13, fontWeight: 650, color: '#333', letterSpacing: '-0.1px' }}>
           {label}{required && <span style={{ color: '#e53e3e', marginLeft: 2 }}>*</span>}
         </label>
       )}
@@ -28,11 +28,12 @@ export default function SelectField({ label, value, options, onChange, required,
         onClick={() => setOpen(o => !o)}
         style={{
           width: '100%',
-          minHeight: 46,
-          padding: '9px 12px',
-          border: `1.5px solid ${open || focused ? '#076818' : '#e8e8e8'}`,
-          borderRadius: 12,
-          fontSize: 15,
+          height: 48,
+          minHeight: 48,
+          padding: '0 14px',
+          border: `1.5px solid ${open || focused ? '#076818' : '#e4e6e2'}`,
+          borderRadius: 14,
+          fontSize: 14,
           color: '#1a1a1a',
           background: '#fff',
           fontFamily: 'inherit',
@@ -46,7 +47,7 @@ export default function SelectField({ label, value, options, onChange, required,
           textAlign: 'left',
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
           boxSizing: 'border-box',
-          boxShadow: open || focused ? '0 0 0 4px rgba(45,106,45,0.08)' : 'none',
+          boxShadow: open || focused ? '0 0 0 2px rgba(7,104,24,0.08)' : 'none',
         }}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
@@ -70,8 +71,8 @@ export default function SelectField({ label, value, options, onChange, required,
           left: 0,
           right: 0,
           background: '#fff',
-          borderRadius: 18,
-          border: '1.5px solid #e8e8e8',
+          borderRadius: 14,
+          border: '1.5px solid #e4e6e2',
           boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
           zIndex: 200,
           overflow: 'hidden',
@@ -94,11 +95,12 @@ export default function SelectField({ label, value, options, onChange, required,
                 onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = '#fff' }}
                 style={{
                   width: '100%',
-                  padding: '13px 16px',
+                  minHeight: 44,
+                  padding: '11px 14px',
                   border: 'none',
                   borderTop: i > 0 ? '1px solid #f4f4f4' : 'none',
                   background: isSelected ? '#f0f7f0' : '#fff',
-                  fontSize: 15,
+                  fontSize: 14,
                   fontFamily: 'inherit',
                   fontWeight: isSelected ? 500 : 400,
                   color: opt.disabled ? '#aaa' : isSelected ? '#076818' : '#1a1a1a',
