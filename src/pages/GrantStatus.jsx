@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowDown, ArrowUp, Bell, BellRing, Check, ChevronLeft, ChevronRight, HelpCircle, Search, X } from 'lucide-react'
+import { ArrowDown, ArrowUp, Bell, BellRing, Check, ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import PreparationButton from '../components/PreparationButton'
-import GrantStatusTutorial from '../components/GrantStatusTutorial'
 import okcheonCharacter from '../assets/okcheon-character.png'
 import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
@@ -128,7 +127,6 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified
           </p>
         </div>
         <button
-          data-tutorial="gs-bell"
           type="button"
           aria-label={notified ? '알림 설정됨' : '알림 받기'}
           onClick={e => { e.stopPropagation(); onNotify() }}
@@ -152,9 +150,7 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified
       </div>
 
       <div style={{ borderTop: '1px solid rgba(218,231,211,0.6)', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div data-tutorial="gs-status">
-          <StatusCheckboxes value={status} onChange={onStatusChange} />
-        </div>
+        <StatusCheckboxes value={status} onChange={onStatusChange} />
         <div style={{ display: 'flex', width: '100%' }}>
           <PreparationButton
             onClick={e => { e.stopPropagation(); navigate(`/checklist?policyId=${encodeURIComponent(grant.id)}`, { state: { grant } }) }}
@@ -295,7 +291,6 @@ export default function GrantStatus() {
   const [loading, setLoading] = useState(true)
   const statusProgress = useLoadingProgress(loading)
   const [error, setError] = useState('')
-  const [tutorialOpen, setTutorialOpen] = useState(false)
   const [userName, setUserName] = useState(getKakaoUserName)
   const toastTimer = useRef(null)
 
@@ -405,27 +400,13 @@ export default function GrantStatus() {
 
       <div style={{ padding: '12px 18px 100px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
-        <div style={{ position: 'relative', textAlign: 'center', lineHeight: 1.55, padding: '4px 0 0' }}>
+        <div style={{ textAlign: 'center', lineHeight: 1.55, padding: '4px 0 0' }}>
           <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
             {userName || '내'}님의 <span style={{ color: '#076818' }}>지원 현황</span>은
           </p>
           <p style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
             다음과 같아요
           </p>
-          <button
-            type="button"
-            aria-label="사용 가이드 보기"
-            onClick={() => setTutorialOpen(true)}
-            style={{
-              position: 'absolute', top: 0, right: 0,
-              width: 34, height: 34, borderRadius: '50%',
-              border: '1.5px solid #e0ead9', background: '#f4f9f2',
-              color: '#076818', display: 'inline-flex',
-              alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            }}
-          >
-            <HelpCircle size={17} strokeWidth={2.2} />
-          </button>
         </div>
 
         {/* Search box */}
@@ -447,7 +428,7 @@ export default function GrantStatus() {
           )}
         </div>
 
-        <div data-tutorial="gs-filters" style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
           {filters.map(f => {
             const active = activeFilter === f.key
             const count = f.key === '전체'
@@ -685,7 +666,6 @@ export default function GrantStatus() {
 
       <Toast visible={toastVisible} />
       <NotificationSetModal visible={notificationModalVisible} mode={notificationModalMode} onClose={() => setNotificationModalVisible(false)} />
-      {tutorialOpen && <GrantStatusTutorial onFinish={() => setTutorialOpen(false)} />}
     </div>
   )
 }
