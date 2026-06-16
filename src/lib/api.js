@@ -3,6 +3,15 @@ import { normalizePlaceCategory } from './placeCategories'
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
 const SAVED_POLICY_CACHE_KEY = 'savedPolicyCache'
+const SAVED_POLICIES_LIST_KEY = 'savedPoliciesList'
+
+export function getCachedSavedPolicies() {
+  try {
+    return JSON.parse(localStorage.getItem(SAVED_POLICIES_LIST_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
 
 export function getAccessToken() {
   return localStorage.getItem('accessToken') || localStorage.getItem('access') || localStorage.getItem('token')
@@ -345,11 +354,17 @@ export async function fetchSavedPolicies() {
 
   // Final dedup by id, in case of any remaining stale cache collisions
   const seen = new Set()
-  return [...policies, ...cachedPolicies].filter(p => {
+  const result = [...policies, ...cachedPolicies].filter(p => {
     if (seen.has(String(p.id))) return false
     seen.add(String(p.id))
     return true
   })
+
+  try {
+    localStorage.setItem(SAVED_POLICIES_LIST_KEY, JSON.stringify(result))
+  } catch { /* 스토리지 용량 초과 시 무시 */ }
+
+  return result
 }
 
 export async function savePolicy(policyId) {
