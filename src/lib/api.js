@@ -303,12 +303,9 @@ function removeMyPlaceId(id) {
 }
 
 export async function fetchPlaces() {
-  console.log('[fetchPlaces] token:', getAccessToken()?.slice(0, 20))
   const data = await request('/api/places/')
   const myIds = getMyPlaceIds()
-  const places = toArray(data)
-  console.log('[fetchPlaces] raw is_owner values:', places.map(p => ({ id: p.id, name: p.name, is_owner: p.is_owner })))
-  return places
+  return toArray(data)
     .map(place => normalizePlace({ ...place, is_owner: place.is_owner || myIds.has(String(place.id)) }))
     .filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng))
 }
