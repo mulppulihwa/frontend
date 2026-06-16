@@ -188,7 +188,7 @@ export function normalizePolicy(policy, index = 0) {
     agency: policy.managing_org || policy.agency || policy.organization || '담당 기관 확인',
     reasons: policy.match_reason
       ? policy.match_reason.split(',').map(s => s.trim()).filter(Boolean)
-      : [summary, policy.benefit_type].filter(Boolean),
+      : [summary].filter(Boolean),
     period: deadline ? `~ ${formatDate(deadline)}` : '신청 기간 확인',
     deadline: deadline || null,
     status: getPolicyStatus(policy),

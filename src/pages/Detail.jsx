@@ -35,7 +35,7 @@ function buildSections(grant) {
   const sourceLink = getPolicySourceLink(grant)
   return [
     { title: '지원 내용', icon: Banknote, items: [grant.summary || grant.subtitle || '지원 내용을 확인해 주세요'], type: 'bullet' },
-    { title: '신청 자격', icon: ClipboardCheck, items: grant.reasons?.length ? grant.reasons : ['신청 자격을 확인해 주세요'], type: 'check' },
+    { title: '신청 자격', icon: ClipboardCheck, items: grant.qualification_text ? [grant.qualification_text] : grant.reasons?.length ? grant.reasons : ['신청 자격을 확인해 주세요'], type: 'check' },
     { title: '신청 기간', icon: Calendar, items: [grant.period || '신청 기간 확인'], type: 'bullet' },
     { title: '담당 기관', icon: Phone, items: [{ text: grant.agency || '담당 기관 확인', phone: grant.phone || (grant.agency?.match(/\(([0-9-]+)\)/)?.[1]) || null }], type: 'contact' },
     ...(sourceLink ? [{ title: '출처', icon: ExternalLink, type: 'source', label: sourceLink.label, sourceUrl: sourceLink.href }] : []),
