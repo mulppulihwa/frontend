@@ -4,7 +4,7 @@ import { ArrowUpRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
-import { fetchPolicyChecklist, saveCheckedItems } from '../lib/api'
+import { fetchPolicyChecklist, getCachedChecklistSections, saveCheckedItems, setCachedChecklistSections } from '../lib/api'
 
 const accentColor = '#c2185b'
 
@@ -110,7 +110,7 @@ function normalizeChecklistResponse(data) {
 
   const grouped = raw.reduce((acc, item, index) => {
     if (!looksLikeChecklistItem(item)) return acc
-    const sectionTitle = item.section || item.category || item.group || item.type || '준비 항목'
+    const sectionTitle = item.section || item.category || item.group || item.type || '필요 서류'
     if (!acc[sectionTitle]) acc[sectionTitle] = []
     acc[sectionTitle].push(normalizeChecklistItem(item, `flat-${sectionTitle}`, index))
     return acc
@@ -225,9 +225,9 @@ export default function Checklist() {
   const { state, search } = useLocation()
   const grant = state?.grant
   const policyId = grant?.id || new URLSearchParams(search).get('policyId')
-  const [checklistSections, setChecklistSections] = useState([])
+  const [checklistSections, setChecklistSections] = useState(() => getCachedChecklistSections(policyId) || [])
   const [officeInfo, setOfficeInfo] = useState(null)
-  const [loading, setLoading] = useState(Boolean(policyId))
+  const [loading, setLoading] = useState(() => !getCachedChecklistSections(policyId) && Boolean(policyId))
   const [parsing, setParsing] = useState(false)
   const checklistProgress = useLoadingProgress(loading || parsing)
   const [error, setError] = useState('')
@@ -264,7 +264,8 @@ export default function Checklist() {
       }
     }
 
-    setLoading(true)
+    const hasCachedSections = (getCachedChecklistSections(policyId) || []).length > 0
+    if (!hasCachedSections) setLoading(true)
     setParsing(false)
     setError('')
 
@@ -276,16 +277,22 @@ export default function Checklist() {
         const data = await fetchPolicyChecklist(policyId)
         if (!active) return
         const sections = normalizeChecklistResponse(data)
-        if (sections.length === 0 && attempt < MAX_RETRIES) {
-          // Backend is still parsing — show "분석 중" and retry
-          setParsing(true)
-          setLoading(false)
+        const isParsing = data?.parsing === true
+        if (sections.length === 0 && isParsing && attempt < MAX_RETRIES) {
+          // 백엔드가 파싱 중임을 명시한 경우에만 재시도
+          if (!hasCachedSections) {
+            setParsing(true)
+            setLoading(false)
+          }
           await new Promise(res => setTimeout(res, RETRY_DELAY))
           if (active) attemptFetch(attempt + 1)
           return
         }
         setParsing(false)
-        setChecklistSections(sections)
+        if (sections.length > 0) {
+          setCachedChecklistSections(policyId, sections)
+          setChecklistSections(sections)
+        }
         setOfficeInfo(normalizeOffice(data))
         const backendChecked = Array.isArray(data?.checked_items) ? data.checked_items : Array.isArray(data?.checkedItems) ? data.checkedItems : []
         if (backendChecked.length > 0) {
@@ -300,9 +307,11 @@ export default function Checklist() {
         setLoading(false)
       } catch (err) {
         if (!active) return
-        setError(err.message || '체크리스트를 불러오지 못했습니다.')
-        setChecklistSections([])
-        setOfficeInfo(null)
+        if (!hasCachedSections) {
+          setError(err.message || '체크리스트를 불러오지 못했습니다.')
+          setChecklistSections([])
+          setOfficeInfo(null)
+        }
         setParsing(false)
         setLoading(false)
       }
@@ -346,13 +355,16 @@ export default function Checklist() {
           </p>
         )}
         {/* Section steps */}
-        {!checklistProgress.visible && (checklistSections.length > 0 ? checklistSections : [{
-          title: '기본 준비',
-          items: [
-            { id: 'default-call', label: '행정복지센터에 전화하기', persistable: false },
-            { id: 'default-id', label: '주민등록증 챙기기', persistable: false },
-          ],
-        }]).map((section) => {
+        {!checklistProgress.visible && ([
+          {
+            title: '기본 준비',
+            items: [
+              { id: 'default-call', label: '행정복지센터에 전화하기', persistable: false },
+              { id: 'default-id', label: '주민등록증 챙기기', persistable: false },
+            ],
+          },
+          ...checklistSections,
+        ]).map((section) => {
           const done = section.items.filter(item => !!checked[item.id]).length
           const total = section.items.length
           const complete = done === total

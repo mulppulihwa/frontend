@@ -7,7 +7,7 @@ import useLoadingProgress from '../hooks/useLoadingProgress'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import PreparationButton from '../components/PreparationButton'
 import okcheonCharacter from '../assets/okcheon-character.png'
-import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
+import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, getCachedSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 
 const filters = [
@@ -278,8 +278,11 @@ function NotificationSetModal({ visible, mode, onClose }) {
 export default function GrantStatus() {
   const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState('전체')
-  const [statuses, setStatuses] = useState({})
-  const [grantsData, setGrantsData] = useState([])
+  const [statuses, setStatuses] = useState(() => {
+    const cached = getCachedSavedPolicies()
+    return cached.reduce((acc, p) => ({ ...acc, [p.id]: p.user_status || null }), {})
+  })
+  const [grantsData, setGrantsData] = useState(() => getCachedSavedPolicies())
   const [toastVisible, setToastVisible] = useState(false)
   const [notificationModalVisible, setNotificationModalVisible] = useState(false)
   const [notificationModalMode, setNotificationModalMode] = useState('set')
@@ -288,7 +291,7 @@ export default function GrantStatus() {
   const [sort, setSort] = useState('deadline')
   const [sortReversed, setSortReversed] = useState(false)
   const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(() => getCachedSavedPolicies().length === 0)
   const statusProgress = useLoadingProgress(loading)
   const [error, setError] = useState('')
   const [userName, setUserName] = useState(getKakaoUserName)
@@ -296,7 +299,6 @@ export default function GrantStatus() {
 
   useEffect(() => {
     let active = true
-    // fetch real name from profile API (works even without re-login)
     fetchProfile()
       .then(profile => {
         if (!active) return
@@ -316,11 +318,7 @@ export default function GrantStatus() {
           [policy.id]: policy.user_status || null,
         }), {}))
       })
-      .catch(() => {
-        if (!active) return
-        setGrantsData([])
-        setStatuses({})
-      })
+      .catch(() => {})
       .finally(() => {
         if (active) setLoading(false)
       })

@@ -3,6 +3,34 @@ import { normalizePlaceCategory } from './placeCategories'
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
 const SAVED_POLICY_CACHE_KEY = 'savedPolicyCache'
+const SAVED_POLICIES_LIST_KEY = 'savedPoliciesList'
+const CHECKLIST_SECTIONS_PREFIX = 'checklist-sections-'
+
+export function getCachedChecklistSections(policyId) {
+  try {
+    return JSON.parse(localStorage.getItem(`${CHECKLIST_SECTIONS_PREFIX}${policyId}`) || 'null')
+  } catch {
+    return null
+  }
+}
+
+export function setCachedChecklistSections(policyId, sections) {
+  try {
+    localStorage.setItem(`${CHECKLIST_SECTIONS_PREFIX}${policyId}`, JSON.stringify(sections))
+  } catch { /* 무시 */ }
+}
+
+// 세션 내 메모리 캐시 — 네비게이션 후 재마운트 시 로딩 없이 즉시 반환
+let _savedPoliciesMemoryCache = null
+
+export function getCachedSavedPolicies() {
+  if (_savedPoliciesMemoryCache) return _savedPoliciesMemoryCache
+  try {
+    return JSON.parse(localStorage.getItem(SAVED_POLICIES_LIST_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
 
 export function getAccessToken() {
   return localStorage.getItem('accessToken') || localStorage.getItem('access') || localStorage.getItem('token')
@@ -188,7 +216,7 @@ export function normalizePolicy(policy, index = 0) {
     agency: policy.managing_org || policy.agency || policy.organization || '담당 기관 확인',
     reasons: policy.match_reason
       ? policy.match_reason.split(',').map(s => s.trim()).filter(Boolean)
-      : [summary, policy.benefit_type].filter(Boolean),
+      : [summary].filter(Boolean),
     period: deadline ? `~ ${formatDate(deadline)}` : '신청 기간 확인',
     deadline: deadline || null,
     status: getPolicyStatus(policy),
@@ -370,11 +398,18 @@ export async function fetchSavedPolicies() {
 
   // Final dedup by id, in case of any remaining stale cache collisions
   const seen = new Set()
-  return [...policies, ...cachedPolicies].filter(p => {
+  const result = [...policies, ...cachedPolicies].filter(p => {
     if (seen.has(String(p.id))) return false
     seen.add(String(p.id))
     return true
   })
+
+  _savedPoliciesMemoryCache = result
+  try {
+    localStorage.setItem(SAVED_POLICIES_LIST_KEY, JSON.stringify(result))
+  } catch { /* 스토리지 용량 초과 시 무시 */ }
+
+  return result
 }
 
 export async function savePolicy(policyId) {

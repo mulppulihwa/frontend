@@ -20,7 +20,7 @@ function createSteps(userName) {
     {
       selector: '[data-tutorial="schedule"]',
       eyebrow: '오늘의 맞춤 일정',
-      title: '가장 마감이 임박한 정책의 준비 항목들을 띄워드려요.',
+      title: '가장 마감이 임박한 정책의 필요 서류들을 띄워드려요.',
       description: '',
     },
     {

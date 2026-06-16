@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, Check, ChevronRight, Clock3, User } from 'lucide-react'
-import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, saveCheckedItems } from '../lib/api'
+import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, getCachedSavedPolicies, saveCheckedItems } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 import HomeTutorial from '../components/HomeTutorial'
 import PreparationButton from '../components/PreparationButton'
@@ -487,7 +487,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
             </button>
             <div style={{ padding: '12px 16px 16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                <p style={{ fontSize: 14, fontWeight: 800, color: '#c2185b' }}>준비 항목</p>
+                <p style={{ fontSize: 14, fontWeight: 800, color: '#c2185b' }}>필요 서류</p>
                 <p style={{ fontSize: 13, fontWeight: 800, color: total > 0 && done === total ? '#076818' : '#aaa' }}>{done}/{total}</p>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -514,7 +514,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
               <Check size={22} strokeWidth={2.4} />
             </span>
             <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433' }}>미완성 체크리스트가 없습니다.</p>
-            <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: '#888' }}>모든 준비 항목을 확인했어요.</p>
+            <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: '#888' }}>모든 필요 서류를 확인했어요.</p>
           </div>
         )}
       </div>
@@ -535,13 +535,13 @@ function normalizeUser(profile) {
 
 export default function Home({ tutorial = false }) {
   const navigate = useNavigate()
-  const [policies, setPolicies] = useState([])
+  const [policies, setPolicies] = useState(() => getCachedSavedPolicies())
   const [selectedPolicyId, setSelectedPolicyId] = useState(null)
   const [user, setUser] = useState(() => ({
     name: getKakaoUserName(),
     region: readJsonSafe('submittedDiagnosisProfile').location || '',
   }))
-  const [policiesLoaded, setPoliciesLoaded] = useState(false)
+  const [policiesLoaded, setPoliciesLoaded] = useState(() => getCachedSavedPolicies().length > 0)
 
   useEffect(() => {
     if (!tutorial && !localStorage.getItem('homeTutorialSeen')) {
@@ -550,7 +550,11 @@ export default function Home({ tutorial = false }) {
   }, [tutorial, navigate])
   const [, setChecklistRevision] = useState(0)
   const [checklistItemsByPolicy, setChecklistItemsByPolicy] = useState(readChecklistCache)
-  const [checklistsLoaded, setChecklistsLoaded] = useState(false)
+  const [checklistsLoaded, setChecklistsLoaded] = useState(() => {
+    const cached = readChecklistCache()
+    const initialPolicies = getCachedSavedPolicies()
+    return initialPolicies.length > 0 && Object.keys(cached).length > 0
+  })
 
   useEffect(() => {
     let active = true
@@ -589,13 +593,14 @@ export default function Home({ tutorial = false }) {
       }
     }
 
-    setChecklistsLoaded(false)
     localStorage.removeItem('home-checklist-completed')
     const activePolicyIds = new Set(policies.map(policy => String(policy.id)))
     const cachedItems = Object.fromEntries(
       Object.entries(readChecklistCache()).filter(([policyId]) => activePolicyIds.has(policyId)),
     )
     setChecklistItemsByPolicy(cachedItems)
+    // 캐시가 없을 때만 로딩 표시, 있으면 즉시 렌더링 후 백그라운드 갱신
+    if (Object.keys(cachedItems).length === 0) setChecklistsLoaded(false)
 
     const requests = policies.map(async policy => {
       try {
