@@ -345,13 +345,14 @@ export default function Checklist() {
             {error}
           </p>
         )}
-        {!checklistProgress.visible && !error && checklistSections.length === 0 && !officeInfo && (
-          <p style={{ fontSize: 14, fontWeight: 600, color: '#666', textAlign: 'center', lineHeight: 1.5, padding: '24px 0' }}>
-            등록된 체크리스트 정보가 없습니다.
-          </p>
-        )}
         {/* Section steps */}
-        {!checklistProgress.visible && checklistSections.map((section) => {
+        {!checklistProgress.visible && (checklistSections.length > 0 ? checklistSections : [{
+          title: '기본 준비',
+          items: [
+            { id: 'default-call', label: '행정복지센터에 전화하기', persistable: false },
+            { id: 'default-id', label: '주민등록증 챙기기', persistable: false },
+          ],
+        }]).map((section) => {
           const done = section.items.filter(item => !!checked[item.id]).length
           const total = section.items.length
           const complete = done === total

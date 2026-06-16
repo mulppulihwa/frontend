@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Check, Banknote, ClipboardCheck, Calendar, Phone, MousePointerClick, ArrowUpRight, GraduationCap, FileText } from 'lucide-react'
+import { Check, Banknote, ClipboardCheck, Calendar, Phone, MousePointerClick, ArrowUpRight, GraduationCap } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
 import { fetchPolicyDetail } from '../lib/api'
@@ -11,7 +11,6 @@ const sections = [
   { title: '신청 기간', icon: Calendar, items: ['2026.04.01 ~ 06.30'], type: 'bullet' },
   { title: '담당 기관', icon: Phone, items: [{ text: '옥천군 농업기술센터', phone: '043-730-XXXX' }], type: 'contact' },
   { title: '신청 요건', icon: GraduationCap, items: [], type: 'requirement' },
-  { title: '신청 서류', icon: FileText, items: ['주민등록등본', '귀농교육 이수서', '소득분의 증명서'], type: 'bullet' },
   { title: '신청 방법', icon: MousePointerClick, items: ['인터넷, 방문, FAX, 우편, 무인발급기'], type: 'bullet' },
 ]
 
@@ -42,7 +41,6 @@ function buildSections(grant) {
     { title: '신청 기간', icon: Calendar, items: [grant.period || '신청 기간 확인'], type: 'bullet' },
     { title: '담당 기관', icon: Phone, items: [{ text: grant.agency || '담당 기관 확인', phone: grant.phone || (grant.agency?.match(/\(([0-9-]+)\)/)?.[1]) || null }], type: 'contact' },
     ...(sourceLink ? [{ title: '신청 요건', icon: GraduationCap, items: [], type: 'requirement', link: sourceLink }] : []),
-    { title: '신청 서류', icon: FileText, items: ['주민등록등본', '귀농교육 이수서', '소득분위 증명서'], type: 'bullet' },
     { title: '신청 방법', icon: MousePointerClick, items: ['방문 또는 담당 기관 안내에 따라 신청'], type: 'bullet' },
   ]
 }
