@@ -150,18 +150,20 @@ export default function Results() {
             현재 상태를 알려주세요.
           </p>
         </div>
-        <div style={{ textAlign: 'center', marginTop: 10 }}>
-          {(() => {
-            const unchecked = total - Object.values(statuses).filter(v => v !== null).length
-            return unchecked > 0
-              ? <span style={{ fontSize: 13, fontWeight: 600, color: '#FFA100', background: '#fff8ee', border: '1.5px solid #ffe0a0', borderRadius: 20, padding: '4px 12px' }}>
-                  현황 미입력 {unchecked}개 남았어요
-                </span>
-              : <span style={{ fontSize: 13, fontWeight: 600, color: '#076818', background: '#e8f3e8', border: '1.5px solid #b8ddb8', borderRadius: 20, padding: '4px 12px' }}>
-                  모두 확인했어요 ✓
-                </span>
-          })()}
-        </div>
+        {!loading && total > 0 && (
+          <div style={{ textAlign: 'center', marginTop: 10 }}>
+            {(() => {
+              const unchecked = total - Object.values(statuses).filter(v => v !== null).length
+              return unchecked > 0
+                ? <span style={{ fontSize: 13, fontWeight: 600, color: '#FFA100', background: '#fff8ee', border: '1.5px solid #ffe0a0', borderRadius: 20, padding: '4px 12px' }}>
+                    현황 미입력 {unchecked}개 남았어요
+                  </span>
+                : <span style={{ fontSize: 13, fontWeight: 600, color: '#076818', background: '#e8f3e8', border: '1.5px solid #b8ddb8', borderRadius: 20, padding: '4px 12px' }}>
+                    모두 확인했어요 ✓
+                  </span>
+            })()}
+          </div>
+        )}
       </div>
 
       <div style={{ width: '80%', maxWidth: 344, margin: '0 auto', padding: '0 0 222px', flex: 1, overflowX: 'hidden' }}>
