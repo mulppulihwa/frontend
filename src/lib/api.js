@@ -303,6 +303,7 @@ function removeMyPlaceId(id) {
 }
 
 export async function fetchPlaces() {
+  console.log('[fetchPlaces] token:', getAccessToken()?.slice(0, 20))
   const data = await request('/api/places/')
   const myIds = getMyPlaceIds()
   const places = toArray(data)
