@@ -5,7 +5,11 @@ const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
 const SAVED_POLICY_CACHE_KEY = 'savedPolicyCache'
 const SAVED_POLICIES_LIST_KEY = 'savedPoliciesList'
 
+// 세션 내 메모리 캐시 — 네비게이션 후 재마운트 시 로딩 없이 즉시 반환
+let _savedPoliciesMemoryCache = null
+
 export function getCachedSavedPolicies() {
+  if (_savedPoliciesMemoryCache) return _savedPoliciesMemoryCache
   try {
     return JSON.parse(localStorage.getItem(SAVED_POLICIES_LIST_KEY) || '[]')
   } catch {
@@ -360,6 +364,7 @@ export async function fetchSavedPolicies() {
     return true
   })
 
+  _savedPoliciesMemoryCache = result
   try {
     localStorage.setItem(SAVED_POLICIES_LIST_KEY, JSON.stringify(result))
   } catch { /* 스토리지 용량 초과 시 무시 */ }
