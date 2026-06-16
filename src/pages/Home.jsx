@@ -487,7 +487,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
             </button>
             <div style={{ padding: '12px 16px 16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                <p style={{ fontSize: 14, fontWeight: 800, color: '#c2185b' }}>준비 항목</p>
+                <p style={{ fontSize: 14, fontWeight: 800, color: '#c2185b' }}>필요 서류</p>
                 <p style={{ fontSize: 13, fontWeight: 800, color: total > 0 && done === total ? '#076818' : '#aaa' }}>{done}/{total}</p>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -514,7 +514,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
               <Check size={22} strokeWidth={2.4} />
             </span>
             <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433' }}>미완성 체크리스트가 없습니다.</p>
-            <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: '#888' }}>모든 준비 항목을 확인했어요.</p>
+            <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: '#888' }}>모든 필요 서류를 확인했어요.</p>
           </div>
         )}
       </div>
