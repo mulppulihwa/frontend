@@ -4,6 +4,21 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, ''
 const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
 const SAVED_POLICY_CACHE_KEY = 'savedPolicyCache'
 const SAVED_POLICIES_LIST_KEY = 'savedPoliciesList'
+const CHECKLIST_SECTIONS_PREFIX = 'checklist-sections-'
+
+export function getCachedChecklistSections(policyId) {
+  try {
+    return JSON.parse(localStorage.getItem(`${CHECKLIST_SECTIONS_PREFIX}${policyId}`) || 'null')
+  } catch {
+    return null
+  }
+}
+
+export function setCachedChecklistSections(policyId, sections) {
+  try {
+    localStorage.setItem(`${CHECKLIST_SECTIONS_PREFIX}${policyId}`, JSON.stringify(sections))
+  } catch { /* 무시 */ }
+}
 
 // 세션 내 메모리 캐시 — 네비게이션 후 재마운트 시 로딩 없이 즉시 반환
 let _savedPoliciesMemoryCache = null
