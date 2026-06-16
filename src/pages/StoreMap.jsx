@@ -23,8 +23,8 @@ function toApiCoordinate(value) {
   return Number.isFinite(coordinate) ? coordinate.toFixed(7) : null
 }
 
-const COLLAPSED_H = 320
-const EXPANDED_H = 440
+const COLLAPSED_H = 220
+const EXPANDED_H = 400
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
 const USER_PLACE_CATEGORIES = PLACE_CATEGORIES.map(category => category.id)
 const API_PLACE_CATEGORY = {
