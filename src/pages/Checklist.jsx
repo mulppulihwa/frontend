@@ -278,9 +278,11 @@ export default function Checklist() {
         if (!active) return
         const sections = normalizeChecklistResponse(data)
         if (sections.length === 0 && attempt < MAX_RETRIES) {
-          // 즉시 기본 항목 표시 후 백그라운드에서 재시도 (파싱 완료 시 자동 업데이트)
-          setLoading(false)
-          setParsing(false)
+          // 캐시가 없을 때만 "분석 중" 표시, 캐시가 있으면 기존 항목 유지하며 재시도
+          if (!hasCachedSections) {
+            setParsing(true)
+            setLoading(false)
+          }
           await new Promise(res => setTimeout(res, RETRY_DELAY))
           if (active) attemptFetch(attempt + 1)
           return
