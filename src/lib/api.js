@@ -254,9 +254,32 @@ export async function fetchRegions() {
   return toArray(data)
 }
 
+const MY_PLACE_IDS_KEY = 'myPlaceIds'
+
+function getMyPlaceIds() {
+  try { return new Set(JSON.parse(localStorage.getItem(MY_PLACE_IDS_KEY) || '[]')) } catch { return new Set() }
+}
+
+function addMyPlaceId(id) {
+  if (!id) return
+  const ids = getMyPlaceIds()
+  ids.add(String(id))
+  localStorage.setItem(MY_PLACE_IDS_KEY, JSON.stringify([...ids]))
+}
+
+function removeMyPlaceId(id) {
+  if (!id) return
+  const ids = getMyPlaceIds()
+  ids.delete(String(id))
+  localStorage.setItem(MY_PLACE_IDS_KEY, JSON.stringify([...ids]))
+}
+
 export async function fetchPlaces() {
   const data = await request('/api/places/')
-  return toArray(data).map(normalizePlace).filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng))
+  const myIds = getMyPlaceIds()
+  return toArray(data)
+    .map(place => normalizePlace({ ...place, is_owner: place.is_owner || myIds.has(String(place.id)) }))
+    .filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng))
 }
 
 export async function createPlace(place) {
@@ -264,6 +287,7 @@ export async function createPlace(place) {
     method: 'POST',
     body: JSON.stringify(place),
   })
+  addMyPlaceId(data?.id)
   return normalizePlace(data)
 }
 
@@ -278,6 +302,7 @@ export async function updatePlace(placeId, place) {
 
 export async function deletePlace(placeId) {
   if (!placeId) throw new Error('삭제할 장소 ID가 없습니다.')
+  removeMyPlaceId(placeId)
   return request(`/api/places/${placeId}/`, {
     method: 'DELETE',
   })
