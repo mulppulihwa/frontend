@@ -30,15 +30,15 @@ const USER_PLACE_CATEGORIES = PLACE_CATEGORIES.map(category => category.id)
 const API_PLACE_CATEGORY = {
   행정: '행정',
   부동산: '건축자재',
-  동호회: '동호회',
+  동호회: '생활',
   맛집: '음식점',
-  생활: '생활',
+  생활: '약국',
 }
 const EDITABLE_PLACE_CATEGORY = {
   행정: '행정',
   건축자재: '부동산',
-  동호회: '동호회',
-  생활: '생활',
+  생활: '동호회',
+  약국: '생활',
   음식점: '맛집',
 }
 
