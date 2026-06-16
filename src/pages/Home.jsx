@@ -535,6 +535,9 @@ function normalizeUser(profile) {
 
 export default function Home({ tutorial = false }) {
   const navigate = useNavigate()
+  const [showTutorial, setShowTutorial] = useState(
+    () => tutorial || !localStorage.getItem('homeTutorialSeen')
+  )
   const [policies, setPolicies] = useState(() => getCachedSavedPolicies())
   const [selectedPolicyId, setSelectedPolicyId] = useState(null)
   const [user, setUser] = useState(() => ({
@@ -543,11 +546,6 @@ export default function Home({ tutorial = false }) {
   }))
   const [policiesLoaded, setPoliciesLoaded] = useState(() => getCachedSavedPolicies().length > 0)
 
-  useEffect(() => {
-    if (!tutorial && !localStorage.getItem('homeTutorialSeen')) {
-      navigate('/tutorial', { replace: true })
-    }
-  }, [tutorial, navigate])
   const [, setChecklistRevision] = useState(0)
   const [checklistItemsByPolicy, setChecklistItemsByPolicy] = useState(readChecklistCache)
   const [checklistsLoaded, setChecklistsLoaded] = useState(() => {
@@ -691,7 +689,7 @@ export default function Home({ tutorial = false }) {
         />
         <DiagnosedPolicies policies={policies} checklistItemsByPolicy={checklistItemsByPolicy} navigate={navigate} />
       </div>
-      {tutorial && <HomeTutorial userName={user.name} onFinish={() => { localStorage.setItem('homeTutorialSeen', '1'); navigate('/home', { replace: true }) }} />}
+      {showTutorial && <HomeTutorial userName={user.name} onFinish={() => { localStorage.setItem('homeTutorialSeen', '1'); setShowTutorial(false) }} />}
     </div>
   )
 }
