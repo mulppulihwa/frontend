@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Check, Banknote, ClipboardCheck, Calendar, Phone, ArrowUpRight, GraduationCap, ExternalLink } from 'lucide-react'
+import { Check, Banknote, ClipboardCheck, Calendar, Phone, ArrowUpRight, ExternalLink } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Card from '../components/Card'
 import { fetchPolicyDetail } from '../lib/api'
@@ -10,7 +10,6 @@ const sections = [
   { title: '신청 자격', icon: ClipboardCheck, items: ['귀농 3년 이내', '만 18세 이상', '옥천군 거주'], type: 'check' },
   { title: '신청 기간', icon: Calendar, items: ['2026.04.01 ~ 06.30'], type: 'bullet' },
   { title: '담당 기관', icon: Phone, items: [{ text: '옥천군 농업기술센터', phone: '043-730-XXXX' }], type: 'contact' },
-  { title: '신청 요건', icon: GraduationCap, items: [], type: 'requirement' },
 ]
 
 function getPolicySourceLink(grant) {
@@ -39,8 +38,7 @@ function buildSections(grant) {
     { title: '신청 자격', icon: ClipboardCheck, items: grant.reasons?.length ? grant.reasons : ['신청 자격을 확인해 주세요'], type: 'check' },
     { title: '신청 기간', icon: Calendar, items: [grant.period || '신청 기간 확인'], type: 'bullet' },
     { title: '담당 기관', icon: Phone, items: [{ text: grant.agency || '담당 기관 확인', phone: grant.phone || (grant.agency?.match(/\(([0-9-]+)\)/)?.[1]) || null }], type: 'contact' },
-    ...(sourceLink ? [{ title: '신청 요건', icon: GraduationCap, items: [], type: 'requirement', link: sourceLink }] : []),
-    ...(sourceLink ? [{ title: '출처', icon: ExternalLink, type: 'source', link: sourceLink }] : []),
+    ...(sourceLink ? [{ title: '출처', icon: ExternalLink, type: 'source', link: sourceLink, source: grant.source, sourceUrl: grant.source_url || grant.sourceUrl }] : []),
   ]
 }
 
@@ -181,10 +179,10 @@ export default function Detail() {
               </div>
             )}
 
-            {section.type === 'source' && section.link && (
-              section.link.href ? (
+            {section.type === 'source' && (section.source || section.link?.label) && (
+              section.sourceUrl ? (
                 <a
-                  href={section.link.href}
+                  href={section.sourceUrl}
                   target="_blank"
                   rel="noreferrer"
                   style={{
@@ -193,12 +191,13 @@ export default function Detail() {
                     background: '#e8f3e8', padding: '10px 16px', borderRadius: 14,
                   }}
                 >
-                  {section.link.label}
+                  {section.source || section.link.label}
                   <ArrowUpRight size={15} color="#076818" strokeWidth={2.3} />
                 </a>
               ) : (
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#076818' }}>
-                  {section.link.label}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 600, color: '#076818' }}>
+                  {section.source || section.link?.label}
+                  <ArrowUpRight size={15} color="#076818" strokeWidth={2.3} />
                 </span>
               )
             )}
