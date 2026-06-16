@@ -542,6 +542,12 @@ export default function Home({ tutorial = false }) {
     region: readJsonSafe('submittedDiagnosisProfile').location || '',
   }))
   const [policiesLoaded, setPoliciesLoaded] = useState(false)
+
+  useEffect(() => {
+    if (!tutorial && !localStorage.getItem('homeTutorialSeen')) {
+      navigate('/tutorial', { replace: true })
+    }
+  }, [tutorial, navigate])
   const [, setChecklistRevision] = useState(0)
   const [checklistItemsByPolicy, setChecklistItemsByPolicy] = useState(readChecklistCache)
   const [checklistsLoaded, setChecklistsLoaded] = useState(false)
@@ -680,7 +686,7 @@ export default function Home({ tutorial = false }) {
         />
         <DiagnosedPolicies policies={policies} checklistItemsByPolicy={checklistItemsByPolicy} navigate={navigate} />
       </div>
-      {tutorial && <HomeTutorial userName={user.name} onFinish={() => navigate('/home', { replace: true })} />}
+      {tutorial && <HomeTutorial userName={user.name} onFinish={() => { localStorage.setItem('homeTutorialSeen', '1'); navigate('/home', { replace: true }) }} />}
     </div>
   )
 }
