@@ -1,6 +1,7 @@
 import {
   Building2,
   Landmark,
+  ShoppingBag,
   UsersRound,
   UtensilsCrossed,
 } from 'lucide-react'
@@ -34,6 +35,13 @@ export const PLACE_CATEGORIES = [
     color: '#FFA100',
     bg: '#fff3e0',
   },
+  {
+    id: '생활',
+    label: '생활',
+    icon: ShoppingBag,
+    color: '#e06f3a',
+    bg: '#fdf0e8',
+  },
 ]
 
 export function normalizePlaceCategory(category = '') {
@@ -53,6 +61,10 @@ export function normalizePlaceCategory(category = '') {
 
   if (value.includes('맛집') || value.includes('음식점')) {
     return '맛집'
+  }
+
+  if (value.includes('생활')) {
+    return '생활'
   }
 
   return null
