@@ -346,13 +346,16 @@ export default function Checklist() {
           </p>
         )}
         {/* Section steps */}
-        {!checklistProgress.visible && (checklistSections.length > 0 ? checklistSections : [{
-          title: '기본 준비',
-          items: [
-            { id: 'default-call', label: '행정복지센터에 전화하기', persistable: false },
-            { id: 'default-id', label: '주민등록증 챙기기', persistable: false },
-          ],
-        }]).map((section) => {
+        {!checklistProgress.visible && ([
+          ...checklistSections,
+          {
+            title: '기본 준비',
+            items: [
+              { id: 'default-call', label: '행정복지센터에 전화하기', persistable: false },
+              { id: 'default-id', label: '주민등록증 챙기기', persistable: false },
+            ],
+          },
+        ]).map((section) => {
           const done = section.items.filter(item => !!checked[item.id]).length
           const total = section.items.length
           const complete = done === total
