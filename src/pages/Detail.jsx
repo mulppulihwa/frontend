@@ -26,7 +26,7 @@ function getPolicySourceLink(grant) {
     label = '옥천군청'
   }
 
-  if (!label) return null
+  if (!label || !href) return null
   return { label, href }
 }
 
@@ -38,7 +38,7 @@ function buildSections(grant) {
     { title: '신청 자격', icon: ClipboardCheck, items: grant.reasons?.length ? grant.reasons : ['신청 자격을 확인해 주세요'], type: 'check' },
     { title: '신청 기간', icon: Calendar, items: [grant.period || '신청 기간 확인'], type: 'bullet' },
     { title: '담당 기관', icon: Phone, items: [{ text: grant.agency || '담당 기관 확인', phone: grant.phone || (grant.agency?.match(/\(([0-9-]+)\)/)?.[1]) || null }], type: 'contact' },
-    ...(sourceLink ? [{ title: '출처', icon: ExternalLink, type: 'source', source: grant.source, sourceUrl: sourceLink.href }] : []),
+    ...(sourceLink ? [{ title: '출처', icon: ExternalLink, type: 'source', label: sourceLink.label, sourceUrl: sourceLink.href }] : []),
   ]
 }
 
@@ -179,7 +179,7 @@ export default function Detail() {
               </div>
             )}
 
-            {section.type === 'source' && (section.source || section.link?.label) && (
+            {section.type === 'source' && section.label && (
               section.sourceUrl ? (
                 <a
                   href={section.sourceUrl}
@@ -191,12 +191,12 @@ export default function Detail() {
                     background: '#e8f3e8', padding: '10px 16px', borderRadius: 14,
                   }}
                 >
-                  {section.source || section.link.label}
+                  {section.label}
                   <ArrowUpRight size={15} color="#076818" strokeWidth={2.3} />
                 </a>
               ) : (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 600, color: '#076818' }}>
-                  {section.source || section.link?.label}
+                  {section.label}
                   <ArrowUpRight size={15} color="#076818" strokeWidth={2.3} />
                 </span>
               )
