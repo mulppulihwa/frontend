@@ -110,7 +110,7 @@ function normalizeChecklistResponse(data) {
 
   const grouped = raw.reduce((acc, item, index) => {
     if (!looksLikeChecklistItem(item)) return acc
-    const sectionTitle = item.section || item.category || item.group || item.type || '준비 항목'
+    const sectionTitle = item.section || item.category || item.group || item.type || '필요 서류'
     if (!acc[sectionTitle]) acc[sectionTitle] = []
     acc[sectionTitle].push(normalizeChecklistItem(item, `flat-${sectionTitle}`, index))
     return acc
@@ -347,7 +347,6 @@ export default function Checklist() {
         )}
         {/* Section steps */}
         {!checklistProgress.visible && ([
-          ...checklistSections,
           {
             title: '기본 준비',
             items: [
@@ -355,6 +354,7 @@ export default function Checklist() {
               { id: 'default-id', label: '주민등록증 챙기기', persistable: false },
             ],
           },
+          ...checklistSections,
         ]).map((section) => {
           const done = section.items.filter(item => !!checked[item.id]).length
           const total = section.items.length
