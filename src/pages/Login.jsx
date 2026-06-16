@@ -73,14 +73,14 @@ export default function Login() {
   }
 
   return (
-    <div className="login-page" style={{
+    <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100dvh',
+      height: '100dvh',
       background: '#FDFCF8',
-      padding: '38px 24px 30px',
+      overflow: 'hidden',
       boxSizing: 'border-box',
-      overflowX: 'hidden',
+      padding: 'clamp(24px, 5vh, 48px) 24px clamp(24px, 4vh, 40px)',
     }}>
       <style>{`
         @keyframes spinRock {
@@ -90,78 +90,53 @@ export default function Login() {
           78%  { transform: rotate(0deg); }
           100% { transform: rotate(0deg); }
         }
-
         .logo-spin-login {
           animation: spinRock 2.8s ease-in-out infinite;
           transform-origin: center center;
         }
-
-        @media (max-height: 760px) {
-          .login-page {
-            padding-top: 24px !important;
-            padding-bottom: 20px !important;
-          }
-
-          .login-content {
-            gap: 14px !important;
-          }
-
-          .login-character {
-            height: clamp(190px, 29vh, 245px) !important;
-            margin-top: 10px !important;
-          }
-        }
       `}</style>
 
-      <div className="login-content" style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        gap: 24,
-        paddingBottom: 18,
-      }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-            <img src={okcheonTypo} alt="옥천" style={{ height: 66, width: 'auto' }} />
-            <img src={okTypo} alt="OK" className="logo-spin-login" style={{ height: 66, width: 'auto' }} />
-          </div>
-          <p style={{ fontSize: 15, fontWeight: 500, color: '#111', lineHeight: 1.35, margin: 0, textAlign: 'center' }}>
-            숨은 귀농 혜택, 옥천옥이 알아서 챙겨드릴게요!
-          </p>
+      {/* Top: logo + tagline */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+          <img src={okcheonTypo} alt="옥천" style={{ height: 'clamp(52px, 8vh, 70px)', width: 'auto' }} />
+          <img src={okTypo} alt="OK" className="logo-spin-login" style={{ height: 'clamp(52px, 8vh, 70px)', width: 'auto' }} />
         </div>
-
-        <div className="login-character" style={{ position: 'relative', width: '100%', maxWidth: 390, height: 'clamp(220px, 33vh, 300px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginTop: 22 }}>
-          <img
-            src={farmer}
-            alt=""
-            style={{
-              position: 'relative',
-              zIndex: 4,
-              width: 'auto',
-              height: '100%',
-              maxHeight: 300,
-              objectFit: 'contain',
-              filter: 'drop-shadow(0 10px 16px rgba(30, 50, 25, 0.10))',
-            }}
-          />
-        </div>
-
-        <div style={{ width: '100%', maxWidth: 350, borderRadius: 16, padding: '12px 14px', textAlign: 'center', background: '#FDFCF8' }}>
-          <p style={{ fontSize: 15, fontWeight: 600, color: '#1a1a1a', lineHeight: 1.55, margin: 0 }}>
-            내게 꼭 맞는 정책 진단부터<br />
-            복잡한 지원금 신청 준비, 알뜰한 사용처 안내까지<br />
-            <span style={{ color: '#076818', fontWeight: 800 }}>옥천옥</span>이 든든하게 책임집니다!
-          </p>
-        </div>
+        <p style={{ fontSize: 'clamp(13px, 1.8vh, 15px)', fontWeight: 500, color: '#111', lineHeight: 1.35, margin: 0, textAlign: 'center' }}>
+          숨은 귀농 혜택, 옥천옥이 알아서 챙겨드릴게요!
+        </p>
       </div>
 
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginTop: 18 }}>
+      {/* Middle: character (fills remaining space) */}
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img
+          src={farmer}
+          alt=""
+          style={{
+            width: 'auto',
+            height: '100%',
+            maxHeight: '100%',
+            maxWidth: '80%',
+            objectFit: 'contain',
+            filter: 'drop-shadow(0 10px 16px rgba(30, 50, 25, 0.10))',
+          }}
+        />
+      </div>
+
+      {/* Bottom: description + button */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(14px, 2.5vh, 24px)', flexShrink: 0 }}>
+        <p style={{ fontSize: 'clamp(13px, 1.8vh, 15px)', fontWeight: 600, color: '#1a1a1a', lineHeight: 1.55, margin: 0, textAlign: 'center' }}>
+          내게 꼭 맞는 정책 진단부터<br />
+          복잡한 지원금 신청 준비, 알뜰한 사용처 안내까지<br />
+          <span style={{ color: '#076818', fontWeight: 800 }}>옥천옥</span>이 든든하게 책임집니다!
+        </p>
+
         {error && (
-          <p role="alert" style={{ fontSize: 13, color: '#d93025', lineHeight: 1.5, textAlign: 'center', marginBottom: 2 }}>
+          <p role="alert" style={{ fontSize: 13, color: '#d93025', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>
             {error}
           </p>
         )}
+
         <button
           className="app-action-button"
           onClick={handleKakaoLogin}
