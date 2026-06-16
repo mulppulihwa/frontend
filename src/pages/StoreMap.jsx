@@ -73,7 +73,7 @@ export default function StoreMap() {
   const mapAreaRef = useRef(null)
   const postcodeLayerRef = useRef(null)
   const [mapAreaHeight, setMapAreaHeight] = useState(0)
-  const [activeCategory, setActiveCategory] = useState('')
+  const [activeCategory, setActiveCategory] = useState('행정')
   const [sheetH, setSheetH] = useState(COLLAPSED_H)
   const [selectedStore, setSelectedStore] = useState(null)
   const [stores, setStores] = useState([])
@@ -87,6 +87,7 @@ export default function StoreMap() {
   const [deletePlaceLoading, setDeletePlaceLoading] = useState(false)
   const [editingPlaceId, setEditingPlaceId] = useState(null)
   const [hoveredPlaceId, setHoveredPlaceId] = useState(null)
+  const [userFilter, setUserFilter] = useState('all')
   const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '', hours: '', memo: '' })
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
@@ -239,13 +240,15 @@ export default function StoreMap() {
     setActiveCategory(categoryId)
     setSelectedStore(null)
     setQuery('')
+    setUserFilter('all')
     drawMarkers(categoryId)
   }
 
   const categories = getPlaceCategories(stores)
-  const filteredStores = stores.filter(s => s.category === activeCategory).filter(s =>
-    s.name.includes(query) || s.address.includes(query)
-  )
+  const filteredStores = stores
+    .filter(s => s.category === activeCategory)
+    .filter(s => s.name.includes(query) || s.address.includes(query))
+    .filter(s => userFilter === 'added' ? s.userAdded : true)
 
   const handleStoreClick = (store) => {
     setSelectedStore(store)
@@ -541,9 +544,30 @@ export default function StoreMap() {
               padding: '0 18px 12px', cursor: 'pointer', flexShrink: 0,
             }}
           >
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#888' }}>
-              {filteredStores.length}개 장소
-            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: '#888' }}>
+                {filteredStores.length}개 장소
+              </span>
+              {stores.some(s => s.category === activeCategory && s.userAdded) && (
+              <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: 6 }}>
+                {[{ id: 'all', label: '모두' }, { id: 'added', label: '직접 추가' }].map(({ id, label }) => (
+                  <button
+                    key={id}
+                    onClick={() => setUserFilter(id)}
+                    style={{
+                      padding: '4px 12px', borderRadius: 20, border: 'none', cursor: 'pointer',
+                      fontFamily: 'inherit', fontSize: 12, fontWeight: 650,
+                      background: userFilter === id ? '#076818' : '#f0f0f0',
+                      color: userFilter === id ? '#fff' : '#777',
+                      transition: 'background 0.15s, color 0.15s',
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              )}
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#aaa' }}>
