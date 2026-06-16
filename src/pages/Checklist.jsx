@@ -277,8 +277,9 @@ export default function Checklist() {
         const data = await fetchPolicyChecklist(policyId)
         if (!active) return
         const sections = normalizeChecklistResponse(data)
-        if (sections.length === 0 && attempt < MAX_RETRIES) {
-          // 캐시가 없을 때만 "분석 중" 표시, 캐시가 있으면 기존 항목 유지하며 재시도
+        const isParsing = data?.parsing === true
+        if (sections.length === 0 && isParsing && attempt < MAX_RETRIES) {
+          // 백엔드가 파싱 중임을 명시한 경우에만 재시도
           if (!hasCachedSections) {
             setParsing(true)
             setLoading(false)
