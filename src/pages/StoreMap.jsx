@@ -662,19 +662,31 @@ export default function StoreMap() {
                       <CatIcon size={24} color={activeCat.color} strokeWidth={2.2} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0, paddingRight: store.userAdded ? 36 : 0 }}>
-                      <p style={{
-                        fontSize: 16,
-                        lineHeight: 1.35,
-                        fontWeight: 750,
-                        color: '#20242f',
-                        letterSpacing: '-0.2px',
-                        margin: '0 0 6px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}>
-                        {store.name}
-                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, minWidth: 0 }}>
+                        <p style={{
+                          fontSize: 16,
+                          lineHeight: 1.35,
+                          fontWeight: 750,
+                          color: '#20242f',
+                          letterSpacing: '-0.2px',
+                          margin: 0,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {store.name}
+                        </p>
+                        {store.userAdded && (
+                          <span style={{
+                            flexShrink: 0,
+                            fontSize: 11, fontWeight: 650, color: '#076818',
+                            background: '#e8f3e8', borderRadius: 6,
+                            padding: '2px 6px', letterSpacing: '-0.1px',
+                          }}>
+                            직접 추가
+                          </span>
+                        )}
+                      </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 7, minHeight: 19 }}>
                         <span style={{ fontSize: 13.5, lineHeight: 1, fontWeight: 750, color: '#d98200' }}>★ {store.rating}</span>
                         <span style={{ fontSize: 12.5, lineHeight: 1, fontWeight: 550, color: '#555' }}>({store.reviews})</span>
