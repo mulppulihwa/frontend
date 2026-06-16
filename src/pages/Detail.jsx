@@ -14,7 +14,7 @@ const sections = [
 
 function getPolicySourceLink(grant) {
   const source = String(grant?.source || '').trim()
-  const href = grant?.source_url || grant?.sourceUrl || ''
+  const href = grant?.source_url || grant?.sourceUrl || grant?.apply_url || ''
   const searchable = `${source} ${href}`.toLowerCase()
 
   let label = source
