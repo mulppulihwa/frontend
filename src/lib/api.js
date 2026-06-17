@@ -315,8 +315,9 @@ export async function createPlace(place) {
     method: 'POST',
     body: JSON.stringify(place),
   })
+  // 방금 만든 장소는 항상 내 소유 — 백엔드가 is_owner를 안 줘도 직접 표시한다.
   addMyPlaceId(data?.id)
-  return normalizePlace(data)
+  return normalizePlace({ ...data, is_owner: true })
 }
 
 export async function updatePlace(placeId, place) {
@@ -325,7 +326,9 @@ export async function updatePlace(placeId, place) {
     method: 'PATCH',
     body: JSON.stringify(place),
   })
-  return normalizePlace(data)
+  // 내 장소만 수정 가능하므로 수정 후에도 소유 상태를 유지한다.
+  addMyPlaceId(data?.id ?? placeId)
+  return normalizePlace({ ...data, is_owner: true })
 }
 
 export async function deletePlace(placeId) {
