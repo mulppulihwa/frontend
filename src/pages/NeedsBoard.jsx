@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CalendarDays, Check, ChevronRight, FilePenLine, Home, Loader2, MapPin, Pencil, Phone, Trash2, UserRound, UsersRound } from 'lucide-react'
+import { CalendarDays, Check, ChevronRight, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, Trash2, UserRound, UsersRound, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Button from '../components/Button'
 import SelectField from '../components/SelectField'
@@ -25,6 +25,8 @@ const peopleFilters = ['전체', '농촌일손', '주택수리', '돌봄', '동�
 const houseFilters = ['전체', '원룸', '투룸이상', '오피스텔', '주택', '기타']
 const regionOptions = ['옥천읍', '동이면', '안남면', '청성면', '청산면', '이원면', '군서면', '군북면']
 const APPLICANT_CACHE_KEY = 'okcheonNeedsApplicant'
+const MAX_HOUSING_IMAGES = 10
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024
 
 function readApplicantCache() {
   try {
@@ -214,6 +216,8 @@ export default function NeedsBoard() {
   const [error, setError] = useState('')
   const [applications, setApplications] = useState([])
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [housingImages, setHousingImages] = useState([])
+  const [housingImagePreviews, setHousingImagePreviews] = useState([])
   const [applicant, setApplicant] = useState(readApplicantCache)
   const [draft, setDraft] = useState({
     type: 'people',
@@ -287,6 +291,9 @@ export default function NeedsBoard() {
   }
 
   const openWrite = () => {
+    housingImagePreviews.forEach(preview => URL.revokeObjectURL(preview.url))
+    setHousingImages([])
+    setHousingImagePreviews([])
     setDraft(current => ({
       ...current,
       type: tab,
@@ -297,6 +304,9 @@ export default function NeedsBoard() {
 
   const openEdit = () => {
     if (!selectedPost?.is_owner) return
+    housingImagePreviews.forEach(preview => URL.revokeObjectURL(preview.url))
+    setHousingImages([])
+    setHousingImagePreviews([])
     setDraft(draftFromPost(selectedPost))
     setMode('edit')
   }
@@ -368,7 +378,7 @@ export default function NeedsBoard() {
         }
         const result = isEditing
           ? await updateHousingPost(selectedPost.id, payload)
-          : await createHousingPost(payload)
+          : await createHousingPost(payload, housingImages)
         post = normalizeHousingPost(result)
       }
       setPosts(current => isEditing
@@ -423,6 +433,39 @@ export default function NeedsBoard() {
 
   const updateDraft = (key, value) => setDraft(current => ({ ...current, [key]: value }))
   const updateApplicant = (key, value) => setApplicant(current => ({ ...current, [key]: value }))
+  const addHousingImages = event => {
+    const incoming = Array.from(event.target.files || [])
+    event.target.value = ''
+    if (!incoming.length) return
+
+    const invalidType = incoming.find(file => !file.type.startsWith('image/'))
+    if (invalidType) {
+      setToast('이미지 파일만 선택할 수 있어요.')
+      return
+    }
+    const oversized = incoming.find(file => file.size > MAX_IMAGE_SIZE)
+    if (oversized) {
+      setToast('사진 한 장당 최대 용량은 10MB예요.')
+      return
+    }
+    if (housingImages.length + incoming.length > MAX_HOUSING_IMAGES) {
+      setToast(`사진은 최대 ${MAX_HOUSING_IMAGES}장까지 등록할 수 있어요.`)
+      return
+    }
+
+    setHousingImages(current => [...current, ...incoming])
+    setHousingImagePreviews(current => [
+      ...current,
+      ...incoming.map(file => ({ file, url: URL.createObjectURL(file) })),
+    ])
+  }
+  const removeHousingImage = index => {
+    setHousingImagePreviews(current => {
+      URL.revokeObjectURL(current[index].url)
+      return current.filter((_, itemIndex) => itemIndex !== index)
+    })
+    setHousingImages(current => current.filter((_, itemIndex) => itemIndex !== index))
+  }
   const handleBack = () => {
     if (['apply', 'edit', 'applications'].includes(mode) && selectedPost) {
       setMode('detail')
@@ -514,6 +557,19 @@ export default function NeedsBoard() {
               </h2>
               <p style={{ margin: 0, fontSize: 14, color: '#555', lineHeight: 1.6 }}>{selectedPost.content}</p>
             </div>
+
+            {selectedPost.type === 'house' && selectedPost.photos?.length > 0 && (
+              <div className="no-scrollbar" aria-label="매물 사진" style={{ display: 'flex', gap: 10, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '2px 1px 6px' }}>
+                {selectedPost.photos.map((photo, index) => (
+                  <img
+                    key={photo.id || photo.image}
+                    src={photo.image}
+                    alt={`${selectedPost.title} 사진 ${index + 1}`}
+                    style={{ flex: '0 0 88%', width: '88%', aspectRatio: '4 / 3', objectFit: 'cover', borderRadius: 20, background: '#eef1ec', scrollSnapAlign: 'center' }}
+                  />
+                ))}
+              </div>
+            )}
 
             <div style={{ borderRadius: 24, background: '#fff', boxShadow: '0 4px 20px rgba(31,45,35,0.08)', padding: 20, display: 'grid', gap: 13 }}>
               {selectedPost.type === 'people' ? (
@@ -650,6 +706,41 @@ export default function NeedsBoard() {
                 <Field label="집 평수" value={draft.size} onChange={v => updateDraft('size', v)} placeholder="예: 18" type="number" />
                 <Field label="방 구성" value={draft.rooms} onChange={v => updateDraft('rooms', v)} placeholder="예: 분리형 원룸" />
                 <Field label="자세한 주소" value={draft.address} onChange={v => updateDraft('address', v)} placeholder="예: 옥천읍 금구리" />
+                {mode === 'write' ? (
+                  <section style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>집 내부 사진</span>
+                      <span style={{ fontSize: 12, color: '#777' }}>{housingImages.length}/{MAX_HOUSING_IMAGES}</span>
+                    </div>
+                    {housingImagePreviews.length > 0 && (
+                      <div className="no-scrollbar" style={{ display: 'flex', gap: 9, overflowX: 'auto', paddingBottom: 2 }}>
+                        {housingImagePreviews.map((preview, index) => (
+                          <div key={preview.url} style={{ position: 'relative', flex: '0 0 112px', width: 112, height: 84 }}>
+                            <img src={preview.url} alt={`선택한 사진 ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12, background: '#eef1ec' }} />
+                            <button type="button" aria-label={`사진 ${index + 1} 삭제`} onClick={() => removeHousingImage(index)} style={{ position: 'absolute', top: 5, right: 5, width: 27, height: 27, padding: 0, border: 'none', borderRadius: '50%', background: 'rgba(20,24,20,0.72)', color: '#fff', display: 'grid', placeItems: 'center', cursor: 'pointer' }}>
+                              <X size={15} strokeWidth={2.4} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <label style={{ minHeight: 48, border: '1.5px dashed #b9cdb7', borderRadius: 14, background: '#f7faf5', color: GREEN, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, fontSize: 14, fontWeight: 650, cursor: 'pointer' }}>
+                      <ImagePlus size={18} strokeWidth={2.2} /> 사진 선택
+                      <input type="file" accept="image/*" multiple onChange={addHousingImages} style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }} />
+                    </label>
+                    <span style={{ fontSize: 12, color: '#777', lineHeight: 1.45 }}>최대 10장, 사진 한 장당 10MB까지 등록할 수 있어요.</span>
+                  </section>
+                ) : selectedPost?.photos?.length > 0 ? (
+                  <section style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>등록된 사진</span>
+                    <div className="no-scrollbar" style={{ display: 'flex', gap: 9, overflowX: 'auto' }}>
+                      {selectedPost.photos.map((photo, index) => (
+                        <img key={photo.id || photo.image} src={photo.image} alt={`등록된 사진 ${index + 1}`} style={{ flex: '0 0 112px', width: 112, height: 84, objectFit: 'cover', borderRadius: 12, background: '#eef1ec' }} />
+                      ))}
+                    </div>
+                    <span style={{ fontSize: 12, color: '#777', lineHeight: 1.45 }}>현재는 등록된 사진을 변경할 수 없어요.</span>
+                  </section>
+                ) : null}
                 <Field label="옵션 정보" value={draft.optionsText} onChange={v => updateDraft('optionsText', v)} placeholder="쉼표로 구분해 주세요" />
                 <Field label="작성자 이름" value={draft.author} onChange={v => updateDraft('author', v)} placeholder="이름 또는 상호명" />
                 <Field label="전화번호" value={draft.phone} onChange={v => updateDraft('phone', v)} placeholder="010-0000-0000" type="tel" />

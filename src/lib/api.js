@@ -79,8 +79,9 @@ async function refreshAccessToken() {
 
 async function request(path, options = {}) {
   const token = getAccessToken()
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData
   const headers = {
-    ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+    ...(options.body && !isFormData ? { 'Content-Type': 'application/json' } : {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
   }
@@ -401,10 +402,21 @@ export async function fetchHousingPost(postId) {
   return request(`/api/board/housing/${postId}/`)
 }
 
-export async function createHousingPost(post) {
+export async function createHousingPost(post, images = []) {
+  const formData = new FormData()
+  Object.entries(post).forEach(([key, value]) => {
+    if (value == null || value === '') return
+    if (Array.isArray(value)) {
+      value.forEach(item => formData.append(key, item))
+      return
+    }
+    formData.append(key, String(value))
+  })
+  images.forEach(image => formData.append('images', image))
+
   return request('/api/board/housing/', {
     method: 'POST',
-    body: JSON.stringify(post),
+    body: formData,
   })
 }
 
