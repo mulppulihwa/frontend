@@ -1,9 +1,9 @@
-import { FileText, Home, Map } from 'lucide-react'
+import { Home, Map, Search } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const items = [
   { label: '홈', path: '/home', icon: Home },
-  { label: '구해요', path: '/needs', icon: FileText },
+  { label: '구해요', path: '/needs', icon: Search },
   { label: '지도', path: '/map', icon: Map },
 ]
 
