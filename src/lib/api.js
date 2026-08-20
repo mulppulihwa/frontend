@@ -230,7 +230,7 @@ export function normalizePolicy(policy, index = 0) {
 
 export function normalizePlace(place, index = 0) {
   const sourceCategory = place.category || place.type || place.benefit_type || ''
-  const category = normalizePlaceCategory(sourceCategory)
+  const category = normalizePlaceCategory(sourceCategory, place.name || place.title)
   return {
     ...place,
     id: place.id ?? index + 1,

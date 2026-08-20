@@ -32,7 +32,7 @@ function createSteps(userName) {
     {
       selector: '[data-tutorial="map-navigation"]',
       eyebrow: '우리 마을 정착 지도',
-      title: '행정복지센터부터 동호회 장소까지 성공적인 옥천 정착을 돕는 지도예요.',
+      title: '집과 부동산부터 농기계, 교육, 생활 명소까지 성공적인 옥천 정착을 돕는 지도예요.',
       description: '',
     },
     {

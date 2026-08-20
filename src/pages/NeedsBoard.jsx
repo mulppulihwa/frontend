@@ -694,22 +694,10 @@ export default function NeedsBoard() {
               </>
             ) : (
               <>
-                <SelectField
-                  label="거래 유형"
-                  value={draft.dealType}
-                  onChange={value => updateDraft('dealType', value)}
-                  options={[{ value: '월세', label: '월세' }, { value: '전세', label: '전세' }]}
-                />
-                <Field label={draft.dealType === '전세' ? '전세금 (만원)' : '보증금 (만원)'} value={draft.deposit} onChange={v => updateDraft('deposit', v)} placeholder="예: 300" type="number" />
-                {draft.dealType === '월세' && <Field label="월세 (만원)" value={draft.monthlyRent} onChange={v => updateDraft('monthlyRent', v)} placeholder="예: 35" type="number" />}
-                <Field label="관리비 (만원)" value={draft.maintenanceFee} onChange={v => updateDraft('maintenanceFee', v)} placeholder="예: 5" type="number" />
-                <Field label="집 평수" value={draft.size} onChange={v => updateDraft('size', v)} placeholder="예: 18" type="number" />
-                <Field label="방 구성" value={draft.rooms} onChange={v => updateDraft('rooms', v)} placeholder="예: 분리형 원룸" />
-                <Field label="자세한 주소" value={draft.address} onChange={v => updateDraft('address', v)} placeholder="예: 옥천읍 금구리" />
                 {mode === 'write' ? (
                   <section style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>집 내부 사진</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>집 내부 사진 (선택)</span>
                       <span style={{ fontSize: 12, color: '#777' }}>{housingImages.length}/{MAX_HOUSING_IMAGES}</span>
                     </div>
                     {housingImagePreviews.length > 0 && (
@@ -730,17 +718,35 @@ export default function NeedsBoard() {
                     </label>
                     <span style={{ fontSize: 12, color: '#777', lineHeight: 1.45 }}>최대 10장, 사진 한 장당 10MB까지 등록할 수 있어요.</span>
                   </section>
-                ) : selectedPost?.photos?.length > 0 ? (
+                ) : (
                   <section style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>등록된 사진</span>
-                    <div className="no-scrollbar" style={{ display: 'flex', gap: 9, overflowX: 'auto' }}>
-                      {selectedPost.photos.map((photo, index) => (
-                        <img key={photo.id || photo.image} src={photo.image} alt={`등록된 사진 ${index + 1}`} style={{ flex: '0 0 112px', width: 112, height: 84, objectFit: 'cover', borderRadius: 12, background: '#eef1ec' }} />
-                      ))}
-                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>집 내부 사진</span>
+                    {selectedPost?.photos?.length > 0 ? (
+                      <div className="no-scrollbar" style={{ display: 'flex', gap: 9, overflowX: 'auto' }}>
+                        {selectedPost.photos.map((photo, index) => (
+                          <img key={photo.id || photo.image} src={photo.image} alt={`등록된 사진 ${index + 1}`} style={{ flex: '0 0 112px', width: 112, height: 84, objectFit: 'cover', borderRadius: 12, background: '#eef1ec' }} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ minHeight: 48, borderRadius: 14, background: '#f5f6f4', color: '#777', display: 'grid', placeItems: 'center', fontSize: 13 }}>
+                        등록된 사진이 없어요.
+                      </div>
+                    )}
                     <span style={{ fontSize: 12, color: '#777', lineHeight: 1.45 }}>현재는 등록된 사진을 변경할 수 없어요.</span>
                   </section>
-                ) : null}
+                )}
+                <SelectField
+                  label="거래 유형"
+                  value={draft.dealType}
+                  onChange={value => updateDraft('dealType', value)}
+                  options={[{ value: '월세', label: '월세' }, { value: '전세', label: '전세' }]}
+                />
+                <Field label={draft.dealType === '전세' ? '전세금 (만원)' : '보증금 (만원)'} value={draft.deposit} onChange={v => updateDraft('deposit', v)} placeholder="예: 300" type="number" />
+                {draft.dealType === '월세' && <Field label="월세 (만원)" value={draft.monthlyRent} onChange={v => updateDraft('monthlyRent', v)} placeholder="예: 35" type="number" />}
+                <Field label="관리비 (만원)" value={draft.maintenanceFee} onChange={v => updateDraft('maintenanceFee', v)} placeholder="예: 5" type="number" />
+                <Field label="집 평수" value={draft.size} onChange={v => updateDraft('size', v)} placeholder="예: 18" type="number" />
+                <Field label="방 구성" value={draft.rooms} onChange={v => updateDraft('rooms', v)} placeholder="예: 분리형 원룸" />
+                <Field label="자세한 주소" value={draft.address} onChange={v => updateDraft('address', v)} placeholder="예: 옥천읍 금구리" />
                 <Field label="옵션 정보" value={draft.optionsText} onChange={v => updateDraft('optionsText', v)} placeholder="쉼표로 구분해 주세요" />
                 <Field label="작성자 이름" value={draft.author} onChange={v => updateDraft('author', v)} placeholder="이름 또는 상호명" />
                 <Field label="전화번호" value={draft.phone} onChange={v => updateDraft('phone', v)} placeholder="010-0000-0000" type="tel" />

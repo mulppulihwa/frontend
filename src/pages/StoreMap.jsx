@@ -28,19 +28,11 @@ const COLLAPSED_H = 220
 const EXPANDED_H = 400
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
 const USER_PLACE_CATEGORIES = PLACE_CATEGORIES.map(category => category.id)
-const API_PLACE_CATEGORY = {
-  행정: '행정',
-  부동산: '건축자재',
-  동호회: '동호회',
-  맛집: '음식점',
-  생활: '생활',
-}
+const API_PLACE_CATEGORY = Object.fromEntries(USER_PLACE_CATEGORIES.map(category => [category, category]))
 const EDITABLE_PLACE_CATEGORY = {
-  행정: '행정',
   건축자재: '부동산',
-  동호회: '동호회',
-  생활: '생활',
   음식점: '맛집',
+  ...API_PLACE_CATEGORY,
 }
 const PLACE_RECOMMEND_KEY = 'okcheonPlaceRecommendations'
 
@@ -53,7 +45,7 @@ function writeRecommendations(value) {
 }
 
 function getTrustBadges(place) {
-  if (place.userAdded) return []
+  if (place.userAdded || place.curated) return []
   const key = `${place.name || ''}${place.address || ''}`
   const badges = []
   if (key.length % 2 === 0 || place.category === '맛집') badges.push('옥천신문 추천')
@@ -103,10 +95,12 @@ export default function StoreMap() {
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
   const markersRef = useRef([])
+  const geocodeAttemptsRef = useRef(new Set())
   const mapAreaRef = useRef(null)
   const postcodeLayerRef = useRef(null)
   const [mapAreaHeight, setMapAreaHeight] = useState(0)
-  const [activeCategory, setActiveCategory] = useState('행정')
+  const [mapReady, setMapReady] = useState(false)
+  const [activeCategory, setActiveCategory] = useState('집')
   const [sheetH, setSheetH] = useState(COLLAPSED_H)
   const [selectedStore, setSelectedStore] = useState(null)
   const [stores, setStores] = useState([])
@@ -145,7 +139,9 @@ export default function StoreMap() {
     fetchPlaces()
       .then(places => {
         if (!active) return
-        const relatedPlaces = filterPlacesByPolicy(places, relatedPolicy)
+        const relatedPlaces = relatedPolicy
+          ? filterPlacesByPolicy(places, relatedPolicy)
+          : places
         setStores(relatedPlaces)
         const nextCategory = state?.store?.category || relatedPlaces[0]?.category || ''
         if (nextCategory) setActiveCategory(nextCategory)
@@ -211,10 +207,12 @@ export default function StoreMap() {
       window.kakao.maps.load(() => {
         const container = mapRef.current
         if (!container) return
-        const center = state?.store
+        const hasStorePosition = Number.isFinite(Number(state?.store?.lat)) && Number.isFinite(Number(state?.store?.lng))
+        const center = hasStorePosition
           ? new window.kakao.maps.LatLng(state.store.lat, state.store.lng)
           : new window.kakao.maps.LatLng(OKCHEON_CENTER.lat, OKCHEON_CENTER.lng)
         mapInstanceRef.current = new window.kakao.maps.Map(container, { center, level: 3 })
+        setMapReady(true)
         const category = state?.store?.category || activeCategory
         if (state?.store) setActiveCategory(category)
         drawMarkers(category)
@@ -237,13 +235,40 @@ export default function StoreMap() {
     document.head.appendChild(script)
   }, [])
 
+  useEffect(() => {
+    if (!window.kakao?.maps?.services || stores.length === 0) return
+    const geocoder = new window.kakao.maps.services.Geocoder()
+
+    stores.forEach(place => {
+      const hasCoordinates = Number.isFinite(Number(place.lat)) && Number.isFinite(Number(place.lng))
+      const key = String(place.id || `${place.name}-${place.address}`)
+      if (hasCoordinates || place.locationPrivate || !place.address || geocodeAttemptsRef.current.has(key)) return
+      geocodeAttemptsRef.current.add(key)
+
+      geocoder.addressSearch(place.address, (results, status) => {
+        if (status !== window.kakao.maps.services.Status.OK || !results.length) return
+        const lat = Number(results[0].y)
+        const lng = Number(results[0].x)
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return
+        setStores(current => current.map(item => (
+          String(item.id) === String(place.id) ? { ...item, lat, lng } : item
+        )))
+      })
+    })
+  }, [stores, mapReady])
+
   function drawMarkers(categoryId) {
     const map = mapInstanceRef.current
     if (!map || !categoryId) return
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
-    const color = getPlaceCategoryMeta(categoryId).color
-    stores.filter(place => place.category === categoryId).forEach(store => {
+    const categoryMeta = getPlaceCategoryMeta(categoryId)
+    if (!categoryMeta) return
+    const color = categoryMeta.color
+    stores
+      .filter(place => place.category === categoryId)
+      .filter(place => Number.isFinite(Number(place.lat)) && Number.isFinite(Number(place.lng)))
+      .forEach(store => {
       const position = new window.kakao.maps.LatLng(store.lat, store.lng)
       const svg = `<svg width="36" height="44" viewBox="0 0 36 44" xmlns="http://www.w3.org/2000/svg">
         <filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/></filter>
@@ -263,7 +288,7 @@ export default function StoreMap() {
         openDetail(store)
       })
       markersRef.current.push(marker)
-    })
+      })
   }
 
   useEffect(() => {
@@ -287,6 +312,7 @@ export default function StoreMap() {
   const handleStoreClick = (store) => {
     setSelectedStore(store)
     if (fullscreen) setSheetH(COLLAPSED_H)
+    if (!Number.isFinite(Number(store.lat)) || !Number.isFinite(Number(store.lng))) return
     window.setTimeout(() => {
       mapInstanceRef.current?.panTo(new window.kakao.maps.LatLng(store.lat, store.lng))
     }, fullscreen ? 120 : 0)
@@ -296,10 +322,14 @@ export default function StoreMap() {
 
   function openDetail(store) {
     setDetailPopup({ ...store, kakaoResult: null })
+    if (store.locationPrivate) {
+      setDetailLoading(false)
+      return
+    }
     setDetailLoading(true)
     if (window.kakao?.maps?.services) {
       const ps = new window.kakao.maps.services.Places()
-      ps.keywordSearch(store.name, (data, status) => {
+      ps.keywordSearch([store.name, store.locationPrivate ? '' : store.address].filter(Boolean).join(' '), (data, status) => {
         if (status === window.kakao.maps.services.Status.OK && data.length > 0) {
           const p = data[0]
           setDetailPopup({
@@ -764,8 +794,12 @@ export default function StoreMap() {
                         )}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 7, minHeight: 19 }}>
-                        <span style={{ fontSize: 13.5, lineHeight: 1, fontWeight: 750, color: '#d98200' }}>★ {store.rating}</span>
-                        <span style={{ fontSize: 12.5, lineHeight: 1, fontWeight: 550, color: '#555' }}>({store.reviews})</span>
+                        {(Number(store.rating) > 0 || Number(store.reviews) > 0) && (
+                          <>
+                            <span style={{ fontSize: 13.5, lineHeight: 1, fontWeight: 750, color: '#d98200' }}>★ {store.rating}</span>
+                            <span style={{ fontSize: 12.5, lineHeight: 1, fontWeight: 550, color: '#555' }}>({store.reviews})</span>
+                          </>
+                        )}
                         {recommendCount > 0 && (
                           <>
                             <span style={{ fontSize: 12, color: '#777' }}>·</span>
@@ -774,7 +808,7 @@ export default function StoreMap() {
                             </span>
                           </>
                         )}
-                        {userPos && (
+                        {userPos && Number.isFinite(Number(store.lat)) && Number.isFinite(Number(store.lng)) && (
                           <>
                             <span style={{ fontSize: 12, color: '#777' }}>·</span>
                             <span style={{ fontSize: 13, lineHeight: 1, fontWeight: 650, color: '#3f3f3f' }}>{haversine(userPos.lat, userPos.lng, store.lat, store.lng)}</span>
@@ -1095,24 +1129,30 @@ export default function StoreMap() {
               <span style={{ color: '#6d766a' }}>{getRecommendedCount(detailPopup, recommendations)}</span>
             </button>
 
-            <div style={{ display: 'flex', gap: 10 }}>
-              <a
-                className="app-action-button"
-                href={getKakaoMapUrl(detailPopup)}
-                target="_blank"
-                rel="noreferrer"
-                style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#f5f5f5', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#555', fontFamily: 'inherit', cursor: 'pointer' }}
-              >
-                지도에서 보기
-              </a>
-              <a
-                className="app-action-button"
-                href={`tel:${detailPopup.kakaoResult?.phone || detailPopup.phone}`}
-                style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#076818', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#fff', fontFamily: 'inherit' }}
-              >
-                전화하기
-              </a>
-            </div>
+            {(!detailPopup.locationPrivate || detailPopup.kakaoResult?.phone || detailPopup.phone) && (
+              <div style={{ display: 'flex', gap: 10 }}>
+                {!detailPopup.locationPrivate && (
+                  <a
+                    className="app-action-button"
+                    href={getKakaoMapUrl(detailPopup)}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#f5f5f5', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#555', fontFamily: 'inherit', cursor: 'pointer' }}
+                  >
+                    지도에서 보기
+                  </a>
+                )}
+                {(detailPopup.kakaoResult?.phone || detailPopup.phone) && (
+                  <a
+                    className="app-action-button"
+                    href={`tel:${detailPopup.kakaoResult?.phone || detailPopup.phone}`}
+                    style={{ flex: 1, padding: '13px 0', borderRadius: 50, background: '#076818', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: 14, fontWeight: 600, color: '#fff', fontFamily: 'inherit' }}
+                  >
+                    전화하기
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

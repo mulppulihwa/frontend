@@ -21,7 +21,8 @@ export default function StoreSearch() {
     let active = true
     fetchPlaces()
       .then(places => {
-        if (active) setStores(filterPlacesByPolicy(places, relatedPolicy))
+        if (!active) return
+        setStores(relatedPolicy ? filterPlacesByPolicy(places, relatedPolicy) : places)
       })
       .catch(() => {})
     return () => {
@@ -124,24 +125,30 @@ export default function StoreSearch() {
                   </div>
                 </div>
               </div>
-              <div style={{ display: 'flex', borderTop: '1.5px solid #ebebeb' }}>
-                <a
-                  href={`tel:${store.phone}`}
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none', borderRight: '1.5px solid #ebebeb' }}
-                >
-                  <Phone size={14} color="#076818" strokeWidth={2.5} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#076818', fontFamily: 'inherit' }}>전화하기</span>
-                </a>
-                <a
-                  href={`https://map.kakao.com/?q=${encodeURIComponent(store.name)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none' }}
-                >
-                  <MapPin size={14} color="#FFA100" strokeWidth={2.5} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#FFA100', fontFamily: 'inherit' }}>지도 보기</span>
-                </a>
-              </div>
+              {(store.phone || !store.locationPrivate) && (
+                <div style={{ display: 'flex', borderTop: '1.5px solid #ebebeb' }}>
+                  {store.phone && (
+                    <a
+                      href={`tel:${store.phone}`}
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none', borderRight: !store.locationPrivate ? '1.5px solid #ebebeb' : 'none' }}
+                    >
+                      <Phone size={14} color="#076818" strokeWidth={2.5} />
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#076818', fontFamily: 'inherit' }}>전화하기</span>
+                    </a>
+                  )}
+                  {!store.locationPrivate && (
+                    <a
+                      href={`https://map.kakao.com/?q=${encodeURIComponent(`${store.name} ${store.address}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 0', textDecoration: 'none' }}
+                    >
+                      <MapPin size={14} color="#FFA100" strokeWidth={2.5} />
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#FFA100', fontFamily: 'inherit' }}>지도 보기</span>
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           )
         })}

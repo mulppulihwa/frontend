@@ -77,15 +77,17 @@ export default function StoreDetail() {
               전화하기
             </a>
           )}
-          <a
-            href={`https://map.kakao.com/?q=${encodeURIComponent(store.name)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '13px 0', borderRadius: 999, background: '#f5f5f5', color: '#555', textDecoration: 'none', fontSize: 14, fontWeight: 700 }}
-          >
-            <ArrowUpRight size={15} color="#555" strokeWidth={2.4} />
-            지도 보기
-          </a>
+          {!store.locationPrivate && (
+            <a
+              href={`https://map.kakao.com/?q=${encodeURIComponent(`${store.name} ${store.address}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '13px 0', borderRadius: 999, background: '#f5f5f5', color: '#555', textDecoration: 'none', fontSize: 14, fontWeight: 700 }}
+            >
+              <ArrowUpRight size={15} color="#555" strokeWidth={2.4} />
+              지도 보기
+            </a>
+          )}
         </div>
       </div>
     </div>
