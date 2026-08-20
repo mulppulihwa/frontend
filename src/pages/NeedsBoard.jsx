@@ -24,7 +24,7 @@ function Pill({ active, children, onClick }) {
         color: active ? '#fff' : '#555',
         fontFamily: 'inherit',
         fontSize: 13,
-        fontWeight: 750,
+        fontWeight: 600,
         cursor: 'pointer',
       }}
     >
@@ -64,10 +64,10 @@ function PostCard({ post, onClick }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14 }}>
         <div style={{ minWidth: 0 }}>
-          <span style={{ display: 'inline-flex', borderRadius: 999, background: '#e8f3e8', color: GREEN, padding: '5px 10px', fontSize: 12, fontWeight: 800, marginBottom: 10 }}>
+          <span style={{ display: 'inline-flex', borderRadius: 999, background: '#e8f3e8', color: GREEN, padding: '5px 10px', fontSize: 12, fontWeight: 600, marginBottom: 10 }}>
             {post.category}
           </span>
-          <h3 style={{ margin: 0, fontSize: 18, lineHeight: 1.32, color: '#1f2433', fontWeight: 850, letterSpacing: '-0.35px' }}>
+          <h3 style={{ margin: 0, fontSize: 18, lineHeight: 1.32, color: '#1f2433', fontWeight: 700, letterSpacing: 0 }}>
             {post.title}
           </h3>
         </div>
@@ -104,7 +104,7 @@ function Field({ label, value, onChange, placeholder, type = 'text', textarea = 
   }
   return (
     <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-      <span style={{ fontSize: 13, fontWeight: 750, color: '#333' }}>{label}</span>
+      <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>{label}</span>
       {textarea ? <textarea {...common} /> : <input {...common} type={type} />}
     </label>
   )
@@ -212,7 +212,7 @@ export default function NeedsBoard() {
                       boxShadow: tab === id ? '0 3px 12px rgba(31,45,35,0.09)' : 'none',
                       fontFamily: 'inherit',
                       fontSize: 14,
-                      fontWeight: 850,
+                      fontWeight: 700,
                       cursor: 'pointer',
                     }}
                   >
@@ -234,7 +234,7 @@ export default function NeedsBoard() {
                 <PostCard key={post.id} post={post} onClick={() => { setSelectedPost(post); setMode('detail') }} />
               ))}
               {visiblePosts.length === 0 && (
-                <div style={{ padding: '42px 0', textAlign: 'center', color: '#888', fontSize: 14, fontWeight: 650 }}>
+                <div style={{ padding: '42px 0', textAlign: 'center', color: '#888', fontSize: 14, fontWeight: 500 }}>
                   조건에 맞는 게시글이 없어요.
                 </div>
               )}
@@ -245,10 +245,10 @@ export default function NeedsBoard() {
         {mode === 'detail' && selectedPost && (
           <section style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ borderRadius: 24, background: '#fff', boxShadow: '0 4px 20px rgba(31,45,35,0.08)', padding: 20 }}>
-              <span style={{ display: 'inline-flex', borderRadius: 999, background: '#e8f3e8', color: GREEN, padding: '6px 12px', fontSize: 12, fontWeight: 850 }}>
+              <span style={{ display: 'inline-flex', borderRadius: 999, background: '#e8f3e8', color: GREEN, padding: '6px 12px', fontSize: 12, fontWeight: 600 }}>
                 {selectedPost.category}
               </span>
-              <h2 style={{ margin: '12px 0 8px', fontSize: 22, lineHeight: 1.3, color: '#1f2433', fontWeight: 900, letterSpacing: '-0.4px' }}>
+              <h2 style={{ margin: '12px 0 8px', fontSize: 22, lineHeight: 1.3, color: '#1f2433', fontWeight: 700, letterSpacing: 0 }}>
                 {selectedPost.title}
               </h2>
               <p style={{ margin: 0, fontSize: 14, color: '#555', lineHeight: 1.6 }}>{selectedPost.content}</p>
@@ -287,7 +287,7 @@ export default function NeedsBoard() {
         {mode === 'apply' && selectedPost && (
           <form onSubmit={handleApply} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ borderRadius: 24, background: '#fff', boxShadow: '0 4px 20px rgba(31,45,35,0.08)', padding: 20 }}>
-              <h2 style={{ margin: '0 0 6px', fontSize: 19, fontWeight: 850, color: '#1f2433' }}>지원자 기본 정보</h2>
+              <h2 style={{ margin: '0 0 6px', fontSize: 19, fontWeight: 700, color: '#1f2433' }}>지원자 기본 정보</h2>
               <p style={{ margin: 0, color: '#777', fontSize: 13, lineHeight: 1.5 }}>처음 저장한 정보는 다음 지원 때 자동으로 채워져요.</p>
             </div>
             <Field label="이름" value={applicant.name} onChange={v => updateApplicant('name', v)} placeholder="이름을 입력해 주세요" />
@@ -344,9 +344,9 @@ export default function NeedsBoard() {
       </main>
 
       {toast && (
-        <div style={{ position: 'fixed', left: '50%', bottom: 92, transform: 'translateX(-50%)', zIndex: 500, width: 'min(calc(100% - 40px), 320px)', borderRadius: 999, background: '#1f2433', color: '#fff', padding: '13px 18px', textAlign: 'center', fontSize: 14, fontWeight: 750, boxShadow: '0 10px 28px rgba(31,36,51,0.22)' }}>
+        <div style={{ position: 'fixed', left: '50%', bottom: 92, transform: 'translateX(-50%)', zIndex: 500, width: 'min(calc(100% - 40px), 320px)', borderRadius: 999, background: '#1f2433', color: '#fff', padding: '13px 18px', textAlign: 'center', fontSize: 14, fontWeight: 600, boxShadow: '0 10px 28px rgba(31,36,51,0.22)' }}>
           {toast}
-          <button type="button" onClick={() => setToast('')} style={{ marginLeft: 12, border: 'none', background: 'transparent', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>닫기</button>
+          <button type="button" onClick={() => setToast('')} style={{ marginLeft: 12, border: 'none', background: 'transparent', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>닫기</button>
         </div>
       )}
     </div>
