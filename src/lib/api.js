@@ -339,6 +339,88 @@ export async function deletePlace(placeId) {
   })
 }
 
+export async function fetchJobPosts(filters = {}) {
+  const params = new URLSearchParams()
+  if (filters.category) params.set('category', filters.category)
+  if (filters.region) params.set('region', filters.region)
+  const query = params.toString()
+  const data = await request(`/api/board/jobs/${query ? `?${query}` : ''}`)
+  return toArray(data)
+}
+
+export async function fetchJobPost(postId) {
+  if (!postId) throw new Error('모집글 ID가 없습니다.')
+  return request(`/api/board/jobs/${postId}/`)
+}
+
+export async function createJobPost(post) {
+  return request('/api/board/jobs/', {
+    method: 'POST',
+    body: JSON.stringify(post),
+  })
+}
+
+export async function updateJobPost(postId, post) {
+  if (!postId) throw new Error('수정할 모집글 ID가 없습니다.')
+  return request(`/api/board/jobs/${postId}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(post),
+  })
+}
+
+export async function deleteJobPost(postId) {
+  if (!postId) throw new Error('삭제할 모집글 ID가 없습니다.')
+  return request(`/api/board/jobs/${postId}/`, { method: 'DELETE' })
+}
+
+export async function applyToJobPost(postId, application) {
+  if (!postId) throw new Error('지원할 모집글 ID가 없습니다.')
+  return request(`/api/board/jobs/${postId}/apply/`, {
+    method: 'POST',
+    body: JSON.stringify(application),
+  })
+}
+
+export async function fetchJobApplications(postId) {
+  if (!postId) throw new Error('모집글 ID가 없습니다.')
+  const data = await request(`/api/board/jobs/${postId}/applications/`)
+  return toArray(data)
+}
+
+export async function fetchHousingPosts(filters = {}) {
+  const params = new URLSearchParams()
+  if (filters.roomType) params.set('room_type', filters.roomType)
+  if (filters.region) params.set('region', filters.region)
+  const query = params.toString()
+  const data = await request(`/api/board/housing/${query ? `?${query}` : ''}`)
+  return toArray(data)
+}
+
+export async function fetchHousingPost(postId) {
+  if (!postId) throw new Error('매물 ID가 없습니다.')
+  return request(`/api/board/housing/${postId}/`)
+}
+
+export async function createHousingPost(post) {
+  return request('/api/board/housing/', {
+    method: 'POST',
+    body: JSON.stringify(post),
+  })
+}
+
+export async function updateHousingPost(postId, post) {
+  if (!postId) throw new Error('수정할 매물 ID가 없습니다.')
+  return request(`/api/board/housing/${postId}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(post),
+  })
+}
+
+export async function deleteHousingPost(postId) {
+  if (!postId) throw new Error('삭제할 매물 ID가 없습니다.')
+  return request(`/api/board/housing/${postId}/`, { method: 'DELETE' })
+}
+
 export async function fetchProfile() {
   return request('/api/profile/')
 }
