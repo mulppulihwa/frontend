@@ -14,6 +14,7 @@ import Checklist from './pages/Checklist'
 import StoreSearch from './pages/StoreSearch'
 import BasicInfo from './pages/BasicInfo'
 import AddressSearchTest from './pages/AddressSearchTest'
+import NeedsBoard from './pages/NeedsBoard'
 import { getAccessToken } from './lib/api'
 import BottomNav from './components/BottomNav'
 
@@ -52,6 +53,7 @@ function Layout() {
         <Route path="/checklist" element={<Checklist />} />
         <Route path="/store-search" element={<StoreSearch />} />
         <Route path="/basic-info" element={<BasicInfo />} />
+        <Route path="/needs" element={<NeedsBoard />} />
       </Route>
       <Route path="/dev/address-search-test" element={<AddressSearchTest />} />
     </Routes>

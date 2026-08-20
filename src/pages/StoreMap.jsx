@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ChevronUp, ChevronDown, MapPin, Phone, Search, X, Clock, Plus, Trash2, MessageSquareText, Pencil } from 'lucide-react'
+import { ChevronUp, ChevronDown, MapPin, Phone, Search, X, Clock, Plus, Trash2, MessageSquareText, Pencil, ShieldCheck, ThumbsUp } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import SelectField from '../components/SelectField'
 import { createPlace, deletePlace, fetchPlaces, updatePlace } from '../lib/api'
@@ -8,6 +8,7 @@ import { getPlaceCategories, getPlaceCategoryMeta, PLACE_CATEGORIES } from '../l
 import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
+const GREEN = '#076818'
 
 function haversine(lat1, lng1, lat2, lng2) {
   const R = 6371000
@@ -40,6 +41,37 @@ const EDITABLE_PLACE_CATEGORY = {
   동호회: '동호회',
   생활: '생활',
   음식점: '맛집',
+}
+const PLACE_RECOMMEND_KEY = 'okcheonPlaceRecommendations'
+
+function readRecommendations() {
+  try { return JSON.parse(localStorage.getItem(PLACE_RECOMMEND_KEY) || '{}') } catch { return {} }
+}
+
+function writeRecommendations(value) {
+  localStorage.setItem(PLACE_RECOMMEND_KEY, JSON.stringify(value))
+}
+
+function getTrustBadges(place) {
+  if (place.userAdded) return []
+  const key = `${place.name || ''}${place.address || ''}`
+  const badges = []
+  if (key.length % 2 === 0 || place.category === '맛집') badges.push('옥천신문 추천')
+  if (key.length % 3 === 0 || place.category === '행정') badges.push('옥천군 상담센터 추천')
+  return badges
+}
+
+function getRecommendKey(place) {
+  return String(place?.id || `${place?.name}-${place?.address}`)
+}
+
+function getRecommendedCount(place, recommendations = readRecommendations()) {
+  const key = getRecommendKey(place)
+  return Number(recommendations[key]?.count ?? place?.recommend_count ?? place?.recommendCount ?? 0)
+}
+
+function isPlaceRecommended(place, recommendations = readRecommendations()) {
+  return Boolean(recommendations[getRecommendKey(place)]?.recommended)
 }
 
 function loadPostcodeScript() {
@@ -89,6 +121,7 @@ export default function StoreMap() {
   const [editingPlaceId, setEditingPlaceId] = useState(null)
   const [hoveredPlaceId, setHoveredPlaceId] = useState(null)
   const [userFilter, setUserFilter] = useState('all')
+  const [recommendations, setRecommendations] = useState(() => readRecommendations())
   const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '', hours: '', memo: '' })
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
@@ -283,6 +316,22 @@ export default function StoreMap() {
     } else {
       setDetailLoading(false)
     }
+  }
+
+  const handleRecommendPlace = (place) => {
+    const key = getRecommendKey(place)
+    setRecommendations(current => {
+      if (current[key]?.recommended) return current
+      const next = {
+        ...current,
+        [key]: {
+          recommended: true,
+          count: getRecommendedCount(place, current) + 1,
+        },
+      }
+      writeRecommendations(next)
+      return next
+    })
   }
 
   const openAddPlace = (event) => {
@@ -622,6 +671,8 @@ export default function StoreMap() {
               const storeKey = store.id || `${store.name}-${i}`
               const isHovered = hoveredPlaceId === storeKey
               const CatIcon = activeCat.icon
+              const trustBadges = getTrustBadges(store)
+              const recommendCount = getRecommendedCount(store, recommendations)
               return (
                 <div
                   key={storeKey}
@@ -715,6 +766,14 @@ export default function StoreMap() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 7, minHeight: 19 }}>
                         <span style={{ fontSize: 13.5, lineHeight: 1, fontWeight: 750, color: '#d98200' }}>★ {store.rating}</span>
                         <span style={{ fontSize: 12.5, lineHeight: 1, fontWeight: 550, color: '#555' }}>({store.reviews})</span>
+                        {recommendCount > 0 && (
+                          <>
+                            <span style={{ fontSize: 12, color: '#777' }}>·</span>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12.5, lineHeight: 1, fontWeight: 750, color: '#076818' }}>
+                              <ThumbsUp size={12} strokeWidth={2.4} /> {recommendCount}
+                            </span>
+                          </>
+                        )}
                         {userPos && (
                           <>
                             <span style={{ fontSize: 12, color: '#777' }}>·</span>
@@ -722,6 +781,15 @@ export default function StoreMap() {
                           </>
                         )}
                       </div>
+                      {trustBadges.length > 0 && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, margin: '-1px 0 7px' }}>
+                          {trustBadges.map(badge => (
+                            <span key={badge} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 7px', borderRadius: 999, background: '#fff7e4', color: '#936000', fontSize: 11, fontWeight: 800 }}>
+                              <ShieldCheck size={11} strokeWidth={2.4} /> {badge}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                       <div style={{ display: 'grid', gridTemplateColumns: '17px minmax(0, 1fr)', alignItems: 'center', columnGap: 6, marginBottom: 4 }}>
                         <MapPin size={15} color="#555" strokeWidth={2.1} />
                         <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 500, color: '#444', letterSpacing: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -973,6 +1041,15 @@ export default function StoreMap() {
                 <X size={20} color="#888" strokeWidth={2} />
               </button>
             </div>
+            {getTrustBadges(detailPopup).length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: -6 }}>
+                {getTrustBadges(detailPopup).map(badge => (
+                  <span key={badge} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 9px', borderRadius: 999, background: '#fff7e4', color: '#936000', fontSize: 12, fontWeight: 800 }}>
+                    <ShieldCheck size={13} strokeWidth={2.4} /> {badge}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {detailLoading ? (
               <p style={{ fontSize: 14, color: '#aaa', textAlign: 'center', padding: '12px 0' }}>불러오는 중...</p>
@@ -991,6 +1068,32 @@ export default function StoreMap() {
                 ))}
               </div>
             )}
+
+            <button
+              type="button"
+              onClick={() => handleRecommendPlace(detailPopup)}
+              disabled={isPlaceRecommended(detailPopup, recommendations)}
+              style={{
+                width: '100%',
+                minHeight: 42,
+                borderRadius: 999,
+                border: '1.5px solid #dfe8dc',
+                background: isPlaceRecommended(detailPopup, recommendations) ? '#e8f3e8' : '#FFFFFF',
+                color: GREEN,
+                fontFamily: 'inherit',
+                fontSize: 14,
+                fontWeight: 850,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                cursor: isPlaceRecommended(detailPopup, recommendations) ? 'default' : 'pointer',
+              }}
+            >
+              <ThumbsUp size={16} strokeWidth={2.4} />
+              {isPlaceRecommended(detailPopup, recommendations) ? '추천했어요' : '추천해요'}
+              <span style={{ color: '#6d766a' }}>{getRecommendedCount(detailPopup, recommendations)}</span>
+            </button>
 
             <div style={{ display: 'flex', gap: 10 }}>
               <a

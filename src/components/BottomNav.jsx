@@ -1,8 +1,9 @@
-import { Home, Map } from 'lucide-react'
+import { FileText, Home, Map } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const items = [
   { label: '홈', path: '/home', icon: Home },
+  { label: '구해요', path: '/needs', icon: FileText },
   { label: '지도', path: '/map', icon: Map },
 ]
 
@@ -24,7 +25,7 @@ export default function BottomNav() {
         padding: '8px 54px max(8px, env(safe-area-inset-bottom))',
         boxSizing: 'border-box',
         display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
+        gridTemplateColumns: 'repeat(3, 1fr)',
         alignItems: 'center',
         background: '#FFFFFF',
         borderRadius: '28px 28px 0 0',
