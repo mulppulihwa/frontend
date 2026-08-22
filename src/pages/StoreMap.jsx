@@ -30,10 +30,17 @@ const COLLAPSED_H = 220
 const EXPANDED_H = 400
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
 const USER_PLACE_CATEGORIES = PLACE_CATEGORIES.map(category => category.id)
-const API_PLACE_CATEGORY = Object.fromEntries(USER_PLACE_CATEGORIES.map(category => [category, category]))
+const API_PLACE_CATEGORY = {
+  ...Object.fromEntries(USER_PLACE_CATEGORIES.map(category => [category, category])),
+  집: '생활',
+  부동산: '건축자재',
+  수도: '생활',
+  교육센터: '행정',
+  레저시설: '생활',
+  명소: '생활',
+  맛집: '음식점',
+}
 const EDITABLE_PLACE_CATEGORY = {
-  건축자재: '부동산',
-  음식점: '맛집',
   ...API_PLACE_CATEGORY,
 }
 const PLACE_RECOMMEND_KEY = 'okcheonPlaceRecommendations'
@@ -237,7 +244,7 @@ export default function StoreMap() {
   const [hoveredPlaceId, setHoveredPlaceId] = useState(null)
   const [userFilter, setUserFilter] = useState('all')
   const [recommendations, setRecommendations] = useState(() => readRecommendations())
-  const [newPlace, setNewPlace] = useState({ name: '', category: '부동산', address: '', phone: '', hours: '', memo: '' })
+  const [newPlace, setNewPlace] = useState({ name: '', category: '생활', address: '', phone: '', hours: '', memo: '' })
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
   const relatedPolicy = state?.policy || null
@@ -496,7 +503,7 @@ export default function StoreMap() {
     setEditingPlaceId(null)
     setNewPlace({
       name: '',
-      category: '부동산',
+      category: '생활',
       address: '',
       phone: '',
       hours: '',
@@ -514,7 +521,7 @@ export default function StoreMap() {
       category: EDITABLE_PLACE_CATEGORY[store.sourceCategory]
         || EDITABLE_PLACE_CATEGORY[store.category]
         || store.category
-        || '부동산',
+        || '생활',
       address: store.address || '',
       phone: store.phone || '',
       hours: store.hours === '사용자가 추가한 장소' ? '' : store.hours || '',
