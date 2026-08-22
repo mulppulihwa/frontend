@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowUp, CalendarDays, Check, ChevronLeft, ChevronRight, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
+import { ArrowUp, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Button from '../components/Button'
 import SelectField from '../components/SelectField'
@@ -86,6 +86,7 @@ const MOCK_JOB_POSTS = [
     conditions: '초보 가능 · 편한 작업복 준비',
     description: '복숭아 수확과 선별을 함께 도와주실 분을 찾습니다. 점심 식사를 제공해요.',
     created_by_nickname: '김옥천',
+    created_at: '2026-08-20T09:20:00+09:00',
     is_owner: false,
     isMock: true,
   },
@@ -101,6 +102,7 @@ const MOCK_JOB_POSTS = [
     conditions: '도배 경험자 우대 · 작업 도구 제공',
     description: '빈집 한 곳의 벽지 제거와 도배를 함께 진행합니다. 오전 9시에 시작해요.',
     created_by_nickname: '나린',
+    created_at: '2026-08-21T16:40:00+09:00',
     is_owner: true,
     isMock: true,
     mockApplications: [
@@ -139,6 +141,7 @@ const MOCK_HOUSING_POSTS = [
     description: '시장과 버스정류장이 가까운 조용한 투룸입니다. 즉시 입주할 수 있어요.',
     contact_name: '나린',
     contact_phone: '010-7300-1234',
+    created_at: '2026-08-19T11:15:00+09:00',
     photos: [],
     is_owner: true,
     isMock: true,
@@ -212,6 +215,13 @@ function matchesHeadcount(value, range) {
   if (range === '3-5') return count >= 3 && count <= 5
   if (range === '6이상') return count >= 6
   return true
+}
+
+function formatCreatedAt(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 등록`
 }
 
 function isPostOwner(post) {
@@ -355,6 +365,11 @@ function PostCard({ post, onClick }) {
         <InfoRow icon={CalendarDays}>{isPeople ? post.period : post.price}</InfoRow>
         <InfoRow icon={UserRound}>{isPeople ? post.condition : post.rooms}</InfoRow>
       </div>
+      {formatCreatedAt(post.created_at) && (
+        <div style={{ marginTop: 12, paddingTop: 11, borderTop: '1px solid #edf0eb' }}>
+          <InfoRow icon={Clock3}>{formatCreatedAt(post.created_at)}</InfoRow>
+        </div>
+      )}
     </button>
   )
 }
@@ -1099,6 +1114,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
               )}
               <InfoRow icon={UserRound}>작성자: {selectedPost.author}</InfoRow>
               {selectedPost.type === 'house' && <InfoRow icon={Phone}>연락처: {selectedPost.phone}</InfoRow>}
+              {formatCreatedAt(selectedPost.created_at) && <InfoRow icon={Clock3}>등록일: {formatCreatedAt(selectedPost.created_at).replace(' 등록', '')}</InfoRow>}
             </div>
 
             {isPostOwner(selectedPost) && (
