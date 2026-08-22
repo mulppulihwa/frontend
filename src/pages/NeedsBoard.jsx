@@ -207,6 +207,11 @@ function getMockPosts(tab, filter, hiddenIds) {
     .map(tab === 'people' ? normalizeJobPost : normalizeHousingPost)
 }
 
+function getVisibleDemoPosts(tab, filter, hiddenIds) {
+  if (tab === 'people') return getMockPosts(tab, filter, hiddenIds)
+  return import.meta.env.DEV ? getMockPosts(tab, filter, hiddenIds) : []
+}
+
 function draftFromPost(post) {
   if (post.type === 'people') {
     return {
@@ -426,12 +431,12 @@ export default function NeedsBoard() {
           })
         if (!cancelled) {
           const apiPosts = data.map(tab === 'people' ? normalizeJobPost : normalizeHousingPost)
-          const mockPosts = import.meta.env.DEV ? getMockPosts(tab, filter, hiddenMockIds) : []
+          const mockPosts = getVisibleDemoPosts(tab, filter, hiddenMockIds)
           setPosts([...mockPosts, ...apiPosts])
         }
       } catch (loadError) {
         if (!cancelled) {
-          const mockPosts = import.meta.env.DEV ? getMockPosts(tab, filter, hiddenMockIds) : []
+          const mockPosts = getVisibleDemoPosts(tab, filter, hiddenMockIds)
           setPosts(mockPosts)
           if (mockPosts.length === 0) setError(loadError.message || '게시글을 불러오지 못했습니다.')
         }
