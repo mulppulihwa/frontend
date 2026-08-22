@@ -1,7 +1,7 @@
 import { ArrowLeft, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-export default function TopBar({ title, onBack, onClose, rightAction }) {
+export default function TopBar({ title, onBack, onClose, rightAction, hideBack = false }) {
   const navigate = useNavigate()
   return (
     <>
@@ -20,12 +20,16 @@ export default function TopBar({ title, onBack, onClose, rightAction }) {
       background: '#FDFCF8',
       zIndex: 100,
     }}>
-      <button
-        onClick={onBack ?? (() => navigate(-1))}
-        style={{ position: 'absolute', left: 18, background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', borderRadius: 8 }}
-      >
-        <ArrowLeft size={18} color="#1a1a1a" strokeWidth={2} />
-      </button>
+      {!hideBack && (
+        <button
+          type="button"
+          aria-label="뒤로 가기"
+          onClick={onBack ?? (() => navigate(-1))}
+          style={{ position: 'absolute', left: 18, background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', borderRadius: 8 }}
+        >
+          <ArrowLeft size={18} color="#1a1a1a" strokeWidth={2} />
+        </button>
+      )}
       <span style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', letterSpacing: '-0.2px' }}>{title}</span>
       {onClose && (
         <button

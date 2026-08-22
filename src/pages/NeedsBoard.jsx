@@ -910,6 +910,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
       <TopBar
         title={mode === 'write' ? '글쓰기' : mode === 'edit' ? '게시글 수정' : mode === 'apply' ? '지원하기' : mode === 'applications' ? '지원자 목록' : authoredOnly ? '내가 쓴 글' : '구해요'}
         onBack={mode === 'list' ? (authoredOnly ? () => navigate('/needs') : undefined) : handleBack}
+        hideBack={mode === 'list' && !authoredOnly}
         rightAction={mode === 'list' ? { label: '글쓰기', icon: <FilePenLine size={19} />, onClick: openWrite } : null}
       />
 
