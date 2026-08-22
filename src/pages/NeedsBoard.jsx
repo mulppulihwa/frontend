@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CalendarDays, Check, ChevronRight, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, Search, Trash2, UserRound, UsersRound, X } from 'lucide-react'
+import { CalendarDays, Check, ChevronRight, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Button from '../components/Button'
 import SelectField from '../components/SelectField'
@@ -27,6 +27,32 @@ const regionOptions = ['옥천읍', '동이면', '안남면', '청성면', '청�
 const APPLICANT_CACHE_KEY = 'okcheonNeedsApplicant'
 const MAX_HOUSING_IMAGES = 10
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024
+const initialHousingFilters = {
+  region: '전체',
+  dealType: '전체',
+  deposit: '전체',
+  monthlyRent: '전체',
+  size: '전체',
+}
+
+const depositFilterOptions = [
+  { value: '전체', label: '전체' },
+  { value: '500이하', label: '500만원 이하' },
+  { value: '500-1000', label: '500~1,000만원' },
+  { value: '1000이상', label: '1,000만원 이상' },
+]
+const monthlyRentFilterOptions = [
+  { value: '전체', label: '전체' },
+  { value: '30이하', label: '30만원 이하' },
+  { value: '30-50', label: '30~50만원' },
+  { value: '50이상', label: '50만원 이상' },
+]
+const sizeFilterOptions = [
+  { value: '전체', label: '전체' },
+  { value: '10이하', label: '10평 이하' },
+  { value: '10-20', label: '10~20평' },
+  { value: '20이상', label: '20평 이상' },
+]
 
 const MOCK_JOB_POSTS = [
   {
@@ -126,6 +152,23 @@ function formatHousingPrice(post) {
   if (post.deal_type === '월세' && post.monthly_rent != null) parts.push(`월세 ${Number(post.monthly_rent).toLocaleString()}만원`)
   if (post.deal_type === '전세' && post.deposit != null) return `전세 ${Number(post.deposit).toLocaleString()}만원`
   return parts.join(' / ') || post.deal_type || '가격 문의'
+}
+
+function matchesNumberRange(value, range) {
+  if (range === '전체') return true
+  if (value == null || value === '') return false
+  const number = Number(value)
+  if (!Number.isFinite(number)) return false
+  if (range === '500이하') return number <= 500
+  if (range === '500-1000') return number > 500 && number < 1000
+  if (range === '1000이상') return number >= 1000
+  if (range === '30이하') return number <= 30
+  if (range === '30-50') return number > 30 && number < 50
+  if (range === '50이상') return number >= 50
+  if (range === '10이하') return number <= 10
+  if (range === '10-20') return number > 10 && number < 20
+  if (range === '20이상') return number >= 20
+  return true
 }
 
 function normalizeJobPost(post) {
@@ -264,11 +307,12 @@ function PostCard({ post, onClick }) {
   )
 }
 
-function Field({ label, value, onChange, placeholder, type = 'text', textarea = false }) {
+function Field({ label, value, onChange, placeholder, type = 'text', textarea = false, required = false }) {
   const common = {
     value,
     onChange: event => onChange(event.target.value),
     placeholder,
+    required,
     style: {
       width: '100%',
       minHeight: textarea ? 92 : 48,
@@ -285,7 +329,9 @@ function Field({ label, value, onChange, placeholder, type = 'text', textarea = 
   }
   return (
     <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-      <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>{label}</span>
+      <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>
+        {label}{required && <span aria-hidden="true" style={{ color: '#d93025', marginLeft: 3 }}>*</span>}
+      </span>
       {textarea ? <textarea {...common} /> : <input {...common} type={type} />}
     </label>
   )
@@ -296,6 +342,8 @@ export default function NeedsBoard() {
   const [tab, setTab] = useState('people')
   const [filter, setFilter] = useState('전체')
   const [searchQuery, setSearchQuery] = useState('')
+  const [housingFilterOpen, setHousingFilterOpen] = useState(false)
+  const [housingFilters, setHousingFilters] = useState(initialHousingFilters)
   const [posts, setPosts] = useState([])
   const [selectedPost, setSelectedPost] = useState(null)
   const [toast, setToast] = useState('')
@@ -336,6 +384,13 @@ export default function NeedsBoard() {
     const normalizedQuery = searchQuery.trim().toLocaleLowerCase('ko-KR')
     return posts.filter(post => {
       if (post.type !== tab) return false
+      if (tab === 'house') {
+        if (housingFilters.region !== '전체' && post.region !== housingFilters.region) return false
+        if (housingFilters.dealType !== '전체' && post.deal_type !== housingFilters.dealType) return false
+        if (!matchesNumberRange(post.deposit, housingFilters.deposit)) return false
+        if (!matchesNumberRange(post.monthly_rent, housingFilters.monthlyRent)) return false
+        if (!matchesNumberRange(post.size_pyeong, housingFilters.size)) return false
+      }
       if (!normalizedQuery) return true
       const searchableText = [
         post.title,
@@ -350,7 +405,12 @@ export default function NeedsBoard() {
       ].filter(Boolean).join(' ').toLocaleLowerCase('ko-KR')
       return searchableText.includes(normalizedQuery)
     })
-  }, [posts, searchQuery, tab])
+  }, [posts, searchQuery, tab, housingFilters])
+
+  const activeHousingFilterCount = useMemo(
+    () => Object.values(housingFilters).filter(value => value !== '전체').length,
+    [housingFilters],
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -360,7 +420,10 @@ export default function NeedsBoard() {
       try {
         const data = tab === 'people'
           ? await fetchJobPosts({ category: filter === '전체' ? '' : filter })
-          : await fetchHousingPosts({ roomType: filter === '전체' ? '' : filter })
+          : await fetchHousingPosts({
+            roomType: filter === '전체' ? '' : filter,
+            region: housingFilters.region === '전체' ? '' : housingFilters.region,
+          })
         if (!cancelled) {
           const apiPosts = data.map(tab === 'people' ? normalizeJobPost : normalizeHousingPost)
           const mockPosts = import.meta.env.DEV ? getMockPosts(tab, filter, hiddenMockIds) : []
@@ -378,7 +441,7 @@ export default function NeedsBoard() {
     }
     loadPosts()
     return () => { cancelled = true }
-  }, [tab, filter, hiddenMockIds])
+  }, [tab, filter, hiddenMockIds, housingFilters.region])
 
   useEffect(() => {
     let cancelled = false
@@ -558,6 +621,16 @@ export default function NeedsBoard() {
 
   const updateDraft = (key, value) => setDraft(current => ({ ...current, [key]: value }))
   const updateApplicant = (key, value) => setApplicant(current => ({ ...current, [key]: value }))
+  const isPostDraftValid = draft.type === 'people'
+    ? Boolean(draft.title.trim() && draft.category && draft.content.trim())
+    : Boolean(
+      draft.title.trim()
+      && draft.category
+      && draft.address.trim()
+      && draft.dealType
+      && draft.author.trim()
+      && draft.phone.trim(),
+    )
   const addHousingImages = event => {
     const incoming = Array.from(event.target.files || [])
     event.target.value = ''
@@ -670,6 +743,80 @@ export default function NeedsBoard() {
                   </Pill>
                 ))}
               </div>
+              {tab === 'house' && (
+                <div style={{ marginTop: 12 }}>
+                  <button
+                    type="button"
+                    onClick={() => setHousingFilterOpen(open => !open)}
+                    aria-expanded={housingFilterOpen}
+                    style={{
+                      width: '100%', minHeight: 44, padding: '0 14px', border: '1.5px solid #dfe5dc',
+                      borderRadius: 14, background: '#fff', color: '#334033', display: 'flex',
+                      alignItems: 'center', justifyContent: 'space-between', fontFamily: 'inherit',
+                      fontSize: 13.5, fontWeight: 650, cursor: 'pointer',
+                    }}
+                  >
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+                      <SlidersHorizontal size={17} strokeWidth={2.2} /> 상세 필터
+                    </span>
+                    {activeHousingFilterCount > 0 && (
+                      <span style={{ minWidth: 24, height: 24, padding: '0 7px', borderRadius: 999, background: '#e8f3e8', color: GREEN, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 750 }}>
+                        {activeHousingFilterCount}
+                      </span>
+                    )}
+                  </button>
+                  {housingFilterOpen && (
+                    <div style={{ marginTop: 8, padding: 14, borderRadius: 18, background: '#f4f6f2', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+                        <SelectField
+                          label="지역"
+                          value={housingFilters.region}
+                          onChange={value => setHousingFilters(current => ({ ...current, region: value }))}
+                          options={['전체', ...regionOptions].map(value => ({ value, label: value }))}
+                        />
+                        <SelectField
+                          label="거래 유형"
+                          value={housingFilters.dealType}
+                          onChange={value => setHousingFilters(current => ({
+                            ...current,
+                            dealType: value,
+                            monthlyRent: value === '전세' ? '전체' : current.monthlyRent,
+                          }))}
+                          options={['전체', '월세', '전세'].map(value => ({ value, label: value }))}
+                        />
+                        <SelectField
+                          label="보증금"
+                          value={housingFilters.deposit}
+                          onChange={value => setHousingFilters(current => ({ ...current, deposit: value }))}
+                          options={depositFilterOptions}
+                        />
+                        {housingFilters.dealType !== '전세' && (
+                          <SelectField
+                            label="월세"
+                            value={housingFilters.monthlyRent}
+                            onChange={value => setHousingFilters(current => ({ ...current, monthlyRent: value }))}
+                            options={monthlyRentFilterOptions}
+                          />
+                        )}
+                        <SelectField
+                          label="면적"
+                          value={housingFilters.size}
+                          onChange={value => setHousingFilters(current => ({ ...current, size: value }))}
+                          options={sizeFilterOptions}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setHousingFilters(initialHousingFilters)}
+                        disabled={activeHousingFilterCount === 0}
+                        style={{ alignSelf: 'flex-end', border: 'none', background: 'transparent', color: activeHousingFilterCount ? '#596257' : '#aeb3ad', display: 'inline-flex', alignItems: 'center', gap: 5, padding: 3, fontFamily: 'inherit', fontSize: 12.5, fontWeight: 600, cursor: activeHousingFilterCount ? 'pointer' : 'default' }}
+                      >
+                        <RotateCcw size={14} strokeWidth={2.2} /> 초기화
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </section>
 
             <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -814,6 +961,7 @@ export default function NeedsBoard() {
           <form onSubmit={handleSubmitPost} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <SelectField
               label="게시판"
+              required
               value={draft.type}
               onChange={value => {
                 updateDraft('type', value)
@@ -823,11 +971,12 @@ export default function NeedsBoard() {
             />
             <SelectField
               label="카테고리"
+              required
               value={draft.category}
               onChange={value => updateDraft('category', value)}
               options={(draft.type === 'people' ? peopleFilters : houseFilters).filter(v => v !== '전체').map(value => ({ value, label: value }))}
             />
-            <Field label="제목" value={draft.title} onChange={v => updateDraft('title', v)} placeholder="게시글 제목" />
+            <Field label="제목" required value={draft.title} onChange={v => updateDraft('title', v)} placeholder="게시글 제목" />
             <SelectField
               label="지역"
               value={draft.region}
@@ -888,6 +1037,7 @@ export default function NeedsBoard() {
                 )}
                 <SelectField
                   label="거래 유형"
+                  required
                   value={draft.dealType}
                   onChange={value => updateDraft('dealType', value)}
                   options={[{ value: '월세', label: '월세' }, { value: '전세', label: '전세' }]}
@@ -897,14 +1047,14 @@ export default function NeedsBoard() {
                 <Field label="관리비 (만원)" value={draft.maintenanceFee} onChange={v => updateDraft('maintenanceFee', v)} placeholder="예: 5" type="number" />
                 <Field label="집 평수" value={draft.size} onChange={v => updateDraft('size', v)} placeholder="예: 18" type="number" />
                 <Field label="방 구성" value={draft.rooms} onChange={v => updateDraft('rooms', v)} placeholder="예: 분리형 원룸" />
-                <Field label="자세한 주소" value={draft.address} onChange={v => updateDraft('address', v)} placeholder="예: 옥천읍 금구리" />
+                <Field label="자세한 주소" required value={draft.address} onChange={v => updateDraft('address', v)} placeholder="예: 옥천읍 금구리" />
                 <Field label="옵션 정보" value={draft.optionsText} onChange={v => updateDraft('optionsText', v)} placeholder="쉼표로 구분해 주세요" />
-                <Field label="작성자 이름" value={draft.author} onChange={v => updateDraft('author', v)} placeholder="이름 또는 상호명" />
-                <Field label="전화번호" value={draft.phone} onChange={v => updateDraft('phone', v)} placeholder="010-0000-0000" type="tel" />
+                <Field label="작성자 이름" required value={draft.author} onChange={v => updateDraft('author', v)} placeholder="이름 또는 상호명" />
+                <Field label="전화번호" required value={draft.phone} onChange={v => updateDraft('phone', v)} placeholder="010-0000-0000" type="tel" />
               </>
             )}
-            <Field label="상세 설명" value={draft.content} onChange={v => updateDraft('content', v)} placeholder="자유롭게 적어주세요" textarea />
-            <Button disabled={submitting || !draft.title || !draft.region || !draft.content || (draft.type === 'house' && (!draft.address || !draft.dealType || !draft.author || !draft.phone))}>
+            <Field label="상세 설명" required={draft.type === 'people'} value={draft.content} onChange={v => updateDraft('content', v)} placeholder="자유롭게 적어주세요" textarea />
+            <Button disabled={submitting || !isPostDraftValid}>
               {submitting ? (mode === 'edit' ? '수정 중...' : '등록 중...') : (mode === 'edit' ? '수정 완료' : '등록하기')}
             </Button>
           </form>

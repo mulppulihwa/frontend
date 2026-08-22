@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CircleHelp, Search } from 'lucide-react'
+import { CircleHelp, FileText, Home, Search, UsersRound } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
-import { deleteMyProfile, fetchProfile } from '../lib/api'
+import { deleteMyProfile, fetchHousingPosts, fetchJobPosts, fetchProfile } from '../lib/api'
 import { findDisplayName, getKakaoUserName, logout } from '../lib/auth'
 
 const SUBMITTED_KEY = 'submittedDiagnosisProfile'
@@ -70,6 +70,38 @@ function formatLastDiagnosis() {
   const days = Math.floor((Date.now() - date.getTime()) / 86400000)
   const ago = days === 0 ? '오늘' : `${days}일 전`
   return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')} (${ago})`
+}
+
+function formatPostDate(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`
+}
+
+function AuthoredPostCard({ post }) {
+  const isHousing = post.type === 'house'
+  const Icon = isHousing ? Home : UsersRound
+  const category = isHousing ? post.room_type : post.category
+  const description = post.description?.trim() || '작성한 상세 내용이 없어요.'
+
+  return (
+    <article style={{ padding: '15px 16px', borderRadius: 18, background: '#FFFFFF', boxShadow: '0 4px 16px rgba(31,45,35,0.07)', display: 'flex', flexDirection: 'column', gap: 9 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+        <span style={{ width: 34, height: 34, borderRadius: 11, background: '#edf5eb', color: '#076818', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+          <Icon size={17} strokeWidth={2.2} />
+        </span>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <span style={{ color: '#507052', fontSize: 11.5, fontWeight: 650 }}>{category}</span>
+            <span style={{ color: '#9a9a95', fontSize: 11 }}>{formatPostDate(post.created_at)}</span>
+          </div>
+          <h3 style={{ margin: '4px 0 0', color: '#1f2433', fontSize: 14.5, lineHeight: 1.4, fontWeight: 700, letterSpacing: 0 }}>{post.title}</h3>
+        </div>
+      </div>
+      <p style={{ margin: 0, color: '#555b55', fontSize: 12.5, lineHeight: 1.55, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{description}</p>
+    </article>
+  )
 }
 
 function ConfirmModal({ action, deleting, onCancel, onConfirm }) {
@@ -170,6 +202,9 @@ export default function BasicInfo() {
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
   const [confirmAction, setConfirmAction] = useState(null)
+  const [authoredPostType, setAuthoredPostType] = useState('people')
+  const [authoredPosts, setAuthoredPosts] = useState([])
+  const [authoredPostsLoading, setAuthoredPostsLoading] = useState(true)
   const lastDiagnosis = formatLastDiagnosis()
 
   useEffect(() => {
@@ -194,7 +229,20 @@ export default function BasicInfo() {
       })
       .catch(() => {})
       .finally(() => setLoading(false))
+
+    Promise.allSettled([fetchJobPosts(), fetchHousingPosts()])
+      .then(([jobsResult, housingResult]) => {
+        const jobs = jobsResult.status === 'fulfilled' ? jobsResult.value : []
+        const housing = housingResult.status === 'fulfilled' ? housingResult.value : []
+        setAuthoredPosts([
+          ...jobs.filter(post => post.is_owner).map(post => ({ ...post, type: 'people' })),
+          ...housing.filter(post => post.is_owner).map(post => ({ ...post, type: 'house' })),
+        ])
+      })
+      .finally(() => setAuthoredPostsLoading(false))
   }, [])
+
+  const visibleAuthoredPosts = authoredPosts.filter(post => post.type === authoredPostType)
 
   const handleLogout = () => {
     logout()
@@ -320,6 +368,39 @@ export default function BasicInfo() {
               <ReadOnlyRow label="현재 직업" value={diagnosisInfo.job} />
               <ReadOnlyRow label="농사 여부" value={formatBoolean(diagnosisInfo.farming)} />
               <ReadOnlyRow label="농업경영체" value={formatBoolean(diagnosisInfo.farmBusiness)} />
+            </section>
+
+            <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                <p style={{ margin: 0, fontSize: 17, fontWeight: 800, color: '#1a1a1a', letterSpacing: '-0.3px' }}>내가 쓴 구해요 글</p>
+                <button type="button" onClick={() => navigate('/needs')} style={{ border: 'none', background: 'transparent', color: '#076818', padding: 2, fontFamily: 'inherit', fontSize: 12.5, fontWeight: 650, cursor: 'pointer' }}>구해요로 이동</button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, padding: 4, borderRadius: 999, background: '#f0f2ee' }}>
+                {[
+                  ['people', '사람 구해요'],
+                  ['house', '집 구해요'],
+                ].map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setAuthoredPostType(value)}
+                    style={{ minHeight: 38, border: 'none', borderRadius: 999, background: authoredPostType === value ? '#FFFFFF' : 'transparent', color: authoredPostType === value ? '#076818' : '#747974', boxShadow: authoredPostType === value ? '0 2px 9px rgba(31,45,35,0.08)' : 'none', fontFamily: 'inherit', fontSize: 12.5, fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {authoredPostsLoading ? (
+                <div style={{ minHeight: 90, display: 'grid', placeItems: 'center', color: '#777', fontSize: 12.5 }}>작성한 글을 불러오는 중이에요.</div>
+              ) : visibleAuthoredPosts.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {visibleAuthoredPosts.map(post => <AuthoredPostCard key={`${post.type}-${post.id}`} post={post} />)}
+                </div>
+              ) : (
+                <div style={{ minHeight: 90, borderRadius: 18, background: '#f5f6f3', color: '#777', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, fontSize: 12.5, textAlign: 'center' }}>
+                  <FileText size={16} strokeWidth={2} /> 작성한 글이 없어요.
+                </div>
+              )}
             </section>
 
             <button
