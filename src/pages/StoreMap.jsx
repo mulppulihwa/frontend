@@ -94,6 +94,11 @@ function getRecommendedCount(place, recommendations = readRecommendations()) {
   return Number(recommendations[key]?.count ?? place?.recommend_count ?? place?.recommendCount ?? 0)
 }
 
+function getDisplayedRecommendedCount(place, recommendations, showPreview = false) {
+  const count = getRecommendedCount(place, recommendations)
+  return showPreview ? Math.max(count, 5) : count
+}
+
 function isPlaceRecommended(place, recommendations = readRecommendations()) {
   return Boolean(recommendations[getRecommendKey(place)]?.recommended)
 }
@@ -826,7 +831,11 @@ export default function StoreMap() {
                 store,
                 import.meta.env.DEV && store === filteredStores[0],
               )
-              const recommendCount = getRecommendedCount(store, recommendations)
+              const recommendCount = getDisplayedRecommendedCount(
+                store,
+                recommendations,
+                import.meta.env.DEV && store === filteredStores[0],
+              )
               return (
                 <div
                   key={storeKey}
@@ -1201,7 +1210,11 @@ export default function StoreMap() {
               </button>
             </div>
             <ResidentRecommendationBadge
-              count={getRecommendedCount(detailPopup, recommendations)}
+              count={getDisplayedRecommendedCount(
+                detailPopup,
+                recommendations,
+                import.meta.env.DEV && String(detailPopup.id) === String(filteredStores[0]?.id),
+              )}
               large
             />
             <InstitutionRecommendationBadge
