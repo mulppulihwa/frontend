@@ -150,9 +150,10 @@ const MOCK_HOUSING_POSTS = [
 
 function readApplicantCache() {
   try {
-    return JSON.parse(localStorage.getItem(APPLICANT_CACHE_KEY) || 'null') || { name: '', phone: '', region: '', note: '' }
+    const cached = JSON.parse(localStorage.getItem(APPLICANT_CACHE_KEY) || 'null') || {}
+    return { name: cached.name || '', phone: cached.phone || '', note: cached.note || '' }
   } catch {
-    return { name: '', phone: '', region: '', note: '' }
+    return { name: '', phone: '', note: '' }
   }
 }
 
@@ -345,6 +346,79 @@ function DetailRow({ label, children }) {
   )
 }
 
+function FilterChoiceGroup({ label, value, options, onChange }) {
+  return (
+    <fieldset style={{ margin: 0, padding: 0, border: 'none' }}>
+      <legend style={{ marginBottom: 9, fontSize: 14, fontWeight: 700, color: '#252b25' }}>{label}</legend>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
+        {options.map(option => {
+          const optionValue = typeof option === 'string' ? option : option.value
+          const optionLabel = typeof option === 'string' ? option : option.label
+          const checked = value === optionValue
+          return (
+            <label
+              key={optionValue}
+              style={{
+                minHeight: 44,
+                padding: '0 12px',
+                border: `1.5px solid ${checked ? GREEN : '#e1e5df'}`,
+                borderRadius: 12,
+                background: checked ? '#f1f8f0' : '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 9,
+                color: checked ? GREEN : '#454b45',
+                fontSize: 13,
+                fontWeight: checked ? 700 : 550,
+                cursor: 'pointer',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={() => onChange(optionValue)}
+                style={{ width: 18, height: 18, margin: 0, accentColor: GREEN, flexShrink: 0 }}
+              />
+              <span>{optionLabel}</span>
+            </label>
+          )
+        })}
+      </div>
+    </fieldset>
+  )
+}
+
+function FilterModal({ title, onClose, onReset, hasFilters, children }) {
+  return (
+    <div
+      role="presentation"
+      onMouseDown={event => { if (event.target === event.currentTarget) onClose() }}
+      style={{ position: 'fixed', inset: 0, zIndex: 1200, padding: '24px 18px', background: 'rgba(27, 31, 27, 0.42)', display: 'grid', placeItems: 'center' }}
+    >
+      <section role="dialog" aria-modal="true" aria-label={title} style={{ width: 'min(100%, 440px)', maxHeight: 'min(82dvh, 720px)', overflowY: 'auto', borderRadius: 24, background: '#fff', boxShadow: '0 18px 50px rgba(24, 31, 25, 0.2)', padding: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 750, color: '#1f2433', letterSpacing: 0 }}>상세 필터</h2>
+            <p style={{ margin: '5px 0 0', fontSize: 12.5, color: '#727972' }}>{title}</p>
+          </div>
+          <button type="button" aria-label="상세 필터 닫기" onClick={onClose} style={{ width: 38, height: 38, border: 'none', borderRadius: '50%', background: '#f2f4f1', color: '#616861', display: 'grid', placeItems: 'center', cursor: 'pointer' }}>
+            <X size={19} strokeWidth={2.2} />
+          </button>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>{children}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '0.8fr 1.2fr', gap: 8, marginTop: 22 }}>
+          <button type="button" onClick={onReset} disabled={!hasFilters} style={{ minHeight: 46, border: '1.5px solid #dfe5dc', borderRadius: 14, background: '#fff', color: hasFilters ? '#596257' : '#b5bab4', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 650, cursor: hasFilters ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <RotateCcw size={15} strokeWidth={2.2} /> 초기화
+          </button>
+          <button type="button" onClick={onClose} style={{ minHeight: 46, border: 'none', borderRadius: 14, background: GREEN, color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+            필터 적용
+          </button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 function PostCard({ post, onClick }) {
   const isPeople = post.type === 'people'
   return (
@@ -396,12 +470,13 @@ function PostCard({ post, onClick }) {
   )
 }
 
-function Field({ label, value, onChange, placeholder, type = 'text', textarea = false, required = false }) {
+function Field({ label, value, onChange, placeholder, type = 'text', textarea = false, required = false, maxLength }) {
   const common = {
     value,
     onChange: event => onChange(event.target.value),
     placeholder,
     required,
+    maxLength,
     style: {
       width: '100%',
       minHeight: textarea ? 92 : 48,
@@ -473,6 +548,13 @@ export default function NeedsBoard({ authoredOnly = false }) {
     phone: '',
     content: '',
   })
+
+  useEffect(() => {
+    if (!peopleFilterOpen && !housingFilterOpen) return undefined
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previousOverflow }
+  }, [peopleFilterOpen, housingFilterOpen])
 
   const filters = tab === 'people' ? peopleFilters : houseFilters
   const visiblePosts = useMemo(() => {
@@ -585,7 +667,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
         setApplicant(current => ({
           ...current,
           name: current.name || profile?.applicant_name || profile?.nickname || '',
-          region: current.region || profile?.current_residence || '',
         }))
       })
       .catch(() => {})
@@ -885,7 +966,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
                 <div style={{ marginTop: 12 }}>
                   <button
                     type="button"
-                    onClick={() => setPeopleFilterOpen(open => !open)}
+                    onClick={() => setPeopleFilterOpen(true)}
                     aria-expanded={peopleFilterOpen}
                     style={{
                       width: '100%', minHeight: 44, padding: '0 14px', border: '1.5px solid #dfe5dc',
@@ -903,45 +984,13 @@ export default function NeedsBoard({ authoredOnly = false }) {
                       </span>
                     )}
                   </button>
-                  {peopleFilterOpen && (
-                    <div style={{ marginTop: 8, padding: 14, borderRadius: 18, background: '#f4f6f2', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
-                        <SelectField
-                          label="지역"
-                          value={peopleDetailFilters.region}
-                          onChange={value => setPeopleDetailFilters(current => ({ ...current, region: value }))}
-                          options={['전체', ...regionOptions].map(value => ({ value, label: value }))}
-                        />
-                        <SelectField
-                          label="모집 일정"
-                          value={peopleDetailFilters.schedule}
-                          onChange={value => setPeopleDetailFilters(current => ({ ...current, schedule: value }))}
-                          options={scheduleFilterOptions}
-                        />
-                        <SelectField
-                          label="필요 인원"
-                          value={peopleDetailFilters.headcount}
-                          onChange={value => setPeopleDetailFilters(current => ({ ...current, headcount: value }))}
-                          options={headcountFilterOptions}
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setPeopleDetailFilters(initialPeopleFilters)}
-                        disabled={activePeopleFilterCount === 0}
-                        style={{ alignSelf: 'flex-end', border: 'none', background: 'transparent', color: activePeopleFilterCount ? '#596257' : '#aeb3ad', display: 'inline-flex', alignItems: 'center', gap: 5, padding: 3, fontFamily: 'inherit', fontSize: 12.5, fontWeight: 600, cursor: activePeopleFilterCount ? 'pointer' : 'default' }}
-                      >
-                        <RotateCcw size={14} strokeWidth={2.2} /> 초기화
-                      </button>
-                    </div>
-                  )}
                 </div>
               )}
               {tab === 'house' && (
                 <div style={{ marginTop: 12 }}>
                   <button
                     type="button"
-                    onClick={() => setHousingFilterOpen(open => !open)}
+                    onClick={() => setHousingFilterOpen(true)}
                     aria-expanded={housingFilterOpen}
                     style={{
                       width: '100%', minHeight: 44, padding: '0 14px', border: '1.5px solid #dfe5dc',
@@ -959,56 +1008,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
                       </span>
                     )}
                   </button>
-                  {housingFilterOpen && (
-                    <div style={{ marginTop: 8, padding: 14, borderRadius: 18, background: '#f4f6f2', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
-                        <SelectField
-                          label="지역"
-                          value={housingFilters.region}
-                          onChange={value => setHousingFilters(current => ({ ...current, region: value }))}
-                          options={['전체', ...regionOptions].map(value => ({ value, label: value }))}
-                        />
-                        <SelectField
-                          label="거래 유형"
-                          value={housingFilters.dealType}
-                          onChange={value => setHousingFilters(current => ({
-                            ...current,
-                            dealType: value,
-                            monthlyRent: value === '전세' ? '전체' : current.monthlyRent,
-                          }))}
-                          options={['전체', '월세', '전세'].map(value => ({ value, label: value }))}
-                        />
-                        <SelectField
-                          label="보증금"
-                          value={housingFilters.deposit}
-                          onChange={value => setHousingFilters(current => ({ ...current, deposit: value }))}
-                          options={depositFilterOptions}
-                        />
-                        {housingFilters.dealType !== '전세' && (
-                          <SelectField
-                            label="월세"
-                            value={housingFilters.monthlyRent}
-                            onChange={value => setHousingFilters(current => ({ ...current, monthlyRent: value }))}
-                            options={monthlyRentFilterOptions}
-                          />
-                        )}
-                        <SelectField
-                          label="면적"
-                          value={housingFilters.size}
-                          onChange={value => setHousingFilters(current => ({ ...current, size: value }))}
-                          options={sizeFilterOptions}
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setHousingFilters(initialHousingFilters)}
-                        disabled={activeHousingFilterCount === 0}
-                        style={{ alignSelf: 'flex-end', border: 'none', background: 'transparent', color: activeHousingFilterCount ? '#596257' : '#aeb3ad', display: 'inline-flex', alignItems: 'center', gap: 5, padding: 3, fontFamily: 'inherit', fontSize: 12.5, fontWeight: 600, cursor: activeHousingFilterCount ? 'pointer' : 'default' }}
-                      >
-                        <RotateCcw size={14} strokeWidth={2.2} /> 초기화
-                      </button>
-                    </div>
-                  )}
                 </div>
               )}
               {!authoredOnly && (
@@ -1186,9 +1185,8 @@ export default function NeedsBoard({ authoredOnly = false }) {
             <div style={{ borderRadius: 24, background: '#fff', boxShadow: '0 4px 20px rgba(31,45,35,0.08)', padding: 20 }}>
               <h2 style={{ margin: '0 0 6px', fontSize: 19, fontWeight: 700, color: '#1f2433' }}>지원자 기본 정보</h2>
             </div>
-            <Field label="이름" value={applicant.name} onChange={v => updateApplicant('name', v)} placeholder="이름을 입력해 주세요" />
-            <Field label="전화번호" value={applicant.phone} onChange={v => updateApplicant('phone', v)} placeholder="010-0000-0000" type="tel" />
-            <Field label="거주 지역" value={applicant.region} onChange={v => updateApplicant('region', v)} placeholder="예: 옥천읍" />
+            <Field label="이름" required maxLength={50} value={applicant.name} onChange={v => updateApplicant('name', v)} placeholder="이름을 입력해 주세요" />
+            <Field label="전화번호" required maxLength={20} value={applicant.phone} onChange={v => updateApplicant('phone', v)} placeholder="010-0000-0000" type="tel" />
             <Field label="전달 메모" value={applicant.note} onChange={v => updateApplicant('note', v)} placeholder="가능한 시간이나 경험을 적어주세요" textarea />
             <Button disabled={!applicant.name || !applicant.phone || submitting}>{submitting ? '지원 중...' : '지원 완료'}</Button>
           </form>
@@ -1324,6 +1322,80 @@ export default function NeedsBoard({ authoredOnly = false }) {
           </form>
         )}
       </main>
+
+      {peopleFilterOpen && (
+        <FilterModal
+          title="사람 구해요 조건을 선택해 주세요"
+          onClose={() => setPeopleFilterOpen(false)}
+          onReset={() => setPeopleDetailFilters(initialPeopleFilters)}
+          hasFilters={activePeopleFilterCount > 0}
+        >
+          <FilterChoiceGroup
+            label="지역"
+            value={peopleDetailFilters.region}
+            options={['전체', ...regionOptions]}
+            onChange={value => setPeopleDetailFilters(current => ({ ...current, region: value }))}
+          />
+          <FilterChoiceGroup
+            label="모집 일정"
+            value={peopleDetailFilters.schedule}
+            options={scheduleFilterOptions}
+            onChange={value => setPeopleDetailFilters(current => ({ ...current, schedule: value }))}
+          />
+          <FilterChoiceGroup
+            label="필요 인원"
+            value={peopleDetailFilters.headcount}
+            options={headcountFilterOptions}
+            onChange={value => setPeopleDetailFilters(current => ({ ...current, headcount: value }))}
+          />
+        </FilterModal>
+      )}
+
+      {housingFilterOpen && (
+        <FilterModal
+          title="집 구해요 조건을 선택해 주세요"
+          onClose={() => setHousingFilterOpen(false)}
+          onReset={() => setHousingFilters(initialHousingFilters)}
+          hasFilters={activeHousingFilterCount > 0}
+        >
+          <FilterChoiceGroup
+            label="지역"
+            value={housingFilters.region}
+            options={['전체', ...regionOptions]}
+            onChange={value => setHousingFilters(current => ({ ...current, region: value }))}
+          />
+          <FilterChoiceGroup
+            label="거래 유형"
+            value={housingFilters.dealType}
+            options={['전체', '월세', '전세']}
+            onChange={value => setHousingFilters(current => ({
+              ...current,
+              dealType: value,
+              monthlyRent: value === '전세' ? '전체' : current.monthlyRent,
+            }))}
+          />
+          <FilterChoiceGroup
+            label="보증금"
+            value={housingFilters.deposit}
+            options={depositFilterOptions}
+            onChange={value => setHousingFilters(current => ({ ...current, deposit: value }))}
+          />
+          {housingFilters.dealType !== '전세' && (
+            <FilterChoiceGroup
+              label="월세"
+              value={housingFilters.monthlyRent}
+              options={monthlyRentFilterOptions}
+              onChange={value => setHousingFilters(current => ({ ...current, monthlyRent: value }))}
+            />
+          )}
+          <FilterChoiceGroup
+            label="면적"
+            value={housingFilters.size}
+            options={sizeFilterOptions}
+            onChange={value => setHousingFilters(current => ({ ...current, size: value }))}
+          />
+        </FilterModal>
+      )}
 
       {mode === 'list' && showScrollTop && (
         <button
