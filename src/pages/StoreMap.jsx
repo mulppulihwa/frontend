@@ -111,37 +111,37 @@ function ResidentRecommendationBadge({ count, large = false }) {
 
   return (
     <div style={{
-      display: 'inline-flex',
+      display: 'flex',
+      flexDirection: 'column',
       alignItems: 'center',
-      alignSelf: 'flex-start',
-      gap: large ? 9 : 7,
-      maxWidth: '100%',
-      padding: large ? '7px 12px 7px 8px' : '5px 10px 5px 6px',
-      border: '1px solid #eed8a9',
-      borderRadius: 999,
-      background: '#fff8e9',
+      justifyContent: 'flex-start',
+      gap: large ? 5 : 3,
+      width: large ? 104 : 76,
+      flexShrink: 0,
     }}>
       <img
         src={okcheonRecommendation}
         alt=""
         aria-hidden="true"
         style={{
-          width: large ? 42 : 32,
-          height: large ? 42 : 32,
+          width: large ? 70 : 50,
+          height: large ? 70 : 50,
           flexShrink: 0,
           objectFit: 'contain',
         }}
       />
       <span style={{
-        minWidth: 0,
-        color: '#5f470d',
-        fontSize: large ? 13 : 11.5,
+        width: '100%',
+        color: '#20242f',
+        fontSize: large ? 12.5 : 10.5,
         fontWeight: 750,
-        lineHeight: 1.3,
+        lineHeight: 1.25,
         letterSpacing: 0,
+        textAlign: 'center',
+        wordBreak: 'keep-all',
       }}>
         옥천 주민 추천
-        <span style={{ color: '#8a7139', fontWeight: 600 }}> · {count}명</span>
+        <span style={{ display: 'block', color: '#657064', fontSize: large ? 11.5 : 9.5, fontWeight: 600 }}>({count}명 이상)</span>
       </span>
     </div>
   )
@@ -152,37 +152,37 @@ function InstitutionRecommendationBadge({ types, large = false }) {
 
   return (
     <div style={{
-      display: 'inline-flex',
+      display: 'flex',
+      flexDirection: 'column',
       alignItems: 'center',
-      alignSelf: 'flex-start',
-      gap: large ? 10 : 7,
-      maxWidth: '100%',
-      padding: large ? '7px 12px 7px 8px' : '5px 10px 5px 6px',
-      border: '1px solid #cfe0cc',
-      borderRadius: 999,
-      background: '#f3f8f1',
+      justifyContent: 'flex-start',
+      gap: large ? 5 : 3,
+      width: large ? 112 : 82,
+      flexShrink: 0,
     }}>
       <img
         src={okcheonSearch}
         alt=""
         aria-hidden="true"
         style={{
-          width: large ? 42 : 32,
-          height: large ? 42 : 32,
+          width: large ? 70 : 50,
+          height: large ? 70 : 50,
           flexShrink: 0,
           objectFit: 'contain',
         }}
       />
       <span style={{
         display: 'flex',
-        minWidth: 0,
+        width: '100%',
         flexDirection: 'column',
         gap: 1,
-        color: '#274d2b',
-        fontSize: large ? 13 : 11.5,
+        color: '#20242f',
+        fontSize: large ? 12.5 : 10.5,
         fontWeight: 750,
-        lineHeight: 1.3,
+        lineHeight: 1.25,
         letterSpacing: 0,
+        textAlign: 'center',
+        wordBreak: 'keep-all',
       }}>
         {types.map(type => <span key={type.id}>{type.label}</span>)}
       </span>
@@ -266,15 +266,24 @@ export default function StoreMap() {
         const relatedPlaces = relatedPolicy
           ? filterPlacesByPolicy(places, relatedPolicy)
           : places
+        const previewCategory = relatedPlaces[0]?.category
+        let previewIndex = 0
         const displayedPlaces = SHOW_RECOMMENDATION_BADGE_MOCK && relatedPlaces.length
-          ? relatedPlaces.map((place, index) => index === 0
-            ? {
-                ...place,
-                recommend_count: Math.max(Number(place.recommend_count ?? place.recommendCount ?? 0), 5),
-                recommendation_types: ['옥천신문', '옥천군 상담센터'],
-                isRecommendationMock: true,
-              }
-            : place)
+          ? relatedPlaces.map(place => {
+              if (place.category !== previewCategory || previewIndex > 1) return place
+              const mockType = previewIndex++
+              return mockType === 0
+                ? {
+                    ...place,
+                    recommend_count: Math.max(Number(place.recommend_count ?? place.recommendCount ?? 0), 5),
+                    isRecommendationMock: true,
+                  }
+                : {
+                    ...place,
+                    recommendation_types: ['옥천신문', '옥천군 상담센터'],
+                    isRecommendationMock: true,
+                  }
+            })
           : relatedPlaces
         setStores(displayedPlaces)
         const nextCategory = state?.store?.category || displayedPlaces[0]?.category || ''
@@ -896,7 +905,7 @@ export default function StoreMap() {
                       </button>
                     </div>
                   )}
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '16px 14px 12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '16px 14px 12px' }}>
                     <div style={{
                       width: 46, height: 46, borderRadius: 14, flexShrink: 0,
                       background: 'none',
@@ -954,16 +963,6 @@ export default function StoreMap() {
                           </>
                         )}
                       </div>
-                      {institutionRecommendations.length > 0 && (
-                        <div style={{ display: 'flex', margin: '-1px 0 8px' }}>
-                          <InstitutionRecommendationBadge types={institutionRecommendations} />
-                        </div>
-                      )}
-                      {recommendCount >= 5 && (
-                        <div style={{ display: 'flex', margin: '-1px 0 8px' }}>
-                          <ResidentRecommendationBadge count={recommendCount} />
-                        </div>
-                      )}
                       <div style={{ display: 'grid', gridTemplateColumns: '17px minmax(0, 1fr)', alignItems: 'center', columnGap: 6, marginBottom: 4 }}>
                         <MapPin size={15} color="#555" strokeWidth={2.1} />
                         <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 500, color: '#444', letterSpacing: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -977,6 +976,24 @@ export default function StoreMap() {
                         </span>
                       </div>
                     </div>
+                    {(institutionRecommendations.length > 0 || recommendCount >= 5) && (
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        justifyContent: 'center',
+                        gap: 8,
+                        flexShrink: 0,
+                        marginTop: 0,
+                      }}>
+                        {institutionRecommendations.length > 0 && (
+                          <InstitutionRecommendationBadge types={institutionRecommendations} />
+                        )}
+                        {recommendCount >= 5 && (
+                          <ResidentRecommendationBadge count={recommendCount} />
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 14px' }}>
