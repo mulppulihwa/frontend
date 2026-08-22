@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowUp, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
+import { ArrowDownUp, ArrowUp, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Button from '../components/Button'
 import SelectField from '../components/SelectField'
@@ -525,6 +525,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
   const [housingImagePreviews, setHousingImagePreviews] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [showScrollTop, setShowScrollTop] = useState(false)
+  const [sortOrder, setSortOrder] = useState('newest')
   const [applicant, setApplicant] = useState(readApplicantCache)
   const [draft, setDraft] = useState({
     type: 'people',
@@ -559,7 +560,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
   const filters = tab === 'people' ? peopleFilters : houseFilters
   const visiblePosts = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLocaleLowerCase('ko-KR')
-    return posts.filter(post => {
+    const filteredPosts = posts.filter(post => {
       if (post.type !== tab) return false
       if (authoredOnly && !isPostOwner(post)) return false
       if (tab === 'people') {
@@ -588,7 +589,18 @@ export default function NeedsBoard({ authoredOnly = false }) {
       ].filter(Boolean).join(' ').toLocaleLowerCase('ko-KR')
       return searchableText.includes(normalizedQuery)
     })
-  }, [posts, searchQuery, tab, peopleDetailFilters, housingFilters, authoredOnly])
+
+    return [...filteredPosts].sort((a, b) => {
+      const aTime = a.created_at ? Date.parse(a.created_at) : Number.NaN
+      const bTime = b.created_at ? Date.parse(b.created_at) : Number.NaN
+      const aHasTime = Number.isFinite(aTime)
+      const bHasTime = Number.isFinite(bTime)
+      if (!aHasTime && !bHasTime) return 0
+      if (!aHasTime) return 1
+      if (!bHasTime) return -1
+      return sortOrder === 'newest' ? bTime - aTime : aTime - bTime
+    })
+  }, [posts, searchQuery, tab, peopleDetailFilters, housingFilters, authoredOnly, sortOrder])
 
   const totalPages = Math.max(1, Math.ceil(visiblePosts.length / POSTS_PER_PAGE))
   const paginatedPosts = useMemo(
@@ -608,7 +620,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [tab, filter, searchQuery, authoredOnly, peopleDetailFilters, housingFilters])
+  }, [tab, filter, searchQuery, authoredOnly, peopleDetailFilters, housingFilters, sortOrder])
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages)
@@ -1010,6 +1022,30 @@ export default function NeedsBoard({ authoredOnly = false }) {
                   </button>
                 </div>
               )}
+              <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#626a61', fontSize: 12.5, fontWeight: 650 }}>
+                  <ArrowDownUp size={15} strokeWidth={2.2} /> 정렬
+                </span>
+                <div role="group" aria-label="게시글 등록일 정렬" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: 3, borderRadius: 12, background: '#f0f2ee' }}>
+                  {[
+                    ['newest', '최신 글부터'],
+                    ['oldest', '오래된 글부터'],
+                  ].map(([value, label]) => {
+                    const active = sortOrder === value
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => setSortOrder(value)}
+                        style={{ minHeight: 34, padding: '0 11px', border: active ? '1px solid #c8ddc5' : '1px solid transparent', borderRadius: 9, background: active ? '#fff' : 'transparent', color: active ? GREEN : '#747a73', boxShadow: active ? '0 2px 7px rgba(31,45,35,0.08)' : 'none', fontFamily: 'inherit', fontSize: 12, fontWeight: active ? 700 : 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      >
+                        {label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
               {!authoredOnly && (
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
                   <button
