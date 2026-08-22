@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CalendarDays, Check, ChevronRight, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, Trash2, UserRound, UsersRound, X } from 'lucide-react'
+import { CalendarDays, Check, ChevronRight, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, Search, Trash2, UserRound, UsersRound, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Button from '../components/Button'
 import SelectField from '../components/SelectField'
@@ -295,6 +295,7 @@ export default function NeedsBoard() {
   const [mode, setMode] = useState('list')
   const [tab, setTab] = useState('people')
   const [filter, setFilter] = useState('전체')
+  const [searchQuery, setSearchQuery] = useState('')
   const [posts, setPosts] = useState([])
   const [selectedPost, setSelectedPost] = useState(null)
   const [toast, setToast] = useState('')
@@ -331,7 +332,25 @@ export default function NeedsBoard() {
   })
 
   const filters = tab === 'people' ? peopleFilters : houseFilters
-  const visiblePosts = useMemo(() => posts.filter(post => post.type === tab), [posts, tab])
+  const visiblePosts = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLocaleLowerCase('ko-KR')
+    return posts.filter(post => {
+      if (post.type !== tab) return false
+      if (!normalizedQuery) return true
+      const searchableText = [
+        post.title,
+        post.category,
+        post.region,
+        post.content,
+        post.location,
+        post.address,
+        post.condition,
+        post.rooms,
+        post.author,
+      ].filter(Boolean).join(' ').toLocaleLowerCase('ko-KR')
+      return searchableText.includes(normalizedQuery)
+    })
+  }, [posts, searchQuery, tab])
 
   useEffect(() => {
     let cancelled = false
@@ -620,6 +639,29 @@ export default function NeedsBoard() {
                   </button>
                 ))}
               </div>
+              <label style={{ position: 'relative', display: 'block', marginTop: 12 }}>
+                <span style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>
+                  구해요 게시글 검색
+                </span>
+                <Search size={19} color="#7a8177" strokeWidth={2.2} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={event => setSearchQuery(event.target.value)}
+                  placeholder={tab === 'people' ? '일자리, 지역, 모집 분야 검색' : '지역, 가격, 방 구성 검색'}
+                  style={{ width: '100%', minHeight: 50, border: '1.5px solid #e1e5df', borderRadius: 16, background: '#fff', padding: '0 44px 0 46px', color: '#1f2433', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, outline: 'none', boxSizing: 'border-box' }}
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    aria-label="검색어 지우기"
+                    onClick={() => setSearchQuery('')}
+                    style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', width: 32, height: 32, border: 'none', borderRadius: '50%', background: '#f1f3ef', color: '#667064', display: 'grid', placeItems: 'center', cursor: 'pointer' }}
+                  >
+                    <X size={16} strokeWidth={2.3} />
+                  </button>
+                )}
+              </label>
               <div className="no-scrollbar" style={{ display: 'flex', gap: 8, overflowX: 'auto', marginTop: 12, paddingBottom: 2 }}>
                 {filters.map(item => (
                   <Pill key={item} active={filter === item} onClick={() => setFilter(item)}>
@@ -645,7 +687,7 @@ export default function NeedsBoard() {
               )}
               {!loading && !error && visiblePosts.length === 0 && (
                 <div style={{ padding: '42px 0', textAlign: 'center', color: '#888', fontSize: 14, fontWeight: 500 }}>
-                  아직 등록된 게시글이 없어요.
+                  {searchQuery.trim() ? '검색 결과가 없어요.' : '아직 등록된 게시글이 없어요.'}
                 </div>
               )}
             </section>
