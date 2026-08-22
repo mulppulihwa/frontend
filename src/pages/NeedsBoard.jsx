@@ -645,7 +645,8 @@ export default function NeedsBoard() {
                 </span>
                 <Search size={19} color="#7a8177" strokeWidth={2.2} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                 <input
-                  type="search"
+                  type="text"
+                  inputMode="search"
                   value={searchQuery}
                   onChange={event => setSearchQuery(event.target.value)}
                   placeholder={tab === 'people' ? '일자리, 지역, 모집 분야 검색' : '지역, 가격, 방 구성 검색'}
