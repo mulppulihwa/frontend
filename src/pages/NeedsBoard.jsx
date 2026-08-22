@@ -214,6 +214,10 @@ function matchesHeadcount(value, range) {
   return true
 }
 
+function isPostOwner(post) {
+  return post?.is_owner === true
+}
+
 function normalizeJobPost(post) {
   return {
     ...post,
@@ -438,7 +442,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
     const normalizedQuery = searchQuery.trim().toLocaleLowerCase('ko-KR')
     return posts.filter(post => {
       if (post.type !== tab) return false
-      if (authoredOnly && !post.is_owner) return false
+      if (authoredOnly && !isPostOwner(post)) return false
       if (tab === 'people') {
         if (peopleDetailFilters.region !== '전체' && post.region !== peopleDetailFilters.region) return false
         if (!matchesJobSchedule(post, peopleDetailFilters.schedule)) return false
@@ -571,7 +575,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
   }
 
   const openEdit = () => {
-    if (!selectedPost?.is_owner) return
+    if (!isPostOwner(selectedPost)) return
     housingImagePreviews.forEach(preview => URL.revokeObjectURL(preview.url))
     setHousingImages([])
     setHousingImagePreviews([])
@@ -580,7 +584,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
   }
 
   const openApplications = async () => {
-    if (!selectedPost?.is_owner || selectedPost.type !== 'people') return
+    if (!isPostOwner(selectedPost) || selectedPost.type !== 'people') return
     setMode('applications')
     setLoading(true)
     setError('')
@@ -605,7 +609,11 @@ export default function NeedsBoard({ authoredOnly = false }) {
     if (post.isMock) return
     try {
       const detail = post.type === 'people' ? await fetchJobPost(post.id) : await fetchHousingPost(post.id)
-      setSelectedPost(post.type === 'people' ? normalizeJobPost(detail) : normalizeHousingPost(detail))
+      const normalizedDetail = post.type === 'people' ? normalizeJobPost(detail) : normalizeHousingPost(detail)
+      setSelectedPost({
+        ...normalizedDetail,
+        is_owner: detail.is_owner === true || post.is_owner === true,
+      })
     } catch (detailError) {
       setToast(detailError.message || '상세 정보를 불러오지 못했습니다.')
     }
@@ -690,7 +698,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
   }
 
   const handleDelete = async () => {
-    if (!selectedPost?.is_owner) return
+    if (!isPostOwner(selectedPost)) return
     setSubmitting(true)
     try {
       if (selectedPost.isMock) {
@@ -1093,7 +1101,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
               {selectedPost.type === 'house' && <InfoRow icon={Phone}>연락처: {selectedPost.phone}</InfoRow>}
             </div>
 
-            {selectedPost.is_owner && (
+            {isPostOwner(selectedPost) && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: 8 }}>
                 {selectedPost.type === 'people' && (
                   <button type="button" onClick={openApplications} style={{ minHeight: 46, border: '1.5px solid #dfe4dc', borderRadius: 14, background: '#fff', color: '#333', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
