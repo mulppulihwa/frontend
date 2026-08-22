@@ -1120,7 +1120,9 @@ export default function NeedsBoard({ authoredOnly = false }) {
             )}
 
             {selectedPost.type === 'people' ? (
-              <Button onClick={() => setMode('apply')} style={{ marginTop: 8 }}>지원하기</Button>
+              !isPostOwner(selectedPost) && (
+                <Button onClick={() => setMode('apply')} style={{ marginTop: 8 }}>지원하기</Button>
+              )
             ) : (
               <a href={`tel:${selectedPost.phone}`} style={{ textDecoration: 'none' }}>
                 <Button style={{ marginTop: 8 }}>바로 전화걸기</Button>
