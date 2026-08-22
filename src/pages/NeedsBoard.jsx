@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ArrowUp, CalendarDays, Check, ChevronLeft, ChevronRight, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Button from '../components/Button'
@@ -384,13 +385,13 @@ function Field({ label, value, onChange, placeholder, type = 'text', textarea = 
   )
 }
 
-export default function NeedsBoard() {
+export default function NeedsBoard({ authoredOnly = false }) {
+  const navigate = useNavigate()
   const listTopRef = useRef(null)
   const [mode, setMode] = useState('list')
   const [tab, setTab] = useState('people')
   const [filter, setFilter] = useState('전체')
   const [searchQuery, setSearchQuery] = useState('')
-  const [myPostsOnly, setMyPostsOnly] = useState(false)
   const [peopleFilterOpen, setPeopleFilterOpen] = useState(false)
   const [peopleDetailFilters, setPeopleDetailFilters] = useState(initialPeopleFilters)
   const [housingFilterOpen, setHousingFilterOpen] = useState(false)
@@ -437,7 +438,7 @@ export default function NeedsBoard() {
     const normalizedQuery = searchQuery.trim().toLocaleLowerCase('ko-KR')
     return posts.filter(post => {
       if (post.type !== tab) return false
-      if (myPostsOnly && !post.is_owner) return false
+      if (authoredOnly && !post.is_owner) return false
       if (tab === 'people') {
         if (peopleDetailFilters.region !== '전체' && post.region !== peopleDetailFilters.region) return false
         if (!matchesJobSchedule(post, peopleDetailFilters.schedule)) return false
@@ -464,7 +465,7 @@ export default function NeedsBoard() {
       ].filter(Boolean).join(' ').toLocaleLowerCase('ko-KR')
       return searchableText.includes(normalizedQuery)
     })
-  }, [posts, searchQuery, tab, peopleDetailFilters, housingFilters, myPostsOnly])
+  }, [posts, searchQuery, tab, peopleDetailFilters, housingFilters, authoredOnly])
 
   const totalPages = Math.max(1, Math.ceil(visiblePosts.length / POSTS_PER_PAGE))
   const paginatedPosts = useMemo(
@@ -484,7 +485,7 @@ export default function NeedsBoard() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [tab, filter, searchQuery, myPostsOnly, peopleDetailFilters, housingFilters])
+  }, [tab, filter, searchQuery, authoredOnly, peopleDetailFilters, housingFilters])
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages)
@@ -769,8 +770,8 @@ export default function NeedsBoard() {
   return (
     <div className="detail-scroll-page" style={{ minHeight: '100dvh', background: BG, paddingBottom: 104, overflowY: 'auto' }}>
       <TopBar
-        title={mode === 'write' ? '글쓰기' : mode === 'edit' ? '게시글 수정' : mode === 'apply' ? '지원하기' : mode === 'applications' ? '지원자 목록' : '구해요'}
-        onBack={mode === 'list' ? undefined : handleBack}
+        title={mode === 'write' ? '글쓰기' : mode === 'edit' ? '게시글 수정' : mode === 'apply' ? '지원하기' : mode === 'applications' ? '지원자 목록' : authoredOnly ? '내가 쓴 글' : '구해요'}
+        onBack={mode === 'list' ? (authoredOnly ? () => navigate('/needs') : undefined) : handleBack}
         rightAction={mode === 'list' ? { label: '글쓰기', icon: <FilePenLine size={19} />, onClick: openWrite } : null}
       />
 
@@ -965,27 +966,28 @@ export default function NeedsBoard() {
                   )}
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
-                <button
-                  type="button"
-                  aria-pressed={myPostsOnly}
-                  onClick={() => setMyPostsOnly(current => !current)}
-                  style={{
-                    border: 'none',
-                    background: 'transparent',
-                    padding: '3px 0',
-                    color: myPostsOnly ? GREEN : '#596257',
-                    fontFamily: 'inherit',
-                    fontSize: 13,
-                    fontWeight: myPostsOnly ? 700 : 600,
-                    textDecoration: 'underline',
-                    textUnderlineOffset: 4,
-                    cursor: 'pointer',
-                  }}
-                >
-                  내가 쓴 구해요 글{myPostsOnly ? ' ✓' : ''}
-                </button>
-              </div>
+              {!authoredOnly && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/needs/mine')}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      padding: '3px 0',
+                      color: '#596257',
+                      fontFamily: 'inherit',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      textDecoration: 'underline',
+                      textUnderlineOffset: 4,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    내가 쓴 글
+                  </button>
+                </div>
+              )}
             </section>
 
             <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -1004,7 +1006,7 @@ export default function NeedsBoard() {
               )}
               {!loading && !error && visiblePosts.length === 0 && (
                 <div style={{ padding: '42px 0', textAlign: 'center', color: '#888', fontSize: 14, fontWeight: 500 }}>
-                  {myPostsOnly ? '작성한 글이 없어요.' : searchQuery.trim() ? '검색 결과가 없어요.' : '아직 등록된 게시글이 없어요.'}
+                  {authoredOnly ? '작성한 글이 없어요.' : searchQuery.trim() ? '검색 결과가 없어요.' : '아직 등록된 게시글이 없어요.'}
                 </div>
               )}
               {!loading && !error && visiblePosts.length > POSTS_PER_PAGE && (

@@ -54,6 +54,7 @@ function Layout() {
         <Route path="/store-search" element={<StoreSearch />} />
         <Route path="/basic-info" element={<BasicInfo />} />
         <Route path="/needs" element={<NeedsBoard />} />
+        <Route path="/needs/mine" element={<NeedsBoard authoredOnly />} />
       </Route>
       <Route path="/dev/address-search-test" element={<AddressSearchTest />} />
     </Routes>
