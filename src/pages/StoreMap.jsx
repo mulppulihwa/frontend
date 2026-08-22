@@ -861,16 +861,16 @@ export default function StoreMap() {
                   onMouseLeave={() => setHoveredPlaceId(null)}
                   style={{
                     position: 'relative',
-                    borderRadius: 18, marginBottom: 10,
+                    borderRadius: 22, marginBottom: 10,
                     background: '#fff',
-                    border: `1px solid ${isSelected ? 'rgba(7,104,24,0.55)' : 'transparent'}`,
+                    border: 'none',
                     boxShadow: isSelected
-                      ? '0 7px 20px rgba(7,104,24,0.12)'
+                      ? '0 5px 20px rgba(7,104,24,0.16)'
                       : isHovered
-                        ? '0 8px 22px rgba(31,45,35,0.11)'
-                        : '0 3px 14px rgba(31,45,35,0.07)',
+                        ? '0 7px 22px rgba(31,45,35,0.11)'
+                        : '0 4px 18px rgba(31,45,35,0.08)',
                     cursor: 'pointer', overflow: 'hidden',
-                    transition: 'border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease',
+                    transition: 'box-shadow 0.18s ease, transform 0.18s ease',
                     transform: isHovered ? 'translateY(-1px)' : 'translateY(0)',
                   }}
                 >

@@ -111,7 +111,7 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified
   const BellIcon = notified ? BellRing : Bell
 
   return (
-    <div style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.9)', borderRadius: 28, overflow: 'hidden' }}>
+    <div style={{ background: '#fff', border: 'none', borderRadius: 22, boxShadow: '0 4px 18px rgba(31,45,35,0.08)', overflow: 'hidden' }}>
       <div
         onClick={() => navigate('/detail', { state: { grant } })}
         style={{ padding: '16px 16px 12px', display: 'grid', gridTemplateColumns: '56px minmax(0, 1fr) 34px', alignItems: 'center', gap: 10, cursor: 'pointer' }}

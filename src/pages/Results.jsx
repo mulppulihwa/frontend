@@ -196,7 +196,7 @@ export default function Results() {
         />
 
         {/* Status card */}
-        <div style={{ background: '#fff', borderRadius: 22, border: '1.5px solid #e8e8e8', padding: '10px 14px' }}>
+        <div style={{ background: '#fff', borderRadius: 22, border: 'none', boxShadow: '0 4px 18px rgba(31,45,35,0.08)', padding: 18 }}>
           <p style={{ fontSize: 13, fontWeight: 500, color: '#1a1a1a', marginBottom: 8, letterSpacing: '-0.1px' }}>지원현황을 체크해주세요</p>
           <StatusCheckboxes
             value={statuses[grant.id] ?? null}

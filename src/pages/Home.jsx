@@ -136,7 +136,7 @@ function DiagnosedPolicyCard({ policy, checklistItems, navigate }) {
   const progress = getChecklistProgress(policy, checklistItems)
 
   return (
-    <article style={{ background: '#fff', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 24, padding: '16px 14px 14px' }}>
+    <article style={{ background: '#fff', border: 'none', borderRadius: 22, boxShadow: '0 4px 18px rgba(31,45,35,0.08)', padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <p style={{ width: 54, flexShrink: 0, fontSize: 14, fontWeight: 800, color: '#d93025', textAlign: 'center' }}>
           {getDday(policy.deadline)}
@@ -187,7 +187,7 @@ function DiagnosedPolicies({ policies, checklistItemsByPolicy, navigate }) {
           />
         ))}
         {visiblePolicies.length === 0 && (
-          <div style={{ minHeight: 116, display: 'grid', placeItems: 'center', border: '1px solid rgba(218,231,211,0.95)', borderRadius: 24, background: '#fff', color: '#888', fontSize: 13, fontWeight: 600 }}>
+          <div style={{ minHeight: 116, display: 'grid', placeItems: 'center', border: 'none', borderRadius: 22, boxShadow: '0 4px 18px rgba(31,45,35,0.08)', background: '#fff', color: '#888', fontSize: 13, fontWeight: 600 }}>
             신청 예정인 정책이 없어요.
           </div>
         )}
