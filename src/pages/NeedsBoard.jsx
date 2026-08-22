@@ -925,7 +925,6 @@ export default function NeedsBoard() {
           <form onSubmit={handleApply} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ borderRadius: 24, background: '#fff', boxShadow: '0 4px 20px rgba(31,45,35,0.08)', padding: 20 }}>
               <h2 style={{ margin: '0 0 6px', fontSize: 19, fontWeight: 700, color: '#1f2433' }}>지원자 기본 정보</h2>
-              <p style={{ margin: 0, color: '#777', fontSize: 13, lineHeight: 1.5 }}>처음 저장한 정보는 다음 지원 때 자동으로 채워져요.</p>
             </div>
             <Field label="이름" value={applicant.name} onChange={v => updateApplicant('name', v)} placeholder="이름을 입력해 주세요" />
             <Field label="전화번호" value={applicant.phone} onChange={v => updateApplicant('phone', v)} placeholder="010-0000-0000" type="tel" />
