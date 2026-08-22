@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowDownUp, ArrowUp, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
+import { ArrowDown, ArrowDownUp, ArrowUp, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Button from '../components/Button'
 import SelectField from '../components/SelectField'
@@ -29,6 +29,11 @@ const APPLICANT_CACHE_KEY = 'okcheonNeedsApplicant'
 const MAX_HOUSING_IMAGES = 10
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024
 const POSTS_PER_PAGE = 10
+const boardSortOptions = [
+  { key: 'deadline', label: '마감 임박' },
+  { key: 'recent', label: '최근 추가' },
+  { key: 'name', label: '이름순' },
+]
 const initialPeopleFilters = {
   region: '전체',
   schedule: '전체',
@@ -238,6 +243,12 @@ function getRecruitmentDday(endDate) {
   return { label: `D-${days}`, color: GREEN, background: '#e8f3e8' }
 }
 
+function getBoardSortDirectionLabel(sort, reversed) {
+  if (sort === 'deadline') return reversed ? '마감 여유순' : '마감 빠른순'
+  if (sort === 'recent') return reversed ? '오래된순' : '최신순'
+  return reversed ? '역순' : '가나다순'
+}
+
 function formatMoney(value) {
   if (value == null || value === '') return '미등록'
   const number = Number(value)
@@ -416,24 +427,24 @@ function FilterModal({ title, onClose, onReset, hasFilters, children }) {
     <div
       role="presentation"
       onMouseDown={event => { if (event.target === event.currentTarget) onClose() }}
-      style={{ position: 'fixed', inset: 0, zIndex: 1200, padding: '20px 28px', background: 'rgba(27, 31, 27, 0.42)', display: 'grid', placeItems: 'center' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 1200, padding: 24, background: 'rgba(20,24,20,0.38)', backdropFilter: 'blur(3px)', display: 'grid', placeItems: 'center' }}
     >
-      <section role="dialog" aria-modal="true" aria-label={title} style={{ width: 'min(100%, 360px)', maxHeight: 'min(74dvh, 590px)', overflowY: 'auto', borderRadius: 22, background: '#fff', boxShadow: '0 18px 50px rgba(24, 31, 25, 0.2)', padding: 18 }}>
+      <section role="dialog" aria-modal="true" aria-label={title} style={{ width: 'min(100%, 330px)', maxHeight: 'min(78dvh, 590px)', overflowY: 'auto', border: '1.5px solid #dbead5', borderRadius: 24, background: '#fff', boxShadow: '0 22px 60px rgba(0,0,0,0.2)', padding: 22 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
           <div>
             <h2 style={{ margin: 0, fontSize: 20, fontWeight: 750, color: '#1f2433', letterSpacing: 0 }}>상세 필터</h2>
             <p style={{ margin: '5px 0 0', fontSize: 12.5, color: '#727972' }}>{title}</p>
           </div>
-          <button type="button" aria-label="상세 필터 닫기" onClick={onClose} style={{ width: 38, height: 38, border: 'none', borderRadius: '50%', background: '#f2f4f1', color: '#616861', display: 'grid', placeItems: 'center', cursor: 'pointer' }}>
+          <button type="button" aria-label="상세 필터 닫기" onClick={onClose} style={{ width: 38, height: 38, border: 'none', borderRadius: '50%', background: '#f2f4f1', color: '#616861', display: 'grid', placeItems: 'center', cursor: 'pointer', flexShrink: 0 }}>
             <X size={19} strokeWidth={2.2} />
           </button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{children}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '0.8fr 1.2fr', gap: 8, marginTop: 16 }}>
-          <button type="button" onClick={onReset} disabled={!hasFilters} style={{ minHeight: 42, border: 'none', borderRadius: 14, background: '#f1f3f0', color: hasFilters ? '#596257' : '#b5bab4', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 650, cursor: hasFilters ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          <button type="button" onClick={onReset} disabled={!hasFilters} style={{ minHeight: 42, border: 'none', borderRadius: 999, background: '#f1f3f0', color: hasFilters ? '#596257' : '#b5bab4', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 650, cursor: hasFilters ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             <RotateCcw size={15} strokeWidth={2.2} /> 초기화
           </button>
-          <button type="button" onClick={onClose} style={{ minHeight: 42, border: 'none', borderRadius: 14, background: GREEN, color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+          <button type="button" onClick={onClose} style={{ minHeight: 42, border: 'none', borderRadius: 999, background: GREEN, color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
             필터 적용
           </button>
         </div>
@@ -554,7 +565,8 @@ export default function NeedsBoard({ authoredOnly = false }) {
   const [housingImagePreviews, setHousingImagePreviews] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [showScrollTop, setShowScrollTop] = useState(false)
-  const [sortOrder, setSortOrder] = useState('newest')
+  const [sort, setSort] = useState('recent')
+  const [sortReversed, setSortReversed] = useState(false)
   const [applicant, setApplicant] = useState(readApplicantCache)
   const [draft, setDraft] = useState({
     type: 'people',
@@ -620,16 +632,23 @@ export default function NeedsBoard({ authoredOnly = false }) {
     })
 
     return [...filteredPosts].sort((a, b) => {
-      const aTime = a.created_at ? Date.parse(a.created_at) : Number.NaN
-      const bTime = b.created_at ? Date.parse(b.created_at) : Number.NaN
+      if (sort === 'name') {
+        const order = String(a.title || '').localeCompare(String(b.title || ''), 'ko')
+        return sortReversed ? -order : order
+      }
+
+      const field = sort === 'deadline' ? 'end_date' : 'created_at'
+      const aTime = a[field] ? Date.parse(a[field]) : Number.NaN
+      const bTime = b[field] ? Date.parse(b[field]) : Number.NaN
       const aHasTime = Number.isFinite(aTime)
       const bHasTime = Number.isFinite(bTime)
-      if (!aHasTime && !bHasTime) return 0
+      if (!aHasTime && !bHasTime) return String(a.title || '').localeCompare(String(b.title || ''), 'ko')
       if (!aHasTime) return 1
       if (!bHasTime) return -1
-      return sortOrder === 'newest' ? bTime - aTime : aTime - bTime
+      const order = sort === 'deadline' ? aTime - bTime : bTime - aTime
+      return sortReversed ? -order : order
     })
-  }, [posts, searchQuery, tab, peopleDetailFilters, housingFilters, authoredOnly, sortOrder])
+  }, [posts, searchQuery, tab, peopleDetailFilters, housingFilters, authoredOnly, sort, sortReversed])
 
   const totalPages = Math.max(1, Math.ceil(visiblePosts.length / POSTS_PER_PAGE))
   const paginatedPosts = useMemo(
@@ -649,7 +668,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [tab, filter, searchQuery, authoredOnly, peopleDetailFilters, housingFilters, sortOrder])
+  }, [tab, filter, searchQuery, authoredOnly, peopleDetailFilters, housingFilters, sort, sortReversed])
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages)
@@ -1052,29 +1071,38 @@ export default function NeedsBoard({ authoredOnly = false }) {
                   </button>
                 </div>
               )}
-              <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#626a61', fontSize: 12.5, fontWeight: 650 }}>
+              <div aria-label="정렬 방식" style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
+                <span style={{ marginRight: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, color: '#626a61', fontSize: 12.5, fontWeight: 650 }}>
                   <ArrowDownUp size={15} strokeWidth={2.2} /> 정렬
                 </span>
-                <div role="group" aria-label="게시글 등록일 정렬" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: 3, borderRadius: 12, background: '#f0f2ee' }}>
-                  {[
-                    ['newest', '최신 글부터'],
-                    ['oldest', '오래된 글부터'],
-                  ].map(([value, label]) => {
-                    const active = sortOrder === value
-                    return (
-                      <button
-                        key={value}
-                        type="button"
-                        aria-pressed={active}
-                        onClick={() => setSortOrder(value)}
-                        style={{ minHeight: 34, padding: '0 11px', border: active ? '1px solid #c8ddc5' : '1px solid transparent', borderRadius: 9, background: active ? '#fff' : 'transparent', color: active ? GREEN : '#747a73', boxShadow: active ? '0 2px 7px rgba(31,45,35,0.08)' : 'none', fontFamily: 'inherit', fontSize: 12, fontWeight: active ? 700 : 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
-                      >
-                        {label}
-                      </button>
-                    )
-                  })}
-                </div>
+                <select
+                  aria-label="정렬 기준"
+                  value={sort}
+                  onChange={event => {
+                    setSort(event.target.value)
+                    setSortReversed(false)
+                    setCurrentPage(1)
+                  }}
+                  style={{ width: 112, height: 36, padding: '0 28px 0 11px', border: '1px solid #dfe4dc', borderRadius: 10, background: '#fff', color: '#333', fontFamily: 'inherit', fontSize: 12.5, fontWeight: 650, cursor: 'pointer' }}
+                >
+                  {boardSortOptions.map(option => (
+                    <option key={option.key} value={option.key}>{option.label}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  aria-label={`정렬 방향 변경, 현재 ${getBoardSortDirectionLabel(sort, sortReversed)}`}
+                  title={getBoardSortDirectionLabel(sort, sortReversed)}
+                  onClick={() => {
+                    setSortReversed(value => !value)
+                    setCurrentPage(1)
+                  }}
+                  style={{ width: 36, height: 36, padding: 0, border: '1px solid #dfe4dc', borderRadius: 10, background: '#fff', color: GREEN, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                >
+                  {(sort === 'recent' ? sortReversed : !sortReversed)
+                    ? <ArrowUp size={16} strokeWidth={2.4} />
+                    : <ArrowDown size={16} strokeWidth={2.4} />}
+                </button>
               </div>
               {!authoredOnly && (
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
