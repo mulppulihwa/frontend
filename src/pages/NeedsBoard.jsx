@@ -347,6 +347,7 @@ export default function NeedsBoard() {
   const [tab, setTab] = useState('people')
   const [filter, setFilter] = useState('전체')
   const [searchQuery, setSearchQuery] = useState('')
+  const [myPostsOnly, setMyPostsOnly] = useState(false)
   const [housingFilterOpen, setHousingFilterOpen] = useState(false)
   const [housingFilters, setHousingFilters] = useState(initialHousingFilters)
   const [posts, setPosts] = useState([])
@@ -389,6 +390,7 @@ export default function NeedsBoard() {
     const normalizedQuery = searchQuery.trim().toLocaleLowerCase('ko-KR')
     return posts.filter(post => {
       if (post.type !== tab) return false
+      if (myPostsOnly && !post.is_owner) return false
       if (tab === 'house') {
         if (housingFilters.region !== '전체' && post.region !== housingFilters.region) return false
         if (housingFilters.dealType !== '전체' && post.deal_type !== housingFilters.dealType) return false
@@ -410,7 +412,7 @@ export default function NeedsBoard() {
       ].filter(Boolean).join(' ').toLocaleLowerCase('ko-KR')
       return searchableText.includes(normalizedQuery)
     })
-  }, [posts, searchQuery, tab, housingFilters])
+  }, [posts, searchQuery, tab, housingFilters, myPostsOnly])
 
   const activeHousingFilterCount = useMemo(
     () => Object.values(housingFilters).filter(value => value !== '전체').length,
@@ -822,6 +824,27 @@ export default function NeedsBoard() {
                   )}
                 </div>
               )}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
+                <button
+                  type="button"
+                  aria-pressed={myPostsOnly}
+                  onClick={() => setMyPostsOnly(current => !current)}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    padding: '3px 0',
+                    color: myPostsOnly ? GREEN : '#596257',
+                    fontFamily: 'inherit',
+                    fontSize: 13,
+                    fontWeight: myPostsOnly ? 700 : 600,
+                    textDecoration: 'underline',
+                    textUnderlineOffset: 4,
+                    cursor: 'pointer',
+                  }}
+                >
+                  내가 쓴 구해요 글{myPostsOnly ? ' ✓' : ''}
+                </button>
+              </div>
             </section>
 
             <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -840,7 +863,7 @@ export default function NeedsBoard() {
               )}
               {!loading && !error && visiblePosts.length === 0 && (
                 <div style={{ padding: '42px 0', textAlign: 'center', color: '#888', fontSize: 14, fontWeight: 500 }}>
-                  {searchQuery.trim() ? '검색 결과가 없어요.' : '아직 등록된 게시글이 없어요.'}
+                  {myPostsOnly ? '작성한 글이 없어요.' : searchQuery.trim() ? '검색 결과가 없어요.' : '아직 등록된 게시글이 없어요.'}
                 </div>
               )}
             </section>
