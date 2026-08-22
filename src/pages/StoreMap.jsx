@@ -67,7 +67,7 @@ const INSTITUTION_RECOMMENDATION_TYPES = [
   },
 ]
 
-function getInstitutionRecommendationTypes(place, showPreview = false) {
+function getInstitutionRecommendationTypes(place) {
   const rawValues = [
     place.recommendationTypes,
     place.recommendation_types,
@@ -90,7 +90,7 @@ function getInstitutionRecommendationTypes(place, showPreview = false) {
   }
 
   const matchedTypes = INSTITUTION_RECOMMENDATION_TYPES.filter(type => rawValues.some(type.matches))
-  return matchedTypes.length || !showPreview ? matchedTypes : INSTITUTION_RECOMMENDATION_TYPES
+  return matchedTypes.slice(0, 1)
 }
 
 function getRecommendKey(place) {
@@ -141,7 +141,6 @@ function ResidentRecommendationBadge({ count, large = false }) {
         wordBreak: 'keep-all',
       }}>
         옥천 주민 추천
-        <span style={{ display: 'block', color: '#657064', fontSize: large ? 11.5 : 9.5, fontWeight: 600 }}>({count}명 이상)</span>
       </span>
     </div>
   )
@@ -270,19 +269,20 @@ export default function StoreMap() {
         let previewIndex = 0
         const displayedPlaces = SHOW_RECOMMENDATION_BADGE_MOCK && relatedPlaces.length
           ? relatedPlaces.map(place => {
-              if (place.category !== previewCategory || previewIndex > 1) return place
+              if (place.category !== previewCategory || previewIndex > 2) return place
               const mockType = previewIndex++
-              return mockType === 0
-                ? {
+              if (mockType === 0) {
+                return {
                     ...place,
                     recommend_count: Math.max(Number(place.recommend_count ?? place.recommendCount ?? 0), 5),
                     isRecommendationMock: true,
-                  }
-                : {
-                    ...place,
-                    recommendation_types: ['옥천신문', '옥천군 상담센터'],
-                    isRecommendationMock: true,
-                  }
+                }
+              }
+              return {
+                ...place,
+                recommendation_types: [mockType === 1 ? '옥천신문' : '옥천군 상담센터'],
+                isRecommendationMock: true,
+              }
             })
           : relatedPlaces
         setStores(displayedPlaces)
