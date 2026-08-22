@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { CalendarDays, Check, ChevronRight, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ArrowUp, CalendarDays, Check, ChevronLeft, ChevronRight, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Button from '../components/Button'
 import SelectField from '../components/SelectField'
@@ -27,6 +27,12 @@ const regionOptions = ['옥천읍', '동이면', '안남면', '청성면', '청�
 const APPLICANT_CACHE_KEY = 'okcheonNeedsApplicant'
 const MAX_HOUSING_IMAGES = 10
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024
+const POSTS_PER_PAGE = 10
+const initialPeopleFilters = {
+  region: '전체',
+  schedule: '전체',
+  headcount: '전체',
+}
 const initialHousingFilters = {
   region: '전체',
   dealType: '전체',
@@ -52,6 +58,18 @@ const sizeFilterOptions = [
   { value: '10이하', label: '10평 이하' },
   { value: '10-20', label: '10~20평' },
   { value: '20이상', label: '20평 이상' },
+]
+const scheduleFilterOptions = [
+  { value: '전체', label: '전체' },
+  { value: '모집중', label: '현재 모집 중' },
+  { value: '예정', label: '모집 예정' },
+  { value: '상시', label: '상시 모집' },
+]
+const headcountFilterOptions = [
+  { value: '전체', label: '전체' },
+  { value: '1-2', label: '1~2명' },
+  { value: '3-5', label: '3~5명' },
+  { value: '6이상', label: '6명 이상' },
 ]
 
 const MOCK_JOB_POSTS = [
@@ -168,6 +186,30 @@ function matchesNumberRange(value, range) {
   if (range === '10이하') return number <= 10
   if (range === '10-20') return number > 10 && number < 20
   if (range === '20이상') return number >= 20
+  return true
+}
+
+function matchesJobSchedule(post, schedule) {
+  if (schedule === '전체') return true
+  if (!post.start_date && !post.end_date) return schedule === '상시'
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const start = post.start_date ? new Date(`${post.start_date}T00:00:00`) : null
+  const end = post.end_date ? new Date(`${post.end_date}T23:59:59`) : null
+
+  if (schedule === '예정') return Boolean(start && start > today)
+  if (schedule === '모집중') return (!start || start <= today) && (!end || end >= today)
+  return false
+}
+
+function matchesHeadcount(value, range) {
+  if (range === '전체') return true
+  const count = Number(value)
+  if (!Number.isFinite(count)) return false
+  if (range === '1-2') return count >= 1 && count <= 2
+  if (range === '3-5') return count >= 3 && count <= 5
+  if (range === '6이상') return count >= 6
   return true
 }
 
@@ -343,11 +385,14 @@ function Field({ label, value, onChange, placeholder, type = 'text', textarea = 
 }
 
 export default function NeedsBoard() {
+  const listTopRef = useRef(null)
   const [mode, setMode] = useState('list')
   const [tab, setTab] = useState('people')
   const [filter, setFilter] = useState('전체')
   const [searchQuery, setSearchQuery] = useState('')
   const [myPostsOnly, setMyPostsOnly] = useState(false)
+  const [peopleFilterOpen, setPeopleFilterOpen] = useState(false)
+  const [peopleDetailFilters, setPeopleDetailFilters] = useState(initialPeopleFilters)
   const [housingFilterOpen, setHousingFilterOpen] = useState(false)
   const [housingFilters, setHousingFilters] = useState(initialHousingFilters)
   const [posts, setPosts] = useState([])
@@ -361,6 +406,8 @@ export default function NeedsBoard() {
   const [hiddenMockIds, setHiddenMockIds] = useState(() => new Set())
   const [housingImages, setHousingImages] = useState([])
   const [housingImagePreviews, setHousingImagePreviews] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [showScrollTop, setShowScrollTop] = useState(false)
   const [applicant, setApplicant] = useState(readApplicantCache)
   const [draft, setDraft] = useState({
     type: 'people',
@@ -391,6 +438,11 @@ export default function NeedsBoard() {
     return posts.filter(post => {
       if (post.type !== tab) return false
       if (myPostsOnly && !post.is_owner) return false
+      if (tab === 'people') {
+        if (peopleDetailFilters.region !== '전체' && post.region !== peopleDetailFilters.region) return false
+        if (!matchesJobSchedule(post, peopleDetailFilters.schedule)) return false
+        if (!matchesHeadcount(post.recruit_count, peopleDetailFilters.headcount)) return false
+      }
       if (tab === 'house') {
         if (housingFilters.region !== '전체' && post.region !== housingFilters.region) return false
         if (housingFilters.dealType !== '전체' && post.deal_type !== housingFilters.dealType) return false
@@ -412,12 +464,45 @@ export default function NeedsBoard() {
       ].filter(Boolean).join(' ').toLocaleLowerCase('ko-KR')
       return searchableText.includes(normalizedQuery)
     })
-  }, [posts, searchQuery, tab, housingFilters, myPostsOnly])
+  }, [posts, searchQuery, tab, peopleDetailFilters, housingFilters, myPostsOnly])
+
+  const totalPages = Math.max(1, Math.ceil(visiblePosts.length / POSTS_PER_PAGE))
+  const paginatedPosts = useMemo(
+    () => visiblePosts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE),
+    [visiblePosts, currentPage],
+  )
+
+  const activePeopleFilterCount = useMemo(
+    () => Object.values(peopleDetailFilters).filter(value => value !== '전체').length,
+    [peopleDetailFilters],
+  )
 
   const activeHousingFilterCount = useMemo(
     () => Object.values(housingFilters).filter(value => value !== '전체').length,
     [housingFilters],
   )
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [tab, filter, searchQuery, myPostsOnly, peopleDetailFilters, housingFilters])
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages)
+  }, [currentPage, totalPages])
+
+  useEffect(() => {
+    const updateScrollTopVisibility = () => setShowScrollTop(window.scrollY > 420)
+    updateScrollTopVisibility()
+    window.addEventListener('scroll', updateScrollTopVisibility, { passive: true })
+    return () => window.removeEventListener('scroll', updateScrollTopVisibility)
+  }, [])
+
+  const changePage = page => {
+    setCurrentPage(page)
+    requestAnimationFrame(() => listTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
   useEffect(() => {
     let cancelled = false
@@ -692,7 +777,7 @@ export default function NeedsBoard() {
       <main style={{ padding: '12px 20px 24px' }}>
         {mode === 'list' && (
           <>
-            <section style={{ marginBottom: 18 }}>
+            <section ref={listTopRef} style={{ marginBottom: 18, scrollMarginTop: 12 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: 4, borderRadius: 999, background: '#f1f3ef' }}>
                 {[
                   ['people', '사람 구해요'],
@@ -750,6 +835,62 @@ export default function NeedsBoard() {
                   </Pill>
                 ))}
               </div>
+              {tab === 'people' && (
+                <div style={{ marginTop: 12 }}>
+                  <button
+                    type="button"
+                    onClick={() => setPeopleFilterOpen(open => !open)}
+                    aria-expanded={peopleFilterOpen}
+                    style={{
+                      width: '100%', minHeight: 44, padding: '0 14px', border: '1.5px solid #dfe5dc',
+                      borderRadius: 14, background: '#fff', color: '#334033', display: 'flex',
+                      alignItems: 'center', justifyContent: 'space-between', fontFamily: 'inherit',
+                      fontSize: 13.5, fontWeight: 650, cursor: 'pointer',
+                    }}
+                  >
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+                      <SlidersHorizontal size={17} strokeWidth={2.2} /> 상세 필터
+                    </span>
+                    {activePeopleFilterCount > 0 && (
+                      <span style={{ minWidth: 24, height: 24, padding: '0 7px', borderRadius: 999, background: '#e8f3e8', color: GREEN, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 750 }}>
+                        {activePeopleFilterCount}
+                      </span>
+                    )}
+                  </button>
+                  {peopleFilterOpen && (
+                    <div style={{ marginTop: 8, padding: 14, borderRadius: 18, background: '#f4f6f2', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+                        <SelectField
+                          label="지역"
+                          value={peopleDetailFilters.region}
+                          onChange={value => setPeopleDetailFilters(current => ({ ...current, region: value }))}
+                          options={['전체', ...regionOptions].map(value => ({ value, label: value }))}
+                        />
+                        <SelectField
+                          label="모집 일정"
+                          value={peopleDetailFilters.schedule}
+                          onChange={value => setPeopleDetailFilters(current => ({ ...current, schedule: value }))}
+                          options={scheduleFilterOptions}
+                        />
+                        <SelectField
+                          label="필요 인원"
+                          value={peopleDetailFilters.headcount}
+                          onChange={value => setPeopleDetailFilters(current => ({ ...current, headcount: value }))}
+                          options={headcountFilterOptions}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setPeopleDetailFilters(initialPeopleFilters)}
+                        disabled={activePeopleFilterCount === 0}
+                        style={{ alignSelf: 'flex-end', border: 'none', background: 'transparent', color: activePeopleFilterCount ? '#596257' : '#aeb3ad', display: 'inline-flex', alignItems: 'center', gap: 5, padding: 3, fontFamily: 'inherit', fontSize: 12.5, fontWeight: 600, cursor: activePeopleFilterCount ? 'pointer' : 'default' }}
+                      >
+                        <RotateCcw size={14} strokeWidth={2.2} /> 초기화
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
               {tab === 'house' && (
                 <div style={{ marginTop: 12 }}>
                   <button
@@ -853,7 +994,7 @@ export default function NeedsBoard() {
                   <Loader2 size={30} aria-label="게시글을 불러오는 중" style={{ animation: 'spin 0.9s linear infinite' }} />
                 </div>
               )}
-              {!loading && visiblePosts.map(post => (
+              {!loading && paginatedPosts.map(post => (
                 <PostCard key={`${post.type}-${post.id}`} post={post} onClick={() => openDetail(post)} />
               ))}
               {!loading && error && (
@@ -865,6 +1006,40 @@ export default function NeedsBoard() {
                 <div style={{ padding: '42px 0', textAlign: 'center', color: '#888', fontSize: 14, fontWeight: 500 }}>
                   {myPostsOnly ? '작성한 글이 없어요.' : searchQuery.trim() ? '검색 결과가 없어요.' : '아직 등록된 게시글이 없어요.'}
                 </div>
+              )}
+              {!loading && !error && visiblePosts.length > POSTS_PER_PAGE && (
+                <nav aria-label="게시글 페이지" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: '12px 0 2px' }}>
+                  <button
+                    type="button"
+                    aria-label="이전 페이지"
+                    disabled={currentPage === 1}
+                    onClick={() => changePage(currentPage - 1)}
+                    style={{ width: 38, height: 38, borderRadius: '50%', border: '1px solid #dfe5dc', background: '#fff', color: currentPage === 1 ? '#c7cbc6' : GREEN, display: 'grid', placeItems: 'center', cursor: currentPage === 1 ? 'default' : 'pointer' }}
+                  >
+                    <ChevronLeft size={18} strokeWidth={2.3} />
+                  </button>
+                  {Array.from({ length: totalPages }, (_, index) => index + 1).map(page => (
+                    <button
+                      key={page}
+                      type="button"
+                      aria-label={`${page}페이지`}
+                      aria-current={page === currentPage ? 'page' : undefined}
+                      onClick={() => changePage(page)}
+                      style={{ width: 38, height: 38, borderRadius: '50%', border: page === currentPage ? 'none' : '1px solid #dfe5dc', background: page === currentPage ? GREEN : '#fff', color: page === currentPage ? '#fff' : '#4f584f', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    aria-label="다음 페이지"
+                    disabled={currentPage === totalPages}
+                    onClick={() => changePage(currentPage + 1)}
+                    style={{ width: 38, height: 38, borderRadius: '50%', border: '1px solid #dfe5dc', background: '#fff', color: currentPage === totalPages ? '#c7cbc6' : GREEN, display: 'grid', placeItems: 'center', cursor: currentPage === totalPages ? 'default' : 'pointer' }}
+                  >
+                    <ChevronRight size={18} strokeWidth={2.3} />
+                  </button>
+                </nav>
               )}
             </section>
           </>
@@ -1087,6 +1262,32 @@ export default function NeedsBoard() {
           </form>
         )}
       </main>
+
+      {mode === 'list' && showScrollTop && (
+        <button
+          type="button"
+          aria-label="맨 위로 이동"
+          onClick={scrollToTop}
+          style={{
+            position: 'fixed',
+            right: 'max(18px, calc((100vw - 430px) / 2 + 18px))',
+            bottom: 94,
+            zIndex: 120,
+            width: 48,
+            height: 48,
+            border: 'none',
+            borderRadius: '50%',
+            background: GREEN,
+            color: '#fff',
+            display: 'grid',
+            placeItems: 'center',
+            boxShadow: '0 6px 18px rgba(7,104,24,0.24)',
+            cursor: 'pointer',
+          }}
+        >
+          <ArrowUp size={21} strokeWidth={2.5} />
+        </button>
+      )}
 
       {deleteConfirmOpen && selectedPost && (
         <div role="presentation" onClick={() => !submitting && setDeleteConfirmOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 900, display: 'grid', placeItems: 'center', padding: 24, background: 'rgba(20,24,20,0.42)', backdropFilter: 'blur(3px)' }}>
