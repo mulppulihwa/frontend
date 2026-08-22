@@ -28,6 +28,7 @@ function toApiCoordinate(value) {
 
 const COLLAPSED_H = 220
 const EXPANDED_H = 400
+const SHOW_RECOMMENDATION_BADGE_MOCK = true
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
 const USER_PLACE_CATEGORIES = PLACE_CATEGORIES.map(category => category.id)
 const API_PLACE_CATEGORY = {
@@ -99,11 +100,6 @@ function getRecommendKey(place) {
 function getRecommendedCount(place, recommendations = readRecommendations()) {
   const key = getRecommendKey(place)
   return Number(recommendations[key]?.count ?? place?.recommend_count ?? place?.recommendCount ?? 0)
-}
-
-function getDisplayedRecommendedCount(place, recommendations, showPreview = false) {
-  const count = getRecommendedCount(place, recommendations)
-  return showPreview ? Math.max(count, 5) : count
 }
 
 function isPlaceRecommended(place, recommendations = readRecommendations()) {
@@ -270,8 +266,18 @@ export default function StoreMap() {
         const relatedPlaces = relatedPolicy
           ? filterPlacesByPolicy(places, relatedPolicy)
           : places
-        setStores(relatedPlaces)
-        const nextCategory = state?.store?.category || relatedPlaces[0]?.category || ''
+        const displayedPlaces = SHOW_RECOMMENDATION_BADGE_MOCK && relatedPlaces.length
+          ? relatedPlaces.map((place, index) => index === 0
+            ? {
+                ...place,
+                recommend_count: Math.max(Number(place.recommend_count ?? place.recommendCount ?? 0), 5),
+                recommendation_types: ['옥천신문', '옥천군 상담센터'],
+                isRecommendationMock: true,
+              }
+            : place)
+          : relatedPlaces
+        setStores(displayedPlaces)
+        const nextCategory = state?.store?.category || displayedPlaces[0]?.category || ''
         if (nextCategory) setActiveCategory(nextCategory)
       })
       .catch(() => {})
@@ -834,15 +840,8 @@ export default function StoreMap() {
               const storeKey = store.id || `${store.name}-${i}`
               const isHovered = hoveredPlaceId === storeKey
               const CatIcon = activeCat.icon
-              const institutionRecommendations = getInstitutionRecommendationTypes(
-                store,
-                import.meta.env.DEV && store === filteredStores[0],
-              )
-              const recommendCount = getDisplayedRecommendedCount(
-                store,
-                recommendations,
-                import.meta.env.DEV && store === filteredStores[0],
-              )
+              const institutionRecommendations = getInstitutionRecommendationTypes(store)
+              const recommendCount = getRecommendedCount(store, recommendations)
               return (
                 <div
                   key={storeKey}
@@ -1217,18 +1216,11 @@ export default function StoreMap() {
               </button>
             </div>
             <ResidentRecommendationBadge
-              count={getDisplayedRecommendedCount(
-                detailPopup,
-                recommendations,
-                import.meta.env.DEV && String(detailPopup.id) === String(filteredStores[0]?.id),
-              )}
+              count={getRecommendedCount(detailPopup, recommendations)}
               large
             />
             <InstitutionRecommendationBadge
-              types={getInstitutionRecommendationTypes(
-                detailPopup,
-                import.meta.env.DEV && String(detailPopup.id) === String(filteredStores[0]?.id),
-              )}
+              types={getInstitutionRecommendationTypes(detailPopup)}
               large
             />
 
