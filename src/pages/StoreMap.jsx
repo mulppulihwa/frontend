@@ -1219,29 +1219,51 @@ export default function StoreMap() {
             )}
 
             <button
+              className="app-action-button"
               type="button"
               onClick={() => handleRecommendPlace(detailPopup)}
               disabled={isPlaceRecommended(detailPopup, recommendations)}
               style={{
-                width: '100%',
-                minHeight: 42,
+                width: '76%',
+                minWidth: 210,
+                margin: '0 auto',
                 borderRadius: 999,
-                border: '1.5px solid #dfe8dc',
-                background: isPlaceRecommended(detailPopup, recommendations) ? '#e8f3e8' : '#FFFFFF',
-                color: GREEN,
+                border: isPlaceRecommended(detailPopup, recommendations) ? '1px solid #cfe2cc' : '1px solid transparent',
+                background: isPlaceRecommended(detailPopup, recommendations) ? '#edf6eb' : GREEN,
+                color: isPlaceRecommended(detailPopup, recommendations) ? GREEN : '#FFFFFF',
                 fontFamily: 'inherit',
                 fontSize: 14,
-                fontWeight: 850,
+                fontWeight: 750,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 6,
+                gap: 7,
                 cursor: isPlaceRecommended(detailPopup, recommendations) ? 'default' : 'pointer',
+                boxShadow: isPlaceRecommended(detailPopup, recommendations) ? 'none' : '0 5px 14px rgba(7,104,24,0.16)',
+                transition: 'background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease',
               }}
             >
-              <ThumbsUp size={16} strokeWidth={2.4} />
-              {isPlaceRecommended(detailPopup, recommendations) ? '추천했어요' : '추천해요'}
-              <span style={{ color: '#6d766a' }}>{getRecommendedCount(detailPopup, recommendations)}</span>
+              <ThumbsUp
+                size={16}
+                strokeWidth={2.3}
+                fill={isPlaceRecommended(detailPopup, recommendations) ? GREEN : 'none'}
+              />
+              {isPlaceRecommended(detailPopup, recommendations) ? '추천 완료' : '옥천 주민 추천하기'}
+              <span style={{
+                minWidth: 24,
+                height: 24,
+                padding: '0 6px',
+                borderRadius: 999,
+                background: isPlaceRecommended(detailPopup, recommendations) ? '#dcefd9' : 'rgba(255,255,255,0.18)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxSizing: 'border-box',
+                fontSize: 11.5,
+                fontWeight: 750,
+              }}>
+                {getRecommendedCount(detailPopup, recommendations)}
+              </span>
             </button>
 
             {(!detailPopup.locationPrivate || detailPopup.kakaoResult?.phone || detailPopup.phone) && (
