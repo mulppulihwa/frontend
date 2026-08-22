@@ -467,7 +467,12 @@ export default function StoreMap() {
   const handleRecommendPlace = (place) => {
     const key = getRecommendKey(place)
     setRecommendations(current => {
-      if (current[key]?.recommended) return current
+      if (current[key]?.recommended) {
+        const next = { ...current }
+        delete next[key]
+        writeRecommendations(next)
+        return next
+      }
       const next = {
         ...current,
         [key]: {
@@ -1229,7 +1234,7 @@ export default function StoreMap() {
               className="app-action-button"
               type="button"
               onClick={() => handleRecommendPlace(detailPopup)}
-              disabled={isPlaceRecommended(detailPopup, recommendations)}
+              aria-pressed={isPlaceRecommended(detailPopup, recommendations)}
               style={{
                 width: '76%',
                 minWidth: 210,
@@ -1245,7 +1250,7 @@ export default function StoreMap() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 7,
-                cursor: isPlaceRecommended(detailPopup, recommendations) ? 'default' : 'pointer',
+                cursor: 'pointer',
                 boxShadow: isPlaceRecommended(detailPopup, recommendations) ? 'none' : '0 5px 14px rgba(7,104,24,0.16)',
                 transition: 'background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease',
               }}
@@ -1255,7 +1260,7 @@ export default function StoreMap() {
                 strokeWidth={2.3}
                 fill={isPlaceRecommended(detailPopup, recommendations) ? GREEN : 'none'}
               />
-              {isPlaceRecommended(detailPopup, recommendations) ? '추천 완료' : '옥천 주민 추천하기'}
+              {isPlaceRecommended(detailPopup, recommendations) ? '추천 취소' : '옥천 주민 추천하기'}
               <span style={{
                 minWidth: 24,
                 height: 24,
