@@ -225,6 +225,19 @@ function formatCreatedAt(value) {
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 등록`
 }
 
+function getRecruitmentDday(endDate) {
+  if (!endDate) return { label: '상시', color: '#596257', background: '#f1f3f0' }
+
+  const deadline = new Date(`${endDate}T23:59:59`)
+  if (Number.isNaN(deadline.getTime())) return null
+
+  const days = Math.ceil((deadline.getTime() - Date.now()) / 86400000)
+  if (days < 0) return { label: '마감', color: '#777', background: '#f1f1ef' }
+  if (days === 0) return { label: 'D-DAY', color: '#d93025', background: '#fff0ef' }
+  if (days <= 7) return { label: `D-${days}`, color: '#d93025', background: '#fff0ef' }
+  return { label: `D-${days}`, color: GREEN, background: '#e8f3e8' }
+}
+
 function formatMoney(value) {
   if (value == null || value === '') return '미등록'
   const number = Number(value)
@@ -349,8 +362,8 @@ function DetailRow({ label, children }) {
 function FilterChoiceGroup({ label, value, options, onChange }) {
   return (
     <fieldset style={{ margin: 0, padding: 0, border: 'none' }}>
-      <legend style={{ marginBottom: 9, fontSize: 14, fontWeight: 700, color: '#252b25' }}>{label}</legend>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
+      <legend style={{ marginBottom: 6, fontSize: 13.5, fontWeight: 700, color: '#252b25' }}>{label}</legend>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', columnGap: 8, rowGap: 1 }}>
         {options.map(option => {
           const optionValue = typeof option === 'string' ? option : option.value
           const optionLabel = typeof option === 'string' ? option : option.label
@@ -359,16 +372,13 @@ function FilterChoiceGroup({ label, value, options, onChange }) {
             <label
               key={optionValue}
               style={{
-                minHeight: 44,
-                padding: '0 12px',
-                border: `1.5px solid ${checked ? GREEN : '#e1e5df'}`,
-                borderRadius: 12,
-                background: checked ? '#f1f8f0' : '#fff',
+                minHeight: 34,
+                padding: '2px 1px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 9,
+                gap: 8,
                 color: checked ? GREEN : '#454b45',
-                fontSize: 13,
+                fontSize: 13.5,
                 fontWeight: checked ? 700 : 550,
                 cursor: 'pointer',
               }}
@@ -377,7 +387,7 @@ function FilterChoiceGroup({ label, value, options, onChange }) {
                 type="checkbox"
                 checked={checked}
                 onChange={() => onChange(optionValue)}
-                style={{ width: 18, height: 18, margin: 0, accentColor: GREEN, flexShrink: 0 }}
+                style={{ width: 17, height: 17, margin: 0, accentColor: GREEN, flexShrink: 0 }}
               />
               <span>{optionLabel}</span>
             </label>
@@ -393,10 +403,10 @@ function FilterModal({ title, onClose, onReset, hasFilters, children }) {
     <div
       role="presentation"
       onMouseDown={event => { if (event.target === event.currentTarget) onClose() }}
-      style={{ position: 'fixed', inset: 0, zIndex: 1200, padding: '24px 18px', background: 'rgba(27, 31, 27, 0.42)', display: 'grid', placeItems: 'center' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 1200, padding: '20px 28px', background: 'rgba(27, 31, 27, 0.42)', display: 'grid', placeItems: 'center' }}
     >
-      <section role="dialog" aria-modal="true" aria-label={title} style={{ width: 'min(100%, 440px)', maxHeight: 'min(82dvh, 720px)', overflowY: 'auto', borderRadius: 24, background: '#fff', boxShadow: '0 18px 50px rgba(24, 31, 25, 0.2)', padding: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
+      <section role="dialog" aria-modal="true" aria-label={title} style={{ width: 'min(100%, 360px)', maxHeight: 'min(74dvh, 590px)', overflowY: 'auto', borderRadius: 22, background: '#fff', boxShadow: '0 18px 50px rgba(24, 31, 25, 0.2)', padding: 18 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
           <div>
             <h2 style={{ margin: 0, fontSize: 20, fontWeight: 750, color: '#1f2433', letterSpacing: 0 }}>상세 필터</h2>
             <p style={{ margin: '5px 0 0', fontSize: 12.5, color: '#727972' }}>{title}</p>
@@ -405,12 +415,12 @@ function FilterModal({ title, onClose, onReset, hasFilters, children }) {
             <X size={19} strokeWidth={2.2} />
           </button>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>{children}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '0.8fr 1.2fr', gap: 8, marginTop: 22 }}>
-          <button type="button" onClick={onReset} disabled={!hasFilters} style={{ minHeight: 46, border: '1.5px solid #dfe5dc', borderRadius: 14, background: '#fff', color: hasFilters ? '#596257' : '#b5bab4', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 650, cursor: hasFilters ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{children}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '0.8fr 1.2fr', gap: 8, marginTop: 16 }}>
+          <button type="button" onClick={onReset} disabled={!hasFilters} style={{ minHeight: 42, border: 'none', borderRadius: 14, background: '#f1f3f0', color: hasFilters ? '#596257' : '#b5bab4', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 650, cursor: hasFilters ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             <RotateCcw size={15} strokeWidth={2.2} /> 초기화
           </button>
-          <button type="button" onClick={onClose} style={{ minHeight: 46, border: 'none', borderRadius: 14, background: GREEN, color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+          <button type="button" onClick={onClose} style={{ minHeight: 42, border: 'none', borderRadius: 14, background: GREEN, color: '#fff', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
             필터 적용
           </button>
         </div>
@@ -421,6 +431,7 @@ function FilterModal({ title, onClose, onReset, hasFilters, children }) {
 
 function PostCard({ post, onClick }) {
   const isPeople = post.type === 'people'
+  const dday = isPeople ? getRecruitmentDday(post.end_date) : null
   return (
     <button
       type="button"
@@ -443,6 +454,11 @@ function PostCard({ post, onClick }) {
             <span style={{ display: 'inline-flex', borderRadius: 999, background: '#e8f3e8', color: GREEN, padding: '5px 10px', fontSize: 12, fontWeight: 600 }}>
               {post.category}
             </span>
+            {dday && (
+              <span style={{ display: 'inline-flex', borderRadius: 999, background: dday.background, color: dday.color, padding: '5px 9px', fontSize: 11.5, fontWeight: 750 }}>
+                {dday.label}
+              </span>
+            )}
             {post.isMock && (
               <span style={{ display: 'inline-flex', borderRadius: 999, background: '#fff3d9', color: '#a76500', padding: '5px 9px', fontSize: 11, fontWeight: 650 }}>
                 예시
