@@ -224,6 +224,17 @@ function formatCreatedAt(value) {
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 등록`
 }
 
+function formatMoney(value) {
+  if (value == null || value === '') return '미등록'
+  const number = Number(value)
+  return `${Number.isFinite(number) ? number.toLocaleString() : value}만원`
+}
+
+function displayValue(value, fallback = '미등록') {
+  if (value == null || value === '') return fallback
+  return value
+}
+
 function isPostOwner(post) {
   return post?.is_owner === true
 }
@@ -317,6 +328,17 @@ function InfoRow({ icon: Icon, children }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 7, minWidth: 0 }}>
       <Icon size={15} color="#6d766a" strokeWidth={2.2} />
       <span style={{ fontSize: 13, fontWeight: 550, color: '#4d554a', lineHeight: 1.35, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {children}
+      </span>
+    </div>
+  )
+}
+
+function DetailRow({ label, children }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '92px minmax(0, 1fr)', gap: 12, alignItems: 'start', padding: '11px 0', borderBottom: '1px solid #edf0eb' }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: '#747b72', lineHeight: 1.5 }}>{label}</span>
+      <span style={{ minWidth: 0, fontSize: 14, fontWeight: 550, color: '#292e29', lineHeight: 1.55, textAlign: 'right', overflowWrap: 'anywhere' }}>
         {children}
       </span>
     </div>
@@ -1095,26 +1117,38 @@ export default function NeedsBoard({ authoredOnly = false }) {
               </div>
             )}
 
-            <div style={{ borderRadius: 24, background: '#fff', boxShadow: '0 4px 20px rgba(31,45,35,0.08)', padding: 20, display: 'grid', gap: 13 }}>
+            <div style={{ borderRadius: 24, background: '#fff', boxShadow: '0 4px 20px rgba(31,45,35,0.08)', padding: '8px 20px' }}>
               {selectedPost.type === 'people' ? (
                 <>
-                  <InfoRow icon={MapPin}>장소: {selectedPost.location || selectedPost.region}</InfoRow>
-                  <InfoRow icon={CalendarDays}>모집 기간: {selectedPost.period}</InfoRow>
-                  <InfoRow icon={UsersRound}>모집 인원: {selectedPost.headcount}</InfoRow>
-                  <InfoRow icon={Check}>지원 조건: {selectedPost.condition}</InfoRow>
+                  <DetailRow label="모집 분야">{displayValue(selectedPost.category)}</DetailRow>
+                  <DetailRow label="지역">{displayValue(selectedPost.region)}</DetailRow>
+                  <DetailRow label="상세 장소">{displayValue(selectedPost.location)}</DetailRow>
+                  <DetailRow label="모집 시작일">{selectedPost.start_date ? formatDate(selectedPost.start_date) : '상시 모집'}</DetailRow>
+                  <DetailRow label="모집 종료일">{selectedPost.end_date ? formatDate(selectedPost.end_date) : '상시 모집'}</DetailRow>
+                  <DetailRow label="모집 인원">{selectedPost.recruit_count ? `${selectedPost.recruit_count}명` : '인원 협의'}</DetailRow>
+                  <DetailRow label="지원 조건">{displayValue(selectedPost.conditions, '조건 없음')}</DetailRow>
+                  <DetailRow label="작성자">{displayValue(selectedPost.created_by_nickname, '작성자')}</DetailRow>
                 </>
               ) : (
                 <>
-                  <InfoRow icon={MapPin}>주소: {selectedPost.address}</InfoRow>
-                  <InfoRow icon={Home}>집 정보: {selectedPost.size} · {selectedPost.rooms}</InfoRow>
-                  <InfoRow icon={CalendarDays}>가격: {selectedPost.price}</InfoRow>
-                  <InfoRow icon={Check}>{selectedPost.maintenance}</InfoRow>
-                  <InfoRow icon={Check}>옵션: {(selectedPost.options || []).join(', ') || '문의 필요'}</InfoRow>
+                  <DetailRow label="지역">{displayValue(selectedPost.region)}</DetailRow>
+                  <DetailRow label="상세 주소">{displayValue(selectedPost.detail_address)}</DetailRow>
+                  <DetailRow label="방 유형">{displayValue(selectedPost.room_type)}</DetailRow>
+                  <DetailRow label="방 구성">{displayValue(selectedPost.room_layout)}</DetailRow>
+                  <DetailRow label="면적">{selectedPost.size_pyeong ? `${selectedPost.size_pyeong}평` : '미등록'}</DetailRow>
+                  <DetailRow label="거래 유형">{displayValue(selectedPost.deal_type)}</DetailRow>
+                  <DetailRow label="보증금">{formatMoney(selectedPost.deposit)}</DetailRow>
+                  <DetailRow label="월세">{selectedPost.deal_type === '전세' ? '해당 없음' : formatMoney(selectedPost.monthly_rent)}</DetailRow>
+                  <DetailRow label="관리비">{formatMoney(selectedPost.maintenance_fee)}</DetailRow>
+                  <DetailRow label="옵션">{(selectedPost.options || []).join(', ') || '미등록'}</DetailRow>
+                  <DetailRow label="작성자">{displayValue(selectedPost.contact_name)}</DetailRow>
+                  <DetailRow label="연락처">{displayValue(selectedPost.contact_phone)}</DetailRow>
+                  {(selectedPost.lat != null || selectedPost.lng != null) && (
+                    <DetailRow label="지도 좌표">{displayValue(selectedPost.lat)} / {displayValue(selectedPost.lng)}</DetailRow>
+                  )}
                 </>
               )}
-              <InfoRow icon={UserRound}>작성자: {selectedPost.author}</InfoRow>
-              {selectedPost.type === 'house' && <InfoRow icon={Phone}>연락처: {selectedPost.phone}</InfoRow>}
-              {formatCreatedAt(selectedPost.created_at) && <InfoRow icon={Clock3}>등록일: {formatCreatedAt(selectedPost.created_at).replace(' 등록', '')}</InfoRow>}
+              <DetailRow label="등록일">{formatCreatedAt(selectedPost.created_at).replace(' 등록', '') || '미등록'}</DetailRow>
             </div>
 
             {isPostOwner(selectedPost) && (
