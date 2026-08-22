@@ -349,12 +349,25 @@ function InfoRow({ icon: Icon, children }) {
 }
 
 function DetailRow({ label, children }) {
+  const Icon = label.includes('지역') || label.includes('장소') || label.includes('주소') || label.includes('좌표')
+    ? MapPin
+    : label.includes('일') || label.includes('기간')
+      ? CalendarDays
+      : label.includes('인원')
+        ? UsersRound
+        : label.includes('작성자')
+          ? UserRound
+          : label.includes('연락처')
+            ? Phone
+            : label.includes('방') || label.includes('면적') || label.includes('거래') || label.includes('보증금') || label.includes('월세') || label.includes('관리비')
+              ? Home
+              : Check
+
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '92px minmax(0, 1fr)', gap: 12, alignItems: 'start', padding: '11px 0', borderBottom: '1px solid #edf0eb' }}>
-      <span style={{ fontSize: 13, fontWeight: 600, color: '#747b72', lineHeight: 1.5 }}>{label}</span>
-      <span style={{ minWidth: 0, fontSize: 14, fontWeight: 550, color: '#292e29', lineHeight: 1.55, textAlign: 'right', overflowWrap: 'anywhere' }}>
-        {children}
-      </span>
+    <div style={{ display: 'grid', gridTemplateColumns: '20px 88px minmax(0, 1fr)', gap: 8, alignItems: 'start' }}>
+      <Icon size={17} color="#6d766a" strokeWidth={2.1} style={{ marginTop: 2 }} />
+      <span style={{ fontSize: 13, fontWeight: 650, color: '#747b72', lineHeight: 1.5 }}>{label}</span>
+      <span style={{ minWidth: 0, fontSize: 14, fontWeight: 550, color: '#292e29', lineHeight: 1.5, overflowWrap: 'anywhere' }}>{children}</span>
     </div>
   )
 }
@@ -1169,7 +1182,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
               </div>
             )}
 
-            <div style={{ borderRadius: 24, background: '#fff', boxShadow: '0 4px 20px rgba(31,45,35,0.08)', padding: '8px 20px' }}>
+            <div style={{ borderRadius: 24, background: '#fff', boxShadow: '0 4px 20px rgba(31,45,35,0.08)', padding: 20, display: 'grid', gap: 13 }}>
               {selectedPost.type === 'people' ? (
                 <>
                   <DetailRow label="모집 분야">{displayValue(selectedPost.category)}</DetailRow>
