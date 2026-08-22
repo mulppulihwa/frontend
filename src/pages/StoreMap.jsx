@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ChevronUp, ChevronDown, MapPin, Phone, Search, X, Clock, Plus, Trash2, MessageSquareText, Pencil, ShieldCheck, ThumbsUp } from 'lucide-react'
+import { ChevronUp, ChevronDown, MapPin, Phone, Search, X, Clock, Plus, Trash2, MessageSquareText, Pencil, ThumbsUp } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import SelectField from '../components/SelectField'
 import { createPlace, deletePlace, fetchPlaces, updatePlace } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta, PLACE_CATEGORIES } from '../lib/placeCategories'
 import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 import okcheonRecommendation from '../assets/okcheon-recommendation.png'
+import okcheonSearch from '../assets/okcheon-search.png'
 
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
 const GREEN = '#076818'
@@ -45,12 +46,42 @@ function writeRecommendations(value) {
   localStorage.setItem(PLACE_RECOMMEND_KEY, JSON.stringify(value))
 }
 
-function getTrustBadges(place) {
-  if (place.userAdded || place.curated) return []
-  const key = `${place.name || ''}${place.address || ''}`
-  const badges = []
-  if (key.length % 3 === 0 || place.category === '행정') badges.push('옥천군 상담센터 추천')
-  return badges
+const INSTITUTION_RECOMMENDATION_TYPES = [
+  {
+    id: 'okcheon_news',
+    label: '옥천신문 추천',
+    matches: value => value.includes('옥천신문') || value.includes('okcheonnews') || value.includes('newspaper'),
+  },
+  {
+    id: 'okcheon_counseling_center',
+    label: '옥천군 상담센터 추천',
+    matches: value => value.includes('상담센터') || value.includes('counselingcenter') || value.includes('consultingcenter'),
+  },
+]
+
+function getInstitutionRecommendationTypes(place) {
+  const rawValues = [
+    place.recommendationTypes,
+    place.recommendation_types,
+    place.recommendationType,
+    place.recommendation_type,
+    place.recommendedBy,
+    place.recommended_by,
+    place.verificationTypes,
+    place.verification_types,
+  ]
+    .flatMap(value => Array.isArray(value) ? value : [value])
+    .flatMap(value => typeof value === 'string' ? value.split(/[,|]/) : [])
+    .map(value => value.toLowerCase().replace(/[\s_-]/g, ''))
+
+  if (place.okcheon_news_recommended || place.is_okcheon_news_recommended || place.recommended_by_okcheon_news) {
+    rawValues.push('okcheonnews')
+  }
+  if (place.counseling_center_recommended || place.is_counseling_center_recommended || place.recommended_by_counseling_center) {
+    rawValues.push('counselingcenter')
+  }
+
+  return INSTITUTION_RECOMMENDATION_TYPES.filter(type => rawValues.some(type.matches))
 }
 
 function getRecommendKey(place) {
@@ -102,6 +133,49 @@ function ResidentRecommendationBadge({ count, large = false }) {
       }}>
         옥천 주민 추천
         <span style={{ color: '#8a7139', fontWeight: 600 }}> · {count}명</span>
+      </span>
+    </div>
+  )
+}
+
+function InstitutionRecommendationBadge({ types, large = false }) {
+  if (!types.length) return null
+
+  return (
+    <div style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      alignSelf: 'flex-start',
+      gap: large ? 10 : 7,
+      maxWidth: '100%',
+      padding: large ? '7px 12px 7px 8px' : '5px 10px 5px 6px',
+      border: '1px solid #cfe0cc',
+      borderRadius: 999,
+      background: '#f3f8f1',
+    }}>
+      <img
+        src={okcheonSearch}
+        alt=""
+        aria-hidden="true"
+        style={{
+          width: large ? 42 : 32,
+          height: large ? 42 : 32,
+          flexShrink: 0,
+          objectFit: 'contain',
+        }}
+      />
+      <span style={{
+        display: 'flex',
+        minWidth: 0,
+        flexDirection: 'column',
+        gap: 1,
+        color: '#274d2b',
+        fontSize: large ? 13 : 11.5,
+        fontWeight: 750,
+        lineHeight: 1.3,
+        letterSpacing: 0,
+      }}>
+        {types.map(type => <span key={type.id}>{type.label}</span>)}
       </span>
     </div>
   )
@@ -742,7 +816,7 @@ export default function StoreMap() {
               const storeKey = store.id || `${store.name}-${i}`
               const isHovered = hoveredPlaceId === storeKey
               const CatIcon = activeCat.icon
-              const trustBadges = getTrustBadges(store)
+              const institutionRecommendations = getInstitutionRecommendationTypes(store)
               const recommendCount = getRecommendedCount(store, recommendations)
               return (
                 <div
@@ -856,13 +930,9 @@ export default function StoreMap() {
                           </>
                         )}
                       </div>
-                      {trustBadges.length > 0 && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, margin: '-1px 0 7px' }}>
-                          {trustBadges.map(badge => (
-                            <span key={badge} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 7px', borderRadius: 999, background: '#fff7e4', color: '#936000', fontSize: 11, fontWeight: 800 }}>
-                              <ShieldCheck size={11} strokeWidth={2.4} /> {badge}
-                            </span>
-                          ))}
+                      {institutionRecommendations.length > 0 && (
+                        <div style={{ display: 'flex', margin: '-1px 0 8px' }}>
+                          <InstitutionRecommendationBadge types={institutionRecommendations} />
                         </div>
                       )}
                       {recommendCount >= 5 && (
@@ -1125,15 +1195,10 @@ export default function StoreMap() {
               count={getRecommendedCount(detailPopup, recommendations)}
               large
             />
-            {getTrustBadges(detailPopup).length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: -6 }}>
-                {getTrustBadges(detailPopup).map(badge => (
-                  <span key={badge} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 9px', borderRadius: 999, background: '#fff7e4', color: '#936000', fontSize: 12, fontWeight: 800 }}>
-                    <ShieldCheck size={13} strokeWidth={2.4} /> {badge}
-                  </span>
-                ))}
-              </div>
-            )}
+            <InstitutionRecommendationBadge
+              types={getInstitutionRecommendationTypes(detailPopup)}
+              large
+            />
 
             {detailLoading ? (
               <p style={{ fontSize: 14, color: '#aaa', textAlign: 'center', padding: '12px 0' }}>불러오는 중...</p>
