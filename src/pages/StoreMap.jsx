@@ -1271,9 +1271,9 @@ export default function StoreMap() {
                 minWidth: 210,
                 margin: '0 auto',
                 borderRadius: 999,
-                border: isPlaceRecommended(detailPopup, recommendations) ? '1px solid #cfe2cc' : '1px solid transparent',
-                background: isPlaceRecommended(detailPopup, recommendations) ? '#edf6eb' : GREEN,
-                color: isPlaceRecommended(detailPopup, recommendations) ? GREEN : '#FFFFFF',
+                border: isPlaceRecommended(detailPopup, recommendations) ? '1px solid transparent' : '1px solid #e0e3de',
+                background: isPlaceRecommended(detailPopup, recommendations) ? GREEN : '#f1f3f0',
+                color: isPlaceRecommended(detailPopup, recommendations) ? '#FFFFFF' : '#555b55',
                 fontFamily: 'inherit',
                 fontSize: 14,
                 fontWeight: 750,
@@ -1282,14 +1282,14 @@ export default function StoreMap() {
                 justifyContent: 'center',
                 gap: 7,
                 cursor: 'pointer',
-                boxShadow: isPlaceRecommended(detailPopup, recommendations) ? 'none' : '0 5px 14px rgba(7,104,24,0.16)',
+                boxShadow: isPlaceRecommended(detailPopup, recommendations) ? '0 5px 14px rgba(7,104,24,0.16)' : 'none',
                 transition: 'background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease',
               }}
             >
               <ThumbsUp
                 size={16}
                 strokeWidth={2.3}
-                fill={isPlaceRecommended(detailPopup, recommendations) ? GREEN : 'none'}
+                fill={isPlaceRecommended(detailPopup, recommendations) ? '#FFFFFF' : 'none'}
               />
               {isPlaceRecommended(detailPopup, recommendations) ? '추천 취소' : '옥천 주민 추천하기'}
               <span style={{
@@ -1297,7 +1297,7 @@ export default function StoreMap() {
                 height: 24,
                 padding: '0 6px',
                 borderRadius: 999,
-                background: isPlaceRecommended(detailPopup, recommendations) ? '#dcefd9' : 'rgba(255,255,255,0.18)',
+                background: isPlaceRecommended(detailPopup, recommendations) ? 'rgba(255,255,255,0.2)' : '#e2e5e0',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
