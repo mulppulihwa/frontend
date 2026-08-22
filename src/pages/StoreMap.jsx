@@ -48,7 +48,6 @@ function getTrustBadges(place) {
   if (place.userAdded || place.curated) return []
   const key = `${place.name || ''}${place.address || ''}`
   const badges = []
-  if (key.length % 2 === 0 || place.category === '맛집') badges.push('옥천신문 추천')
   if (key.length % 3 === 0 || place.category === '행정') badges.push('옥천군 상담센터 추천')
   return badges
 }
