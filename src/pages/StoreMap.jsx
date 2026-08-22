@@ -118,6 +118,7 @@ function ResidentRecommendationBadge({ count, large = false }) {
       gap: large ? 5 : 3,
       width: large ? 104 : 76,
       flexShrink: 0,
+      alignSelf: large ? 'center' : 'auto',
     }}>
       <img
         src={okcheonRecommendation}
@@ -158,6 +159,7 @@ function InstitutionRecommendationBadge({ types, large = false }) {
       gap: large ? 5 : 3,
       width: large ? 112 : 82,
       flexShrink: 0,
+      alignSelf: large ? 'center' : 'auto',
     }}>
       <img
         src={okcheonSearch}
@@ -905,12 +907,12 @@ export default function StoreMap() {
                       </button>
                     </div>
                   )}
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '16px 14px 12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 14px 12px' }}>
                     <div style={{
                       width: 46, height: 46, borderRadius: 14, flexShrink: 0,
                       background: 'none',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      marginTop: 2,
+                      marginTop: 0,
                       transition: 'background 0.18s',
                     }}>
                       <CatIcon size={24} color={activeCat.color} strokeWidth={2.2} />
