@@ -120,9 +120,9 @@ function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified
           {dDayLabel}
         </p>
         <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{grant.title}</p>
-          <p style={{ fontSize: 13, color: '#555', letterSpacing: '-0.1px' }}>{grant.subtitle}</p>
-          <p style={{ fontSize: 12, fontWeight: 400, color: '#8a8a8a', letterSpacing: '-0.1px' }}>
+          <p style={{ fontSize: 18, fontWeight: 700, color: '#1f2433', lineHeight: 1.32, letterSpacing: 0, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{grant.title}</p>
+          <p style={{ fontSize: 13, fontWeight: 550, color: '#4d554a', lineHeight: 1.35, letterSpacing: 0 }}>{grant.subtitle}</p>
+          <p style={{ fontSize: 12, fontWeight: 500, color: '#777', lineHeight: 1.35, letterSpacing: 0 }}>
             {formatAddedDate(grant.addedAt)}
           </p>
         </div>

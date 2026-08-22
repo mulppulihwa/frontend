@@ -920,11 +920,11 @@ export default function StoreMap() {
                     <div style={{ flex: 1, minWidth: 0, paddingRight: store.userAdded ? 36 : 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, minWidth: 0 }}>
                         <p style={{
-                          fontSize: 16,
+                          fontSize: 18,
                           lineHeight: 1.35,
-                          fontWeight: 750,
-                          color: '#20242f',
-                          letterSpacing: '-0.2px',
+                          fontWeight: 700,
+                          color: '#1f2433',
+                          letterSpacing: 0,
                           margin: 0,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -946,14 +946,14 @@ export default function StoreMap() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 7, minHeight: 19 }}>
                         {(Number(store.rating) > 0 || Number(store.reviews) > 0) && (
                           <>
-                            <span style={{ fontSize: 13.5, lineHeight: 1, fontWeight: 750, color: '#d98200' }}>★ {store.rating}</span>
-                            <span style={{ fontSize: 12.5, lineHeight: 1, fontWeight: 550, color: '#555' }}>({store.reviews})</span>
+                            <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 650, color: '#d98200' }}>★ {store.rating}</span>
+                            <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 550, color: '#4d554a' }}>({store.reviews})</span>
                           </>
                         )}
                         {recommendCount > 0 && (
                           <>
                             <span style={{ fontSize: 12, color: '#777' }}>·</span>
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12.5, lineHeight: 1, fontWeight: 750, color: '#076818' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 13, lineHeight: 1.35, fontWeight: 650, color: '#076818' }}>
                               <ThumbsUp size={12} strokeWidth={2.4} /> {recommendCount}
                             </span>
                           </>
@@ -961,19 +961,19 @@ export default function StoreMap() {
                         {userPos && Number.isFinite(Number(store.lat)) && Number.isFinite(Number(store.lng)) && (
                           <>
                             <span style={{ fontSize: 12, color: '#777' }}>·</span>
-                            <span style={{ fontSize: 13, lineHeight: 1, fontWeight: 650, color: '#3f3f3f' }}>{haversine(userPos.lat, userPos.lng, store.lat, store.lng)}</span>
+                            <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 550, color: '#4d554a' }}>{haversine(userPos.lat, userPos.lng, store.lat, store.lng)}</span>
                           </>
                         )}
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '17px minmax(0, 1fr)', alignItems: 'center', columnGap: 6, marginBottom: 4 }}>
-                        <MapPin size={15} color="#555" strokeWidth={2.1} />
-                        <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 500, color: '#444', letterSpacing: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <MapPin size={15} color="#6d766a" strokeWidth={2.1} />
+                        <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 550, color: '#4d554a', letterSpacing: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.address}
                         </span>
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '17px minmax(0, 1fr)', alignItems: 'center', columnGap: 6 }}>
-                        <Clock size={15} color="#555" strokeWidth={2.1} />
-                        <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 500, color: '#444', letterSpacing: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <Clock size={15} color="#6d766a" strokeWidth={2.1} />
+                        <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 550, color: '#4d554a', letterSpacing: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {store.hours}
                         </span>
                       </div>

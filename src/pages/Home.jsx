@@ -142,10 +142,10 @@ function DiagnosedPolicyCard({ policy, checklistItems, navigate }) {
           {getDday(policy.deadline)}
         </p>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 15, fontWeight: 750, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all' }}>
+          <p style={{ fontSize: 18, fontWeight: 700, color: '#1f2433', lineHeight: 1.32, letterSpacing: 0, wordBreak: 'keep-all' }}>
             {policy.title}
           </p>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 6, padding: '4px 8px', borderRadius: 999, background: statusMeta.background, color: statusMeta.color, fontSize: 11, fontWeight: 700 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 6, padding: '4px 8px', borderRadius: 999, background: statusMeta.background, color: statusMeta.color, fontSize: 12, fontWeight: 600, lineHeight: 1.35 }}>
             <StatusIcon size={11} strokeWidth={2.5} />
             {statusMeta.label}
           </span>
