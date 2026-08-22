@@ -6,6 +6,7 @@ import SelectField from '../components/SelectField'
 import { createPlace, deletePlace, fetchPlaces, updatePlace } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta, PLACE_CATEGORIES } from '../lib/placeCategories'
 import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
+import okcheonRecommendation from '../assets/okcheon-recommendation.png'
 
 const OKCHEON_CENTER = { lat: 36.3063, lng: 127.5718 }
 const GREEN = '#076818'
@@ -63,6 +64,47 @@ function getRecommendedCount(place, recommendations = readRecommendations()) {
 
 function isPlaceRecommended(place, recommendations = readRecommendations()) {
   return Boolean(recommendations[getRecommendKey(place)]?.recommended)
+}
+
+function ResidentRecommendationBadge({ count, large = false }) {
+  if (count < 5) return null
+
+  return (
+    <div style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      alignSelf: 'flex-start',
+      gap: large ? 9 : 7,
+      maxWidth: '100%',
+      padding: large ? '7px 12px 7px 8px' : '5px 10px 5px 6px',
+      border: '1px solid #eed8a9',
+      borderRadius: 999,
+      background: '#fff8e9',
+    }}>
+      <img
+        src={okcheonRecommendation}
+        alt=""
+        aria-hidden="true"
+        style={{
+          width: large ? 42 : 32,
+          height: large ? 42 : 32,
+          flexShrink: 0,
+          objectFit: 'contain',
+        }}
+      />
+      <span style={{
+        minWidth: 0,
+        color: '#5f470d',
+        fontSize: large ? 13 : 11.5,
+        fontWeight: 750,
+        lineHeight: 1.3,
+        letterSpacing: 0,
+      }}>
+        옥천 주민 추천
+        <span style={{ color: '#8a7139', fontWeight: 600 }}> · {count}명</span>
+      </span>
+    </div>
+  )
 }
 
 function loadPostcodeScript() {
@@ -823,6 +865,11 @@ export default function StoreMap() {
                           ))}
                         </div>
                       )}
+                      {recommendCount >= 5 && (
+                        <div style={{ display: 'flex', margin: '-1px 0 8px' }}>
+                          <ResidentRecommendationBadge count={recommendCount} />
+                        </div>
+                      )}
                       <div style={{ display: 'grid', gridTemplateColumns: '17px minmax(0, 1fr)', alignItems: 'center', columnGap: 6, marginBottom: 4 }}>
                         <MapPin size={15} color="#555" strokeWidth={2.1} />
                         <span style={{ fontSize: 13, lineHeight: 1.35, fontWeight: 500, color: '#444', letterSpacing: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -1074,6 +1121,10 @@ export default function StoreMap() {
                 <X size={20} color="#888" strokeWidth={2} />
               </button>
             </div>
+            <ResidentRecommendationBadge
+              count={getRecommendedCount(detailPopup, recommendations)}
+              large
+            />
             {getTrustBadges(detailPopup).length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: -6 }}>
                 {getTrustBadges(detailPopup).map(badge => (
