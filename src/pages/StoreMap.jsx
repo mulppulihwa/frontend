@@ -59,7 +59,7 @@ const INSTITUTION_RECOMMENDATION_TYPES = [
   },
 ]
 
-function getInstitutionRecommendationTypes(place) {
+function getInstitutionRecommendationTypes(place, showPreview = false) {
   const rawValues = [
     place.recommendationTypes,
     place.recommendation_types,
@@ -81,7 +81,8 @@ function getInstitutionRecommendationTypes(place) {
     rawValues.push('counselingcenter')
   }
 
-  return INSTITUTION_RECOMMENDATION_TYPES.filter(type => rawValues.some(type.matches))
+  const matchedTypes = INSTITUTION_RECOMMENDATION_TYPES.filter(type => rawValues.some(type.matches))
+  return matchedTypes.length || !showPreview ? matchedTypes : INSTITUTION_RECOMMENDATION_TYPES
 }
 
 function getRecommendKey(place) {
@@ -816,7 +817,10 @@ export default function StoreMap() {
               const storeKey = store.id || `${store.name}-${i}`
               const isHovered = hoveredPlaceId === storeKey
               const CatIcon = activeCat.icon
-              const institutionRecommendations = getInstitutionRecommendationTypes(store)
+              const institutionRecommendations = getInstitutionRecommendationTypes(
+                store,
+                import.meta.env.DEV && store === filteredStores[0],
+              )
               const recommendCount = getRecommendedCount(store, recommendations)
               return (
                 <div
@@ -1196,7 +1200,10 @@ export default function StoreMap() {
               large
             />
             <InstitutionRecommendationBadge
-              types={getInstitutionRecommendationTypes(detailPopup)}
+              types={getInstitutionRecommendationTypes(
+                detailPopup,
+                import.meta.env.DEV && String(detailPopup.id) === String(filteredStores[0]?.id),
+              )}
               large
             />
 
