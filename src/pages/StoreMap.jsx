@@ -23,7 +23,7 @@ function haversine(lat1, lng1, lat2, lng2) {
 
 function toApiCoordinate(value) {
   const coordinate = Number(value)
-  return Number.isFinite(coordinate) ? coordinate.toFixed(7) : null
+  return Number.isFinite(coordinate) ? Number(coordinate.toFixed(6)) : null
 }
 
 const COLLAPSED_H = 220
