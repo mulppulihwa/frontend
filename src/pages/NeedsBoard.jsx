@@ -896,18 +896,42 @@ export default function NeedsBoard({ authoredOnly = false }) {
                   value={searchQuery}
                   onChange={event => setSearchQuery(event.target.value)}
                   placeholder={tab === 'people' ? '일자리, 지역, 모집 분야 검색' : '지역, 가격, 방 구성 검색'}
-                  style={{ width: '100%', minHeight: 50, border: '1.5px solid #e1e5df', borderRadius: 16, background: '#fff', padding: '0 44px 0 46px', color: '#1f2433', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, outline: 'none', boxSizing: 'border-box' }}
+                  style={{ width: '100%', minHeight: 50, border: '1.5px solid #e1e5df', borderRadius: 16, background: '#fff', padding: `0 ${searchQuery ? 88 : 50}px 0 46px`, color: '#1f2433', fontFamily: 'inherit', fontSize: 14, fontWeight: 500, outline: 'none', boxSizing: 'border-box' }}
                 />
                 {searchQuery && (
                   <button
                     type="button"
                     aria-label="검색어 지우기"
                     onClick={() => setSearchQuery('')}
-                    style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', width: 32, height: 32, border: 'none', borderRadius: '50%', background: '#f1f3ef', color: '#667064', display: 'grid', placeItems: 'center', cursor: 'pointer' }}
+                    style={{ position: 'absolute', right: 46, top: '50%', transform: 'translateY(-50%)', width: 32, height: 32, border: 'none', borderRadius: '50%', background: '#f1f3ef', color: '#667064', display: 'grid', placeItems: 'center', cursor: 'pointer' }}
                   >
                     <X size={16} strokeWidth={2.3} />
                   </button>
                 )}
+                <button
+                  type="button"
+                  aria-label="상세 필터"
+                  aria-expanded={tab === 'people' ? peopleFilterOpen : housingFilterOpen}
+                  onClick={() => tab === 'people' ? setPeopleFilterOpen(true) : setHousingFilterOpen(true)}
+                  style={{
+                    position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                    width: 34, height: 34, padding: 0, border: 'none', borderRadius: 10,
+                    background: (tab === 'people' ? activePeopleFilterCount : activeHousingFilterCount) > 0 ? '#e8f3e8' : 'transparent',
+                    color: GREEN, display: 'grid', placeItems: 'center', cursor: 'pointer',
+                  }}
+                >
+                  <SlidersHorizontal size={19} strokeWidth={2.3} />
+                  {(tab === 'people' ? activePeopleFilterCount : activeHousingFilterCount) > 0 && (
+                    <span style={{
+                      position: 'absolute', top: 1, right: 1, minWidth: 15, height: 15,
+                      padding: '0 3px', borderRadius: 999, background: GREEN, color: '#fff',
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 9, fontWeight: 800, lineHeight: 1,
+                    }}>
+                      {tab === 'people' ? activePeopleFilterCount : activeHousingFilterCount}
+                    </span>
+                  )}
+                </button>
               </label>
               <div className="no-scrollbar" style={{ display: 'flex', gap: 8, overflowX: 'auto', marginTop: 12, paddingBottom: 2 }}>
                 {filters.map(item => (
@@ -916,54 +940,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
                   </Pill>
                 ))}
               </div>
-              {tab === 'people' && (
-                <div style={{ marginTop: 12 }}>
-                  <button
-                    type="button"
-                    onClick={() => setPeopleFilterOpen(true)}
-                    aria-expanded={peopleFilterOpen}
-                    style={{
-                      width: '100%', minHeight: 44, padding: '0 14px', border: '1.5px solid #dfe5dc',
-                      borderRadius: 14, background: '#fff', color: '#334033', display: 'flex',
-                      alignItems: 'center', justifyContent: 'space-between', fontFamily: 'inherit',
-                      fontSize: 13.5, fontWeight: 650, cursor: 'pointer',
-                    }}
-                  >
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
-                      <SlidersHorizontal size={17} strokeWidth={2.2} /> 상세 필터
-                    </span>
-                    {activePeopleFilterCount > 0 && (
-                      <span style={{ minWidth: 24, height: 24, padding: '0 7px', borderRadius: 999, background: '#e8f3e8', color: GREEN, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 750 }}>
-                        {activePeopleFilterCount}
-                      </span>
-                    )}
-                  </button>
-                </div>
-              )}
-              {tab === 'house' && (
-                <div style={{ marginTop: 12 }}>
-                  <button
-                    type="button"
-                    onClick={() => setHousingFilterOpen(true)}
-                    aria-expanded={housingFilterOpen}
-                    style={{
-                      width: '100%', minHeight: 44, padding: '0 14px', border: '1.5px solid #dfe5dc',
-                      borderRadius: 14, background: '#fff', color: '#334033', display: 'flex',
-                      alignItems: 'center', justifyContent: 'space-between', fontFamily: 'inherit',
-                      fontSize: 13.5, fontWeight: 650, cursor: 'pointer',
-                    }}
-                  >
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
-                      <SlidersHorizontal size={17} strokeWidth={2.2} /> 상세 필터
-                    </span>
-                    {activeHousingFilterCount > 0 && (
-                      <span style={{ minWidth: 24, height: 24, padding: '0 7px', borderRadius: 999, background: '#e8f3e8', color: GREEN, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 750 }}>
-                        {activeHousingFilterCount}
-                      </span>
-                    )}
-                  </button>
-                </div>
-              )}
               <div aria-label="정렬 방식" style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
                 <span style={{ marginRight: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, color: '#626a61', fontSize: 12.5, fontWeight: 650 }}>
                   <ArrowDownUp size={15} strokeWidth={2.2} /> 정렬
