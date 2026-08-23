@@ -36,7 +36,7 @@ export function getDeadlineDays(deadlineLike, today = new Date()) {
 export function formatDday(deadlineLike, today = new Date()) {
   const days = getDeadlineDays(deadlineLike, today)
   if (!Number.isFinite(days) || days === 0) return '-'
-  return days > 0 ? `D-${days}` : `D+${Math.abs(days)}`
+  return days > 0 ? `D-${days}` : '마감'
 }
 
 export function formatDeadlineText(deadlineLike, today = new Date()) {

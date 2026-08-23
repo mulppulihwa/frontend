@@ -4,6 +4,7 @@ import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
 import { fetchSavedPolicies } from '../lib/api'
+import { formatDday, getDeadlineDays } from '../lib/deadline'
 
 const notificationFilters = [
   { key: 'all', label: '전체' },
@@ -13,23 +14,6 @@ const notificationFilters = [
   { key: 'd1', label: '하루 전' },
   { key: 'unknown', label: '날짜 없음' },
 ]
-
-function getDeadlineDays(deadlineStr) {
-  if (!deadlineStr) return Number.POSITIVE_INFINITY
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const deadline = new Date(deadlineStr)
-  if (Number.isNaN(deadline.getTime())) return Number.POSITIVE_INFINITY
-  deadline.setHours(0, 0, 0, 0)
-  return Math.ceil((deadline - today) / 86400000)
-}
-
-function getDday(deadlineStr) {
-  const days = getDeadlineDays(deadlineStr)
-  if (!Number.isFinite(days)) return '-'
-  if (days === 0) return '-'
-  return days > 0 ? `D-${days}` : `D+${Math.abs(days)}`
-}
 
 function matchesNotificationFilter(policy, filter) {
   if (filter === 'all') return true
@@ -65,7 +49,7 @@ function NotificationCard({ policy }) {
   return (
     <div style={{ background: '#FFFFFF', border: '1px solid rgba(218,231,211,0.9)', borderRadius: 28, padding: '16px 16px 14px' }}>
       <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr', columnGap: 10, alignItems: 'center' }}>
-        <p style={{ fontSize: 14, fontWeight: 800, color: '#d93025', lineHeight: 1.25, textAlign: 'center' }}>{getDday(policy.deadline)}</p>
+        <p style={{ fontSize: 14, fontWeight: 800, color: '#d93025', lineHeight: 1.25, textAlign: 'center' }}>{formatDday(policy.deadline)}</p>
         <div>
           <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433', lineHeight: 1.35, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{policy.title}</p>
           <p style={{ marginTop: 10, fontSize: 13, fontWeight: 500, color: '#555', lineHeight: 1.5, wordBreak: 'keep-all', letterSpacing: '-0.1px' }}>
