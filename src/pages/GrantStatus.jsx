@@ -6,6 +6,7 @@ import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import PreparationButton from '../components/PreparationButton'
+import SelectField from '../components/SelectField'
 import okcheonCharacter from '../assets/okcheon-character.png'
 import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, getCachedSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
@@ -471,32 +472,19 @@ export default function GrantStatus() {
             marginBottom: -12,
           }}
         >
-          <select
-            aria-label="정렬 기준"
+          <div style={{ width: 112 }}>
+            <SelectField
+            ariaLabel="정렬 기준"
             value={sort}
-            onChange={event => {
-              setSort(event.target.value)
+            onChange={value => {
+              setSort(value)
               setSortReversed(false)
               setPage(1)
             }}
-            style={{
-              width: 112,
-              height: 36,
-              padding: '0 28px 0 11px',
-              border: '1px solid #dfe4dc',
-              borderRadius: 10,
-              background: '#fff',
-              color: '#333',
-              fontFamily: 'inherit',
-              fontSize: 12.5,
-              fontWeight: 650,
-              cursor: 'pointer',
-            }}
-          >
-            {sortOptions.map(option => (
-              <option key={option.key} value={option.key}>{option.label}</option>
-            ))}
-          </select>
+            options={sortOptions.map(option => ({ value: option.key, label: option.label }))}
+            compact
+            />
+          </div>
           <button
             type="button"
             aria-label={`정렬 방향 변경, 현재 ${sortDirectionLabel}`}

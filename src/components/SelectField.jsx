@@ -1,7 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
 import { ChevronDown, Check } from 'lucide-react'
 
-export default function SelectField({ label, value, options, onChange, required, placeholder = '선택해 주세요' }) {
+export default function SelectField({
+  label,
+  value,
+  options,
+  onChange,
+  required,
+  placeholder = '선택해 주세요',
+  compact = false,
+  ariaLabel,
+}) {
   const [open, setOpen] = useState(false)
   const [focused, setFocused] = useState(false)
   const ref = useRef(null)
@@ -26,14 +35,15 @@ export default function SelectField({ label, value, options, onChange, required,
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
+        aria-label={ariaLabel}
         style={{
           width: '100%',
-          height: 48,
-          minHeight: 48,
-          padding: '0 14px',
+          height: compact ? 36 : 48,
+          minHeight: compact ? 36 : 48,
+          padding: compact ? '0 10px' : '0 14px',
           border: `1.5px solid ${open || focused ? '#076818' : '#e4e6e2'}`,
-          borderRadius: 14,
-          fontSize: 14,
+          borderRadius: compact ? 10 : 14,
+          fontSize: compact ? 12.5 : 14,
           color: '#1a1a1a',
           background: '#fff',
           fontFamily: 'inherit',
@@ -71,7 +81,7 @@ export default function SelectField({ label, value, options, onChange, required,
           left: 0,
           right: 0,
           background: '#fff',
-          borderRadius: 14,
+          borderRadius: compact ? 10 : 14,
           border: '1.5px solid #e4e6e2',
           boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
           zIndex: 200,
@@ -95,12 +105,12 @@ export default function SelectField({ label, value, options, onChange, required,
                 onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = '#fff' }}
                 style={{
                   width: '100%',
-                  minHeight: 44,
-                  padding: '11px 14px',
+                  minHeight: compact ? 38 : 44,
+                  padding: compact ? '8px 10px' : '11px 14px',
                   border: 'none',
                   borderTop: i > 0 ? '1px solid #f4f4f4' : 'none',
                   background: isSelected ? '#f0f7f0' : '#fff',
-                  fontSize: 14,
+                  fontSize: compact ? 12.5 : 14,
                   fontFamily: 'inherit',
                   fontWeight: isSelected ? 500 : 400,
                   color: opt.disabled ? '#aaa' : isSelected ? '#076818' : '#1a1a1a',

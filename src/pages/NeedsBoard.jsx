@@ -968,20 +968,19 @@ export default function NeedsBoard({ authoredOnly = false }) {
                 <span style={{ marginRight: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, color: '#626a61', fontSize: 12.5, fontWeight: 650 }}>
                   <ArrowDownUp size={15} strokeWidth={2.2} /> 정렬
                 </span>
-                <select
-                  aria-label="정렬 기준"
+                <div style={{ width: 112 }}>
+                  <SelectField
+                  ariaLabel="정렬 기준"
                   value={sort}
-                  onChange={event => {
-                    setSort(event.target.value)
+                  onChange={value => {
+                    setSort(value)
                     setSortReversed(false)
                     setCurrentPage(1)
                   }}
-                  style={{ width: 112, height: 36, padding: '0 28px 0 11px', border: '1px solid #dfe4dc', borderRadius: 10, background: '#fff', color: '#333', fontFamily: 'inherit', fontSize: 12.5, fontWeight: 650, cursor: 'pointer' }}
-                >
-                  {boardSortOptions.map(option => (
-                    <option key={option.key} value={option.key}>{option.label}</option>
-                  ))}
-                </select>
+                  options={boardSortOptions.map(option => ({ value: option.key, label: option.label }))}
+                  compact
+                  />
+                </div>
                 <button
                   type="button"
                   aria-label={`정렬 방향 변경, 현재 ${getBoardSortDirectionLabel(sort, sortReversed)}`}
