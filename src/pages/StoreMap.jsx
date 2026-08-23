@@ -123,6 +123,8 @@ function ResidentRecommendationBadge({ count, large = false }) {
         src={okcheonRecommendation}
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         style={{
           width: large ? 70 : 50,
           height: large ? 70 : 50,
@@ -164,6 +166,8 @@ function InstitutionRecommendationBadge({ types, large = false }) {
         src={okcheonSearch}
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         style={{
           width: large ? 70 : 50,
           height: large ? 70 : 50,

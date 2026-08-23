@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react'
-import okcheonCharacter from '../assets/okcheon-character.png'
+import okcheonCharacter from '../assets/okcheon-character-optimized.png'
 
 function createSteps(userName) {
   const displayName = userName || '사용자'
@@ -171,6 +171,8 @@ export default function HomeTutorial({ onFinish, userName }) {
             <img
               src={okcheonCharacter}
               alt=""
+              loading="lazy"
+              decoding="async"
               style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 18%' }}
             />
           </div>

@@ -1268,6 +1268,8 @@ export default function NeedsBoard({ authoredOnly = false }) {
                     key={photo.id || photo.image}
                     src={photo.image}
                     alt={`${selectedPost.title} 사진 ${index + 1}`}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
                     style={{ flex: '0 0 88%', width: '88%', aspectRatio: '4 / 3', objectFit: 'cover', borderRadius: 20, background: '#eef1ec', scrollSnapAlign: 'center' }}
                   />
                 ))}
@@ -1419,7 +1421,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
                       <div className="no-scrollbar" style={{ display: 'flex', gap: 9, overflowX: 'auto', paddingBottom: 2 }}>
                         {housingImagePreviews.map((preview, index) => (
                           <div key={preview.url} style={{ position: 'relative', flex: '0 0 112px', width: 112, height: 84 }}>
-                            <img src={preview.url} alt={`선택한 사진 ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12, background: '#eef1ec' }} />
+                            <img src={preview.url} alt={`선택한 사진 ${index + 1}`} decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12, background: '#eef1ec' }} />
                             <button type="button" aria-label={`사진 ${index + 1} 삭제`} onClick={() => removeHousingImage(index)} style={{ position: 'absolute', top: 5, right: 5, width: 27, height: 27, padding: 0, border: 'none', borderRadius: '50%', background: 'rgba(20,24,20,0.72)', color: '#fff', display: 'grid', placeItems: 'center', cursor: 'pointer' }}>
                               <X size={15} strokeWidth={2.4} />
                             </button>
@@ -1439,7 +1441,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
                     {selectedPost?.photos?.length > 0 ? (
                       <div className="no-scrollbar" style={{ display: 'flex', gap: 9, overflowX: 'auto' }}>
                         {selectedPost.photos.map((photo, index) => (
-                          <img key={photo.id || photo.image} src={photo.image} alt={`등록된 사진 ${index + 1}`} style={{ flex: '0 0 112px', width: 112, height: 84, objectFit: 'cover', borderRadius: 12, background: '#eef1ec' }} />
+                          <img key={photo.id || photo.image} src={photo.image} alt={`등록된 사진 ${index + 1}`} loading="lazy" decoding="async" style={{ flex: '0 0 112px', width: 112, height: 84, objectFit: 'cover', borderRadius: 12, background: '#eef1ec' }} />
                         ))}
                       </div>
                     ) : (

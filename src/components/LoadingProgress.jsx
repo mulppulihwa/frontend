@@ -1,4 +1,4 @@
-import okcheonCharacter from '../assets/okcheon-character.png'
+import okcheonCharacter from '../assets/okcheon-character-optimized.png'
 
 export default function LoadingProgress({ progress, label, detail, emphasizeDetail = false, fullPage = false }) {
   const value = Math.max(0, Math.min(100, Number(progress) || 0))
@@ -74,6 +74,9 @@ export default function LoadingProgress({ progress, label, detail, emphasizeDeta
             <img
               src={okcheonCharacter}
               alt=""
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               style={{
                 position: 'absolute',
                 left: `${characterPosition}%`,

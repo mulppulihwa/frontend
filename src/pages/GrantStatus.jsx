@@ -7,7 +7,7 @@ import useLoadingProgress from '../hooks/useLoadingProgress'
 import StatusCheckboxes from '../components/StatusCheckboxes'
 import PreparationButton from '../components/PreparationButton'
 import SelectField from '../components/SelectField'
-import okcheonCharacter from '../assets/okcheon-character.png'
+import okcheonCharacter from '../assets/okcheon-character-optimized.png'
 import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, getCachedSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 import { formatDday, getDeadlineDays } from '../lib/deadline'
@@ -239,7 +239,7 @@ function NotificationSetModal({ visible, mode, onClose }) {
           animation: 'modalPop 0.2s ease',
         }}
       >
-        <img src={okcheonCharacter} alt="" style={{ width: 70, height: 70, objectFit: 'contain', objectPosition: 'center', marginBottom: 18 }} />
+        <img src={okcheonCharacter} alt="" loading="lazy" decoding="async" style={{ width: 70, height: 70, objectFit: 'contain', objectPosition: 'center', marginBottom: 18 }} />
         <p style={{ fontSize: 20, fontWeight: 800, color: '#ff5538', lineHeight: 1.25, letterSpacing: '-0.4px' }}>
           {isUnset ? '알림 해지 완료' : '알림 설정 완료'}
         </p>

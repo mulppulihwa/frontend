@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import kakaoLogo from '../assets/kkt_logo.png'
-import farmer from '../assets/farmer.png'
+import farmer from '../assets/farmer-optimized.png'
 import okcheonTypo from '../assets/okcheon_typo.png'
 import okTypo from '../assets/ok_typo.png'
 import { completeKakaoLogin, consumeLoginRedirect, startKakaoLogin } from '../lib/auth'
@@ -112,6 +112,9 @@ export default function Login() {
         <img
           src={farmer}
           alt=""
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
           style={{
             width: 'auto',
             height: '100%',

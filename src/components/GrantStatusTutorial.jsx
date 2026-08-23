@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react'
-import okcheonCharacter from '../assets/okcheon-character.png'
+import okcheonCharacter from '../assets/okcheon-character-optimized.png'
 
 const steps = [
   {
@@ -146,7 +146,7 @@ export default function GrantStatusTutorial({ onFinish }) {
 
         <div style={{ display: 'flex', alignItems: isIntro ? 'center' : 'flex-start', gap: 12, paddingRight: 28 }}>
           <div style={{ width: isIntro ? 66 : 54, height: isIntro ? 66 : 54, flexShrink: 0, overflow: 'hidden', borderRadius: 16, background: '#eef6eb' }}>
-            <img src={okcheonCharacter} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 18%' }} />
+            <img src={okcheonCharacter} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 18%' }} />
           </div>
           <div style={{ minWidth: 0 }}>
             <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: '#076818' }}>{step.eyebrow}</p>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Banknote } from 'lucide-react'
-import farmer from '../assets/farmer.png'
+import farmer from '../assets/farmer-optimized.png'
 import Folder from './Folder'
 import { fetchPreviewPolicies } from '../lib/api'
 
@@ -115,6 +115,8 @@ export default function PolicyFolder({ size = 2.5 }) {
         <img
           src={farmer}
           alt=""
+          loading="lazy"
+          decoding="async"
           style={{
             width: '80%',
             height: '80%',
