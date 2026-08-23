@@ -69,7 +69,7 @@ function firstValue(source, keys) {
 
 function SectionTitle({ children, action }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
       <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1f2433', letterSpacing: '-0.3px' }}>{children}</h2>
       {action}
     </div>
@@ -177,7 +177,7 @@ function DiagnosedPolicies({ policies, checklistItemsByPolicy, navigate }) {
           </small>
         </span>
       </SectionTitle>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {visiblePolicies.map(policy => (
           <DiagnosedPolicyCard
             key={policy.id}
@@ -605,7 +605,7 @@ export default function Home({ tutorial = false }) {
 
   return (
     <div style={{ minHeight: '100vh', background: '#FDFCF8', overflowX: 'hidden' }}>
-      <div style={{ padding: '26px 18px 116px', display: 'flex', flexDirection: 'column', gap: 28 }}>
+      <main className="home-page-content">
         <TodayChecklist
           key={todayPolicy?.id || 'empty-checklist'}
           policy={todayPolicy}
@@ -616,7 +616,7 @@ export default function Home({ tutorial = false }) {
           loading={!checklistsLoaded}
         />
         <DiagnosedPolicies policies={policies} checklistItemsByPolicy={checklistItemsByPolicy} navigate={navigate} />
-      </div>
+      </main>
       {showTutorial && <HomeTutorial userName={user.name} onFinish={() => { localStorage.setItem('homeTutorialSeen', '1'); setShowTutorial(false) }} />}
     </div>
   )
