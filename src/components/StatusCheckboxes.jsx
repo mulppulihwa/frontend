@@ -24,20 +24,20 @@ export default function StatusCheckboxes({ value, onChange }) {
               alignItems: 'center',
               justifyContent: 'center',
               gap: 5,
-              padding: '9px 4px',
+              padding: '10px 3px',
               borderRadius: 999,
               border: 'none',
               background: active ? activeBg : '#f7f7f7',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: active ? 700 : 500,
               color: fgColor,
-              letterSpacing: '-0.2px',
+              letterSpacing: 0,
               transition: 'all 0.15s ease',
             }}
           >
-            <Icon size={13} strokeWidth={active ? 2.8 : 2.2} color={fgColor} />
+            <Icon size={15} strokeWidth={active ? 2.8 : 2.2} color={fgColor} />
             {label}
           </button>
         )
