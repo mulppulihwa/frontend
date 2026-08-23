@@ -314,6 +314,42 @@ input:focus-visible {
   to { transform: rotate(360deg); }
 }
 
+.loading-progress-root {
+  animation: loadingProgressEnter 0.38s ease-out both;
+}
+
+.loading-progress-fill {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 42%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  transform: translateX(-160%);
+  animation: loadingProgressShimmer 1.65s ease-in-out infinite;
+}
+
+@keyframes loadingProgressEnter {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes loadingProgressShimmer {
+  0%, 18% { transform: translateX(-160%); }
+  72%, 100% { transform: translateX(300%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-progress-root,
+  .loading-progress-fill::after {
+    animation: none;
+  }
+}
+
 .loading-wave-fill {
   position: absolute;
   left: 0;

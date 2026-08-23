@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export default function useLoadingProgress(active, finishDelay = 320) {
+export default function useLoadingProgress(active, finishDelay = 480) {
   const [progress, setProgress] = useState(active ? 8 : 100)
   const [visible, setVisible] = useState(active)
 
@@ -22,9 +22,9 @@ export default function useLoadingProgress(active, finishDelay = 320) {
       setProgress(current => {
         if (current >= 92) return 92
         const remaining = 92 - current
-        return Math.min(92, current + Math.max(1, Math.ceil(remaining * 0.12)))
+        return Math.min(92, current + Math.max(0.35, remaining * 0.035))
       })
-    }, 180)
+    }, 90)
 
     return () => {
       window.clearTimeout(startTimer)

@@ -1,11 +1,12 @@
 import okcheonCharacter from '../assets/okcheon-character.png'
 
 export default function LoadingProgress({ progress, label, detail, emphasizeDetail = false, fullPage = false }) {
-  const value = Math.max(0, Math.min(100, Math.round(progress)))
+  const value = Math.max(0, Math.min(100, Number(progress) || 0))
+  const displayValue = Math.round(value)
   const characterPosition = Math.max(10, Math.min(90, value))
 
   return (
-    <div style={{
+    <div className="loading-progress-root" style={{
       width: fullPage ? 'min(100%, 360px)' : 'min(100%, 280px)',
       display: 'flex',
       flexDirection: 'column',
@@ -62,12 +63,12 @@ export default function LoadingProgress({ progress, label, detail, emphasizeDeta
             boxSizing: 'border-box',
           }}
         >
-          <div style={{
+          <div className="loading-progress-fill" style={{
             width: `${value}%`,
             height: '100%',
             borderRadius: 999,
             background: '#076818',
-            transition: 'width 0.2s ease, background 0.2s ease',
+            transition: 'width 0.48s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease',
           }} />
           {fullPage && (
             <img
@@ -81,7 +82,7 @@ export default function LoadingProgress({ progress, label, detail, emphasizeDeta
                 height: 82,
                 objectFit: 'contain',
                 transform: 'translateX(-50%)',
-                transition: 'left 0.2s ease',
+                transition: 'left 0.48s cubic-bezier(0.22, 1, 0.36, 1)',
                 pointerEvents: 'none',
               }}
             />
@@ -94,7 +95,7 @@ export default function LoadingProgress({ progress, label, detail, emphasizeDeta
           color: fullPage ? '#000' : value === 100 ? '#076818' : '#5f625d',
           textAlign: fullPage ? 'center' : 'right',
         }}>
-          {value}%
+          {displayValue}%
         </strong>
       </div>
       {emphasizeDetail && (
