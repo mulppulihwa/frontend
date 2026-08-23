@@ -10,6 +10,7 @@ import SelectField from '../components/SelectField'
 import okcheonCharacter from '../assets/okcheon-character.png'
 import { cachePolicyStatus, fetchProfile, fetchSavedPolicies, getCachedSavedPolicies, savePolicy, updateSavedPolicyStatus } from '../lib/api'
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
+import { formatDday, getDeadlineDays } from '../lib/deadline'
 
 const filters = [
   { key: '전체', label: '전체' },
@@ -26,9 +27,6 @@ const statusConfig = {
 
 const NOTIFICATION_STATUS_KEY = 'policyNotificationStatus'
 const POLICIES_PER_PAGE = 10
-const PAGE_LOADED_AT = Date.now()
-const PAGE_LOADED_DAY_START = new Date(PAGE_LOADED_AT)
-PAGE_LOADED_DAY_START.setHours(0, 0, 0, 0)
 const sortOptions = [
   { key: 'deadline', label: '마감 임박' },
   { key: 'recent', label: '최근 추가' },
@@ -41,13 +39,14 @@ function getDateTimestamp(dateLike) {
   return Number.isNaN(timestamp) ? null : timestamp
 }
 
-function getDeadlineTimestamp(grant) {
-  const deadlineTimestamp = getDateTimestamp(grant.deadline)
-  if (deadlineTimestamp !== null) return deadlineTimestamp
+function getGrantDeadlineDays(grant) {
+  const deadlineDays = getDeadlineDays(grant.deadline)
+  if (Number.isFinite(deadlineDays)) return deadlineDays
 
   const countdownDays = Number(grant.countdown?.days ?? grant.days)
-  if (!Number.isFinite(countdownDays) || countdownDays <= 0) return null
-  return PAGE_LOADED_DAY_START.getTime() + countdownDays * 86400000
+  return Number.isFinite(countdownDays) && countdownDays > 0
+    ? countdownDays
+    : Number.POSITIVE_INFINITY
 }
 
 function comparePolicyTitles(a, b) {
@@ -55,15 +54,15 @@ function comparePolicyTitles(a, b) {
 }
 
 function compareByDeadline(a, b, reversed = false) {
-  const aDeadline = getDeadlineTimestamp(a)
-  const bDeadline = getDeadlineTimestamp(b)
+  const aDeadline = getGrantDeadlineDays(a)
+  const bDeadline = getGrantDeadlineDays(b)
 
-  if (aDeadline === null && bDeadline === null) return comparePolicyTitles(a, b)
-  if (aDeadline === null) return 1
-  if (bDeadline === null) return -1
+  if (!Number.isFinite(aDeadline) && !Number.isFinite(bDeadline)) return comparePolicyTitles(a, b)
+  if (!Number.isFinite(aDeadline)) return 1
+  if (!Number.isFinite(bDeadline)) return -1
 
-  const aExpired = aDeadline < PAGE_LOADED_AT
-  const bExpired = bDeadline < PAGE_LOADED_AT
+  const aExpired = aDeadline < 0
+  const bExpired = bDeadline < 0
 
   if (aExpired !== bExpired) return aExpired ? 1 : -1
   if (aDeadline !== bDeadline) {
@@ -106,9 +105,7 @@ function formatAddedDate(dateLike) {
 }
 
 function GrantCard({ grant, status, onStatusChange, navigate, onNotify, notified }) {
-  const deadlineTimestamp = getDeadlineTimestamp(grant)
-  const days = deadlineTimestamp === null ? null : Math.ceil((deadlineTimestamp - PAGE_LOADED_AT) / 86400000)
-  const dDayLabel = days && days > 0 ? `D-${days}` : '-'
+  const dDayLabel = formatDday(grant.deadline)
   const BellIcon = notified ? BellRing : Bell
 
   return (

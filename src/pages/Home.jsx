@@ -5,31 +5,9 @@ import { fetchPolicyChecklist, fetchProfile, fetchSavedPolicies, getCachedSavedP
 import { findDisplayName, getKakaoUserName } from '../lib/auth'
 import HomeTutorial from '../components/HomeTutorial'
 import PreparationButton from '../components/PreparationButton'
+import { formatDday, formatDeadlineText, getDeadlineDays } from '../lib/deadline'
 
 const HOME_CHECKLIST_CACHE_KEY = 'home-checklist-items-v2'
-
-function getDeadlineText(deadlineStr) {
-  if (!deadlineStr) return '마감일 확인 필요'
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const deadline = new Date(deadlineStr)
-  if (Number.isNaN(deadline.getTime())) return '마감일 확인 필요'
-  deadline.setHours(0, 0, 0, 0)
-  const diff = Math.ceil((deadline - today) / 86400000)
-  if (diff === 0) return '오늘 마감'
-  if (diff > 0) return `마감까지 ${diff}일 남음`
-  return `마감 ${Math.abs(diff)}일 지남`
-}
-
-function getDeadlineDays(deadlineStr) {
-  if (!deadlineStr) return Number.POSITIVE_INFINITY
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const deadline = new Date(deadlineStr)
-  if (Number.isNaN(deadline.getTime())) return Number.POSITIVE_INFINITY
-  deadline.setHours(0, 0, 0, 0)
-  return Math.ceil((deadline - today) / 86400000)
-}
 
 function compareDeadlineUrgency(a, b) {
   const aDays = getDeadlineDays(a.deadline)
@@ -117,13 +95,6 @@ const diagnosedStatusMeta = {
   관심없음: { label: '관심 없음', color: '#d93025', background: '#fff0ef', Icon: Check },
 }
 
-function getDday(deadline) {
-  const days = getDeadlineDays(deadline)
-  if (!Number.isFinite(days)) return '-'
-  if (days === 0) return '-'
-  return days > 0 ? `D-${days}` : `D+${Math.abs(days)}`
-}
-
 function DiagnosedPolicyCard({ policy, checklistItems, navigate }) {
   const status = policy.user_status || policy.status
   const statusMeta = diagnosedStatusMeta[status] || {
@@ -139,7 +110,7 @@ function DiagnosedPolicyCard({ policy, checklistItems, navigate }) {
     <article style={{ background: '#fff', border: 'none', borderRadius: 22, boxShadow: '0 4px 18px rgba(31,45,35,0.08)', padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <p style={{ width: 54, flexShrink: 0, fontSize: 14, fontWeight: 800, color: '#d93025', textAlign: 'center' }}>
-          {getDday(policy.deadline)}
+          {formatDday(policy.deadline)}
         </p>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ fontSize: 18, fontWeight: 700, color: '#1f2433', lineHeight: 1.32, letterSpacing: 0, wordBreak: 'keep-all' }}>
@@ -286,7 +257,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
   const done = items.filter(item => !!checked[item.id]).length
   const total = items.length
   const visibleItems = items.slice(0, 3)
-  const deadlineText = getDeadlineText(policy?.deadline)
+  const deadlineText = formatDeadlineText(policy?.deadline)
 
   useEffect(() => {
     window.clearTimeout(itemReorderTimerRef.current)
