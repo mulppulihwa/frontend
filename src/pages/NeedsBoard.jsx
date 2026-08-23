@@ -78,81 +78,6 @@ const headcountFilterOptions = [
   { value: '6이상', label: '6명 이상' },
 ]
 
-const MOCK_JOB_POSTS = [
-  {
-    id: 'mock-job-apply',
-    title: '주말 복숭아밭 일손을 구해요',
-    category: '농촌일손',
-    region: '옥천읍',
-    location: '옥천읍 삼청리 복숭아밭',
-    start_date: '2026-09-05',
-    end_date: '2026-09-06',
-    recruit_count: 3,
-    conditions: '초보 가능 · 편한 작업복 준비',
-    description: '복숭아 수확과 선별을 함께 도와주실 분을 찾습니다. 점심 식사를 제공해요.',
-    created_by_nickname: '김옥천',
-    created_at: '2026-08-20T09:20:00+09:00',
-    is_owner: false,
-    isMock: true,
-  },
-  {
-    id: 'mock-job-owner',
-    title: '귀농인 주택 도배를 도와주실 분',
-    category: '주택수리',
-    region: '군북면',
-    location: '군북면 이백리 마을회관 앞',
-    start_date: '2026-09-12',
-    end_date: '2026-09-12',
-    recruit_count: 2,
-    conditions: '도배 경험자 우대 · 작업 도구 제공',
-    description: '빈집 한 곳의 벽지 제거와 도배를 함께 진행합니다. 오전 9시에 시작해요.',
-    created_by_nickname: '나린',
-    created_at: '2026-08-21T16:40:00+09:00',
-    is_owner: true,
-    isMock: true,
-    mockApplications: [
-      {
-        id: 'mock-application-1',
-        name: '박하늘',
-        phone: '010-2451-7832',
-        message: '도배 경험이 있고 토요일 오전부터 참여할 수 있어요.',
-        applied_at: '2026-08-21T10:30:00+09:00',
-      },
-      {
-        id: 'mock-application-2',
-        name: '이보람',
-        phone: '010-7310-4428',
-        message: '초보지만 끝까지 함께하겠습니다.',
-        applied_at: '2026-08-22T14:10:00+09:00',
-      },
-    ],
-  },
-]
-
-const MOCK_HOUSING_POSTS = [
-  {
-    id: 'mock-house-owner',
-    title: '옥천읍 조용한 투룸 월세',
-    region: '옥천읍',
-    detail_address: '옥천읍 금구리 123-4',
-    room_type: '투룸이상',
-    room_layout: '방 2 · 욕실 1',
-    size_pyeong: 18,
-    deal_type: '월세',
-    deposit: 500,
-    monthly_rent: 40,
-    maintenance_fee: 5,
-    options: ['에어컨', '세탁기', '냉장고'],
-    description: '시장과 버스정류장이 가까운 조용한 투룸입니다. 즉시 입주할 수 있어요.',
-    contact_name: '나린',
-    contact_phone: '010-7300-1234',
-    created_at: '2026-08-19T11:15:00+09:00',
-    photos: [],
-    is_owner: true,
-    isMock: true,
-  },
-]
-
 function readApplicantCache() {
   try {
     const cached = JSON.parse(localStorage.getItem(APPLICANT_CACHE_KEY) || 'null') || {}
@@ -290,19 +215,6 @@ function normalizeHousingPost(post) {
     author: post.contact_name,
     phone: post.contact_phone,
   }
-}
-
-function getMockPosts(tab, filter, hiddenIds) {
-  const source = tab === 'people' ? MOCK_JOB_POSTS : MOCK_HOUSING_POSTS
-  return source
-    .filter(post => !hiddenIds.has(post.id))
-    .filter(post => filter === '전체' || (tab === 'people' ? post.category : post.room_type) === filter)
-    .map(tab === 'people' ? normalizeJobPost : normalizeHousingPost)
-}
-
-function getVisibleDemoPosts(tab, filter, hiddenIds) {
-  if (tab === 'people') return getMockPosts(tab, filter, hiddenIds)
-  return import.meta.env.DEV ? getMockPosts(tab, filter, hiddenIds) : []
 }
 
 function draftFromPost(post) {
@@ -483,11 +395,6 @@ function PostCard({ post, onClick }) {
                 {dday.label}
               </span>
             )}
-            {post.isMock && (
-              <span style={{ display: 'inline-flex', borderRadius: 999, background: '#fff3d9', color: '#a76500', padding: '5px 9px', fontSize: 11, fontWeight: 650 }}>
-                예시
-              </span>
-            )}
           </div>
           <h3 style={{ margin: 0, fontSize: 18, lineHeight: 1.32, color: '#1f2433', fontWeight: 700, letterSpacing: 0 }}>
             {post.title}
@@ -560,7 +467,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
   const [error, setError] = useState('')
   const [applications, setApplications] = useState([])
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
-  const [hiddenMockIds, setHiddenMockIds] = useState(() => new Set())
   const [housingImages, setHousingImages] = useState([])
   const [housingImagePreviews, setHousingImagePreviews] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -701,15 +607,12 @@ export default function NeedsBoard({ authoredOnly = false }) {
             region: housingFilters.region === '전체' ? '' : housingFilters.region,
           })
         if (!cancelled) {
-          const apiPosts = data.map(tab === 'people' ? normalizeJobPost : normalizeHousingPost)
-          const mockPosts = getVisibleDemoPosts(tab, filter, hiddenMockIds)
-          setPosts([...mockPosts, ...apiPosts])
+          setPosts(data.map(tab === 'people' ? normalizeJobPost : normalizeHousingPost))
         }
       } catch (loadError) {
         if (!cancelled) {
-          const mockPosts = getVisibleDemoPosts(tab, filter, hiddenMockIds)
-          setPosts(mockPosts)
-          if (mockPosts.length === 0) setError(loadError.message || '게시글을 불러오지 못했습니다.')
+          setPosts([])
+          setError(loadError.message || '게시글을 불러오지 못했습니다.')
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -717,7 +620,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
     }
     loadPosts()
     return () => { cancelled = true }
-  }, [tab, filter, hiddenMockIds, housingFilters.region])
+  }, [tab, filter, housingFilters.region])
 
   useEffect(() => {
     let cancelled = false
@@ -766,11 +669,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
     setMode('applications')
     setLoading(true)
     setError('')
-    if (selectedPost.isMock) {
-      setApplications(selectedPost.mockApplications || [])
-      setLoading(false)
-      return
-    }
     try {
       setApplications(await fetchJobApplications(selectedPost.id))
     } catch (applicationsError) {
@@ -784,7 +682,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
   const openDetail = async post => {
     setSelectedPost(post)
     setMode('detail')
-    if (post.isMock) return
     try {
       const detail = post.type === 'people' ? await fetchJobPost(post.id) : await fetchHousingPost(post.id)
       const normalizedDetail = post.type === 'people' ? normalizeJobPost(detail) : normalizeHousingPost(detail)
@@ -858,13 +755,11 @@ export default function NeedsBoard({ authoredOnly = false }) {
     event.preventDefault()
     setSubmitting(true)
     try {
-      if (!selectedPost.isMock) {
-        await applyToJobPost(selectedPost.id, {
-          name: applicant.name.trim(),
-          phone: applicant.phone.trim(),
-          message: applicant.note.trim(),
-        })
-      }
+      await applyToJobPost(selectedPost.id, {
+        name: applicant.name.trim(),
+        phone: applicant.phone.trim(),
+        message: applicant.note.trim(),
+      })
       localStorage.setItem(APPLICANT_CACHE_KEY, JSON.stringify(applicant))
       setToast('지원 완료되었습니다.')
       setMode('detail')
@@ -879,9 +774,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
     if (!isPostOwner(selectedPost)) return
     setSubmitting(true)
     try {
-      if (selectedPost.isMock) {
-        setHiddenMockIds(current => new Set([...current, selectedPost.id]))
-      } else if (selectedPost.type === 'people') {
+      if (selectedPost.type === 'people') {
         await deleteJobPost(selectedPost.id)
       } else {
         await deleteHousingPost(selectedPost.id)
@@ -1251,11 +1144,9 @@ export default function NeedsBoard({ authoredOnly = false }) {
                     지원자 보기
                   </button>
                 )}
-                {!selectedPost.isMock && (
-                  <button type="button" onClick={openEdit} style={{ minHeight: 46, border: '1.5px solid #dfe4dc', borderRadius: 14, background: '#fff', color: GREEN, fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
-                    <Pencil size={15} /> 수정
-                  </button>
-                )}
+                <button type="button" onClick={openEdit} style={{ minHeight: 46, border: '1.5px solid #dfe4dc', borderRadius: 14, background: '#fff', color: GREEN, fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+                  <Pencil size={15} /> 수정
+                </button>
                 <button type="button" onClick={() => setDeleteConfirmOpen(true)} style={{ minHeight: 46, border: '1.5px solid #f0d2cf', borderRadius: 14, background: '#fff', color: '#d93025', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
                   <Trash2 size={15} /> 삭제
                 </button>

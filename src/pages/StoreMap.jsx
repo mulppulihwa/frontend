@@ -28,7 +28,6 @@ function toApiCoordinate(value) {
 
 const COLLAPSED_H = 220
 const EXPANDED_H = 400
-const SHOW_RECOMMENDATION_BADGE_MOCK = true
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
 const USER_PLACE_CATEGORIES = PLACE_CATEGORIES.map(category => category.id)
 const API_PLACE_CATEGORY = {
@@ -267,28 +266,8 @@ export default function StoreMap() {
         const relatedPlaces = relatedPolicy
           ? filterPlacesByPolicy(places, relatedPolicy)
           : places
-        const previewCategory = relatedPlaces[0]?.category
-        let previewIndex = 0
-        const displayedPlaces = SHOW_RECOMMENDATION_BADGE_MOCK && relatedPlaces.length
-          ? relatedPlaces.map(place => {
-              if (place.category !== previewCategory || previewIndex > 2) return place
-              const mockType = previewIndex++
-              if (mockType === 0) {
-                return {
-                    ...place,
-                    recommend_count: Math.max(Number(place.recommend_count ?? place.recommendCount ?? 0), 5),
-                    isRecommendationMock: true,
-                }
-              }
-              return {
-                ...place,
-                recommendation_types: [mockType === 1 ? '옥천신문' : '옥천군 상담센터'],
-                isRecommendationMock: true,
-              }
-            })
-          : relatedPlaces
-        setStores(displayedPlaces)
-        const nextCategory = state?.store?.category || displayedPlaces[0]?.category || ''
+        setStores(relatedPlaces)
+        const nextCategory = state?.store?.category || relatedPlaces[0]?.category || ''
         if (nextCategory) setActiveCategory(nextCategory)
       })
       .catch(() => {})
