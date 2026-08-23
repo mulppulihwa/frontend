@@ -46,6 +46,7 @@ export default function Results() {
   const toastTimer = useRef(null)
   const grant = grants[index]
   const total = grants.length
+  const uncheckedCount = grants.filter(policy => !statuses[policy.id]).length
 
   const showToast = () => {
     setToastVisible(true)
@@ -132,8 +133,8 @@ export default function Results() {
       </div>
 
       {/* Indicator + Header */}
-      <div style={{ padding: '12px 18px 10px' }}>
-        <div style={{ marginBottom: 12 }}>
+      <div style={{ padding: '12px 18px 14px' }}>
+        <div style={{ marginBottom: 14 }}>
           <StepIndicator current={index + 1} total={total} />
         </div>
         <div style={{ textAlign: 'center', lineHeight: 1.45 }}>
@@ -143,23 +144,16 @@ export default function Results() {
             현재 상태를 알려주세요.
           </p>
         </div>
-        {!loading && total > 0 && (
-          <div style={{ textAlign: 'center', marginTop: 10 }}>
-            {(() => {
-              const unchecked = total - Object.values(statuses).filter(v => v !== null).length
-              return unchecked > 0
-                ? <span style={{ fontSize: 13, fontWeight: 600, color: '#FFA100', background: '#fff8ee', border: '1.5px solid #ffe0a0', borderRadius: 20, padding: '4px 12px' }}>
-                    현황 미입력 {unchecked}개 남았어요
-                  </span>
-                : <span style={{ fontSize: 13, fontWeight: 600, color: '#076818', background: '#e8f3e8', border: '1.5px solid #b8ddb8', borderRadius: 20, padding: '4px 12px' }}>
-                    모두 확인했어요 ✓
-                  </span>
-            })()}
+        {!loading && total > 0 && uncheckedCount > 0 && (
+          <div style={{ textAlign: 'center', marginTop: 8 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', minHeight: 28, fontSize: 13, fontWeight: 600, color: '#9a6400', background: '#fff8ee', borderRadius: 18, padding: '3px 12px' }}>
+              현황 미입력 {uncheckedCount}개 남았어요
+            </span>
           </div>
         )}
       </div>
 
-      <div style={{ width: '80%', maxWidth: 344, margin: '0 auto', padding: '0 0 222px', flex: 1, overflowX: 'hidden' }}>
+      <div style={{ width: '80%', maxWidth: 344, margin: '0 auto', padding: '2px 0 222px', flex: 1, overflowX: 'hidden' }}>
         {!loading && loadError && (
           <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45 }}>
@@ -183,7 +177,7 @@ export default function Results() {
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
-            gap: 12,
+            gap: 14,
             justifyContent: 'center',
             animation: `${pageDirection === 'next' ? 'cardSlideFromRight' : 'cardSlideFromLeft'} 0.34s cubic-bezier(0.22, 1, 0.36, 1) both`,
             willChange: 'transform, opacity',
@@ -196,8 +190,8 @@ export default function Results() {
         />
 
         {/* Status card */}
-        <div style={{ background: '#fff', borderRadius: 22, border: 'none', boxShadow: '0 4px 18px rgba(31,45,35,0.08)', padding: 18 }}>
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#1a1a1a', marginBottom: 8, letterSpacing: '-0.1px' }}>지원현황을 체크해주세요</p>
+        <div style={{ background: '#fff', borderRadius: 22, border: 'none', boxShadow: '0 4px 18px rgba(31,45,35,0.08)', padding: '16px 18px 18px' }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#30352f', marginBottom: 10, letterSpacing: '-0.1px' }}>지원현황을 체크해주세요</p>
           <StatusCheckboxes
             value={statuses[grant.id] ?? null}
             onChange={handleStatusChange}
