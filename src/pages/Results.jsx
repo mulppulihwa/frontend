@@ -171,7 +171,7 @@ export default function Results() {
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
-            gap: 12,
+            gap: 18,
             justifyContent: 'center',
             animation: `${pageDirection === 'next' ? 'cardSlideFromRight' : 'cardSlideFromLeft'} 0.34s cubic-bezier(0.22, 1, 0.36, 1) both`,
             willChange: 'transform, opacity',
