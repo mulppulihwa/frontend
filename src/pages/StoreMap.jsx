@@ -584,7 +584,7 @@ export default function StoreMap() {
 
   const resolvePlacePosition = () => new Promise(resolve => {
     if (!window.kakao?.maps?.services || !newPlace.address) {
-      resolve(null)
+      resolve({ address: newPlace.address.trim(), lat: null, lng: null })
       return
     }
 
@@ -593,7 +593,7 @@ export default function StoreMap() {
       newPlace.address,
       (data, status) => {
         if (status !== window.kakao.maps.services.Status.OK || !data.length) {
-          resolve(null)
+          resolve({ address: newPlace.address.trim(), lat: null, lng: null })
           return
         }
         resolve({
@@ -616,10 +616,6 @@ export default function StoreMap() {
     setAddPlaceError('')
     try {
       const position = await resolvePlacePosition()
-      if (!position) {
-        setAddPlaceError('주소의 위치를 찾지 못했어요. 주소를 다시 확인해 주세요.')
-        return
-      }
 
       const payload = {
         name: newPlace.name.trim(),
@@ -628,8 +624,12 @@ export default function StoreMap() {
         phone: newPlace.phone.trim(),
         business_hours: newPlace.hours.trim(),
         local_memo: newPlace.memo.trim(),
-        lat: toApiCoordinate(position.lat),
-        lng: toApiCoordinate(position.lng),
+      }
+      const lat = toApiCoordinate(position.lat)
+      const lng = toApiCoordinate(position.lng)
+      if (lat !== null && lng !== null) {
+        payload.lat = lat
+        payload.lng = lng
       }
       const savedPlace = editingPlaceId
         ? await updatePlace(editingPlaceId, payload)
@@ -643,9 +643,11 @@ export default function StoreMap() {
       setSheetH(expandedHeight)
       setAddPlaceOpen(false)
       setEditingPlaceId(null)
-      window.setTimeout(() => {
-        mapInstanceRef.current?.panTo(new window.kakao.maps.LatLng(savedPlace.lat, savedPlace.lng))
-      }, 80)
+      if (Number.isFinite(Number(savedPlace.lat)) && Number.isFinite(Number(savedPlace.lng))) {
+        window.setTimeout(() => {
+          mapInstanceRef.current?.panTo(new window.kakao.maps.LatLng(savedPlace.lat, savedPlace.lng))
+        }, 80)
+      }
     } catch (error) {
       setAddPlaceError(error.message || '장소 정보를 저장하지 못했습니다.')
     } finally {

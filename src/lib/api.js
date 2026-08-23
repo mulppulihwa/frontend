@@ -345,7 +345,6 @@ export async function fetchPlaces() {
   const myIds = getMyPlaceIds()
   return toArray(data)
     .map(place => normalizePlace({ ...place, is_owner: place.is_owner || myIds.has(String(place.id)) }))
-    .filter(place => Number.isFinite(place.lat) && Number.isFinite(place.lng))
 }
 
 export async function createPlace(place) {
