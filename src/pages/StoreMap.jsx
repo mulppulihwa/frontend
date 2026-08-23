@@ -726,7 +726,7 @@ export default function StoreMap() {
             transform: 'translateX(-50%)',
             background: '#fff',
             borderRadius: fullscreen ? 0 : '24px 24px 0 0',
-            boxShadow: '0 -2px 20px rgba(0,0,0,0.10)',
+            boxShadow: '0 -2px 20px rgba(0,0,0,0.10), 0 100px 0 #fff',
             transition: dragRef.current.dragging
               ? 'none'
               : 'height 0.52s cubic-bezier(0.22, 1, 0.36, 1), bottom 0.52s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.36s ease',
