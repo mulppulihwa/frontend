@@ -205,6 +205,10 @@ function isPostOwner(post) {
   return post?.is_owner === true
 }
 
+function hasActiveJobAuthor(post) {
+  return post?.created_by != null
+}
+
 function normalizeJobPost(post) {
   return {
     ...post,
@@ -716,7 +720,8 @@ export default function NeedsBoard({ authoredOnly = false }) {
             region: housingFilters.region === '전체' ? '' : housingFilters.region,
           })
         if (!cancelled) {
-          setPosts(data.map(tab === 'people' ? normalizeJobPost : normalizeHousingPost))
+          const visiblePosts = tab === 'people' ? data.filter(hasActiveJobAuthor) : data
+          setPosts(visiblePosts.map(tab === 'people' ? normalizeJobPost : normalizeHousingPost))
         }
       } catch (loadError) {
         if (!cancelled) {
