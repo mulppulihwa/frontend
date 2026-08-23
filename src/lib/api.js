@@ -5,6 +5,7 @@ const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
 const SAVED_POLICY_CACHE_KEY = 'savedPolicyCache'
 const SAVED_POLICIES_LIST_KEY = 'savedPoliciesList'
 const CHECKLIST_SECTIONS_PREFIX = 'checklist-sections-v2-'
+const HIDDEN_PLACE_NAMES = new Set(['나린 테스트'])
 
 export function getCachedChecklistSections(policyId) {
   try {
@@ -345,6 +346,7 @@ export async function fetchPlaces() {
   const myIds = getMyPlaceIds()
   return toArray(data)
     .map(place => normalizePlace({ ...place, is_owner: place.is_owner || myIds.has(String(place.id)) }))
+    .filter(place => !HIDDEN_PLACE_NAMES.has(place.name.trim()))
 }
 
 export async function createPlace(place) {
