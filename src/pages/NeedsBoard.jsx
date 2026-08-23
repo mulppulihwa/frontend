@@ -99,6 +99,21 @@ function formatDateRange(startDate, endDate) {
   return `${formatDate(startDate)} - ${formatDate(endDate)}`
 }
 
+function getDateDigits(value) {
+  return String(value || '').replace(/\D/g, '').slice(0, 8)
+}
+
+function formatDateInput(value) {
+  const digits = getDateDigits(value)
+  return [digits.slice(0, 4), digits.slice(4, 6), digits.slice(6, 8)].filter(Boolean).join('.')
+}
+
+function toApiDate(value) {
+  const digits = getDateDigits(value)
+  if (digits.length !== 8) return null
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`
+}
+
 function formatHousingPrice(post) {
   const parts = []
   if (post.deposit != null) parts.push(`보증금 ${Number(post.deposit).toLocaleString()}만원`)
@@ -558,6 +573,48 @@ function Field({ label, value, onChange, placeholder, type = 'text', textarea = 
   )
 }
 
+function DateField({ label, value, onChange, required = false }) {
+  const [focused, setFocused] = useState(false)
+  return (
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>
+        {label}{required && <span aria-hidden="true" style={{ color: '#d93025', marginLeft: 3 }}>*</span>}
+      </span>
+      <input
+        type="text"
+        inputMode="numeric"
+        autoComplete="off"
+        value={formatDateInput(value)}
+        onChange={event => onChange(getDateDigits(event.target.value))}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        placeholder="2026.08.23"
+        aria-label={`${label} 여덟 자리 숫자 입력`}
+        required={required}
+        pattern="[0-9.]*"
+        style={{
+          width: '100%',
+          minWidth: 0,
+          height: 48,
+          boxSizing: 'border-box',
+          border: `1.5px solid ${focused ? GREEN : '#e4e6e2'}`,
+          borderRadius: 14,
+          padding: '0 14px',
+          background: '#fff',
+          color: '#1f2433',
+          fontFamily: 'inherit',
+          fontSize: 14,
+          lineHeight: 1.5,
+          letterSpacing: 0,
+          outline: 'none',
+          boxShadow: focused ? '0 0 0 2px rgba(7,104,24,0.08)' : 'none',
+          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+        }}
+      />
+    </label>
+  )
+}
+
 export default function NeedsBoard({ authoredOnly = false }) {
   const navigate = useNavigate()
   const listTopRef = useRef(null)
@@ -886,8 +943,8 @@ export default function NeedsBoard({ authoredOnly = false }) {
           region: draft.region,
           description: draft.content.trim(),
           location: draft.location?.trim() || '',
-          start_date: draft.startDate || null,
-          end_date: draft.endDate || null,
+          start_date: toApiDate(draft.startDate),
+          end_date: toApiDate(draft.endDate),
           recruit_count: draft.headcount ? Number(draft.headcount) : null,
           conditions: draft.condition.trim(),
         }
@@ -1403,8 +1460,8 @@ export default function NeedsBoard({ authoredOnly = false }) {
             />
             {draft.type === 'people' ? (
               <>
-                <Field label="모집 시작일" value={draft.startDate} onChange={v => updateDraft('startDate', v)} type="date" />
-                <Field label="모집 종료일" value={draft.endDate} onChange={v => updateDraft('endDate', v)} type="date" />
+                <DateField label="모집 시작일" value={draft.startDate} onChange={v => updateDraft('startDate', v)} />
+                <DateField label="모집 종료일" value={draft.endDate} onChange={v => updateDraft('endDate', v)} />
                 <Field label="필요 인원" value={draft.headcount} onChange={v => updateDraft('headcount', v)} placeholder="예: 2" type="number" />
                 <Field label="지원 조건" value={draft.condition} onChange={v => updateDraft('condition', v)} placeholder="예: 초보 가능" />
                 <Field label="장소" value={draft.location} onChange={v => updateDraft('location', v)} placeholder="작업 또는 모임 장소" />
