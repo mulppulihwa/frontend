@@ -438,51 +438,85 @@ function PostCard({ post, onClick, applicantCount = null }) {
   )
 }
 
-function OwnerDashboard({ insights, loading }) {
-  const metrics = [
-    { label: '전체 글', value: insights?.total ?? 0, color: '#1f2433' },
-    { label: '게시 중', value: insights?.active ?? 0, color: GREEN },
-    { label: '지원자', value: insights?.applicants ?? 0, color: '#d98700' },
-    { label: '마감 임박', value: insights?.urgent ?? 0, color: '#d93025' },
-  ]
-  const total = Math.max(insights?.total ?? 0, 1)
-  const peopleRatio = `${((insights?.people ?? 0) / total) * 100}%`
-
+function OwnerDashboard({ insights, loading, onOpenPost }) {
   return (
     <section aria-labelledby="owner-dashboard-title" style={{ marginBottom: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 11 }}>
         <BarChart3 size={19} color={GREEN} strokeWidth={2.2} />
         <h2 id="owner-dashboard-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.35, fontWeight: 700, color: '#1f2433', letterSpacing: 0 }}>
-          게시글 현황
+          내 글 관리
         </h2>
       </div>
-      <div style={{ padding: 16, borderRadius: 18, background: '#fff', boxShadow: '0 4px 18px rgba(31,45,35,0.07)' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
-          {metrics.map(metric => (
-            <div key={metric.label} style={{ minWidth: 0, textAlign: 'center', padding: '5px 2px 7px' }}>
-              <strong style={{ display: 'block', minHeight: 29, color: metric.color, fontSize: 23, lineHeight: 1.2, fontWeight: 750 }}>
-                {loading ? '–' : metric.value}
+      <div style={{ overflow: 'hidden', borderRadius: 18, background: '#fff', boxShadow: '0 4px 18px rgba(31,45,35,0.07)' }}>
+        <div style={{ padding: 17, background: '#eef6ec' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16 }}>
+            <div>
+              <span style={{ display: 'block', color: '#557059', fontSize: 12.5, lineHeight: 1.3, fontWeight: 650 }}>작성한 글</span>
+              <strong style={{ display: 'block', marginTop: 3, color: '#1f2433', fontSize: 30, lineHeight: 1.15, fontWeight: 750 }}>
+                {loading ? '–' : insights?.total ?? 0}<small style={{ marginLeft: 2, fontSize: 15, fontWeight: 650 }}>건</small>
               </strong>
-              <span style={{ display: 'block', marginTop: 5, color: '#686f67', fontSize: 11.5, lineHeight: 1.25, fontWeight: 600, whiteSpace: 'nowrap' }}>
-                {metric.label}
-              </span>
             </div>
-          ))}
+            <div style={{ textAlign: 'right' }}>
+              <span style={{ display: 'block', color: '#7b6a43', fontSize: 12.5, lineHeight: 1.3, fontWeight: 650 }}>전체 지원자</span>
+              <strong style={{ display: 'block', marginTop: 3, color: '#b27600', fontSize: 24, lineHeight: 1.15, fontWeight: 750 }}>
+                {loading ? '–' : insights?.applicants ?? 0}<small style={{ marginLeft: 2, fontSize: 14, fontWeight: 650 }}>명</small>
+              </strong>
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8, marginTop: 15 }}>
+            <div style={{ padding: '10px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.75)' }}>
+              <span style={{ color: '#687168', fontSize: 11.5, fontWeight: 600 }}>사람 구해요</span>
+              <strong style={{ display: 'block', marginTop: 2, color: GREEN, fontSize: 18, fontWeight: 750 }}>{loading ? '–' : insights?.people ?? 0}건</strong>
+            </div>
+            <div style={{ padding: '10px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.75)' }}>
+              <span style={{ color: '#687168', fontSize: 11.5, fontWeight: 600 }}>집 구해요</span>
+              <strong style={{ display: 'block', marginTop: 2, color: '#9a6500', fontSize: 18, fontWeight: 750 }}>{loading ? '–' : insights?.housing ?? 0}건</strong>
+            </div>
+          </div>
         </div>
-        <div style={{ height: 1, background: '#edf0eb', margin: '9px 0 14px' }} />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 9 }}>
-          <span style={{ color: '#4f584f', fontSize: 12.5, fontWeight: 650 }}>글 유형</span>
-          <span style={{ color: '#747b72', fontSize: 12, fontWeight: 550 }}>
-            사람 {loading ? '–' : insights?.people ?? 0} · 집 {loading ? '–' : insights?.housing ?? 0}
-          </span>
-        </div>
-        <div aria-hidden="true" style={{ display: 'flex', width: '100%', height: 8, overflow: 'hidden', borderRadius: 999, background: '#ecefea' }}>
-          {!loading && (insights?.total ?? 0) > 0 && (
-            <>
-              <span style={{ width: peopleRatio, background: GREEN, transition: 'width 300ms ease' }} />
-              <span style={{ flex: 1, background: '#f2b84b' }} />
-            </>
+
+        <div style={{ padding: '14px 17px 16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 6, paddingBottom: 14, borderBottom: '1px solid #edf0eb' }}>
+            {[
+              ['모집 중', insights?.recruiting ?? 0, GREEN],
+              ['마감 임박', insights?.urgent ?? 0, '#d93025'],
+              ['모집 종료', insights?.closed ?? 0, '#737873'],
+            ].map(([label, value, color]) => (
+              <div key={label} style={{ minWidth: 0, textAlign: 'center' }}>
+                <strong style={{ display: 'block', color, fontSize: 17, lineHeight: 1.25, fontWeight: 750 }}>{loading ? '–' : value}</strong>
+                <span style={{ display: 'block', marginTop: 3, color: '#707770', fontSize: 11.5, fontWeight: 600 }}>{label}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, margin: '14px 0 8px' }}>
+            <strong style={{ color: '#292e29', fontSize: 13.5, fontWeight: 700 }}>바로 관리할 글</strong>
+            <span style={{ color: '#818781', fontSize: 11.5, fontWeight: 550 }}>마감·지원자 기준</span>
+          </div>
+          {!loading && (insights?.managePosts?.length ?? 0) === 0 && (
+            <p style={{ margin: '12px 0 2px', color: '#7b817a', fontSize: 13, lineHeight: 1.5, textAlign: 'center' }}>관리할 게시글이 없어요.</p>
           )}
+          {!loading && insights?.managePosts?.map(post => {
+            const dday = post.type === 'people' ? getRecruitmentDday(post.end_date) : null
+            const statusLabel = post.type === 'house' ? '매물 게시 중' : post.ownerStatus === 'closed' ? '모집 종료' : dday?.label || '모집 중'
+            const statusColor = post.ownerStatus === 'urgent' ? '#d93025' : post.ownerStatus === 'closed' ? '#777' : GREEN
+            return (
+              <button
+                key={`${post.type}-${post.id}`}
+                type="button"
+                onClick={() => onOpenPost(post)}
+                style={{ width: '100%', minHeight: 52, padding: '10px 0', border: 'none', borderTop: '1px solid #f0f2ee', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, textAlign: 'left', fontFamily: 'inherit', cursor: 'pointer' }}
+              >
+                <span style={{ minWidth: 0 }}>
+                  <strong style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#252a25', fontSize: 13.5, lineHeight: 1.35, fontWeight: 700 }}>{post.title}</strong>
+                  <span style={{ display: 'block', marginTop: 4, color: statusColor, fontSize: 11.5, fontWeight: 650 }}>
+                    {statusLabel}{post.type === 'people' ? ` · 지원자 ${post.applicantCount}명` : ''}
+                  </span>
+                </span>
+                <ChevronRight size={18} color="#a4aaa3" strokeWidth={2.2} style={{ flexShrink: 0 }} />
+              </button>
+            )
+          })}
         </div>
       </div>
     </section>
@@ -718,20 +752,41 @@ export default function NeedsBoard({ authoredOnly = false }) {
         }))
         const statuses = jobs.map(getOwnerPostStatus)
         const applicantByPost = Object.fromEntries(jobs.map((post, index) => [String(post.id), applicantCounts[index]]))
+        const managedJobs = jobs.map((post, index) => ({
+          ...post,
+          ownerStatus: statuses[index],
+          applicantCount: applicantCounts[index],
+        }))
+        const managedHousing = housing.map(post => ({ ...post, ownerStatus: 'active', applicantCount: 0 }))
+        const managePosts = [...managedJobs, ...managedHousing]
+          .sort((a, b) => {
+            const priority = post => {
+              if (post.ownerStatus === 'urgent') return 0
+              if (post.type === 'people' && post.applicantCount > 0 && post.ownerStatus !== 'closed') return 1
+              if (post.ownerStatus === 'active') return 2
+              return 3
+            }
+            const priorityOrder = priority(a) - priority(b)
+            if (priorityOrder !== 0) return priorityOrder
+            return Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0)
+          })
+          .slice(0, 3)
 
         if (!cancelled) {
           setOwnerInsights({
             total: jobs.length + housing.length,
             people: jobs.length,
             housing: housing.length,
-            active: housing.length + statuses.filter(status => status !== 'closed').length,
+            recruiting: statuses.filter(status => status === 'active').length,
             urgent: statuses.filter(status => status === 'urgent').length,
+            closed: statuses.filter(status => status === 'closed').length,
             applicants: applicantCounts.reduce((sum, count) => sum + count, 0),
             applicantByPost,
+            managePosts,
           })
         }
       } catch {
-        if (!cancelled) setOwnerInsights({ total: 0, people: 0, housing: 0, active: 0, urgent: 0, applicants: 0 })
+        if (!cancelled) setOwnerInsights({ total: 0, people: 0, housing: 0, recruiting: 0, urgent: 0, closed: 0, applicants: 0, applicantByPost: {}, managePosts: [] })
       } finally {
         if (!cancelled) setOwnerInsightsLoading(false)
       }
@@ -979,7 +1034,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
       <main style={{ padding: '12px 20px 24px' }}>
         {mode === 'list' && (
           <>
-            {authoredOnly && <OwnerDashboard insights={ownerInsights} loading={ownerInsightsLoading} />}
+            {authoredOnly && <OwnerDashboard insights={ownerInsights} loading={ownerInsightsLoading} onOpenPost={openDetail} />}
             <section ref={listTopRef} style={{ marginBottom: 18, scrollMarginTop: 12 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: 4, borderRadius: 999, background: '#f1f3ef' }}>
                 {[
