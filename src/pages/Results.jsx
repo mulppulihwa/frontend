@@ -46,7 +46,6 @@ export default function Results() {
   const toastTimer = useRef(null)
   const grant = grants[index]
   const total = grants.length
-  const uncheckedCount = grants.filter(policy => !statuses[policy.id]).length
 
   const showToast = () => {
     setToastVisible(true)
@@ -146,13 +145,6 @@ export default function Results() {
             현재 상태를 알려주세요.
           </p>
         </div>
-        {!loading && total > 0 && uncheckedCount > 0 && (
-          <div style={{ textAlign: 'center', marginTop: 10 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#FFA100', background: '#fff8ee', border: '1.5px solid #ffe0a0', borderRadius: 20, padding: '4px 12px' }}>
-              현황 미입력 {uncheckedCount}개 남았어요
-            </span>
-          </div>
-        )}
       </div>
 
       <div style={{ width: '80%', maxWidth: 344, margin: '0 auto', padding: '0 0 222px', flex: 1, overflowX: 'hidden' }}>
