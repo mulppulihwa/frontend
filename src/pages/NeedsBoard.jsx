@@ -1244,6 +1244,15 @@ export default function NeedsBoard({ authoredOnly = false }) {
               <h2 style={{ margin: '12px 0 8px', fontSize: 22, lineHeight: 1.3, color: '#1f2433', fontWeight: 700, letterSpacing: 0 }}>
                 {selectedPost.title}
               </h2>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 7, marginBottom: 10, color: '#747b72', fontSize: 13, fontWeight: 550, lineHeight: 1.4 }}>
+                <span>
+                  {selectedPost.type === 'people'
+                    ? displayValue(selectedPost.created_by_nickname, '작성자')
+                    : displayValue(selectedPost.contact_name, '작성자')}
+                </span>
+                <span aria-hidden="true" style={{ color: '#b4bab2' }}>·</span>
+                <span>{formatCreatedAt(selectedPost.created_at).replace(' 등록', '') || '등록일 미등록'}</span>
+              </div>
               <p style={{ margin: 0, fontSize: 14, color: '#555', lineHeight: 1.6 }}>{selectedPost.content}</p>
             </div>
 
@@ -1270,7 +1279,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
                   <DetailRow label="모집 종료일">{selectedPost.end_date ? formatDate(selectedPost.end_date) : '상시 모집'}</DetailRow>
                   <DetailRow label="모집 인원">{selectedPost.recruit_count ? `${selectedPost.recruit_count}명` : '인원 협의'}</DetailRow>
                   <DetailRow label="지원 조건">{displayValue(selectedPost.conditions, '조건 없음')}</DetailRow>
-                  <DetailRow label="작성자">{displayValue(selectedPost.created_by_nickname, '작성자')}</DetailRow>
                 </>
               ) : (
                 <>
@@ -1284,14 +1292,12 @@ export default function NeedsBoard({ authoredOnly = false }) {
                   <DetailRow label="월세">{selectedPost.deal_type === '전세' ? '해당 없음' : formatMoney(selectedPost.monthly_rent)}</DetailRow>
                   <DetailRow label="관리비">{formatMoney(selectedPost.maintenance_fee)}</DetailRow>
                   <DetailRow label="옵션">{(selectedPost.options || []).join(', ') || '미등록'}</DetailRow>
-                  <DetailRow label="작성자">{displayValue(selectedPost.contact_name)}</DetailRow>
                   <DetailRow label="연락처">{displayValue(selectedPost.contact_phone)}</DetailRow>
                   {(selectedPost.lat != null || selectedPost.lng != null) && (
                     <DetailRow label="지도 좌표">{displayValue(selectedPost.lat)} / {displayValue(selectedPost.lng)}</DetailRow>
                   )}
                 </>
               )}
-              <DetailRow label="등록일">{formatCreatedAt(selectedPost.created_at).replace(' 등록', '') || '미등록'}</DetailRow>
             </div>
 
             {isPostOwner(selectedPost) && (
