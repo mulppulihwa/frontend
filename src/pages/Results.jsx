@@ -134,7 +134,7 @@ export default function Results() {
       </div>
 
       {/* Indicator + Header */}
-      <div style={{ flexShrink: 0, padding: '8px 18px 12px' }}>
+      <div style={{ flexShrink: 0, padding: '8px 18px 10px' }}>
         <div style={{ marginBottom: 10 }}>
           <StepIndicator current={index + 1} total={total} />
         </div>
@@ -147,7 +147,7 @@ export default function Results() {
         </div>
       </div>
 
-      <div style={{ width: '80%', maxWidth: 344, margin: '0 auto', padding: '2px 0 calc(72px + env(safe-area-inset-bottom))', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+      <div style={{ width: '80%', maxWidth: 344, margin: '0 auto', padding: '4px 0 calc(72px + env(safe-area-inset-bottom))', flex: 1, minHeight: 0, overflow: 'hidden' }}>
         {!loading && loadError && (
           <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
             <p style={{ fontSize: 14, fontWeight: 700, color: '#d93025', textAlign: 'center', lineHeight: 1.45 }}>
@@ -172,7 +172,7 @@ export default function Results() {
             display: 'flex',
             flexDirection: 'column',
             gap: 12,
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             animation: `${pageDirection === 'next' ? 'cardSlideFromRight' : 'cardSlideFromLeft'} 0.34s cubic-bezier(0.22, 1, 0.36, 1) both`,
             willChange: 'transform, opacity',
           }}
