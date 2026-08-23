@@ -444,7 +444,7 @@ function OwnerDashboard({ insights, loading, onOpenPost }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 11 }}>
         <BarChart3 size={19} color={GREEN} strokeWidth={2.2} />
         <h2 id="owner-dashboard-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.35, fontWeight: 700, color: '#1f2433', letterSpacing: 0 }}>
-          내 글 관리
+          대시보드
         </h2>
       </div>
       <div style={{ overflow: 'hidden', borderRadius: 18, background: '#fff', boxShadow: '0 4px 18px rgba(31,45,35,0.07)' }}>
