@@ -4,7 +4,7 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, ''
 const POLICY_STATUS_CACHE_KEY = 'policyStatusCache'
 const SAVED_POLICY_CACHE_KEY = 'savedPolicyCache'
 const SAVED_POLICIES_LIST_KEY = 'savedPoliciesList'
-const CHECKLIST_SECTIONS_PREFIX = 'checklist-sections-'
+const CHECKLIST_SECTIONS_PREFIX = 'checklist-sections-v2-'
 
 export function getCachedChecklistSections(policyId) {
   try {
@@ -268,14 +268,51 @@ export async function fetchPolicyDetail(policyId) {
 
 export async function fetchPolicyChecklist(policyId) {
   if (!policyId) throw new Error('정책 ID가 없습니다.')
-  return request(`/api/policies/${policyId}/checklist/`)
+  const data = await request(`/api/policies/${policyId}/checklist/`)
+  const items = Array.isArray(data?.items)
+    ? data.items
+        .filter(item => Number.isInteger(item?.id) && typeof item?.label === 'string' && item.label.trim())
+        .map(item => ({
+          id: item.id,
+          order: Number.isFinite(Number(item.order)) ? Number(item.order) : 0,
+          label: item.label.trim(),
+          persistable: true,
+        }))
+        .sort((a, b) => a.order - b.order)
+    : []
+
+  return {
+    items,
+    parsing: data?.parsing === true,
+  }
 }
 
 export async function saveCheckedItems(policyId, checkedIds) {
-  return request(`/api/users/me/policies/${policyId}/checklist/`, {
+  const data = await request(`/api/users/me/policies/${policyId}/checklist/`, {
     method: 'PATCH',
     body: JSON.stringify({ checked_items: checkedIds }),
   })
+  const normalizedIds = Array.isArray(data?.checked_items) ? data.checked_items : checkedIds
+
+  if (_savedPoliciesMemoryCache) {
+    _savedPoliciesMemoryCache = _savedPoliciesMemoryCache.map(policy => (
+      String(policy.id) === String(policyId)
+        ? { ...policy, checked_items: normalizedIds, checkDone: normalizedIds.length }
+        : policy
+    ))
+  }
+  try {
+    const cached = JSON.parse(localStorage.getItem(SAVED_POLICIES_LIST_KEY) || '[]')
+    if (Array.isArray(cached)) {
+      localStorage.setItem(SAVED_POLICIES_LIST_KEY, JSON.stringify(cached.map(policy => (
+        String(policy.id) === String(policyId)
+          ? { ...policy, checked_items: normalizedIds, checkDone: normalizedIds.length }
+          : policy
+      ))))
+    }
+  } catch { /* 캐시 갱신 실패는 API 저장 결과에 영향을 주지 않음 */ }
+
+  return data
 }
 
 export async function fetchRegions() {

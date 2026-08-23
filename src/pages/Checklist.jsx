@@ -1,138 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ArrowUpRight } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import LoadingProgress from '../components/LoadingProgress'
 import useLoadingProgress from '../hooks/useLoadingProgress'
-import { fetchPolicyChecklist, getCachedChecklistSections, saveCheckedItems, setCachedChecklistSections } from '../lib/api'
+import { fetchPolicyChecklist, fetchSavedPolicies, getCachedChecklistSections, saveCheckedItems, setCachedChecklistSections } from '../lib/api'
 
 const accentColor = '#c2185b'
 
-const checklistSectionSources = [
-  {
-    key: 'requirements',
-    title: '신청 요건',
-    fields: ['requirements', 'application_requirements', 'eligibility', 'conditions', 'qualification', 'qualifications', '신청 요건', '신청요건'],
-  },
-  {
-    key: 'documents',
-    title: '제출 서류',
-    fields: ['documents', 'required_documents', 'submission_documents', 'application_documents', 'paperwork', '제출 서류', '제출서류', '신청 서류', '신청서류'],
-  },
-  {
-    key: 'items',
-    title: '필요 물건',
-    fields: ['items', 'required_items', 'materials', 'preparations', 'things_to_bring', '필요 물건', '필요물건', '준비물'],
-  },
-  {
-    key: 'office',
-    title: '행정복지센터 방문하기',
-    fields: ['visit', 'visit_office_checklist', 'office_visit', 'administrative_center', '행정복지센터 방문하기', '방문하기'],
-  },
-]
-
-function firstPresent(source, fields) {
-  if (!source || typeof source !== 'object') return undefined
-  for (const field of fields) {
-    if (source[field] !== undefined && source[field] !== null) return source[field]
-  }
-  return undefined
-}
-
-function normalizeItemLabel(item) {
-  if (typeof item === 'string') return item
-  if (typeof item === 'number') return String(item)
-  if (!item || typeof item !== 'object') return ''
-  return item.label || item.title || item.name || item.text || item.content || item.description || item.requirement || item.document || item.item || ''
-}
-
-function normalizeChecklistItem(item, sectionKey, index) {
-  const label = normalizeItemLabel(item)
-  if (!label) return null
-  const rawId = item && typeof item === 'object' ? (item.id ?? item.checklist_id ?? item.item_id) : null
-  return {
-    id: rawId ?? `${sectionKey}-${index}`,
-    order: item && typeof item === 'object' ? (item.order ?? item.sort_order ?? index) : index,
-    label,
-    persistable: rawId !== null && rawId !== undefined,
-  }
-}
-
-function toChecklistArray(value) {
-  if (!value) return []
-  if (Array.isArray(value)) return value
-  if (typeof value === 'string') {
-    return value
-      .split(/\r?\n|,/)
-      .map(text => text.replace(/^[-•\d.)\s]+/, '').trim())
-      .filter(Boolean)
-  }
-  if (typeof value === 'object') {
-    if (Array.isArray(value.items)) return value.items
-    if (Array.isArray(value.results)) return value.results
-    if (Array.isArray(value.checklist)) return value.checklist
-    return Object.values(value).filter(v => typeof v === 'string')
-  }
-  return []
-}
-
-function looksLikeChecklistItem(item) {
-  return Boolean(normalizeItemLabel(item))
-}
-
 function normalizeChecklistResponse(data) {
-  const payload = data?.checklist && !Array.isArray(data.checklist) ? data.checklist : data
-  const source = payload?.data && typeof payload.data === 'object' && !Array.isArray(payload.data) ? payload.data : payload
-  const sections = []
-
-  for (const config of checklistSectionSources) {
-    const value = firstPresent(source, config.fields)
-    const items = toChecklistArray(value)
-      .map((item, index) => normalizeChecklistItem(item, config.key, index))
-      .filter(Boolean)
-      .sort((a, b) => a.order - b.order)
-    if (items.length > 0) sections.push({ title: config.title, items })
-  }
-
-  if (sections.length > 0) return sections
-
-  const raw = Array.isArray(data)
-    ? data
-    : Array.isArray(data?.checklist)
-      ? data.checklist
-      : Array.isArray(data?.data)
-        ? data.data
-        : Array.isArray(data?.items)
-          ? data.items
-          : []
-
-  if (!Array.isArray(raw) || raw.length === 0) return []
-
-  const grouped = raw.reduce((acc, item, index) => {
-    if (!looksLikeChecklistItem(item)) return acc
-    const sectionTitle = item.section || item.category || item.group || item.type || '필요 서류'
-    if (!acc[sectionTitle]) acc[sectionTitle] = []
-    acc[sectionTitle].push(normalizeChecklistItem(item, `flat-${sectionTitle}`, index))
-    return acc
-  }, {})
-
-  return Object.entries(grouped)
-    .map(([title, items]) => ({ title, items: items.filter(Boolean).sort((a, b) => a.order - b.order) }))
-    .filter(section => section.items.length > 0)
-}
-
-function normalizeOffice(data) {
-  const source = data?.checklist && !Array.isArray(data.checklist) ? data.checklist : data
-  const payload = source?.office || source?.center || source?.agency_office || source?.visit_office || source?.administrative_center || source?.행정복지센터
-  if (!payload || typeof payload !== 'object') return null
-  return {
-    name: payload.name || payload.title || payload.office_name || '',
-    address: payload.address || payload.road_address || '',
-    phone: payload.phone || payload.tel || payload.contact || '',
-    hours: payload.hours || payload.opening_hours || '',
-    lat: Number(payload.lat ?? payload.latitude),
-    lng: Number(payload.lng ?? payload.longitude),
-  }
+  return data?.items?.length ? [{ title: '준비 항목', items: data.items }] : []
 }
 
 function CheckItem({ label, checked, onToggle }) {
@@ -274,7 +150,10 @@ export default function Checklist() {
 
     const attemptFetch = async (attempt) => {
       try {
-        const data = await fetchPolicyChecklist(policyId)
+        const [data, savedPolicies] = await Promise.all([
+          fetchPolicyChecklist(policyId),
+          fetchSavedPolicies(),
+        ])
         if (!active) return
         const sections = normalizeChecklistResponse(data)
         const isParsing = data?.parsing === true
@@ -292,12 +171,20 @@ export default function Checklist() {
         if (sections.length > 0) {
           setCachedChecklistSections(policyId, sections)
           setChecklistSections(sections)
+        } else if (!isParsing) {
+          setCachedChecklistSections(policyId, [])
+          setChecklistSections([])
         }
-        setOfficeInfo(normalizeOffice(data))
-        const backendChecked = Array.isArray(data?.checked_items) ? data.checked_items : Array.isArray(data?.checkedItems) ? data.checkedItems : []
-        if (backendChecked.length > 0) {
-          setChecked(prev => {
-            const next = backendChecked.reduce((acc, id) => ({ ...acc, [id]: true }), { ...prev })
+        setOfficeInfo(null)
+        const savedPolicy = savedPolicies.find(policy => String(policy.id) === String(policyId))
+        const backendChecked = Array.isArray(savedPolicy?.checked_items)
+          ? savedPolicy.checked_items
+          : Array.isArray(grant?.checked_items)
+            ? grant.checked_items
+            : null
+        if (backendChecked) {
+          setChecked(() => {
+            const next = backendChecked.reduce((acc, id) => ({ ...acc, [id]: true }), {})
             if (storageKey) localStorage.setItem(storageKey, JSON.stringify(next))
             return next
           })
@@ -355,16 +242,7 @@ export default function Checklist() {
           </p>
         )}
         {/* Section steps */}
-        {!checklistProgress.visible && ([
-          {
-            title: '기본 준비',
-            items: [
-              { id: 'default-call', label: '행정복지센터에 전화하기', persistable: false },
-              { id: 'default-id', label: '주민등록증 챙기기', persistable: false },
-            ],
-          },
-          ...checklistSections,
-        ]).map((section) => {
+        {!checklistProgress.visible && checklistSections.map((section) => {
           const done = section.items.filter(item => !!checked[item.id]).length
           const total = section.items.length
           const complete = done === total
@@ -410,12 +288,6 @@ export default function Checklist() {
                     />
                   ))}
                 </div>
-                {section.link && (
-                  <a href={section.link.href} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500, color: '#888', textDecoration: 'none', marginTop: 10 }}>
-                    {section.link.label}
-                    <ArrowUpRight size={14} color="#888" strokeWidth={2} />
-                  </a>
-                )}
               </div>
             </div>
           </div>
