@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowDown, ArrowDownUp, ArrowUp, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
+import { ArrowDown, ArrowDownUp, ArrowUp, BarChart3, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, FilePenLine, Home, ImagePlus, Loader2, MapPin, Pencil, Phone, RotateCcw, Search, SlidersHorizontal, Trash2, UserRound, UsersRound, X } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import Button from '../components/Button'
 import SelectField from '../components/SelectField'
@@ -166,6 +166,22 @@ function getRecruitmentDday(endDate) {
   if (days === 0) return { label: 'D-DAY', color: '#d93025', background: '#fff0ef' }
   if (days <= 7) return { label: `D-${days}`, color: '#d93025', background: '#fff0ef' }
   return { label: `D-${days}`, color: GREEN, background: '#e8f3e8' }
+}
+
+function getApplicantCount(post) {
+  const value = post?.application_count ?? post?.applications_count ?? post?.applicant_count
+  const count = Number(value)
+  return Number.isFinite(count) && count >= 0 ? count : null
+}
+
+function getOwnerPostStatus(post) {
+  if (post.type === 'house' || !post.end_date) return 'active'
+  const deadline = new Date(`${post.end_date}T23:59:59`)
+  if (Number.isNaN(deadline.getTime())) return 'active'
+  const days = Math.ceil((deadline.getTime() - Date.now()) / 86400000)
+  if (days < 0) return 'closed'
+  if (days <= 7) return 'urgent'
+  return 'active'
 }
 
 function getBoardSortDirectionLabel(sort, reversed) {
@@ -365,7 +381,7 @@ function FilterModal({ title, onClose, onReset, hasFilters, children }) {
   )
 }
 
-function PostCard({ post, onClick }) {
+function PostCard({ post, onClick, applicantCount = null }) {
   const isPeople = post.type === 'people'
   const dday = isPeople ? getRecruitmentDday(post.end_date) : null
   return (
@@ -386,13 +402,18 @@ function PostCard({ post, onClick }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14 }}>
         <div style={{ minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
             <span style={{ display: 'inline-flex', borderRadius: 999, background: '#e8f3e8', color: GREEN, padding: '5px 10px', fontSize: 12, fontWeight: 600 }}>
               {post.category}
             </span>
             {dday && (
               <span style={{ display: 'inline-flex', borderRadius: 999, background: dday.background, color: dday.color, padding: '5px 9px', fontSize: 11.5, fontWeight: 750 }}>
                 {dday.label}
+              </span>
+            )}
+            {isPeople && applicantCount != null && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 999, background: '#fff5df', color: '#9a6500', padding: '5px 9px', fontSize: 11.5, fontWeight: 700 }}>
+                <UsersRound size={13} strokeWidth={2.2} /> 지원자 {applicantCount}명
               </span>
             )}
           </div>
@@ -414,6 +435,57 @@ function PostCard({ post, onClick }) {
         </div>
       )}
     </button>
+  )
+}
+
+function OwnerDashboard({ insights, loading }) {
+  const metrics = [
+    { label: '전체 글', value: insights?.total ?? 0, color: '#1f2433' },
+    { label: '게시 중', value: insights?.active ?? 0, color: GREEN },
+    { label: '지원자', value: insights?.applicants ?? 0, color: '#d98700' },
+    { label: '마감 임박', value: insights?.urgent ?? 0, color: '#d93025' },
+  ]
+  const total = Math.max(insights?.total ?? 0, 1)
+  const peopleRatio = `${((insights?.people ?? 0) / total) * 100}%`
+
+  return (
+    <section aria-labelledby="owner-dashboard-title" style={{ marginBottom: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 11 }}>
+        <BarChart3 size={19} color={GREEN} strokeWidth={2.2} />
+        <h2 id="owner-dashboard-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.35, fontWeight: 700, color: '#1f2433', letterSpacing: 0 }}>
+          게시글 현황
+        </h2>
+      </div>
+      <div style={{ padding: 16, borderRadius: 18, background: '#fff', boxShadow: '0 4px 18px rgba(31,45,35,0.07)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
+          {metrics.map(metric => (
+            <div key={metric.label} style={{ minWidth: 0, textAlign: 'center', padding: '5px 2px 7px' }}>
+              <strong style={{ display: 'block', minHeight: 29, color: metric.color, fontSize: 23, lineHeight: 1.2, fontWeight: 750 }}>
+                {loading ? '–' : metric.value}
+              </strong>
+              <span style={{ display: 'block', marginTop: 5, color: '#686f67', fontSize: 11.5, lineHeight: 1.25, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                {metric.label}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div style={{ height: 1, background: '#edf0eb', margin: '9px 0 14px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 9 }}>
+          <span style={{ color: '#4f584f', fontSize: 12.5, fontWeight: 650 }}>글 유형</span>
+          <span style={{ color: '#747b72', fontSize: 12, fontWeight: 550 }}>
+            사람 {loading ? '–' : insights?.people ?? 0} · 집 {loading ? '–' : insights?.housing ?? 0}
+          </span>
+        </div>
+        <div aria-hidden="true" style={{ display: 'flex', width: '100%', height: 8, overflow: 'hidden', borderRadius: 999, background: '#ecefea' }}>
+          {!loading && (insights?.total ?? 0) > 0 && (
+            <>
+              <span style={{ width: peopleRatio, background: GREEN, transition: 'width 300ms ease' }} />
+              <span style={{ flex: 1, background: '#f2b84b' }} />
+            </>
+          )}
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -473,6 +545,9 @@ export default function NeedsBoard({ authoredOnly = false }) {
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [sort, setSort] = useState('recent')
   const [sortReversed, setSortReversed] = useState(false)
+  const [ownerInsights, setOwnerInsights] = useState(null)
+  const [ownerInsightsLoading, setOwnerInsightsLoading] = useState(authoredOnly)
+  const [ownerInsightsVersion, setOwnerInsightsVersion] = useState(0)
   const [applicant, setApplicant] = useState(readApplicantCache)
   const [draft, setDraft] = useState({
     type: 'people',
@@ -623,6 +698,50 @@ export default function NeedsBoard({ authoredOnly = false }) {
   }, [tab, filter, housingFilters.region])
 
   useEffect(() => {
+    if (!authoredOnly) return undefined
+    let cancelled = false
+
+    const loadOwnerInsights = async () => {
+      setOwnerInsightsLoading(true)
+      try {
+        const [jobData, housingData] = await Promise.all([fetchJobPosts(), fetchHousingPosts()])
+        const jobs = jobData.map(normalizeJobPost).filter(isPostOwner)
+        const housing = housingData.map(normalizeHousingPost).filter(isPostOwner)
+        const applicantCounts = await Promise.all(jobs.map(async post => {
+          const directCount = getApplicantCount(post)
+          if (directCount != null) return directCount
+          try {
+            return (await fetchJobApplications(post.id)).length
+          } catch {
+            return 0
+          }
+        }))
+        const statuses = jobs.map(getOwnerPostStatus)
+        const applicantByPost = Object.fromEntries(jobs.map((post, index) => [String(post.id), applicantCounts[index]]))
+
+        if (!cancelled) {
+          setOwnerInsights({
+            total: jobs.length + housing.length,
+            people: jobs.length,
+            housing: housing.length,
+            active: housing.length + statuses.filter(status => status !== 'closed').length,
+            urgent: statuses.filter(status => status === 'urgent').length,
+            applicants: applicantCounts.reduce((sum, count) => sum + count, 0),
+            applicantByPost,
+          })
+        }
+      } catch {
+        if (!cancelled) setOwnerInsights({ total: 0, people: 0, housing: 0, active: 0, urgent: 0, applicants: 0 })
+      } finally {
+        if (!cancelled) setOwnerInsightsLoading(false)
+      }
+    }
+
+    loadOwnerInsights()
+    return () => { cancelled = true }
+  }, [authoredOnly, ownerInsightsVersion])
+
+  useEffect(() => {
     let cancelled = false
     fetchProfile()
       .then(profile => {
@@ -744,6 +863,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
       setSelectedPost(post)
       setToast(isEditing ? '게시글이 수정되었습니다.' : '게시글이 등록되었습니다.')
       setMode('detail')
+      if (authoredOnly) setOwnerInsightsVersion(version => version + 1)
     } catch (submitError) {
       setToast(submitError.message || '게시글을 등록하지 못했습니다.')
     } finally {
@@ -784,6 +904,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
       setToast('게시글이 삭제되었습니다.')
       setMode('list')
       setSelectedPost(null)
+      if (authoredOnly) setOwnerInsightsVersion(version => version + 1)
     } catch (deleteError) {
       setToast(deleteError.message || '게시글을 삭제하지 못했습니다.')
     } finally {
@@ -858,6 +979,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
       <main style={{ padding: '12px 20px 24px' }}>
         {mode === 'list' && (
           <>
+            {authoredOnly && <OwnerDashboard insights={ownerInsights} loading={ownerInsightsLoading} />}
             <section ref={listTopRef} style={{ marginBottom: 18, scrollMarginTop: 12 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: 4, borderRadius: 999, background: '#f1f3ef' }}>
                 {[
@@ -1003,7 +1125,12 @@ export default function NeedsBoard({ authoredOnly = false }) {
                 </div>
               )}
               {!loading && paginatedPosts.map(post => (
-                <PostCard key={`${post.type}-${post.id}`} post={post} onClick={() => openDetail(post)} />
+                <PostCard
+                  key={`${post.type}-${post.id}`}
+                  post={post}
+                  onClick={() => openDetail(post)}
+                  applicantCount={authoredOnly && post.type === 'people' ? ownerInsights?.applicantByPost?.[String(post.id)] : null}
+                />
               ))}
               {!loading && error && (
                 <div style={{ padding: '34px 18px', borderRadius: 18, background: '#fff', textAlign: 'center', color: '#d93025', fontSize: 14, fontWeight: 500 }}>
