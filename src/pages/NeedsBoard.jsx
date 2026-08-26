@@ -575,6 +575,12 @@ function Field({ label, value, onChange, placeholder, type = 'text', textarea = 
 
 function DateField({ label, value, onChange, required = false }) {
   const [focused, setFocused] = useState(false)
+  const today = new Date()
+  const datePlaceholder = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('.')
   return (
     <label style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
       <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>
@@ -588,7 +594,7 @@ function DateField({ label, value, onChange, required = false }) {
         onChange={event => onChange(getDateDigits(event.target.value))}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        placeholder="2026.08.23"
+        placeholder={datePlaceholder}
         aria-label={`${label} 여덟 자리 숫자 입력`}
         required={required}
         pattern="[0-9.]*"
