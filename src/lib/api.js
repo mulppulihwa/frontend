@@ -117,6 +117,48 @@ function toArray(data) {
   return []
 }
 
+function parseApiBoolean(value) {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'number') return value !== 0
+  if (typeof value !== 'string') return undefined
+
+  const normalized = value.trim().toLowerCase()
+  if (['true', '1', 'yes', 'endorsed', 'recommended', 'active'].includes(normalized)) return true
+  if (['false', '0', 'no', 'unendorsed', 'not_endorsed', 'inactive'].includes(normalized)) return false
+  return undefined
+}
+
+function getEndorsementPayload(data) {
+  if (!data || typeof data !== 'object') return null
+  const nested = data.place ?? data.data ?? data.result
+  return nested && typeof nested === 'object' ? nested : data
+}
+
+export function normalizePlaceEndorsement(data) {
+  const payload = getEndorsementPayload(data)
+  if (!payload) return null
+
+  const isEndorsed = parseApiBoolean(
+    payload.is_endorsed
+      ?? payload.isEndorsed
+      ?? payload.endorsed
+      ?? payload.is_recommended
+      ?? payload.recommended
+      ?? payload.status,
+  )
+  const rawCount = payload.endorsement_count
+    ?? payload.recommend_count
+    ?? payload.recommendCount
+    ?? payload.endorsements
+  const parsedCount = rawCount == null ? undefined : Number(rawCount)
+
+  return {
+    ...payload,
+    ...(isEndorsed === undefined ? {} : { is_endorsed: isEndorsed }),
+    ...(Number.isFinite(parsedCount) ? { endorsement_count: Math.max(0, parsedCount) } : {}),
+  }
+}
+
 function toDate(dateLike) {
   if (!dateLike) return null
   const date = new Date(dateLike)
@@ -250,8 +292,10 @@ export function normalizePlace(place, index = 0) {
     isOwner: place.is_owner ?? place.userAdded ?? false,
     okcheon_news_recommended: place.okcheon_news_recommended === true,
     counseling_center_recommended: place.counseling_center_recommended === true,
-    endorsement_count: Number(place.endorsement_count ?? place.recommend_count ?? 0),
-    is_endorsed: place.is_endorsed === true,
+    endorsement_count: Math.max(0, Number(place.endorsement_count ?? place.recommend_count ?? 0) || 0),
+    is_endorsed: parseApiBoolean(
+      place.is_endorsed ?? place.isEndorsed ?? place.endorsed ?? place.is_recommended ?? place.recommended,
+    ) === true,
   }
 }
 
@@ -359,7 +403,15 @@ export async function fetchPlaces(filters = {}) {
 
 export async function togglePlaceEndorsement(placeId) {
   if (!placeId) throw new Error('추천할 장소 ID가 없습니다.')
-  return request(`/api/places/${placeId}/endorse/`, { method: 'POST' })
+  const data = await request(`/api/places/${placeId}/endorse/`, { method: 'POST' })
+  const endorsement = normalizePlaceEndorsement(data)
+
+  if (endorsement && typeof endorsement.is_endorsed === 'boolean') return endorsement
+
+  // Some deployments return 204 or only a success message. Read the authenticated
+  // place again so a second click reliably becomes an un-recommend action.
+  const refreshedPlace = await request(`/api/places/${placeId}/`)
+  return normalizePlaceEndorsement(refreshedPlace) || refreshedPlace
 }
 
 export async function createPlace(place) {

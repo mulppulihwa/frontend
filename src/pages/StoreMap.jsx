@@ -70,11 +70,13 @@ function getInstitutionRecommendationTypes(place) {
 }
 
 function getRecommendedCount(place) {
-  return Number(place?.endorsement_count ?? place?.recommend_count ?? place?.recommendCount ?? 0)
+  const count = Number(place?.endorsement_count ?? place?.recommend_count ?? place?.recommendCount ?? 0)
+  return Number.isFinite(count) ? Math.max(0, count) : 0
 }
 
 function isPlaceRecommended(place) {
-  return place?.is_endorsed === true || place?.isEndorsed === true
+  const value = place?.is_endorsed ?? place?.isEndorsed ?? place?.endorsed
+  return value === true || value === 1 || value === '1' || value === 'true'
 }
 
 function ResidentRecommendationBadge({ count, large = false }) {
@@ -479,8 +481,12 @@ export default function StoreMap() {
     setRecommendPlaceLoadingId(place.id)
     try {
       const result = await togglePlaceEndorsement(place.id)
-      const nextEndorsed = result?.is_endorsed ?? result?.endorsed ?? !wasEndorsed
-      const nextCount = Number(result?.endorsement_count ?? Math.max(0, previousCount + (nextEndorsed ? 1 : -1)))
+      const hasVerifiedState = typeof result?.is_endorsed === 'boolean'
+      const nextEndorsed = hasVerifiedState ? result.is_endorsed : !wasEndorsed
+      const returnedCount = Number(result?.endorsement_count)
+      const nextCount = Number.isFinite(returnedCount)
+        ? Math.max(0, returnedCount)
+        : Math.max(0, previousCount + (nextEndorsed ? 1 : -1))
       const updatedPlace = {
         ...place,
         ...(result && typeof result === 'object' ? result : {}),
