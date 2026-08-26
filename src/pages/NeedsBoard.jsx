@@ -114,6 +114,45 @@ function toApiDate(value) {
   return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`
 }
 
+function isValidDateInput(value) {
+  if (!value) return true
+  const apiDate = toApiDate(value)
+  if (!apiDate) return false
+  const [year, month, day] = apiDate.split('-').map(Number)
+  const date = new Date(year, month - 1, day)
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
+}
+
+function validateJobDraft(draft) {
+  const errors = {}
+  const headcount = String(draft.headcount || '').trim()
+
+  if (headcount) {
+    if (!/^-?\d+$/.test(headcount)) {
+      errors.headcount = '필요 인원은 숫자만 입력해 주세요.'
+    } else if (Number(headcount) < 1) {
+      errors.headcount = '필요 인원은 1명 이상이어야 해요.'
+    } else if (Number(headcount) > 999) {
+      errors.headcount = '필요 인원은 999명 이하로 입력해 주세요.'
+    }
+  }
+
+  if (!isValidDateInput(draft.startDate)) {
+    errors.startDate = '올바른 모집 시작일을 8자리로 입력해 주세요.'
+  }
+  if (!isValidDateInput(draft.endDate)) {
+    errors.endDate = '올바른 모집 종료일을 8자리로 입력해 주세요.'
+  }
+
+  const startDate = toApiDate(draft.startDate)
+  const endDate = toApiDate(draft.endDate)
+  if (!errors.startDate && !errors.endDate && startDate && endDate && endDate < startDate) {
+    errors.endDate = '모집 종료일은 시작일보다 빠를 수 없어요.'
+  }
+
+  return errors
+}
+
 function formatHousingPrice(post) {
   const parts = []
   if (post.deposit != null) parts.push(`보증금 ${Number(post.deposit).toLocaleString()}만원`)
@@ -542,17 +581,22 @@ function OwnerDashboard({ insights, loading, onOpenPost }) {
   )
 }
 
-function Field({ label, value, onChange, placeholder, type = 'text', textarea = false, required = false, maxLength }) {
+function Field({ label, value, onChange, placeholder, type = 'text', textarea = false, required = false, maxLength, error, inputMode, min, max, step }) {
   const common = {
     value,
     onChange: event => onChange(event.target.value),
     placeholder,
     required,
     maxLength,
+    inputMode,
+    min,
+    max,
+    step,
+    'aria-invalid': Boolean(error),
     style: {
       width: '100%',
       minHeight: textarea ? 92 : 48,
-      border: '1.5px solid #e4e6e2',
+      border: `1.5px solid ${error ? '#e0352b' : '#e4e6e2'}`,
       borderRadius: 14,
       padding: textarea ? '12px 14px' : '0 14px',
       fontFamily: 'inherit',
@@ -569,11 +613,12 @@ function Field({ label, value, onChange, placeholder, type = 'text', textarea = 
         {label}{required && <span aria-hidden="true" style={{ color: '#d93025', marginLeft: 3 }}>*</span>}
       </span>
       {textarea ? <textarea {...common} /> : <input {...common} type={type} />}
+      {error && <span role="alert" style={{ color: '#e0352b', fontSize: 12, lineHeight: 1.4 }}>{error}</span>}
     </label>
   )
 }
 
-function DateField({ label, value, onChange, required = false }) {
+function DateField({ label, value, onChange, required = false, error }) {
   const [focused, setFocused] = useState(false)
   const today = new Date()
   const datePlaceholder = [
@@ -598,12 +643,13 @@ function DateField({ label, value, onChange, required = false }) {
         aria-label={`${label} 여덟 자리 숫자 입력`}
         required={required}
         pattern="[0-9.]*"
+        aria-invalid={Boolean(error)}
         style={{
           width: '100%',
           minWidth: 0,
           height: 48,
           boxSizing: 'border-box',
-          border: `1.5px solid ${focused ? GREEN : '#e4e6e2'}`,
+          border: `1.5px solid ${error ? '#e0352b' : focused ? GREEN : '#e4e6e2'}`,
           borderRadius: 14,
           padding: '0 14px',
           background: '#fff',
@@ -617,6 +663,7 @@ function DateField({ label, value, onChange, required = false }) {
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         }}
       />
+      {error && <span role="alert" style={{ color: '#e0352b', fontSize: 12, lineHeight: 1.4 }}>{error}</span>}
     </label>
   )
 }
@@ -638,6 +685,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [draftErrors, setDraftErrors] = useState({})
   const [applications, setApplications] = useState([])
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [housingImages, setHousingImages] = useState([])
@@ -889,6 +937,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
     housingImagePreviews.forEach(preview => URL.revokeObjectURL(preview.url))
     setHousingImages([])
     setHousingImagePreviews([])
+    setDraftErrors({})
     setDraft(current => ({
       ...current,
       type: tab,
@@ -902,6 +951,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
     housingImagePreviews.forEach(preview => URL.revokeObjectURL(preview.url))
     setHousingImages([])
     setHousingImagePreviews([])
+    setDraftErrors({})
     setDraft(draftFromPost(selectedPost))
     setMode('edit')
   }
@@ -938,6 +988,14 @@ export default function NeedsBoard({ authoredOnly = false }) {
 
   const handleSubmitPost = async event => {
     event.preventDefault()
+    if (draft.type === 'people') {
+      const validationErrors = validateJobDraft(draft)
+      setDraftErrors(validationErrors)
+      if (Object.keys(validationErrors).length > 0) {
+        setToast('입력 내용을 다시 확인해 주세요.')
+        return
+      }
+    }
     setSubmitting(true)
     try {
       let post
@@ -1035,7 +1093,10 @@ export default function NeedsBoard({ authoredOnly = false }) {
     }
   }
 
-  const updateDraft = (key, value) => setDraft(current => ({ ...current, [key]: value }))
+  const updateDraft = (key, value) => {
+    setDraft(current => ({ ...current, [key]: value }))
+    setDraftErrors(current => current[key] ? { ...current, [key]: '' } : current)
+  }
   const updateApplicant = (key, value) => setApplicant(current => ({ ...current, [key]: value }))
   const isPostDraftValid = draft.type === 'people'
     ? Boolean(draft.title.trim() && draft.category && draft.content.trim())
@@ -1466,9 +1527,16 @@ export default function NeedsBoard({ authoredOnly = false }) {
             />
             {draft.type === 'people' ? (
               <>
-                <DateField label="모집 시작일" value={draft.startDate} onChange={v => updateDraft('startDate', v)} />
-                <DateField label="모집 종료일" value={draft.endDate} onChange={v => updateDraft('endDate', v)} />
-                <Field label="필요 인원" value={draft.headcount} onChange={v => updateDraft('headcount', v)} placeholder="예: 2" type="number" />
+                <DateField label="모집 시작일" value={draft.startDate} onChange={v => updateDraft('startDate', v)} error={draftErrors.startDate} />
+                <DateField label="모집 종료일" value={draft.endDate} onChange={v => updateDraft('endDate', v)} error={draftErrors.endDate} />
+                <Field
+                  label="필요 인원"
+                  value={draft.headcount}
+                  onChange={v => updateDraft('headcount', v)}
+                  placeholder="예: 2"
+                  inputMode="numeric"
+                  error={draftErrors.headcount}
+                />
                 <Field label="지원 조건" value={draft.condition} onChange={v => updateDraft('condition', v)} placeholder="예: 초보 가능" />
                 <Field label="장소" value={draft.location} onChange={v => updateDraft('location', v)} placeholder="작업 또는 모임 장소" />
               </>
