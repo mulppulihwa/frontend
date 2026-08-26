@@ -340,7 +340,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
           50% { opacity: 0.85; }
         }
       `}</style>
-      <div style={{ minHeight: 230 }} aria-live="polite">
+      <div style={{ minHeight: policy?.id || loading ? 230 : 188 }} aria-live="polite">
         {loading && !policy?.id ? (
           <div
             aria-label="오늘의 맞춤 일정을 불러오는 중"
@@ -400,7 +400,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
           </div>
         ) : (
           <div style={{
-            minHeight: 230,
+            minHeight: 188,
             borderRadius: 24,
             border: '1px solid rgba(218,231,211,0.95)',
             background: '#FFFFFF',
@@ -415,7 +415,7 @@ function TodayChecklist({ policy, checklistItems, userName, navigate, onComplete
               <Check size={22} strokeWidth={2.4} />
             </span>
             <p style={{ fontSize: 15, fontWeight: 700, color: '#1f2433' }}>미완성 체크리스트가 없습니다.</p>
-            <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: '#888' }}>모든 필요 서류를 확인했어요.</p>
+            <p style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: '#888' }}>지금 확인할 준비 항목이 없어요.</p>
           </div>
         )}
       </div>

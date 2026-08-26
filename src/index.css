@@ -195,7 +195,7 @@ input:focus-visible {
   padding: clamp(20px, 2.8dvh, 26px) 18px calc(92px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: clamp(20px, 2.8dvh, 28px);
 }
 
