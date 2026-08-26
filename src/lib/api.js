@@ -248,6 +248,10 @@ export function normalizePlace(place, index = 0) {
     sourceCategory,
     userAdded: place.userAdded ?? place.is_owner ?? false,
     isOwner: place.is_owner ?? place.userAdded ?? false,
+    okcheon_news_recommended: place.okcheon_news_recommended === true,
+    counseling_center_recommended: place.counseling_center_recommended === true,
+    endorsement_count: Number(place.endorsement_count ?? place.recommend_count ?? 0),
+    is_endorsed: place.is_endorsed === true,
   }
 }
 
@@ -341,12 +345,21 @@ function removeMyPlaceId(id) {
   localStorage.setItem(MY_PLACE_IDS_KEY, JSON.stringify([...ids]))
 }
 
-export async function fetchPlaces() {
-  const data = await request('/api/places/')
+export async function fetchPlaces(filters = {}) {
+  const params = new URLSearchParams()
+  if (filters.category) params.set('category', filters.category)
+  if (filters.myEndorsed === true || filters.my_endorsed === true) params.set('my_endorsed', 'true')
+  const query = params.toString()
+  const data = await request(`/api/places/${query ? `?${query}` : ''}`)
   const myIds = getMyPlaceIds()
   return toArray(data)
     .map(place => normalizePlace({ ...place, is_owner: place.is_owner || myIds.has(String(place.id)) }))
     .filter(place => !HIDDEN_PLACE_NAMES.has(place.name.trim()))
+}
+
+export async function togglePlaceEndorsement(placeId) {
+  if (!placeId) throw new Error('추천할 장소 ID가 없습니다.')
+  return request(`/api/places/${placeId}/endorse/`, { method: 'POST' })
 }
 
 export async function createPlace(place) {

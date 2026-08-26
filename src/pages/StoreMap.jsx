@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { ChevronUp, ChevronDown, MapPin, Phone, Search, X, Clock, Plus, Trash2, MessageSquareText, Pencil, ThumbsUp } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import SelectField from '../components/SelectField'
-import { createPlace, deletePlace, fetchPlaces, updatePlace } from '../lib/api'
+import { createPlace, deletePlace, fetchPlaces, togglePlaceEndorsement, updatePlace } from '../lib/api'
 import { getPlaceCategories, getPlaceCategoryMeta, PLACE_CATEGORIES } from '../lib/placeCategories'
 import { filterPlacesByPolicy } from '../lib/placePolicyFilter'
 import okcheonRecommendation from '../assets/okcheon-recommendation.png'
@@ -30,28 +30,6 @@ const COLLAPSED_H = 220
 const EXPANDED_H = 400
 const POSTCODE_SCRIPT_SRC = '//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
 const USER_PLACE_CATEGORIES = PLACE_CATEGORIES.map(category => category.id)
-const API_PLACE_CATEGORY = {
-  ...Object.fromEntries(USER_PLACE_CATEGORIES.map(category => [category, category])),
-  집: '생활',
-  부동산: '건축자재',
-  수도: '생활',
-  교육센터: '행정',
-  레저시설: '생활',
-  명소: '생활',
-  맛집: '음식점',
-}
-const EDITABLE_PLACE_CATEGORY = {
-  ...API_PLACE_CATEGORY,
-}
-const PLACE_RECOMMEND_KEY = 'okcheonPlaceRecommendations'
-
-function readRecommendations() {
-  try { return JSON.parse(localStorage.getItem(PLACE_RECOMMEND_KEY) || '{}') } catch { return {} }
-}
-
-function writeRecommendations(value) {
-  localStorage.setItem(PLACE_RECOMMEND_KEY, JSON.stringify(value))
-}
 
 const INSTITUTION_RECOMMENDATION_TYPES = [
   {
@@ -88,21 +66,15 @@ function getInstitutionRecommendationTypes(place) {
     rawValues.push('counselingcenter')
   }
 
-  const matchedTypes = INSTITUTION_RECOMMENDATION_TYPES.filter(type => rawValues.some(type.matches))
-  return matchedTypes.slice(0, 1)
+  return INSTITUTION_RECOMMENDATION_TYPES.filter(type => rawValues.some(type.matches))
 }
 
-function getRecommendKey(place) {
-  return String(place?.id || `${place?.name}-${place?.address}`)
+function getRecommendedCount(place) {
+  return Number(place?.endorsement_count ?? place?.recommend_count ?? place?.recommendCount ?? 0)
 }
 
-function getRecommendedCount(place, recommendations = readRecommendations()) {
-  const key = getRecommendKey(place)
-  return Number(recommendations[key]?.count ?? place?.recommend_count ?? place?.recommendCount ?? 0)
-}
-
-function isPlaceRecommended(place, recommendations = readRecommendations()) {
-  return Boolean(recommendations[getRecommendKey(place)]?.recommended)
+function isPlaceRecommended(place) {
+  return place?.is_endorsed === true || place?.isEndorsed === true
 }
 
 function ResidentRecommendationBadge({ count, large = false }) {
@@ -228,7 +200,7 @@ export default function StoreMap() {
   const postcodeLayerRef = useRef(null)
   const [mapAreaHeight, setMapAreaHeight] = useState(0)
   const [mapReady, setMapReady] = useState(false)
-  const [activeCategory, setActiveCategory] = useState('집')
+  const [activeCategory, setActiveCategory] = useState('행정')
   const [sheetH, setSheetH] = useState(COLLAPSED_H)
   const [selectedStore, setSelectedStore] = useState(null)
   const [stores, setStores] = useState([])
@@ -243,11 +215,15 @@ export default function StoreMap() {
   const [editingPlaceId, setEditingPlaceId] = useState(null)
   const [hoveredPlaceId, setHoveredPlaceId] = useState(null)
   const [userFilter, setUserFilter] = useState('all')
-  const [recommendations, setRecommendations] = useState(() => readRecommendations())
+  const [endorsedStores, setEndorsedStores] = useState([])
+  const [endorsedPlacesLoading, setEndorsedPlacesLoading] = useState(false)
+  const [recommendPlaceLoadingId, setRecommendPlaceLoadingId] = useState(null)
+  const [recommendPlaceError, setRecommendPlaceError] = useState('')
   const [newPlace, setNewPlace] = useState({ name: '', category: '생활', address: '', phone: '', hours: '', memo: '' })
   const [userPos, setUserPos] = useState(null)
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false })
   const relatedPolicy = state?.policy || null
+  const visibleStores = userFilter === 'endorsed' ? endorsedStores : stores
   const sheetMaxHeight = mapAreaHeight || Math.max(COLLAPSED_H, window.innerHeight - 144)
   const expandedHeight = Math.min(EXPANDED_H, sheetMaxHeight)
 
@@ -279,6 +255,25 @@ export default function StoreMap() {
       active = false
     }
   }, [relatedPolicy])
+
+  useEffect(() => {
+    if (userFilter !== 'endorsed') return undefined
+    let active = true
+    fetchPlaces({ myEndorsed: true })
+      .then(places => {
+        if (!active) return
+        setEndorsedStores(relatedPolicy ? filterPlacesByPolicy(places, relatedPolicy) : places)
+      })
+      .catch(() => {
+        if (active) setEndorsedStores([])
+      })
+      .finally(() => {
+        if (active) setEndorsedPlacesLoading(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [userFilter, relatedPolicy])
 
   const fullscreen = sheetH >= sheetMaxHeight - 8
   const expanded = sheetH > (COLLAPSED_H + expandedHeight) / 2
@@ -393,7 +388,7 @@ export default function StoreMap() {
     const categoryMeta = getPlaceCategoryMeta(categoryId)
     if (!categoryMeta) return
     const color = categoryMeta.color
-    stores
+    visibleStores
       .filter(place => place.category === categoryId)
       .filter(place => Number.isFinite(Number(place.lat)) && Number.isFinite(Number(place.lng)))
       .forEach(store => {
@@ -421,7 +416,7 @@ export default function StoreMap() {
 
   useEffect(() => {
     drawMarkers(activeCategory)
-  }, [stores, activeCategory])
+  }, [stores, endorsedStores, userFilter, activeCategory])
 
   const handleCategoryChange = (categoryId) => {
     setActiveCategory(categoryId)
@@ -432,7 +427,7 @@ export default function StoreMap() {
   }
 
   const categories = getPlaceCategories(stores)
-  const filteredStores = stores
+  const filteredStores = visibleStores
     .filter(s => s.category === activeCategory)
     .filter(s => s.name.includes(query) || s.address.includes(query))
     .filter(s => userFilter === 'added' ? s.userAdded : true)
@@ -476,25 +471,34 @@ export default function StoreMap() {
     }
   }
 
-  const handleRecommendPlace = (place) => {
-    const key = getRecommendKey(place)
-    setRecommendations(current => {
-      if (current[key]?.recommended) {
-        const next = { ...current }
-        delete next[key]
-        writeRecommendations(next)
-        return next
+  const handleRecommendPlace = async (place) => {
+    if (!place?.id || recommendPlaceLoadingId) return
+    const wasEndorsed = isPlaceRecommended(place)
+    const previousCount = getRecommendedCount(place)
+    setRecommendPlaceError('')
+    setRecommendPlaceLoadingId(place.id)
+    try {
+      const result = await togglePlaceEndorsement(place.id)
+      const nextEndorsed = result?.is_endorsed ?? result?.endorsed ?? !wasEndorsed
+      const nextCount = Number(result?.endorsement_count ?? Math.max(0, previousCount + (nextEndorsed ? 1 : -1)))
+      const updatedPlace = {
+        ...place,
+        ...(result && typeof result === 'object' ? result : {}),
+        is_endorsed: nextEndorsed,
+        endorsement_count: nextCount,
       }
-      const next = {
-        ...current,
-        [key]: {
-          recommended: true,
-          count: getRecommendedCount(place, current) + 1,
-        },
-      }
-      writeRecommendations(next)
-      return next
-    })
+      setStores(current => current.map(item => String(item.id) === String(place.id) ? { ...item, ...updatedPlace } : item))
+      setEndorsedStores(current => nextEndorsed
+        ? current.some(item => String(item.id) === String(place.id))
+          ? current.map(item => String(item.id) === String(place.id) ? { ...item, ...updatedPlace } : item)
+          : [...current, updatedPlace]
+        : current.filter(item => String(item.id) !== String(place.id)))
+      setDetailPopup(current => current && String(current.id) === String(place.id) ? { ...current, ...updatedPlace } : current)
+    } catch (error) {
+      setRecommendPlaceError(error.message || '추천 상태를 변경하지 못했어요.')
+    } finally {
+      setRecommendPlaceLoadingId(null)
+    }
   }
 
   const openAddPlace = (event) => {
@@ -518,10 +522,7 @@ export default function StoreMap() {
     setEditingPlaceId(store.id)
     setNewPlace({
       name: store.name || '',
-      category: EDITABLE_PLACE_CATEGORY[store.sourceCategory]
-        || EDITABLE_PLACE_CATEGORY[store.category]
-        || store.category
-        || '생활',
+      category: USER_PLACE_CATEGORIES.includes(store.category) ? store.category : '생활',
       address: store.address || '',
       phone: store.phone || '',
       hours: store.hours === '사용자가 추가한 장소' ? '' : store.hours || '',
@@ -602,7 +603,7 @@ export default function StoreMap() {
 
       const payload = {
         name: newPlace.name.trim(),
-        category: API_PLACE_CATEGORY[newPlace.category] || newPlace.category,
+        category: newPlace.category,
         address: position.address || newPlace.address.trim(),
         phone: newPlace.phone.trim(),
         business_hours: newPlace.hours.trim(),
@@ -761,14 +762,22 @@ export default function StoreMap() {
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 600, color: '#888' }}>
-                {filteredStores.length}개 장소
+                {endorsedPlacesLoading ? '불러오는 중...' : `${filteredStores.length}개 장소`}
               </span>
-              {stores.some(s => s.category === activeCategory && s.userAdded) && (
               <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: 6 }}>
-                {[{ id: 'all', label: '모두' }, { id: 'added', label: '직접 추가' }].map(({ id, label }) => (
+                {[
+                  { id: 'all', label: '모두' },
+                  { id: 'endorsed', label: '내가 추천한 가게' },
+                  ...(stores.some(s => s.category === activeCategory && s.userAdded)
+                    ? [{ id: 'added', label: '직접 추가' }]
+                    : []),
+                ].map(({ id, label }) => (
                   <button
                     key={id}
-                    onClick={() => setUserFilter(id)}
+                    onClick={() => {
+                      if (id === 'endorsed') setEndorsedPlacesLoading(true)
+                      setUserFilter(id)
+                    }}
                     style={{
                       padding: '4px 12px', borderRadius: 20, border: 'none', cursor: 'pointer',
                       fontFamily: 'inherit', fontSize: 12, fontWeight: 650,
@@ -781,7 +790,6 @@ export default function StoreMap() {
                   </button>
                 ))}
               </div>
-              )}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -831,13 +839,13 @@ export default function StoreMap() {
               </div>
             )}
             {filteredStores.map((store) => {
-              const i = stores.indexOf(store)
+              const i = visibleStores.indexOf(store)
               const isSelected = selectedStore?.name === store.name
               const storeKey = store.id || `${store.name}-${i}`
               const isHovered = hoveredPlaceId === storeKey
               const CatIcon = activeCat.icon
               const institutionRecommendations = getInstitutionRecommendationTypes(store)
-              const recommendCount = getRecommendedCount(store, recommendations)
+              const recommendCount = getRecommendedCount(store)
               return (
                 <div
                   key={storeKey}
@@ -1220,7 +1228,7 @@ export default function StoreMap() {
               </button>
             </div>
             <ResidentRecommendationBadge
-              count={getRecommendedCount(detailPopup, recommendations)}
+              count={getRecommendedCount(detailPopup)}
               large
             />
             <InstitutionRecommendationBadge
@@ -1250,15 +1258,16 @@ export default function StoreMap() {
               className="app-action-button"
               type="button"
               onClick={() => handleRecommendPlace(detailPopup)}
-              aria-pressed={isPlaceRecommended(detailPopup, recommendations)}
+              aria-pressed={isPlaceRecommended(detailPopup)}
+              disabled={recommendPlaceLoadingId === detailPopup.id}
               style={{
                 width: '76%',
                 minWidth: 210,
                 margin: '0 auto',
                 borderRadius: 999,
-                border: isPlaceRecommended(detailPopup, recommendations) ? '1px solid transparent' : '1px solid #e0e3de',
-                background: isPlaceRecommended(detailPopup, recommendations) ? GREEN : '#f1f3f0',
-                color: isPlaceRecommended(detailPopup, recommendations) ? '#FFFFFF' : '#555b55',
+                border: isPlaceRecommended(detailPopup) ? '1px solid transparent' : '1px solid #e0e3de',
+                background: isPlaceRecommended(detailPopup) ? GREEN : '#f1f3f0',
+                color: isPlaceRecommended(detailPopup) ? '#FFFFFF' : '#555b55',
                 fontFamily: 'inherit',
                 fontSize: 14,
                 fontWeight: 750,
@@ -1266,23 +1275,26 @@ export default function StoreMap() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 7,
-                cursor: 'pointer',
-                boxShadow: isPlaceRecommended(detailPopup, recommendations) ? '0 5px 14px rgba(7,104,24,0.16)' : 'none',
+                cursor: recommendPlaceLoadingId === detailPopup.id ? 'wait' : 'pointer',
+                opacity: recommendPlaceLoadingId === detailPopup.id ? 0.7 : 1,
+                boxShadow: isPlaceRecommended(detailPopup) ? '0 5px 14px rgba(7,104,24,0.16)' : 'none',
                 transition: 'background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease',
               }}
             >
               <ThumbsUp
                 size={16}
                 strokeWidth={2.3}
-                fill={isPlaceRecommended(detailPopup, recommendations) ? '#FFFFFF' : 'none'}
+                fill={isPlaceRecommended(detailPopup) ? '#FFFFFF' : 'none'}
               />
-              {isPlaceRecommended(detailPopup, recommendations) ? '추천 취소' : '옥천 주민 추천하기'}
+              {recommendPlaceLoadingId === detailPopup.id
+                ? '처리 중...'
+                : isPlaceRecommended(detailPopup) ? '추천 취소' : '옥천 주민 추천하기'}
               <span style={{
                 minWidth: 24,
                 height: 24,
                 padding: '0 6px',
                 borderRadius: 999,
-                background: isPlaceRecommended(detailPopup, recommendations) ? 'rgba(255,255,255,0.2)' : '#e2e5e0',
+                background: isPlaceRecommended(detailPopup) ? 'rgba(255,255,255,0.2)' : '#e2e5e0',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -1290,9 +1302,14 @@ export default function StoreMap() {
                 fontSize: 11.5,
                 fontWeight: 750,
               }}>
-                {getRecommendedCount(detailPopup, recommendations)}
+                {getRecommendedCount(detailPopup)}
               </span>
             </button>
+            {recommendPlaceError && (
+              <p role="alert" style={{ margin: '-8px 0 0', color: '#d93025', fontSize: 12.5, lineHeight: 1.4, textAlign: 'center' }}>
+                {recommendPlaceError}
+              </p>
+            )}
 
             {(!detailPopup.locationPrivate || detailPopup.kakaoResult?.phone || detailPopup.phone) && (
               <div style={{ display: 'flex', gap: 10 }}>
