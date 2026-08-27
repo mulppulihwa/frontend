@@ -127,14 +127,14 @@ function validateJobDraft(draft) {
   const errors = {}
   const headcount = String(draft.headcount || '').trim()
 
-  if (headcount) {
-    if (!/^-?\d+$/.test(headcount)) {
-      errors.headcount = '필요 인원은 숫자만 입력해 주세요.'
-    } else if (Number(headcount) < 1) {
-      errors.headcount = '필요 인원은 1명 이상이어야 해요.'
-    } else if (Number(headcount) > 999) {
-      errors.headcount = '필요 인원은 999명 이하로 입력해 주세요.'
-    }
+  if (!headcount) {
+    errors.headcount = '필요 인원을 입력해 주세요.'
+  } else if (!/^\d+$/.test(headcount)) {
+    errors.headcount = '필요 인원은 양의 정수만 입력해 주세요.'
+  } else if (Number(headcount) < 1) {
+    errors.headcount = '필요 인원은 1명 이상이어야 해요.'
+  } else if (Number(headcount) > 999) {
+    errors.headcount = '필요 인원은 999명 이하로 입력해 주세요.'
   }
 
   if (!isValidDateInput(draft.startDate)) {
@@ -264,12 +264,18 @@ function hasActiveJobAuthor(post) {
 }
 
 function normalizeJobPost(post) {
+  const parsedRecruitCount = Number(post.recruit_count)
+  const recruitCount = Number.isInteger(parsedRecruitCount) && parsedRecruitCount > 0
+    ? parsedRecruitCount
+    : null
+
   return {
     ...post,
+    recruit_count: recruitCount,
     type: 'people',
     content: post.description || '',
     period: formatDateRange(post.start_date, post.end_date),
-    headcount: post.recruit_count ? `${post.recruit_count}명` : '인원 협의',
+    headcount: recruitCount ? `${recruitCount}명` : '인원 협의',
     condition: post.conditions || '조건 없음',
     author: post.created_by_nickname || '작성자',
   }
@@ -1098,8 +1104,11 @@ export default function NeedsBoard({ authoredOnly = false }) {
     setDraftErrors(current => current[key] ? { ...current, [key]: '' } : current)
   }
   const updateApplicant = (key, value) => setApplicant(current => ({ ...current, [key]: value }))
+  const validHeadcount = /^\d+$/.test(String(draft.headcount || '').trim())
+    && Number(draft.headcount) >= 1
+    && Number(draft.headcount) <= 999
   const isPostDraftValid = draft.type === 'people'
-    ? Boolean(draft.title.trim() && draft.category && draft.content.trim())
+    ? Boolean(draft.title.trim() && draft.category && draft.content.trim() && validHeadcount)
     : Boolean(
       draft.title.trim()
       && draft.category
@@ -1532,9 +1541,11 @@ export default function NeedsBoard({ authoredOnly = false }) {
                 <Field
                   label="필요 인원"
                   value={draft.headcount}
-                  onChange={v => updateDraft('headcount', v)}
+                  onChange={v => updateDraft('headcount', v.replace(/\D/g, '').slice(0, 3))}
                   placeholder="예: 2"
                   inputMode="numeric"
+                  maxLength={3}
+                  required
                   error={draftErrors.headcount}
                 />
                 <Field label="지원 조건" value={draft.condition} onChange={v => updateDraft('condition', v)} placeholder="예: 초보 가능" />
