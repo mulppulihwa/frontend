@@ -85,7 +85,8 @@ input:focus-visible {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: calc(100dvh - 70px - env(safe-area-inset-bottom));
+  height: 100vh;
+  height: 100dvh;
   min-height: 0;
   overflow: hidden;
   background: #fdfcf8;
@@ -97,7 +98,7 @@ input:focus-visible {
 }
 
 .diagnosis-progress {
-  padding: 8px 18px 10px;
+  padding: 8px 22px 10px;
 }
 
 .diagnosis-content {
@@ -111,28 +112,66 @@ input:focus-visible {
 
 .diagnosis-header {
   flex-shrink: 0;
-  padding: 8px 18px 0;
+  padding: clamp(10px, 1.8dvh, 16px) 22px 0;
   position: relative;
   z-index: 1;
+}
+
+.diagnosis-header h2 {
+  font-size: clamp(18px, 2.3dvh, 21px) !important;
+  line-height: 1.35 !important;
+  margin-bottom: 5px !important;
+}
+
+.diagnosis-header p {
+  max-width: 350px;
+  margin-inline: auto;
+  font-size: clamp(13px, 1.75dvh, 15px) !important;
+  line-height: 1.45 !important;
+  color: #4f544f !important;
 }
 
 .diagnosis-fields {
   flex: 1;
   min-height: 0;
-  padding: clamp(10px, 1.6dvh, 16px) 18px 4px;
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  padding: clamp(16px, 3dvh, 28px) 22px clamp(10px, 1.8dvh, 16px);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
   position: relative;
   z-index: 2;
   background: #fdfcf8;
 }
 
+.diagnosis-fields::-webkit-scrollbar {
+  display: none;
+}
+
+.diagnosis-fields label {
+  font-size: 14px !important;
+  line-height: 1.35;
+  color: #252825 !important;
+}
+
 .diagnosis-footer {
   flex-shrink: 0;
-  padding: 8px 28px max(24px, env(safe-area-inset-bottom));
+  padding: 10px 22px max(16px, env(safe-area-inset-bottom));
   background: #fdfcf8;
   z-index: 50;
+}
+
+.diagnosis-footer .app-action-button {
+  width: min(100%, 250px) !important;
+  min-height: 52px;
+  padding-block: 13px !important;
+  font-size: 16px !important;
 }
 
 @media (max-height: 740px) {
@@ -142,28 +181,43 @@ input:focus-visible {
   }
 
   .diagnosis-header {
-    padding-top: 3px;
+    padding-top: 7px;
     padding-bottom: 0;
   }
 
   .diagnosis-header h2 {
-    font-size: 16px !important;
+    font-size: 17px !important;
     line-height: 1.35 !important;
   }
 
   .diagnosis-header p {
-    font-size: 12px !important;
+    font-size: 12.5px !important;
     line-height: 1.35 !important;
   }
 
   .diagnosis-fields {
-    padding-top: 7px;
-    justify-content: flex-start;
+    padding-top: 10px;
+    padding-bottom: 6px;
+    justify-content: center;
   }
 
   .diagnosis-footer {
-    padding-top: 5px;
-    padding-bottom: max(18px, env(safe-area-inset-bottom));
+    padding-top: 6px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 360px) {
+  .diagnosis-progress,
+  .diagnosis-header,
+  .diagnosis-fields {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .diagnosis-footer {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 
