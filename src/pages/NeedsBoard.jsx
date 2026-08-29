@@ -26,7 +26,6 @@ const peopleFilters = ['전체', '농촌일손', '주택수리', '돌봄', '동�
 const houseFilters = ['전체', '원룸', '투룸이상', '오피스텔', '주택', '기타']
 const regionOptions = ['옥천읍', '동이면', '안남면', '청성면', '청산면', '이원면', '군서면', '군북면']
 const APPLICANT_CACHE_KEY = 'okcheonNeedsApplicant'
-const APPLIED_JOBS_CACHE_PREFIX = 'okcheonAppliedJobs:'
 const MAX_HOUSING_IMAGES = 10
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024
 const POSTS_PER_PAGE = 10
@@ -86,48 +85,6 @@ function readApplicantCache() {
   } catch {
     return { name: '', phone: '', note: '' }
   }
-}
-
-function getApplicantUserKey(profile) {
-  return String(
-    profile?.id
-      ?? profile?.user_id
-      ?? profile?.kakao_id
-      ?? profile?.email
-      ?? profile?.nickname
-      ?? 'current',
-  )
-}
-
-function readAppliedJobIds(userKey = 'current') {
-  try {
-    const ids = JSON.parse(localStorage.getItem(`${APPLIED_JOBS_CACHE_PREFIX}${userKey}`) || '[]')
-    return new Set(Array.isArray(ids) ? ids.map(String) : [])
-  } catch {
-    return new Set()
-  }
-}
-
-function writeAppliedJobIds(userKey, ids) {
-  try {
-    localStorage.setItem(`${APPLIED_JOBS_CACHE_PREFIX}${userKey}`, JSON.stringify([...ids]))
-  } catch { /* 저장 공간 제한 시 화면 상태만 유지 */ }
-}
-
-function hasBackendApplication(post) {
-  const values = [
-    post?.has_applied,
-    post?.is_applied,
-    post?.applied_by_me,
-    post?.user_applied,
-    post?.my_application,
-  ]
-  return values.some(value => (
-    value === true
-    || value === 1
-    || (typeof value === 'string' && ['true', '1', 'applied', 'completed'].includes(value.trim().toLowerCase()))
-    || (value != null && typeof value === 'object')
-  ))
 }
 
 function formatDate(date) {
@@ -314,7 +271,6 @@ function normalizeJobPost(post) {
 
   return {
     ...post,
-    has_applied: hasBackendApplication(post),
     recruit_count: recruitCount,
     type: 'people',
     content: post.description || '',
@@ -573,11 +529,11 @@ function OwnerDashboard({ insights, loading, onOpenPost }) {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8, marginTop: 15 }}>
             <div style={{ padding: '10px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.75)' }}>
-              <span style={{ color: '#687168', fontSize: 11.5, fontWeight: 600 }}>일손</span>
+              <span style={{ color: '#687168', fontSize: 11.5, fontWeight: 600 }}>사람 구해요</span>
               <strong style={{ display: 'block', marginTop: 2, color: GREEN, fontSize: 18, fontWeight: 750 }}>{loading ? '–' : insights?.people ?? 0}건</strong>
             </div>
             <div style={{ padding: '10px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.75)' }}>
-              <span style={{ color: '#687168', fontSize: 11.5, fontWeight: 600 }}>집</span>
+              <span style={{ color: '#687168', fontSize: 11.5, fontWeight: 600 }}>집 구해요</span>
               <strong style={{ display: 'block', marginTop: 2, color: '#9a6500', fontSize: 18, fontWeight: 750 }}>{loading ? '–' : insights?.housing ?? 0}건</strong>
             </div>
           </div>
@@ -748,8 +704,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
   const [ownerInsightsLoading, setOwnerInsightsLoading] = useState(authoredOnly)
   const [ownerInsightsVersion, setOwnerInsightsVersion] = useState(0)
   const [applicant, setApplicant] = useState(readApplicantCache)
-  const [appliedJobsCacheKey, setAppliedJobsCacheKey] = useState('current')
-  const [appliedJobIds, setAppliedJobIds] = useState(() => readAppliedJobIds('current'))
   const [draft, setDraft] = useState({
     type: 'people',
     category: '농촌일손',
@@ -969,9 +923,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
     fetchProfile()
       .then(profile => {
         if (cancelled) return
-        const userKey = getApplicantUserKey(profile)
-        setAppliedJobsCacheKey(userKey)
-        setAppliedJobIds(readAppliedJobIds(userKey))
         setApplicant(current => ({
           ...current,
           name: current.name || profile?.applicant_name || profile?.nickname || '',
@@ -1034,7 +985,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
       const normalizedDetail = post.type === 'people' ? normalizeJobPost(detail) : normalizeHousingPost(detail)
       setSelectedPost({
         ...normalizedDetail,
-        has_applied: normalizedDetail.has_applied || appliedJobIds.has(String(post.id)),
         is_owner: detail.is_owner === true || post.is_owner === true,
       })
     } catch (detailError) {
@@ -1118,19 +1068,6 @@ export default function NeedsBoard({ authoredOnly = false }) {
         message: applicant.note.trim(),
       })
       localStorage.setItem(APPLICANT_CACHE_KEY, JSON.stringify(applicant))
-      const postId = String(selectedPost.id)
-      setAppliedJobIds(current => {
-        const next = new Set(current)
-        next.add(postId)
-        writeAppliedJobIds(appliedJobsCacheKey, next)
-        return next
-      })
-      setSelectedPost(current => current ? { ...current, has_applied: true } : current)
-      setPosts(current => current.map(post => (
-        post.type === 'people' && String(post.id) === postId
-          ? { ...post, has_applied: true }
-          : post
-      )))
       setToast('지원 완료되었습니다.')
       setMode('detail')
     } catch (applyError) {
@@ -1239,8 +1176,8 @@ export default function NeedsBoard({ authoredOnly = false }) {
             <section ref={listTopRef} style={{ marginBottom: 18, scrollMarginTop: 12 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: 4, borderRadius: 999, background: '#f1f3ef' }}>
                 {[
-                  ['people', '일손'],
-                  ['house', '집'],
+                  ['people', '사람 구해요'],
+                  ['house', '집 구해요'],
                 ].map(([id, label]) => (
                   <button
                     key={id}
@@ -1521,22 +1458,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
 
             {selectedPost.type === 'people' ? (
               !isPostOwner(selectedPost) && (
-                selectedPost.has_applied || appliedJobIds.has(String(selectedPost.id))
-                  ? (
-                    <Button
-                      disabled
-                      style={{
-                        marginTop: 8,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 7,
-                      }}
-                    >
-                      <Check size={18} /> 지원 완료
-                    </Button>
-                  )
-                  : <Button onClick={() => setMode('apply')} style={{ marginTop: 8 }}>지원하기</Button>
+                <Button onClick={() => setMode('apply')} style={{ marginTop: 8 }}>지원하기</Button>
               )
             ) : (
               <a href={`tel:${selectedPost.phone}`} style={{ textDecoration: 'none' }}>
@@ -1595,7 +1517,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
                 updateDraft('type', value)
                 updateDraft('category', value === 'people' ? '농촌일손' : '원룸')
               }}
-              options={[{ value: 'people', label: '일손' }, { value: 'house', label: '집' }]}
+              options={[{ value: 'people', label: '사람 구해요' }, { value: 'house', label: '집 구해요' }]}
             />
             <SelectField
               label="카테고리"
@@ -1700,7 +1622,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
 
       {peopleFilterOpen && (
         <FilterModal
-          title="일손 조건을 선택해 주세요"
+          title="사람 구해요 조건을 선택해 주세요"
           onClose={() => setPeopleFilterOpen(false)}
           onReset={() => setPeopleDetailFilters(initialPeopleFilters)}
           hasFilters={activePeopleFilterCount > 0}
@@ -1728,7 +1650,7 @@ export default function NeedsBoard({ authoredOnly = false }) {
 
       {housingFilterOpen && (
         <FilterModal
-          title="집 조건을 선택해 주세요"
+          title="집 구해요 조건을 선택해 주세요"
           onClose={() => setHousingFilterOpen(false)}
           onReset={() => setHousingFilters(initialHousingFilters)}
           hasFilters={activeHousingFilterCount > 0}

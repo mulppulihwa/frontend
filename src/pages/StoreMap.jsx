@@ -219,6 +219,7 @@ export default function StoreMap() {
   const [userFilter, setUserFilter] = useState('all')
   const [endorsedStores, setEndorsedStores] = useState([])
   const [endorsedPlacesLoading, setEndorsedPlacesLoading] = useState(false)
+  const [endorsedPlacesError, setEndorsedPlacesError] = useState('')
   const [recommendPlaceLoadingId, setRecommendPlaceLoadingId] = useState(null)
   const [recommendPlaceError, setRecommendPlaceError] = useState('')
   const [newPlace, setNewPlace] = useState({ name: '', category: '생활', address: '', phone: '', hours: '', memo: '' })
@@ -261,13 +262,21 @@ export default function StoreMap() {
   useEffect(() => {
     if (userFilter !== 'endorsed') return undefined
     let active = true
+    setEndorsedPlacesLoading(true)
+    setEndorsedPlacesError('')
     fetchPlaces({ myEndorsed: true })
       .then(places => {
         if (!active) return
         setEndorsedStores(relatedPolicy ? filterPlacesByPolicy(places, relatedPolicy) : places)
       })
-      .catch(() => {
-        if (active) setEndorsedStores([])
+      .catch(error => {
+        if (!active) return
+        setEndorsedStores([])
+        setEndorsedPlacesError(
+          error?.status === 401
+            ? '로그인이 만료되었어요. 다시 로그인해 주세요.'
+            : '추천한 가게를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',
+        )
       })
       .finally(() => {
         if (active) setEndorsedPlacesLoading(false)
@@ -387,13 +396,13 @@ export default function StoreMap() {
     if (!map || !categoryId) return
     markersRef.current.forEach(m => m.setMap(null))
     markersRef.current = []
-    const categoryMeta = getPlaceCategoryMeta(categoryId)
-    if (!categoryMeta) return
-    const color = categoryMeta.color
-    visibleStores
-      .filter(place => place.category === categoryId)
+    const markerStores = userFilter === 'endorsed'
+      ? visibleStores
+      : visibleStores.filter(place => place.category === categoryId)
+    markerStores
       .filter(place => Number.isFinite(Number(place.lat)) && Number.isFinite(Number(place.lng)))
       .forEach(store => {
+      const color = getPlaceCategoryMeta(store.category)?.color || '#076818'
       const position = new window.kakao.maps.LatLng(store.lat, store.lng)
       const svg = `<svg width="36" height="44" viewBox="0 0 36 44" xmlns="http://www.w3.org/2000/svg">
         <filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/></filter>
@@ -430,7 +439,7 @@ export default function StoreMap() {
 
   const categories = getPlaceCategories(stores)
   const filteredStores = visibleStores
-    .filter(s => s.category === activeCategory)
+    .filter(s => userFilter === 'endorsed' || s.category === activeCategory)
     .filter(s => s.name.includes(query) || s.address.includes(query))
     .filter(s => userFilter === 'added' ? s.userAdded : true)
 
@@ -781,7 +790,6 @@ export default function StoreMap() {
                   <button
                     key={id}
                     onClick={() => {
-                      if (id === 'endorsed') setEndorsedPlacesLoading(true)
                       setUserFilter(id)
                     }}
                     style={{
@@ -839,9 +847,9 @@ export default function StoreMap() {
             padding: '0 16px 104px',
             scrollPaddingBottom: 104,
           }}>
-            {filteredStores.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '24px 0', color: '#bbb', fontSize: 14 }}>
-                검색 결과가 없어요
+            {!endorsedPlacesLoading && filteredStores.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '24px 0', color: endorsedPlacesError ? '#d93025' : '#777', fontSize: 14, fontWeight: 600 }}>
+                {endorsedPlacesError || (userFilter === 'endorsed' ? '아직 추천한 가게가 없어요' : '검색 결과가 없어요')}
               </div>
             )}
             {filteredStores.map((store) => {
@@ -849,7 +857,8 @@ export default function StoreMap() {
               const isSelected = selectedStore?.name === store.name
               const storeKey = store.id || `${store.name}-${i}`
               const isHovered = hoveredPlaceId === storeKey
-              const CatIcon = activeCat.icon
+              const storeCategory = getPlaceCategoryMeta(store.category) || activeCat
+              const CatIcon = storeCategory.icon
               const institutionRecommendations = getInstitutionRecommendationTypes(store)
               const recommendCount = getRecommendedCount(store)
               return (
@@ -914,7 +923,7 @@ export default function StoreMap() {
                       marginTop: 0,
                       transition: 'background 0.18s',
                     }}>
-                      <CatIcon size={24} color={activeCat.color} strokeWidth={2.2} />
+                      <CatIcon size={24} color={storeCategory.color} strokeWidth={2.2} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0, paddingRight: store.userAdded ? 36 : 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, minWidth: 0 }}>
