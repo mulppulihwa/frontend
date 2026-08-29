@@ -6,6 +6,7 @@
 
 body {
   background: #fff;
+  touch-action: pan-x pan-y;
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
