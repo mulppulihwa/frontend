@@ -14,13 +14,12 @@ export default function GrantResultCard({
       : '#076818'
 
   return (
-    <div style={{
+    <div className="grant-result-card" style={{
       background: 'linear-gradient(135deg, #e8f3e8 0%, #fff7e8 100%)',
       border: 'none',
       borderRadius: 22,
       boxShadow: '0 4px 18px rgba(31,45,35,0.08)',
       padding: 18,
-      height: 330,
       boxSizing: 'border-box',
       display: 'flex',
       flexDirection: 'column',

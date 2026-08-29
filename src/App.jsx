@@ -24,7 +24,7 @@ function RequireAuth({ children }) {
 
 function AppWithNav() {
   const { pathname } = useLocation()
-  const hideBottomNav = ['/step1', '/step2', '/loading', '/results'].includes(pathname)
+  const hideBottomNav = ['/step1', '/step2', '/loading'].includes(pathname)
 
   return (
     <RequireAuth>
